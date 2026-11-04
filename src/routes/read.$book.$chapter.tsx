@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight, Menu, Moon, Search, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
+import { ReadAloud } from "@/components/read-aloud";
 import { SearchPanel } from "@/components/search-panel";
 import { VerseView } from "@/components/verse-view";
 import { BOOKS, SECTIONS, bookMeta } from "@/data/edition";
@@ -28,6 +29,7 @@ function Reader() {
   const [search, setSearch] = useState(false);
   const [menu, setMenu] = useState(false);
   const [sheet, setSheet] = useState<{ title: string; roman: string; body: string } | null>(null);
+  const [heard, setHeard] = useState<number | null>(null);
 
   useEffect(() => {
     let live = true;
@@ -51,6 +53,21 @@ function Reader() {
     // patch identity changes every render; last-read only needs the location.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [book, chapterNo]);
+
+  useEffect(() => {
+    setHeard(null);
+  }, [book, chapterNo]);
+
+  useEffect(() => {
+    if (heard == null) return;
+    const el = document.getElementById(`v-${heard}`);
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (rect.top < 160 || rect.bottom > window.innerHeight - 32) {
+      el.scrollIntoView({ block: "center", behavior: reduced ? "auto" : "smooth" });
+    }
+  }, [heard]);
 
   useEffect(() => {
     const hash = window.location.hash.replace("#", "");
@@ -155,6 +172,14 @@ function Reader() {
           </span>
         </div>
 
+        <ReadAloud
+          book={book}
+          chapter={chapterNo}
+          voice={prefs.voice === "rex" ? "rex" : "ara"}
+          onVoice={(voice) => patch({ voice })}
+          onVerse={setHeard}
+        />
+
         {meta?.later && chapterNo === 1 && (
           <p className="mt-4 border border-gold bg-gold-soft px-3 py-3 text-sm leading-relaxed text-ink">
             {meta.blurb}
@@ -179,6 +204,7 @@ function Reader() {
             showNotes={prefs.notes}
             onWord={onWord}
             onTerm={onTerm}
+            listening={heard === verse.v}
           />
         ))}
 

@@ -18,6 +18,7 @@ type Props = {
   showNotes: boolean;
   onWord: (info: WordGloss | null, surface: string) => void;
   onTerm: (key: string) => void;
+  listening?: boolean;
 };
 
 const SY = ["text-xl leading-relaxed", "text-2xl leading-relaxed", "text-3xl leading-relaxed"] as const;
@@ -33,6 +34,7 @@ export function VerseView({
   showNotes,
   onWord,
   onTerm,
+  listening = false,
 }: Props) {
   const study = NOTES[`${book}.${chapter}.${verse.v}`];
   const marks: { kind: "Murdock" | "Study"; text: string }[] = [];
@@ -46,7 +48,7 @@ export function VerseView({
   const missingEn = !verse.en;
 
   return (
-    <article id={`v-${verse.v}`} className="border-b border-line py-5">
+    <article id={`v-${verse.v}`} className={`scroll-mt-40 border-b border-line py-5 ${listening ? "bg-gold-soft -mx-4 px-4" : ""}`}>
       <div className="flex gap-3">
         <span className="w-8 shrink-0 pt-1 text-right font-serif text-sm text-gold">{verse.v}</span>
         <div className="min-w-0 flex-1">

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import type { VoiceId } from "@/lib/speak";
 
 export type Face = "both" | "sy" | "en";
 
@@ -8,6 +9,7 @@ export type Prefs = {
   face: Face;
   size: 0 | 1 | 2;
   notes: boolean;
+  voice: VoiceId;
   last?: { book: string; chapter: number };
 };
 
@@ -19,6 +21,7 @@ const DEFAULTS: Prefs = {
   face: "both",
   size: 1,
   notes: true,
+  voice: "ara",
 };
 
 function read(): Prefs {
