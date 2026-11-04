@@ -1,0 +1,74 @@
+@import "tailwindcss";
+@import "@fontsource/newsreader/400.css";
+@import "@fontsource/newsreader/600.css";
+@import "@fontsource/newsreader/400-italic.css";
+@import "@fontsource/noto-sans-syriac/400.css";
+
+:root {
+  --paper: #f3efe4;
+  --paper-raised: #faf7f0;
+  --ink: #1c1612;
+  --muted: #5e564c;
+  --line: #d9d0c0;
+  --garnet: #7a2e38;
+  --gold: #8d6b32;
+  --gold-soft: #efe6d2;
+  --syriac: #3d241c;
+  --scrim: rgb(28 22 18 / 0.4);
+}
+
+[data-theme="night"] {
+  --paper: #12110f;
+  --paper-raised: #1c1a17;
+  --ink: #ebe4d6;
+  --muted: #b3a898;
+  --line: #3a342c;
+  --garnet: #e7b4b8;
+  --gold: #d4b483;
+  --gold-soft: #2a241c;
+  --syriac: #f0e2cc;
+  --scrim: rgb(0 0 0 / 0.55);
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-raised: var(--paper-raised);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-garnet: var(--garnet);
+  --color-gold: var(--gold);
+  --color-gold-soft: var(--gold-soft);
+  --color-syriac: var(--syriac);
+  --font-serif: "Newsreader", "Palatino Linotype", Palatino, serif;
+  --font-syriac: "Noto Sans Syriac", serif;
+  --color-scrim: var(--scrim);
+}
+
+@layer base {
+  html {
+    background: var(--paper);
+    color: var(--ink);
+  }
+  body {
+    margin: 0;
+    min-height: 100%;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-serif);
+  }
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+  ::selection {
+    background: var(--gold-soft);
+    color: var(--ink);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}

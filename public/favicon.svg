@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Peshitta Parallel">
+  <rect width="32" height="32" rx="6" fill="#7A2E38"/>
+  <rect x="2.5" y="2.5" width="27" height="27" rx="4.5" fill="#F3EFE4"/>
+  <rect x="6.5" y="7" width="5" height="18" rx="1.5" fill="#1C1612"/>
+  <rect x="20.5" y="7" width="5" height="18" rx="1.5" fill="#1C1612"/>
+  <path d="M16 8 L21.2 16 L16 24 L10.8 16 Z" fill="#8D6B32"/>
+</svg>
