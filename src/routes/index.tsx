@@ -22,9 +22,7 @@ function Home() {
           <Menu className="size-5" />
           <span className="font-serif text-sm">Books</span>
         </button>
-        <p className="font-syriac text-xl text-syriac" lang="syr" dir="rtl">
-          ܦܫܝܛܬܐ
-        </p>
+        <p className="font-serif text-xl">Injell</p>
         <div className="flex items-center">
           <button type="button" className="flex size-11 items-center justify-center" onClick={() => setSearch(true)} aria-label="Search">
             <Search className="size-5" />
@@ -41,14 +39,15 @@ function Home() {
       </header>
 
       <main className="mx-auto max-w-3xl px-5 pb-16 pt-8">
-        <p className="font-syriac text-4xl text-syriac" lang="syr" dir="rtl">
+        <p className="font-syriac text-3xl text-syriac" lang="syr" dir="rtl">
           ܦܫܝܛܬܐ
         </p>
-        <h1 className="mt-2 font-serif text-4xl font-semibold tracking-tight">Peshitta Parallel</h1>
-        <p className="mt-2 font-serif text-xl text-garnet">The New Testament, word for word.</p>
+        <h1 className="mt-2 font-serif text-4xl font-semibold tracking-tight">Injell</h1>
+        <p className="mt-2 font-serif text-xl text-garnet">The Original Words Kept</p>
         <p className="mt-4 max-w-xl text-base leading-relaxed text-muted">
-          Classical Syriac of the 1905 Peshitta, beside James Murdock’s literal English of 1851. {TOTAL_VERSES.toLocaleString()} verses.
-          His footnotes are marked Murdock. Notes on the Aramaic are marked Study.
+          Followers of Christ our Lord. Restored from the Peshitta — a multicultural study, side by side.
+          The classical Syriac stays on the page. Beside it: English, Spanish, Chinese, modern Syriac, German, and Japanese.
+          {TOTAL_VERSES.toLocaleString()} verses.
         </p>
 
         {last && lastBook && (

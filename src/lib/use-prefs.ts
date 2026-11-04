@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
+import { languageById, type LangId } from "@/lib/languages";
 import type { VoiceId } from "@/lib/speak";
 
-export type Face = "both" | "sy" | "en";
+export type Face = "both" | "sy" | "tr";
 
 export type Prefs = {
   theme: "day" | "night";
@@ -10,6 +11,7 @@ export type Prefs = {
   size: 0 | 1 | 2;
   notes: boolean;
   voice: VoiceId;
+  lang: LangId;
   last?: { book: string; chapter: number };
 };
 
@@ -22,6 +24,7 @@ const DEFAULTS: Prefs = {
   size: 1,
   notes: true,
   voice: "ara",
+  lang: "en",
 };
 
 function read(): Prefs {
@@ -29,7 +32,9 @@ function read(): Prefs {
     const raw = localStorage.getItem(KEY);
     if (!raw) return DEFAULTS;
     const parsed = JSON.parse(raw) as Partial<Prefs>;
-    return { ...DEFAULTS, ...parsed };
+    const face = parsed.face === "sy" || parsed.face === "tr" || parsed.face === "both" ? parsed.face : DEFAULTS.face;
+    const voice = parsed.voice === "rex" ? "rex" : "ara";
+    return { ...DEFAULTS, ...parsed, face, voice, lang: languageById(parsed.lang ?? "en").id };
   } catch {
     return DEFAULTS;
   }

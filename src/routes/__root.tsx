@@ -3,7 +3,7 @@ import { AuthProvider } from "@/lib/auth/provider";
 import { PreviewHostBridge } from "@/components/preview-host-bridge";
 import appCss from "../styles.css?url";
 
-const APP_NAME = "Peshitta Parallel";
+const APP_NAME = "Injell";
 
 export const Route = createRootRoute({
   head: () => ({
@@ -14,7 +14,7 @@ export const Route = createRootRoute({
       {
         name: "description",
         content:
-          "The New Testament word for word: the Syriac Peshitta beside James Murdock’s literal English, with footnotes.",
+          "Injell. The original words, kept. Followers of Christ our Lord. Restored from the Peshitta — a multicultural study, side by side.",
       },
       { name: "theme-color", content: "#f3efe4" },
     ],

@@ -1,11 +1,13 @@
 import { Pause, Play, Square } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { speakPart, type Cue, type VoiceId } from "@/lib/speak";
+import { languageById, type LangId } from "@/lib/languages";
 
 type Props = {
   book: string;
   chapter: number;
   voice: VoiceId;
+  lang: LangId;
   onVoice: (voice: VoiceId) => void;
   onVerse: (verse: number | null) => void;
 };
@@ -19,8 +21,8 @@ type Clip = {
 
 const memory = new Map<string, Clip>();
 
-function keyOf(book: string, chapter: number, voice: VoiceId, part: number) {
-  return `${book}.${chapter}.${voice}.${part}`;
+function keyOf(book: string, chapter: number, voice: VoiceId, lang: LangId, part: number) {
+  return `${book}.${chapter}.${voice}.${lang}.${part}`;
 }
 
 function bytesFromBase64(audio: string) {
@@ -72,11 +74,11 @@ async function storeClip(key: string, clip: Clip) {
   }
 }
 
-async function loadClip(book: string, chapter: number, voice: VoiceId, part: number): Promise<Clip> {
-  const key = keyOf(book, chapter, voice, part);
+async function loadClip(book: string, chapter: number, voice: VoiceId, lang: LangId, part: number): Promise<Clip> {
+  const key = keyOf(book, chapter, voice, lang, part);
   const saved = await cachedClip(key);
   if (saved) return saved;
-  const result = await speakPart({ data: { book, chapter, voice, part } });
+  const result = await speakPart({ data: { book, chapter, voice, lang, part } });
   if (!result.ok) throw new Error(result.error);
   const clip: Clip = {
     bytes: bytesFromBase64(result.audio),
@@ -95,7 +97,7 @@ type Scheduled = {
   cues: Cue[];
 };
 
-export function ReadAloud({ book, chapter, voice, onVoice, onVerse }: Props) {
+export function ReadAloud({ book, chapter, voice, lang, onVoice, onVerse }: Props) {
   const [status, setStatus] = useState<"idle" | "loading" | "playing" | "paused">("idle");
   const [error, setError] = useState("");
   const ctxRef = useRef<AudioContext | null>(null);
@@ -131,7 +133,7 @@ export function ReadAloud({ book, chapter, voice, onVoice, onVerse }: Props) {
     halt();
     // A new chapter or voice must not keep speaking the previous one.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [book, chapter, voice]);
+  }, [book, chapter, voice, lang]);
 
   useEffect(() => {
     return () => {
@@ -196,7 +198,7 @@ export function ReadAloud({ book, chapter, voice, onVoice, onVerse }: Props) {
       let when = ctx.currentTime + 0.06;
       while (part < parts) {
         if (run.current !== token) return;
-        const clip = await loadClip(book, chapter, voice, part);
+        const clip = await loadClip(book, chapter, voice, lang, part);
         if (run.current !== token) return;
         parts = clip.parts;
         const audio = await ctx.decodeAudioData(clip.bytes.slice(0));
@@ -262,7 +264,7 @@ export function ReadAloud({ book, chapter, voice, onVoice, onVerse }: Props) {
           </button>
         )}
         <span className="ml-auto flex min-h-11 items-center px-2 text-sm text-gold">
-          {status === "loading" ? "Preparing the voice…" : status === "paused" ? "Paused" : status === "idle" ? "English" : ""}
+          {status === "loading" ? "Preparing the voice…" : status === "paused" ? "Paused" : status === "idle" ? languageById(lang).label : ""}
         </span>
       </div>
       {error && <p className="pb-3 text-sm text-garnet">{error}</p>}

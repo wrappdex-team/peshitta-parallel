@@ -1,4 +1,5 @@
 import { NOTES } from "@/data/edition";
+import { languageById, type LangId } from "@/lib/languages";
 import {
   TERM_NOTES,
   englishRuns,
@@ -13,7 +14,10 @@ type Props = {
   chapter: number;
   verse: Verse;
   words: boolean;
-  face: "both" | "sy" | "en";
+  face: "both" | "sy" | "tr";
+  lang: LangId;
+  parallel: string;
+  pending: boolean;
   size: 0 | 1 | 2;
   showNotes: boolean;
   onWord: (info: WordGloss | null, surface: string) => void;
@@ -30,6 +34,9 @@ export function VerseView({
   verse,
   words,
   face,
+  lang,
+  parallel,
+  pending,
   size,
   showNotes,
   onWord,
@@ -42,10 +49,11 @@ export function VerseView({
     for (const text of verse.fn ?? []) marks.push({ kind: "Murdock", text });
     if (study) marks.push({ kind: "Study", text: study });
   }
-  const showSy = face !== "en";
-  const showEn = face !== "sy";
+  const showSy = face !== "tr";
+  const showTr = face !== "sy";
   const missingSy = !verse.sy;
-  const missingEn = !verse.en;
+  const language = languageById(lang);
+  const typeface = lang === "aii" ? "font-syriac text-syriac" : lang === "zh" ? "font-han" : lang === "ja" ? "font-kana" : "font-serif";
 
   return (
     <article id={`v-${verse.v}`} className={`scroll-mt-40 border-b border-line py-5 ${listening ? "bg-gold-soft -mx-4 px-4" : ""}`}>
@@ -83,14 +91,16 @@ export function VerseView({
               })}
             </div>
           )}
-          {showEn && (
-            missingEn ? (
-              <p className={`mt-3 text-sm text-muted ${showSy ? "" : ""}`}>
-                Murdock does not number this verse by itself. The words sit in the neighboring verse.
+          {showTr && (
+            pending ? (
+              <p className="mt-3 text-sm text-muted">This language is still being set beside the Peshitta.</p>
+            ) : !parallel ? (
+              <p className="mt-3 text-sm text-muted">
+                {verse.en ? "This verse has no line in this language yet." : "Murdock does not number this verse by itself. The words sit in the neighboring verse."}
               </p>
             ) : (
-              <p className={`mt-3 font-serif text-ink ${EN[size]}`}>
-                <English text={verse.en} onTerm={onTerm} />
+              <p lang={lang === "aii" ? "syr" : lang} dir={language.dir} className={`mt-3 text-ink ${typeface} ${EN[size]}`}>
+                {lang === "en" ? <English text={parallel} onTerm={onTerm} /> : parallel}
                 {marks.map((mark, i) => (
                   <a
                     key={`${mark.kind}-${i}`}

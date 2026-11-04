@@ -1,8 +1,8 @@
-# Peshitta Parallel
+# Injell
 
-A reader for the Syriac Peshitta New Testament, set beside James Murdock’s 1852 English.
+The original words, kept. Followers of Christ our Lord. Restored from the Peshitta — a multicultural study, side by side.
 
-The Syriac is the Peshitta (with the later books marked). The English is Murdock’s public-domain translation. Study notes sit on selected verses and explain the wording; they are not a second translation. On a chapter, **Read** speaks Murdock’s English straight through in Ara or Rex, and the verse on the page follows the voice.
+The classical Syriac stays on the page. Beside it: James Murdock’s English, or a study reading in Spanish, Chinese, modern Syriac, German, or Japanese. **Read** speaks the language that is open, in Ara or Rex, and the verse follows the voice.
 
 ## Run locally
 

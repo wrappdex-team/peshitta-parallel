@@ -41,6 +41,16 @@ export async function loadBook(id: string): Promise<BookFile> {
   return loader();
 }
 
+const parallelLoaders = import.meta.glob("../data/tr/*/*.json", {
+  import: "default",
+}) as Record<string, () => Promise<string[][]>>;
+
+export async function loadParallel(lang: string, book: string): Promise<string[][] | null> {
+  const loader = parallelLoaders[`../data/tr/${lang}/${book}.json`];
+  if (!loader) return null;
+  return loader();
+}
+
 export type SearchRow = [string, number, number, string];
 
 let searchCache: SearchRow[] | null = null;

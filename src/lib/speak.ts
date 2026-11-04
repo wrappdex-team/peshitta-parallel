@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { BOOKS } from "@/data/edition";
-import { loadBook, type Verse } from "@/lib/scripture";
+import { type LangId, languageById } from "@/lib/languages";
+import { loadBook, loadParallel, type Verse } from "@/lib/scripture";
 
 export type VoiceId = "ara" | "rex";
 
@@ -20,7 +21,64 @@ export type SpeakResult = SpeakOk | { ok: false; error: string };
 
 const VOICES = new Set<VoiceId>(["ara", "rex"]);
 /** Keep each clip under the host response limit while staying near 128 kbps. */
-const CHUNK = 1500;
+const CHUNK: Record<LangId, number> = {
+  en: 1500,
+  es: 1500,
+  de: 1500,
+  zh: 480,
+  ja: 700,
+  aii: 900,
+};
+
+const LOCAL_NAMES: Record<Exclude<LangId, "en">, Record<string, string>> = {
+  es: {
+    matthew: "Mateo", mark: "Marcos", luke: "Lucas", john: "Juan", acts: "Hechos", romans: "Romanos",
+    "1corinthians": "Primera de Corintios", "2corinthians": "Segunda de Corintios", galatians: "Gálatas",
+    ephesians: "Efesios", philippians: "Filipenses", colossians: "Colosenses",
+    "1thessalonians": "Primera de Tesalonicenses", "2thessalonians": "Segunda de Tesalonicenses",
+    "1timothy": "Primera de Timoteo", "2timothy": "Segunda de Timoteo", titus: "Tito", philemon: "Filemón",
+    hebrews: "Hebreos", james: "Santiago", "1peter": "Primera de Pedro", "2peter": "Segunda de Pedro",
+    "1john": "Primera de Juan", "2john": "Segunda de Juan", "3john": "Tercera de Juan", jude: "Judas",
+    revelation: "Apocalipsis",
+  },
+  zh: {
+    matthew: "马太福音", mark: "马可福音", luke: "路加福音", john: "约翰福音", acts: "使徒行传", romans: "罗马书",
+    "1corinthians": "哥林多前书", "2corinthians": "哥林多后书", galatians: "加拉太书", ephesians: "以弗所书",
+    philippians: "腓立比书", colossians: "歌罗西书", "1thessalonians": "帖撒罗尼迦前书", "2thessalonians": "帖撒罗尼迦后书",
+    "1timothy": "提摩太前书", "2timothy": "提摩太后书", titus: "提多书", philemon: "腓利门书", hebrews: "希伯来书",
+    james: "雅各书", "1peter": "彼得前书", "2peter": "彼得后书", "1john": "约翰一书", "2john": "约翰二书",
+    "3john": "约翰三书", jude: "犹大书", revelation: "启示录",
+  },
+  de: {
+    matthew: "Matthäus", mark: "Markus", luke: "Lukas", john: "Johannes", acts: "Apostelgeschichte", romans: "Römer",
+    "1corinthians": "Erster Korinther", "2corinthians": "Zweiter Korinther", galatians: "Galater", ephesians: "Epheser",
+    philippians: "Philipper", colossians: "Kolosser", "1thessalonians": "Erster Thessalonicher", "2thessalonians": "Zweiter Thessalonicher",
+    "1timothy": "Erster Timotheus", "2timothy": "Zweiter Timotheus", titus: "Titus", philemon: "Philemon",
+    hebrews: "Hebräer", james: "Jakobus", "1peter": "Erster Petrus", "2peter": "Zweiter Petrus",
+    "1john": "Erster Johannes", "2john": "Zweiter Johannes", "3john": "Dritter Johannes", jude: "Judas",
+    revelation: "Offenbarung",
+  },
+  ja: {
+    matthew: "マタイ", mark: "マルコ", luke: "ルカ", john: "ヨハネ", acts: "使徒行伝", romans: "ローマ",
+    "1corinthians": "コリント人への手紙一", "2corinthians": "コリント人への手紙二", galatians: "ガラテヤ",
+    ephesians: "エペソ", philippians: "ピリピ", colossians: "コロサイ",
+    "1thessalonians": "テサロニケ人への手紙一", "2thessalonians": "テサロニケ人への手紙二",
+    "1timothy": "テモテへの手紙一", "2timothy": "テモテへの手紙二", titus: "テトス", philemon: "ピレモン",
+    hebrews: "ヘブル", james: "ヤコブ", "1peter": "ペテロの手紙一", "2peter": "ペテロの手紙二",
+    "1john": "ヨハネの手紙一", "2john": "ヨハネの手紙二", "3john": "ヨハネの手紙三", jude: "ユダ",
+    revelation: "黙示録",
+  },
+  aii: {},
+};
+
+function leadIn(lang: LangId, name: string, chapter: number) {
+  if (lang === "es") return `${name}, capítulo ${chapter}. `;
+  if (lang === "zh") return `${name}，第${chapter}章。`;
+  if (lang === "de") return `${name}, Kapitel ${chapter}. `;
+  if (lang === "ja") return `${name}、第${chapter}章。`;
+  if (lang === "aii") return `${name} ${chapter}. `;
+  return `${name}, chapter ${chapter}. `;
+}
 
 const SPOKEN: Record<string, string> = {
   "1corinthians": "First Corinthians",
@@ -39,7 +97,9 @@ const SPOKEN: Record<string, string> = {
 type Span = { v: number; start: number; end: number };
 type Piece = { text: string; spans: Span[] };
 
-export function spokenName(book: string) {
+export function spokenName(book: string, lang: LangId = "en"): string {
+  if (lang === "aii") return BOOKS.find((item) => item.id === book)?.sy ?? spokenName(book, "en");
+  if (lang !== "en") return LOCAL_NAMES[lang][book] ?? spokenName(book, "en");
   return SPOKEN[book] ?? BOOKS.find((item) => item.id === book)?.name ?? "This book";
 }
 
@@ -48,16 +108,17 @@ export function cleanEnglish(en: string) {
 }
 
 /** Continuous reading, split only on verse boundaries. */
-export function chapterPieces(book: string, chapter: number, verses: Verse[]): Piece[] {
+export function chapterPieces(book: string, chapter: number, verses: Verse[], lines: string[], lang: LangId): Piece[] {
   const bits = verses
-    .map((verse) => ({ v: verse.v, text: cleanEnglish(verse.en) }))
+    .map((verse, index) => ({ v: verse.v, text: cleanEnglish(lines[index] || "") }))
     .filter((bit) => bit.text.length > 0);
   if (!bits.length) return [];
 
   const pieces: Piece[] = [];
   let text = "";
   let spans: Span[] = [];
-  const lead = `${spokenName(book)}, chapter ${chapter}. `;
+  const lead = leadIn(lang, spokenName(book, lang), chapter);
+  const limit = CHUNK[lang];
 
   function flush() {
     if (!text) return;
@@ -68,7 +129,7 @@ export function chapterPieces(book: string, chapter: number, verses: Verse[]): P
 
   for (const bit of bits) {
     const prefix = text ? " " : pieces.length === 0 ? lead : "";
-    if (text && text.length + prefix.length + bit.text.length > CHUNK) flush();
+    if (text && text.length + prefix.length + bit.text.length > limit) flush();
     if (!text && pieces.length === 0) text = lead;
     else if (text) text += " ";
     const start = text.length;
@@ -122,18 +183,19 @@ function cuesFrom(text: string, spans: Span[], chars: string[], times: [number, 
 }
 
 export const speakPart = createServerFn({ method: "POST" })
-  .validator((input: { book: string; chapter: number; voice: VoiceId; part: number }) => {
+  .validator((input: { book: string; chapter: number; voice: VoiceId; part: number; lang: LangId }) => {
     const book = String(input?.book ?? "");
     const chapter = Number(input?.chapter);
     const part = Number(input?.part);
     const voice = input?.voice;
-    if (!/^[a-z0-9]+$/.test(book) || !VOICES.has(voice) || !Number.isInteger(chapter) || chapter < 1 || chapter > 150 || !Number.isInteger(part) || part < 0 || part > 40) {
+    const lang = languageById(String(input?.lang ?? "")).id;
+    if (!/^[a-z0-9]+$/.test(book) || !VOICES.has(voice) || lang !== input?.lang || !Number.isInteger(chapter) || chapter < 1 || chapter > 150 || !Number.isInteger(part) || part < 0 || part > 40) {
       throw new Error("That reading could not be requested.");
     }
-    return { book, chapter, voice, part };
+    return { book, chapter, voice, part, lang };
   })
   .handler(async ({ data }): Promise<SpeakResult> => {
-    const key = `${data.book}:${data.chapter}:${data.voice}:${data.part}`;
+    const key = `${data.book}:${data.chapter}:${data.voice}:${data.lang}:${data.part}`;
     const cached = cache.get(key);
     if (cached) return cached;
 
@@ -145,8 +207,10 @@ export const speakPart = createServerFn({ method: "POST" })
     }
     const verses = doc.chapters[data.chapter - 1];
     if (!verses) return { ok: false, error: "That chapter is not in this book." };
-    const pieces = chapterPieces(data.book, data.chapter, verses);
-    if (!pieces.length) return { ok: false, error: "This chapter has no English to read." };
+    const lines = data.lang === "en" ? verses.map((verse) => verse.en) : (await loadParallel(data.lang, data.book))?.[data.chapter - 1];
+    if (!lines) return { ok: false, error: "That language is not ready for this chapter yet." };
+    const pieces = chapterPieces(data.book, data.chapter, verses, lines, data.lang);
+    if (!pieces.length) return { ok: false, error: "This chapter has nothing to read in that language." };
     const piece = pieces[data.part];
     if (!piece) return { ok: false, error: "That part of the chapter is missing." };
 
@@ -168,7 +232,7 @@ export const speakPart = createServerFn({ method: "POST" })
     const body = {
       text: piece.text,
       voice_id: data.voice,
-      language: "en",
+      language: languageById(data.lang).tts,
       speed: 1,
       text_normalization: false,
       with_timestamps: true,

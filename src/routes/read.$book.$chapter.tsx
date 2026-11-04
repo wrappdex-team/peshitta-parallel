@@ -5,10 +5,12 @@ import { ReadAloud } from "@/components/read-aloud";
 import { SearchPanel } from "@/components/search-panel";
 import { VerseView } from "@/components/verse-view";
 import { BOOKS, SECTIONS, bookMeta } from "@/data/edition";
+import { LANGS, languageById } from "@/lib/languages";
 import {
   TERM_NOTES,
   chapterCount,
   loadBook,
+  loadParallel,
   type BookFile,
   type WordGloss,
 } from "@/lib/scripture";
@@ -25,6 +27,7 @@ function Reader() {
   const { prefs, patch } = usePrefs();
   const meta = bookMeta(book);
   const [doc, setDoc] = useState<BookFile | null>(null);
+  const [parallel, setParallel] = useState<string[][] | null>(null);
   const [err, setErr] = useState("");
   const [search, setSearch] = useState(false);
   const [menu, setMenu] = useState(false);
@@ -46,6 +49,22 @@ function Reader() {
       live = false;
     };
   }, [book]);
+
+  useEffect(() => {
+    let live = true;
+    setParallel(null);
+    if (prefs.lang === "en") return;
+    loadParallel(prefs.lang, book)
+      .then((next) => {
+        if (live) setParallel(next);
+      })
+      .catch(() => {
+        if (live) setParallel(null);
+      });
+    return () => {
+      live = false;
+    };
+  }, [book, prefs.lang]);
 
   useEffect(() => {
     if (!meta || !Number.isFinite(chapterNo) || chapterNo < 1) return;
@@ -158,8 +177,8 @@ function Reader() {
       <main className="mx-auto max-w-3xl px-4 pb-24">
         <div className="flex flex-wrap items-center gap-2 border-b border-line py-3 text-sm">
           <FaceButton label="Both" active={prefs.face === "both"} onClick={() => patch({ face: "both" })} />
-          <FaceButton label="Aramaic" active={prefs.face === "sy"} onClick={() => patch({ face: "sy" })} />
-          <FaceButton label="English" active={prefs.face === "en"} onClick={() => patch({ face: "en" })} />
+          <FaceButton label="Peshitta" active={prefs.face === "sy"} onClick={() => patch({ face: "sy" })} />
+          <FaceButton label={languageById(prefs.lang).label} active={prefs.face === "tr"} onClick={() => patch({ face: "tr" })} />
           <FaceButton label="Words" active={prefs.words} onClick={() => patch({ words: !prefs.words })} />
           <FaceButton label="Notes" active={prefs.notes} onClick={() => patch({ notes: !prefs.notes })} />
           <span className="ml-auto flex items-center">
@@ -172,10 +191,25 @@ function Reader() {
           </span>
         </div>
 
+        <div className="flex flex-wrap items-center border-b border-line">
+          {LANGS.map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              aria-pressed={prefs.lang === item.id}
+              onClick={() => patch({ lang: item.id })}
+              className={`min-h-11 px-2 ${prefs.lang === item.id ? "text-garnet" : "text-muted"} ${item.face === "syriac" ? "font-syriac text-lg" : ""}`}
+            >
+              {item.label}
+            </button>
+          ))}
+        </div>
+
         <ReadAloud
           book={book}
           chapter={chapterNo}
           voice={prefs.voice === "rex" ? "rex" : "ara"}
+          lang={languageById(prefs.lang).id}
           onVoice={(voice) => patch({ voice })}
           onVerse={setHeard}
         />
@@ -192,7 +226,7 @@ function Reader() {
         {err && <p className="mt-6 text-garnet">{err}</p>}
         {!doc && !err && <p className="mt-6 text-muted">Opening the chapter…</p>}
         {doc && !verses && <p className="mt-6 text-muted">That chapter is not in this book.</p>}
-        {verses?.map((verse) => (
+        {verses?.map((verse, verseIndex) => (
           <VerseView
             key={verse.v}
             book={book}
@@ -200,6 +234,9 @@ function Reader() {
             verse={verse}
             words={prefs.words}
             face={prefs.face}
+            lang={languageById(prefs.lang).id}
+            parallel={prefs.lang === "en" ? verse.en : (parallel?.[chapterNo - 1]?.[verseIndex] ?? "")}
+            pending={prefs.lang !== "en" && !parallel}
             size={prefs.size}
             showNotes={prefs.notes}
             onWord={onWord}

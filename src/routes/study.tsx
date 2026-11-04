@@ -12,11 +12,13 @@ function Study() {
       <p className="mt-4 font-syriac text-4xl text-syriac" lang="syr" dir="rtl">
         ܦܫܝܛܬܐ
       </p>
-      <h1 className="mt-2 font-serif text-4xl font-semibold">How to read this edition</h1>
+      <h1 className="mt-2 font-serif text-4xl font-semibold">Injell</h1>
+      <p className="mt-2 font-serif text-xl text-garnet">The Original Words Kept</p>
       <p className="mt-4 leading-relaxed text-muted">
-        Two public-domain texts stand side by side. The Aramaic is the classical Syriac New Testament
-        published by the British and Foreign Bible Society in 1905. The English is James Murdock’s literal
-        translation of 1851, made to stay as close to that Syriac as readable English allows.
+        Followers of Christ our Lord. The classical Syriac is the 1905 Peshitta, and it stays on the page.
+        James Murdock’s English of 1851 is the literal witness of that Syriac. Spanish, Chinese, modern Syriac
+        (Sureth), German, and Japanese are study readings made from his English, so they follow the Peshitta
+        rather than a Greek New Testament. They are not the historic church Bibles of those languages.
       </p>
 
       <h2 className="mt-8 font-serif text-2xl">Word for word</h2>
