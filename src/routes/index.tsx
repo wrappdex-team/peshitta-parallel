@@ -46,9 +46,6 @@ function Home() {
         </p>
         <h1 className="mt-2 font-serif text-4xl font-semibold tracking-tight">Injeel</h1>
         <p className="mt-2 font-serif text-xl text-garnet">The words of Y'shua, kept.</p>
-        <p className="mt-4 max-w-xl text-base leading-relaxed text-muted">
-          The Peshitta stays on the page. Open the Gospel.
-        </p>
 
         {ready && (
           <Link

@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
+import { AGENT_STORE, detectAgent } from "@/lib/agent";
 import { checkVideo, makeAudio, makeImage, shapePrompt, startVideo, type StudioKind } from "@/lib/studio";
 
-const AGENT_KEY = "injeel-agent";
+const AGENT_KEY = AGENT_STORE;
 const STUDIO_KEY = "injeel-studio";
 const STYLES = ["Manuscript gold", "Quiet watercolor", "Night and lamp", "Eastern icon light", "Open landscape"];
 const VOICES = ["ara", "rex", "eve", "leo", "luna", "orion", "aurora", "atlas", "iris", "helios"];
@@ -72,12 +73,12 @@ export function Studio({ open, passage, onClose }: Props) {
 
   const language = customTongue.trim() || tongue;
   const voiceId = customVoice.trim() || voice;
-  const connected = agent.startsWith("xai-");
+  const connected = detectAgent(agent);
 
   function saveAgent() {
     const next = draft.trim();
-    if (next && !next.startsWith("xai-")) {
-      setStatus("An xAI agent key starts with xai-.");
+    if (next && !detectAgent(next)) {
+      setStatus("That key was not recognized. Use an xAI key (xai-), an OpenAI key (sk-), or a Claude key (sk-ant-).");
       return;
     }
     if (next) localStorage.setItem(AGENT_KEY, next);
@@ -178,14 +179,14 @@ export function Studio({ open, passage, onClose }: Props) {
         <div className="mt-4 border border-line p-3">
           <p className="text-xs tracking-widest text-gold">{connected ? "YOUR AGENT" : "CONNECT YOUR AGENT"}</p>
           <p className="mt-1 text-sm text-muted">
-            {connected ? "Connected. Calls use your key, not the site key." : "Paste an xAI key from console.x.ai so the studio uses your own agent."}
+            {connected ? `Connected to ${connected.kind === "xai" ? "xAI" : connected.kind === "openai" ? "OpenAI" : "Claude"}. The key stays on this device.` : "Paste an xAI, OpenAI, or Claude key. The reader and the studio will use it. The key stays on this device."}
           </p>
           <div className="mt-2 flex gap-2">
             <input
               type="password"
               value={draft}
               onChange={(event) => setDraft(event.target.value)}
-              placeholder={connected ? "Replace key" : "xai-…"}
+              placeholder={connected ? "Replace key" : "xai-… or sk-…"}
               className="min-h-11 flex-1 border border-line bg-raised px-3 text-ink"
               autoComplete="off"
             />

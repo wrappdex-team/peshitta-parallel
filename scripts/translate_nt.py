@@ -23,6 +23,9 @@ LANGS = {
     "de": "Modern dignified German. Use du for one person and ihr for more than one. God is Gott, Jesus is Jesus, Messiah is Messias.",
     "ja": "Modern literary Japanese in である style. God is 神, Jesus is イエス, Messiah is メシア. Keep a singular and a plural you distinct.",
     "aii": "Modern Assyrian Neo-Aramaic (Sureth), Eastern dialect, in vocalized Syriac Unicode a speaker would say today. Do not copy the classical Peshitta spelling.",
+    "ar": "Modern clear Arabic (fusḥā). Do not copy the Van Dyck Bible. God / Elohim is الله, Jesus / Y'shua is يسوع, Messiah / Mashiyach is المسيح. Keep “by his hand” as بيده. Right-to-left Arabic script only.",
+    "fr": "Modern dignified French. Do not copy Louis Segond. Use tu for one person and vous for more than one. God / Elohim is Dieu, Jesus / Y'shua is Jésus, Messiah / Mashiyach is Messie.",
+    "ru": "Modern dignified Russian. Do not copy the Synodal translation. Use ты for one person and вы for more than one. God / Elohim is Бог, Jesus / Y'shua is Иисус, Messiah / Mashiyach is Мессия.",
 }
 
 SYSTEM = """You translate James Murdock's 1851 English, which follows the Syriac Peshitta, not the Greek.
@@ -37,13 +40,19 @@ zh: 起初有道，道与上帝同在，上帝就是道。
 de: Im Anfang war das Wort, und das Wort war bei Gott, und Gott war das Wort.
 ja: 初めに言葉があった。言葉は神と共にあり、神が言葉であった。
 aii: ܒܫܘܼܪܵܝܵܐ ܐܝܼܬ ܗ݇ܘܵܐ ܡܸܠܬܵܐ، ܘܡܸܠܬܵܐ ܐܝܼܬ ܗ݇ܘܵܐ ܠܟܸܣ ܐܲܠܵܗܵܐ، ܘܐܲܠܵܗܵܐ ܐܝܼܬ ܗ݇ܘܵܐ ܡܸܠܬܵܐ.
+ar: في البدء كانت الكلمة، والكلمة كانت عند الله، والله كان الكلمة.
+fr: Au commencement était la Parole, et la Parole était avec Dieu, et Dieu était la Parole.
+ru: В начале было Слово, и Слово было у Бога, и Бог был Словом.
 
 English: And by his hand everything was, and without him there was not one thing that was.
 es: Y por su mano todo fue, y sin él no hubo ni una sola cosa de lo que fue.
 zh: 一切都是藉着他的手而有的；没有他，已有的没有一样。
 de: Und durch seine Hand war alles, und ohne ihn war nicht ein Ding von dem, was war.
 ja: そして彼の手によって一切があった。彼なしには、あったものは一つもなかった。
-aii: ܘܒܐܝܼܕܹܗ ܟܠ ܡܸܢܕܝܼ ܗ݇ܘܹܐ ܠܹܗ، ܘܒܘܼܠܵܐ ܡܸܢܹܗ ܠܵܐ ܗ݇ܘܹܐ ܠܹܗ ܐܵܦ ܚܲܕ ܡܸܢܕܝܼ ܕܗ݇ܘܹܐ ܠܹܗ.
+aii: ܘܒܐܝܼܕܹܗ ܟܠ ܡܸܢܕܝܼ ܗ݇ܘܹܐ ܠܹܗ، ܘܒܘܼܠܵܐ ܡܸܢܹܗ ܠܵܐ ܗ݇ܘܹܐ ܠܹܗ ܐܦ ܚܲܕ ܡܸܢܕܝܼ ܕܗ݇ܘܹܐ ܠܹܗ.
+ar: وبيده كان كل شيء، وبدونه لم يكن شيء واحد مما كان.
+fr: Et par sa main tout fut, et sans lui pas même une seule chose ne fut de ce qui était.
+ru: И его рукой было всё, и без него не было ни одной вещи из того, что было.
 """
 
 
@@ -51,8 +60,10 @@ def clean(en: str) -> str:
     return " ".join(en.replace("‹", "").replace("›", "").split())
 
 
-def good(lang: str, text: str) -> bool:
+def good(lang: str, text: str, source: str = "") -> bool:
     if len(text) < 1:
+        return False
+    if source and text.strip().lower() == source.strip().lower():
         return False
     if lang == "zh":
         return any("\u4e00" <= c <= "\u9fff" for c in text)
@@ -60,10 +71,16 @@ def good(lang: str, text: str) -> bool:
         return any("\u3040" <= c <= "\u30ff" or "\u4e00" <= c <= "\u9fff" for c in text)
     if lang == "aii":
         return any("\u0700" <= c <= "\u074f" for c in text)
+    if lang == "ar":
+        return any("\u0600" <= c <= "\u06ff" for c in text)
+    if lang == "ru":
+        return any("\u0400" <= c <= "\u04ff" for c in text)
+    if lang == "fr":
+        letters = [c for c in text if c.isalpha()]
+        return len(letters) >= 2
     letters = [c for c in text if c.isalpha()]
     if len(letters) < 2:
         return False
-    # A Latin line that is still the English source is a failed translation.
     return True
 
 
@@ -112,7 +129,7 @@ def chat(lang: str, lines: list[str]) -> list[str]:
                 payload = json.loads(res.read())
             content = payload["choices"][0]["message"]["content"]
             rows = parse_t(content, len(lines))
-            if all(good(lang, row) for row in rows):
+            if all(good(lang, row, src) for row, src in zip(rows, lines)):
                 return rows
             last = "failed the language check"
         except urllib.error.HTTPError as err:
@@ -197,8 +214,9 @@ def translate_book(lang: str, src: Path):
 
 
 def main():
+    only = [item for item in os.environ.get("ONLY", "ar,fr,ru").split(",") if item in LANGS]
     books = sorted(NT.glob("*.json"), key=lambda p: p.stat().st_size)
-    jobs = [(lang, src) for src in books for lang in LANGS]
+    jobs = [(lang, src) for src in books for lang in only]
     print(f"jobs {len(jobs)} workers {WORKERS}", flush=True)
     failed = []
     with ThreadPoolExecutor(max_workers=WORKERS) as pool:

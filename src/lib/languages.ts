@@ -1,5 +1,8 @@
 export const LANGS = [
   { id: "en", label: "English", tts: "en", dir: "ltr", face: "serif" },
+  { id: "ar", label: "العربية", tts: "ar-SA", dir: "rtl", face: "arab" },
+  { id: "fr", label: "Français", tts: "fr", dir: "ltr", face: "serif" },
+  { id: "ru", label: "Русский", tts: "ru", dir: "ltr", face: "cyrl" },
   { id: "es", label: "Español", tts: "es-ES", dir: "ltr", face: "serif" },
   { id: "zh", label: "中文", tts: "zh", dir: "ltr", face: "cjk" },
   { id: "aii", label: "Sureth", tts: "syr", dir: "rtl", face: "syriac" },

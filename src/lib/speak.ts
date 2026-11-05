@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { BOOKS } from "@/data/edition";
+import { resolveAgent, type Agent } from "@/lib/agent";
 import { type LangId, languageById } from "@/lib/languages";
 import { loadBook, loadParallel, type Verse } from "@/lib/scripture";
 
@@ -24,7 +25,10 @@ const VOICES = new Set<VoiceId>(["ara", "rex"]);
 const CHUNK: Record<LangId, number> = {
   en: 1500,
   es: 1500,
+  fr: 1500,
   de: 1500,
+  ru: 1400,
+  ar: 1200,
   zh: 480,
   ja: 700,
   aii: 900,
@@ -69,6 +73,36 @@ const LOCAL_NAMES: Record<Exclude<LangId, "en">, Record<string, string>> = {
     revelation: "黙示録",
   },
   aii: {},
+  ar: {
+    matthew: "متى", mark: "مرقس", luke: "لوقا", john: "يوحنا", acts: "أعمال الرسل", romans: "رومية",
+    "1corinthians": "كورنثوس الأولى", "2corinthians": "كورنثوس الثانية", galatians: "غلاطية",
+    ephesians: "أفسس", philippians: "فيلبي", colossians: "كولوسي",
+    "1thessalonians": "تسالونيكي الأولى", "2thessalonians": "تسالونيكي الثانية",
+    "1timothy": "تيموثاوس الأولى", "2timothy": "تيموثاوس الثانية", titus: "تيطس", philemon: "فليمون",
+    hebrews: "العبرانيين", james: "يعقوب", "1peter": "بطرس الأولى", "2peter": "بطرس الثانية",
+    "1john": "يوحنا الأولى", "2john": "يوحنا الثانية", "3john": "يوحنا الثالثة", jude: "يهوذا",
+    revelation: "الرؤيا",
+  },
+  fr: {
+    matthew: "Matthieu", mark: "Marc", luke: "Luc", john: "Jean", acts: "Actes", romans: "Romains",
+    "1corinthians": "Première aux Corinthiens", "2corinthians": "Deuxième aux Corinthiens", galatians: "Galates",
+    ephesians: "Éphésiens", philippians: "Philippiens", colossians: "Colossiens",
+    "1thessalonians": "Première aux Thessaloniciens", "2thessalonians": "Deuxième aux Thessaloniciens",
+    "1timothy": "Première à Timothée", "2timothy": "Deuxième à Timothée", titus: "Tite", philemon: "Philémon",
+    hebrews: "Hébreux", james: "Jacques", "1peter": "Première de Pierre", "2peter": "Deuxième de Pierre",
+    "1john": "Première de Jean", "2john": "Deuxième de Jean", "3john": "Troisième de Jean", jude: "Jude",
+    revelation: "Apocalypse",
+  },
+  ru: {
+    matthew: "Матфея", mark: "Марка", luke: "Луки", john: "Иоанна", acts: "Деяния", romans: "Римлянам",
+    "1corinthians": "Первое к Коринфянам", "2corinthians": "Второе к Коринфянам", galatians: "Галатам",
+    ephesians: "Ефесянам", philippians: "Филиппийцам", colossians: "Колоссянам",
+    "1thessalonians": "Первое к Фессалоникийцам", "2thessalonians": "Второе к Фессалоникийцам",
+    "1timothy": "Первое к Тимофею", "2timothy": "Второе к Тимофею", titus: "Титу", philemon: "Филимону",
+    hebrews: "Евреям", james: "Иакова", "1peter": "Первое Петра", "2peter": "Второе Петра",
+    "1john": "Первое Иоанна", "2john": "Второе Иоанна", "3john": "Третье Иоанна", jude: "Иуды",
+    revelation: "Откровение",
+  },
 };
 
 function leadIn(lang: LangId, name: string, chapter: number) {
@@ -77,6 +111,9 @@ function leadIn(lang: LangId, name: string, chapter: number) {
   if (lang === "de") return `${name}, Kapitel ${chapter}. `;
   if (lang === "ja") return `${name}、第${chapter}章。`;
   if (lang === "aii") return `${name} ${chapter}. `;
+  if (lang === "ar") return `${name}، الأصحاح ${chapter}. `;
+  if (lang === "fr") return `${name}, chapitre ${chapter}. `;
+  if (lang === "ru") return `${name}, глава ${chapter}. `;
   return `${name}, chapter ${chapter}. `;
 }
 
@@ -183,16 +220,17 @@ function cuesFrom(text: string, spans: Span[], chars: string[], times: [number, 
 }
 
 export const speakPart = createServerFn({ method: "POST" })
-  .validator((input: { book: string; chapter: number; voice: VoiceId; part: number; lang: LangId }) => {
+  .validator((input: { book: string; chapter: number; voice: VoiceId; part: number; lang: LangId; agentKey?: string }) => {
     const book = String(input?.book ?? "");
     const chapter = Number(input?.chapter);
     const part = Number(input?.part);
     const voice = input?.voice;
     const lang = languageById(String(input?.lang ?? "")).id;
+    const agentKey = String(input?.agentKey ?? "").slice(0, 300);
     if (!/^[a-z0-9]+$/.test(book) || !VOICES.has(voice) || lang !== input?.lang || !Number.isInteger(chapter) || chapter < 1 || chapter > 150 || !Number.isInteger(part) || part < 0 || part > 40) {
       throw new Error("That reading could not be requested.");
     }
-    return { book, chapter, voice, part, lang };
+    return { book, chapter, voice, part, lang, agentKey };
   })
   .handler(async ({ data }): Promise<SpeakResult> => {
     const key = `${data.book}:${data.chapter}:${data.voice}:${data.lang}:${data.part}`;
@@ -214,8 +252,9 @@ export const speakPart = createServerFn({ method: "POST" })
     const piece = pieces[data.part];
     if (!piece) return { ok: false, error: "That part of the chapter is missing." };
 
-    const apiKey = process.env.XAI_API_KEY;
-    if (!apiKey) return { ok: false, error: "The reading voice is not available right now." };
+    const agent = resolveAgent(data.agentKey);
+    if (!agent) return { ok: false, error: "Connect an agent to hear this. Paste an xAI or OpenAI key under the reader." };
+    if (agent.kind === "anthropic") return { ok: false, error: "Claude can shape the studio, but it has no reading voice. Add an xAI or OpenAI key to hear the chapter." };
 
     let ip = "reader";
     let signal: AbortSignal | undefined;
@@ -244,48 +283,97 @@ export const speakPart = createServerFn({ method: "POST" })
 
     try {
       if (signal?.aborted) return { ok: false, error: "The voice was cut off. Press Read to continue." };
-      let res: Response | null = null;
-      for (let attempt = 0; attempt < 2; attempt++) {
-        if (signal?.aborted) return { ok: false, error: "The voice was cut off. Press Read to continue." };
-        res = await fetch("https://api.x.ai/v1/tts", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${apiKey}`,
-          },
-          body: JSON.stringify(body),
-          signal,
-        });
-        if (res.ok || (res.status !== 429 && res.status !== 500 && res.status !== 503)) break;
-        await new Promise((resolve) => setTimeout(resolve, 600));
+      let result: SpeakOk;
+      if (agent.kind === "xai") {
+        const spoken = await speakXai(agent, body, signal);
+        if (!spoken.ok) return spoken;
+        result = {
+          ok: true,
+          part: data.part,
+          parts: pieces.length,
+          audio: spoken.audio,
+          mime: spoken.mime,
+          duration: spoken.duration,
+          cues: cuesFrom(piece.text, piece.spans, spoken.chars, spoken.times),
+        };
+      } else {
+        const spoken = await speakOpenAI(agent, piece, data.voice, signal);
+        if (!spoken.ok) return spoken;
+        result = { ...spoken, part: data.part, parts: pieces.length };
       }
-      if (!res || !res.ok) {
-        return { ok: false, error: "The voice could not read this passage. Try again in a moment." };
-      }
-
-      const payload = (await res.json()) as {
-        audio?: string;
-        content_type?: string;
-        duration?: number;
-        audio_timestamps?: { graph_chars?: string[]; graph_times?: [number, number][] };
-      };
-      if (!payload.audio || !payload.audio_timestamps?.graph_times) {
-        return { ok: false, error: "The voice returned no reading." };
-      }
-      const chars = payload.audio_timestamps.graph_chars ?? [];
-      const times = payload.audio_timestamps.graph_times;
-      const result: SpeakOk = {
-        ok: true,
-        part: data.part,
-        parts: pieces.length,
-        audio: payload.audio,
-        mime: payload.content_type || "audio/mpeg",
-        duration: payload.duration ?? times.at(-1)?.[1] ?? 0,
-        cues: cuesFrom(piece.text, piece.spans, chars, times),
-      };
       remember(key, result);
       return result;
     } catch {
       return { ok: false, error: "The voice was cut off. Press Read to continue." };
     }
   });
+
+async function speakXai(
+  agent: Agent,
+  body: Record<string, unknown>,
+  signal?: AbortSignal,
+): Promise<(SpeakOk & { chars: string[]; times: [number, number][] }) | { ok: false; error: string }> {
+  let res: Response | null = null;
+  for (let attempt = 0; attempt < 2; attempt++) {
+    if (signal?.aborted) return { ok: false, error: "The voice was cut off. Press Read to continue." };
+    res = await fetch("https://api.x.ai/v1/tts", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${agent.key}` },
+      body: JSON.stringify(body),
+      signal,
+    });
+    if (res.ok || (res.status !== 429 && res.status !== 500 && res.status !== 503)) break;
+    await new Promise((resolve) => setTimeout(resolve, 600));
+  }
+  if (!res || !res.ok) return { ok: false, error: res?.status === 401 ? "That xAI key was not accepted." : "The voice could not read this passage. Try again in a moment." };
+  const payload = (await res.json()) as {
+    audio?: string;
+    content_type?: string;
+    duration?: number;
+    audio_timestamps?: { graph_chars?: string[]; graph_times?: [number, number][] };
+  };
+  if (!payload.audio || !payload.audio_timestamps?.graph_times) return { ok: false, error: "The voice returned no reading." };
+  const chars = payload.audio_timestamps.graph_chars ?? [];
+  const times = payload.audio_timestamps.graph_times;
+  return {
+    ok: true,
+    part: 0,
+    parts: 1,
+    audio: payload.audio,
+    mime: payload.content_type || "audio/mpeg",
+    duration: payload.duration ?? times.at(-1)?.[1] ?? 0,
+    cues: [],
+    chars,
+    times,
+  };
+}
+
+async function speakOpenAI(
+  agent: Agent,
+  piece: Piece,
+  voice: VoiceId,
+  signal?: AbortSignal,
+): Promise<SpeakOk | { ok: false; error: string }> {
+  const res = await fetch("https://api.openai.com/v1/audio/speech", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${agent.key}` },
+    body: JSON.stringify({
+      model: "tts-1",
+      voice: voice === "rex" ? "onyx" : "alloy",
+      input: piece.text,
+      response_format: "mp3",
+    }),
+    signal,
+  });
+  if (!res.ok) return { ok: false, error: res.status === 401 ? "That OpenAI key was not accepted." : "The voice could not read this passage. Try again in a moment." };
+  const audio = Buffer.from(await res.arrayBuffer()).toString("base64");
+  if (!audio) return { ok: false, error: "The voice returned no reading." };
+  const words = piece.text.split(/\s+/).filter(Boolean).length;
+  const duration = Math.max(2, words / 2.5);
+  const cues = piece.spans.map((span) => ({
+    v: span.v,
+    start: (span.start / piece.text.length) * duration,
+    end: Math.max((span.start / piece.text.length) * duration, (span.end / piece.text.length) * duration),
+  }));
+  return { ok: true, part: 0, parts: 1, audio, mime: "audio/mpeg", duration, cues };
+}

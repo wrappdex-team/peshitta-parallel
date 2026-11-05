@@ -63,6 +63,23 @@ export async function loadSearch(): Promise<SearchRow[]> {
   return searchCache;
 }
 
+export async function loadLanguageSearch(lang: string): Promise<SearchRow[]> {
+  const books = await Promise.all(CATALOG.map((item) => loadBook(item.id)));
+  const grids = await Promise.all(books.map((book) => loadParallel(lang, book.id)));
+  const rows: SearchRow[] = [];
+  books.forEach((book, index) => {
+    const grid = grids[index];
+    if (!grid) return;
+    book.chapters.forEach((chapter, chapterIndex) => {
+      chapter.forEach((verse, verseIndex) => {
+        const text = grid[chapterIndex]?.[verseIndex];
+        if (text) rows.push([book.id, chapterIndex + 1, verse.v, text]);
+      });
+    });
+  });
+  return rows;
+}
+
 let syriacCache: SearchRow[] | null = null;
 
 export async function loadSyriacSearch(): Promise<SearchRow[]> {

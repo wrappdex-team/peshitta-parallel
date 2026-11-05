@@ -1,9 +1,10 @@
 import { Pause, Play, Square } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { BOOKS } from "@/data/edition";
-import { speakPart, type Cue, type VoiceId } from "@/lib/speak";
+import { AGENT_STORE, detectAgent } from "@/lib/agent";
 import { languageById, type LangId } from "@/lib/languages";
 import { chapterCount, loadBook, loadParallel } from "@/lib/scripture";
+import { speakPart, type Cue, type VoiceId } from "@/lib/speak";
 
 type Props = {
   book: string;
@@ -43,8 +44,17 @@ type Session = { token: number; place: Place; end: number };
 const LEAD = 15;
 const memory = new Map<string, Clip>();
 
+function readerAgent() {
+  try {
+    return localStorage.getItem(AGENT_STORE) || "";
+  } catch {
+    return "";
+  }
+}
+
 function keyOf(book: string, chapter: number, voice: VoiceId, lang: LangId, part: number) {
-  return `${book}.${chapter}.${voice}.${lang}.${part}`;
+  const kind = readerAgent().slice(0, 6);
+  return `${book}.${chapter}.${voice}.${lang}.${part}.${kind}`;
 }
 
 function nextPlace(book: string, chapter: number): Place | null {
@@ -197,7 +207,7 @@ async function loadClip(book: string, chapter: number, voice: VoiceId, lang: Lan
   for (let attempt = 0; attempt < 3; attempt++) {
     if (signal.aborted) throw abortError();
     try {
-      const result = await speakPart({ data: { book, chapter, voice, lang, part }, signal });
+      const result = await speakPart({ data: { book, chapter, voice, lang, part, agentKey: readerAgent() }, signal });
       if (signal.aborted) throw abortError();
       if (!result.ok) throw new Error(result.error);
       const clip: Clip = {
@@ -223,6 +233,8 @@ export function ReadAloud({ book, chapter, voice, lang, onVoice, onVerse, onAdva
   const [status, setStatus] = useState<"idle" | "loading" | "playing" | "paused">("idle");
   const [carry, setCarry] = useState(false);
   const [error, setError] = useState("");
+  const [agentOn, setAgentOn] = useState(false);
+  const [draft, setDraft] = useState("");
   const ctxRef = useRef<AudioContext | null>(null);
   const run = useRef(0);
   const chainGen = useRef(0);
@@ -413,6 +425,10 @@ export function ReadAloud({ book, chapter, voice, lang, onVoice, onVerse, onAdva
       session.current = { token: live.token, place: here, end: endOf(here) };
     }
   }
+
+  useEffect(() => {
+    setAgentOn(Boolean(detectAgent(readerAgent())));
+  }, []);
 
   useEffect(() => {
     const place = spoken.current;
@@ -862,6 +878,35 @@ export function ReadAloud({ book, chapter, voice, lang, onVoice, onVerse, onAdva
         </span>
       </div>
       {error && <p className="px-3 pb-2 text-sm text-garnet">{error}</p>}
+      {!agentOn && (
+        <form
+          className="flex gap-2 px-3 pb-2"
+          onSubmit={(event) => {
+            event.preventDefault();
+            const next = draft.trim();
+            if (!detectAgent(next)) {
+              setError("Use an xAI key (xai-), an OpenAI key (sk-), or a Claude key (sk-ant-).");
+              return;
+            }
+            localStorage.setItem(AGENT_STORE, next);
+            setDraft("");
+            setAgentOn(true);
+            setError("");
+          }}
+        >
+          <input
+            type="password"
+            value={draft}
+            onChange={(event) => setDraft(event.target.value)}
+            placeholder="Connect xAI, OpenAI, or Claude"
+            autoComplete="off"
+            className="min-h-11 flex-1 border border-line bg-raised px-3 text-ink"
+          />
+          <button type="submit" className="min-h-11 bg-garnet px-3 text-paper">
+            Connect
+          </button>
+        </form>
+      )}
     </div>
   );
 }

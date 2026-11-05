@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { bookMeta } from "@/data/edition";
-import { loadSearch, loadSyriacSearch, type SearchRow } from "@/lib/scripture";
+import { loadLanguageSearch, loadSearch, loadSyriacSearch, type SearchRow } from "@/lib/scripture";
 
 type Props = {
   open: boolean;
@@ -13,6 +13,7 @@ export function SearchPanel({ open, onClose }: Props) {
   const [q, setQ] = useState("");
   const [rows, setRows] = useState<SearchRow[] | null>(null);
   const [syRows, setSyRows] = useState<SearchRow[] | null>(null);
+  const [langRows, setLangRows] = useState<Record<string, SearchRow[]>>({});
   const [err, setErr] = useState("");
 
   useEffect(() => {
@@ -39,6 +40,24 @@ export function SearchPanel({ open, onClose }: Props) {
 
   useEffect(() => {
     if (!open) return;
+    const query = q.trim();
+    const lang = /[\u0600-\u06FF]/.test(query) ? "ar" : /[\u0400-\u04FF]/.test(query) ? "ru" : /[àâäéèêëïîôùûüçœæ]/i.test(query) ? "fr" : "";
+    if (!lang || langRows[lang]) return;
+    let live = true;
+    loadLanguageSearch(lang)
+      .then((data) => {
+        if (live) setLangRows((prev) => ({ ...prev, [lang]: data }));
+      })
+      .catch(() => {
+        if (live) setLangRows((prev) => ({ ...prev, [lang]: [] }));
+      });
+    return () => {
+      live = false;
+    };
+  }, [open, q, langRows]);
+
+  useEffect(() => {
+    if (!open) return;
     function onKey(event: KeyboardEvent) {
       if (event.key === "Escape") onClose();
     }
@@ -50,7 +69,10 @@ export function SearchPanel({ open, onClose }: Props) {
     const query = q.trim();
     if (query.length < 2) return [];
     const syriac = /[\u0700-\u074F]/.test(query);
-    const source = syriac ? syRows : rows;
+    const arabic = /[\u0600-\u06FF]/.test(query);
+    const cyrillic = /[\u0400-\u04FF]/.test(query);
+    const french = /[àâäéèêëïîôùûüçœæ]/i.test(query);
+    const source = syriac ? syRows : arabic ? langRows.ar : cyrillic ? langRows.ru : french ? langRows.fr : rows;
     if (!source) return [];
     const needle = syriac ? query.replace(/[\u0700-\u070d]/g, "") : query.toLowerCase();
     const found: SearchRow[] = [];
@@ -62,7 +84,7 @@ export function SearchPanel({ open, onClose }: Props) {
       }
     }
     return found;
-  }, [q, rows, syRows]);
+  }, [q, rows, syRows, langRows]);
 
   if (!open) return null;
 
@@ -80,7 +102,7 @@ export function SearchPanel({ open, onClose }: Props) {
             autoFocus
             value={q}
             onChange={(event) => setQ(event.target.value)}
-            placeholder="A word, in English or Syriac"
+            placeholder="A word, in English, Arabic, French, Russian, or Syriac"
             className="w-full bg-transparent font-serif text-lg text-ink outline-none placeholder:text-muted"
           />
         </div>
@@ -90,8 +112,14 @@ export function SearchPanel({ open, onClose }: Props) {
           {rows && q.trim().length < 2 && (
             <p className="p-4 text-sm text-muted">Type two letters, or a Syriac word.</p>
           )}
-          {rows && /[\u0700-\u074F]/.test(q) && !syRows && (
-            <p className="p-4 text-sm text-muted">Opening the Syriac…</p>
+          {rows && /[\u0600-\u06FF]/.test(q) && !langRows.ar && (
+            <p className="p-4 text-sm text-muted">Opening the Arabic…</p>
+          )}
+          {rows && /[\u0400-\u04FF]/.test(q) && !langRows.ru && (
+            <p className="p-4 text-sm text-muted">Opening the Russian…</p>
+          )}
+          {rows && /[àâäéèêëïîôùûüçœæ]/i.test(q) && !langRows.fr && (
+            <p className="p-4 text-sm text-muted">Opening the French…</p>
           )}
           {hits.map(([id, chapter, verse, text]) => {
             const meta = bookMeta(id);
@@ -112,7 +140,7 @@ export function SearchPanel({ open, onClose }: Props) {
                 <span className="text-sm text-gold">
                   {meta?.name ?? id} {chapter}:{verse}
                 </span>
-                <span className={`mt-1 block text-sm leading-relaxed text-ink ${/[\u0700-\u074F]/.test(text) ? "font-syriac text-xl text-syriac" : ""}`} dir={/[\u0700-\u074F]/.test(text) ? "rtl" : "ltr"} lang={/[\u0700-\u074F]/.test(text) ? "syr" : "en"}>
+                <span className={`mt-1 block text-sm leading-relaxed text-ink ${/[\u0700-\u074F]/.test(text) ? "font-syriac text-xl text-syriac" : /[\u0600-\u06FF]/.test(text) ? "font-arab text-lg" : /[\u0400-\u04FF]/.test(text) ? "font-cyr" : ""}`} dir={/[\u0700-\u074F\u0600-\u06FF]/.test(text) ? "rtl" : "ltr"} lang={/[\u0700-\u074F]/.test(text) ? "syr" : /[\u0600-\u06FF]/.test(text) ? "ar" : /[\u0400-\u04FF]/.test(text) ? "ru" : "en"}>
                   {text}
                 </span>
               </button>

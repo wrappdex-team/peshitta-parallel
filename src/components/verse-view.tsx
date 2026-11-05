@@ -245,7 +245,8 @@ function Parallel({
   verse: number;
   onTerm: (key: string) => void;
 }) {
-  const typeface = lang === "aii" ? "font-syriac text-syriac" : lang === "zh" ? "font-han" : lang === "ja" ? "font-kana" : "font-serif";
+  const typeface =
+    lang === "aii" ? "font-syriac text-syriac" : lang === "ar" ? "font-arab" : lang === "ru" ? "font-cyr" : lang === "zh" ? "font-han" : lang === "ja" ? "font-kana" : "font-serif";
   if (pending) return <p className="text-sm text-muted">This language is still being set beside the Peshitta.</p>;
   if (!text) {
     return (
