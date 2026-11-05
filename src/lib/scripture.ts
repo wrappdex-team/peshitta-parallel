@@ -63,6 +63,23 @@ export async function loadSearch(): Promise<SearchRow[]> {
   return searchCache;
 }
 
+let syriacCache: SearchRow[] | null = null;
+
+export async function loadSyriacSearch(): Promise<SearchRow[]> {
+  if (syriacCache) return syriacCache;
+  const books = await Promise.all(CATALOG.map((item) => loadBook(item.id)));
+  const rows: SearchRow[] = [];
+  for (const book of books) {
+    book.chapters.forEach((chapter, index) => {
+      for (const verse of chapter) {
+        if (verse.sy) rows.push([book.id, index + 1, verse.v, verse.sy]);
+      }
+    });
+  }
+  syriacCache = rows;
+  return rows;
+}
+
 const PUNCT = /[\u0700-\u070d.,:;]/g;
 
 export function syriacWords(sy: string): string[] {
@@ -74,7 +91,7 @@ export function syriacWords(sy: string): string[] {
   return out;
 }
 
-const PREFIXES = ["ܘܕ", "ܘܒ", "ܘܠ", "ܕܒ", "ܕܠ", "ܘ", "ܕ", "ܒ", "ܠ"] as const;
+const PREFIXES = ["ܘܕܒ", "ܘܕܠ", "ܘܒܕ", "ܘܕ", "ܘܒ", "ܘܠ", "ܕܒ", "ܕܠ", "ܘ", "ܕ", "ܒ", "ܠ"] as const;
 
 const PREFIX_GLOSS: Record<string, string> = {
   "ܘ": "and",
@@ -86,7 +103,39 @@ const PREFIX_GLOSS: Record<string, string> = {
   "ܘܠ": "and to",
   "ܕܒ": "that in",
   "ܕܠ": "that to",
+  "ܘܕܒ": "and that in",
+  "ܘܕܠ": "and that to",
+  "ܘܒܕ": "and in of",
 };
+
+const SUFFIXES: [string, string][] = [
+  ["ܟܘܢ", "your"],
+  ["ܟܝܢ", "your"],
+  ["ܗܘܢ", "their"],
+  ["ܗܝܢ", "their"],
+  ["ܘܗܝ", "his"],
+  ["ܬܘܢ", "you"],
+  ["ܟܝ", "your"],
+  ["ܗ", "his"],
+  ["ܟ", "your"],
+  ["ܝ", "my"],
+  ["ܢ", "our"],
+];
+
+function lexeme(stem: string): LexEntry | undefined {
+  if (lex[stem]) return lex[stem];
+  if (stem.length >= 2 && !stem.endsWith("ܐ") && lex[stem + "ܐ"]) return lex[stem + "ܐ"];
+  return undefined;
+}
+
+function nominal(gloss: string) {
+  return !/^(he|she|they|I|you|we|let) /i.test(gloss);
+}
+
+function joinPrefix(pre: string, gloss: string) {
+  if (pre.endsWith("ܕ") && /^(in|to|of|from|upon|with|and) /i.test(gloss)) return `that ${gloss}`;
+  return `${PREFIX_GLOSS[pre]} ${gloss}`;
+}
 
 export type WordGloss = {
   word: string;
@@ -98,24 +147,40 @@ export type WordGloss = {
 
 export function glossWord(word: string): WordGloss | null {
   const direct = lex[word];
-  if (direct) {
-    return { word, gloss: direct.g, roman: direct.r, note: direct.n };
-  }
+  if (direct) return { word, gloss: direct.g, roman: direct.r, note: direct.n };
+
+  const box: { best: { score: number; gloss: string; roman: string; note: string; via: string } | null } = { best: null };
+  const consider = (score: number, gloss: string, roman: string, note: string, via: string) => {
+    if (!box.best || score > box.best.score) box.best = { score, gloss, roman, note, via };
+  };
+
   for (const pre of PREFIXES) {
     if (!word.startsWith(pre)) continue;
     const stem = word.slice(pre.length);
     if (stem.length < 2) continue;
-    const hit = lex[stem];
-    if (!hit) continue;
-    return {
-      word,
-      gloss: `${PREFIX_GLOSS[pre]} · ${hit.g}`,
-      roman: hit.r ? `${PREFIX_GLOSS[pre]} ${hit.r}` : "",
-      note: hit.n,
-      via: `The prefixed letter is “${PREFIX_GLOSS[pre]}.” The stem ${stem} is ${hit.g}.`,
-    };
+    const hit = lexeme(stem);
+    if (hit) {
+      consider(stem.length + 20, joinPrefix(pre, hit.g), hit.r ? `${PREFIX_GLOSS[pre]} ${hit.r}` : "", hit.n, `The prefixed letter is “${PREFIX_GLOSS[pre]}.” The stem is ${hit.g}.`);
+    }
+    for (const [suf, who] of SUFFIXES) {
+      if (!stem.endsWith(suf) || stem.length - suf.length < 2) continue;
+      const core = stem.slice(0, -suf.length);
+      const base = lexeme(core);
+      if (!base || !nominal(base.g)) continue;
+      consider(core.length, joinPrefix(pre, `${who} ${base.g}`), base.r, base.n, `Prefix “${PREFIX_GLOSS[pre]},” ending “${who}.” The stem is ${base.g}.`);
+    }
   }
-  return null;
+
+  for (const [suf, who] of SUFFIXES) {
+    if (!word.endsWith(suf) || word.length - suf.length < 2) continue;
+    const core = word.slice(0, -suf.length);
+    const base = lexeme(core);
+    if (!base || !nominal(base.g)) continue;
+    consider(core.length, `${who} ${base.g}`, base.r, base.n, `The ending is “${who}.” The stem is ${base.g}.`);
+  }
+
+  if (!box.best) return null;
+  return { word, gloss: box.best.gloss, roman: box.best.roman, note: box.best.note, via: box.best.via };
 }
 
 export const TERM_NOTES: Record<string, { title: string; body: string }> = {
@@ -176,6 +241,6 @@ export function englishRuns(input: string): TextRun[] {
 if (!TERM_NOTES.resuscitate) {
   TERM_NOTES.resuscitate = {
     title: "Resuscitate",
-    body: "Murdock’s rendering of the root ܚܝܐ, “to live,” in the causative: to make alive. In Matthew 1:21 this is the verb tied to the name Jesus.",
+    body: "The rendering of the root ܚܝܐ, “to live,” in the causative: to make alive. In Matthew 1:21 this is the verb tied to the name Y'shua.",
   };
 }

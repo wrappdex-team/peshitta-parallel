@@ -12,7 +12,8 @@ export type Prefs = {
   notes: boolean;
   voice: VoiceId;
   lang: LangId;
-  last?: { book: string; chapter: number };
+  lang2: LangId | "none";
+  last?: { book: string; chapter: number; verse: number };
 };
 
 const KEY = "peshitta-parallel";
@@ -25,6 +26,7 @@ const DEFAULTS: Prefs = {
   notes: true,
   voice: "ara",
   lang: "en",
+  lang2: "none",
 };
 
 function read(): Prefs {
@@ -34,7 +36,13 @@ function read(): Prefs {
     const parsed = JSON.parse(raw) as Partial<Prefs>;
     const face = parsed.face === "sy" || parsed.face === "tr" || parsed.face === "both" ? parsed.face : DEFAULTS.face;
     const voice = parsed.voice === "rex" ? "rex" : "ara";
-    return { ...DEFAULTS, ...parsed, face, voice, lang: languageById(parsed.lang ?? "en").id };
+    const lang2 = parsed.lang2 && parsed.lang2 !== "none" ? languageById(parsed.lang2).id : "none";
+    const saved = parsed.last;
+    const last =
+      saved && typeof saved.book === "string"
+        ? { book: saved.book, chapter: Number(saved.chapter) || 1, verse: Number(saved.verse) || 1 }
+        : undefined;
+    return { ...DEFAULTS, ...parsed, face, voice, lang: languageById(parsed.lang ?? "en").id, lang2, last };
   } catch {
     return DEFAULTS;
   }

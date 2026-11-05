@@ -218,9 +218,12 @@ export const speakPart = createServerFn({ method: "POST" })
     if (!apiKey) return { ok: false, error: "The reading voice is not available right now." };
 
     let ip = "reader";
+    let signal: AbortSignal | undefined;
     try {
       const { getRequest } = await import("@tanstack/react-start/server");
-      const forwarded = getRequest().headers.get("x-forwarded-for");
+      const request = getRequest();
+      signal = request.signal;
+      const forwarded = request.headers.get("x-forwarded-for");
       ip = forwarded?.split(",")[0]?.trim() || "reader";
     } catch {
       ip = "reader";
@@ -239,43 +242,50 @@ export const speakPart = createServerFn({ method: "POST" })
       output_format: { codec: "mp3", sample_rate: 24000, bit_rate: 128000 },
     };
 
-    let res: Response | null = null;
-    for (let attempt = 0; attempt < 2; attempt++) {
-      res = await fetch("https://api.x.ai/v1/tts", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${apiKey}`,
-        },
-        body: JSON.stringify(body),
-      });
-      if (res.ok || (res.status !== 429 && res.status !== 500 && res.status !== 503)) break;
-      await new Promise((resolve) => setTimeout(resolve, 600));
-    }
-    if (!res || !res.ok) {
-      return { ok: false, error: "The voice could not read this passage. Try again in a moment." };
-    }
+    try {
+      if (signal?.aborted) return { ok: false, error: "The voice was cut off. Press Read to continue." };
+      let res: Response | null = null;
+      for (let attempt = 0; attempt < 2; attempt++) {
+        if (signal?.aborted) return { ok: false, error: "The voice was cut off. Press Read to continue." };
+        res = await fetch("https://api.x.ai/v1/tts", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${apiKey}`,
+          },
+          body: JSON.stringify(body),
+          signal,
+        });
+        if (res.ok || (res.status !== 429 && res.status !== 500 && res.status !== 503)) break;
+        await new Promise((resolve) => setTimeout(resolve, 600));
+      }
+      if (!res || !res.ok) {
+        return { ok: false, error: "The voice could not read this passage. Try again in a moment." };
+      }
 
-    const payload = (await res.json()) as {
-      audio?: string;
-      content_type?: string;
-      duration?: number;
-      audio_timestamps?: { graph_chars?: string[]; graph_times?: [number, number][] };
-    };
-    if (!payload.audio || !payload.audio_timestamps?.graph_times) {
-      return { ok: false, error: "The voice returned no reading." };
+      const payload = (await res.json()) as {
+        audio?: string;
+        content_type?: string;
+        duration?: number;
+        audio_timestamps?: { graph_chars?: string[]; graph_times?: [number, number][] };
+      };
+      if (!payload.audio || !payload.audio_timestamps?.graph_times) {
+        return { ok: false, error: "The voice returned no reading." };
+      }
+      const chars = payload.audio_timestamps.graph_chars ?? [];
+      const times = payload.audio_timestamps.graph_times;
+      const result: SpeakOk = {
+        ok: true,
+        part: data.part,
+        parts: pieces.length,
+        audio: payload.audio,
+        mime: payload.content_type || "audio/mpeg",
+        duration: payload.duration ?? times.at(-1)?.[1] ?? 0,
+        cues: cuesFrom(piece.text, piece.spans, chars, times),
+      };
+      remember(key, result);
+      return result;
+    } catch {
+      return { ok: false, error: "The voice was cut off. Press Read to continue." };
     }
-    const chars = payload.audio_timestamps.graph_chars ?? [];
-    const times = payload.audio_timestamps.graph_times;
-    const result: SpeakOk = {
-      ok: true,
-      part: data.part,
-      parts: pieces.length,
-      audio: payload.audio,
-      mime: payload.content_type || "audio/mpeg",
-      duration: payload.duration ?? times.at(-1)?.[1] ?? 0,
-      cues: cuesFrom(piece.text, piece.spans, chars, times),
-    };
-    remember(key, result);
-    return result;
   });

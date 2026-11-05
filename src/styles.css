@@ -17,19 +17,21 @@
   --gold-soft: #efe6d2;
   --syriac: #3d241c;
   --scrim: rgb(28 22 18 / 0.4);
+  --jesus: #9b2335;
 }
 
 [data-theme="night"] {
   --paper: #12110f;
   --paper-raised: #1c1a17;
-  --ink: #ebe4d6;
-  --muted: #b3a898;
+  --ink: #f0d78c;
+  --muted: #cbb98a;
   --line: #3a342c;
   --garnet: #e7b4b8;
-  --gold: #d4b483;
+  --gold: #f6e7a8;
   --gold-soft: #2a241c;
-  --syriac: #f0e2cc;
+  --syriac: #f6e7a8;
   --scrim: rgb(0 0 0 / 0.55);
+  --jesus: #ff6b6b;
 }
 
 @theme inline {
@@ -42,6 +44,7 @@
   --color-gold: var(--gold);
   --color-gold-soft: var(--gold-soft);
   --color-syriac: var(--syriac);
+  --color-jesus: var(--jesus);
   --font-serif: "Newsreader", "Palatino Linotype", Palatino, serif;
   --font-syriac: "Noto Sans Syriac", serif;
   --font-han: "Noto Sans SC", "Noto Sans JP", "Newsreader", sans-serif;
@@ -53,10 +56,12 @@
   html {
     background: var(--paper);
     color: var(--ink);
+    min-height: 100%;
+    -webkit-text-size-adjust: 100%;
   }
   body {
     margin: 0;
-    min-height: 100%;
+    min-height: 100dvh;
     background: var(--paper);
     color: var(--ink);
     font-family: var(--font-serif);
@@ -64,11 +69,51 @@
   button:not(:disabled),
   [role="button"]:not(:disabled) {
     cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  a {
+    -webkit-tap-highlight-color: transparent;
+  }
+  input,
+  textarea,
+  select {
+    font-size: 1rem;
   }
   ::selection {
     background: var(--gold-soft);
     color: var(--ink);
   }
+}
+
+.toolbar-scroll {
+  scrollbar-width: none;
+}
+.toolbar-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+@utility pt-safe {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+@utility pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+@utility pb-dock {
+  padding-bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px));
+}
+@utility pt-sheet {
+  padding-top: calc(env(safe-area-inset-top, 0px) + 1rem);
+}
+@utility max-h-sheet {
+  max-height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 2rem);
+}
+@utility pb-page {
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 4rem);
+}
+
+[data-theme="night"] .glow {
+  text-shadow: 0 0 10px rgb(246 231 168 / 0.45);
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -1,20 +1,21 @@
 import { createRootRoute, HeadContent, Outlet, Scripts } from "@tanstack/react-router";
 import { AuthProvider } from "@/lib/auth/provider";
 import { PreviewHostBridge } from "@/components/preview-host-bridge";
+import { NativeShell, ThemeColor } from "@/components/device-shell";
 import appCss from "../styles.css?url";
 
-const APP_NAME = "Injell";
+const APP_NAME = "Injeel";
 
 export const Route = createRootRoute({
   head: () => ({
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
       { title: APP_NAME },
       {
         name: "description",
         content:
-          "Injell. The original words, kept. Followers of Christ our Lord. Restored from the Peshitta — a multicultural study, side by side.",
+          "Injeel. The original words, kept. Followers of Y'shua our Master. Restored from the Peshitta — a multicultural study, side by side.",
       },
       { name: "theme-color", content: "#f3efe4" },
     ],
@@ -38,6 +39,8 @@ export const Route = createRootRoute({
           }}
         />
         <PreviewHostBridge />
+        <ThemeColor />
+        <NativeShell />
         <AuthProvider>
           <Outlet />
         </AuthProvider>

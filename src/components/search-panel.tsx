@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { bookMeta } from "@/data/edition";
-import { loadSearch, type SearchRow } from "@/lib/scripture";
+import { loadSearch, loadSyriacSearch, type SearchRow } from "@/lib/scripture";
 
 type Props = {
   open: boolean;
@@ -12,6 +12,7 @@ export function SearchPanel({ open, onClose }: Props) {
   const navigate = useNavigate();
   const [q, setQ] = useState("");
   const [rows, setRows] = useState<SearchRow[] | null>(null);
+  const [syRows, setSyRows] = useState<SearchRow[] | null>(null);
   const [err, setErr] = useState("");
 
   useEffect(() => {
@@ -23,6 +24,13 @@ export function SearchPanel({ open, onClose }: Props) {
       })
       .catch(() => {
         if (live) setErr("The concordance did not load.");
+      });
+    loadSyriacSearch()
+      .then((data) => {
+        if (live) setSyRows(data);
+      })
+      .catch(() => {
+        if (live) setSyRows([]);
       });
     return () => {
       live = false;
@@ -39,27 +47,32 @@ export function SearchPanel({ open, onClose }: Props) {
   }, [open, onClose]);
 
   const hits = useMemo(() => {
-    const query = q.trim().toLowerCase();
-    if (!rows || query.length < 2) return [];
+    const query = q.trim();
+    if (query.length < 2) return [];
+    const syriac = /[\u0700-\u074F]/.test(query);
+    const source = syriac ? syRows : rows;
+    if (!source) return [];
+    const needle = syriac ? query.replace(/[\u0700-\u070d]/g, "") : query.toLowerCase();
     const found: SearchRow[] = [];
-    for (const row of rows) {
-      if (row[3].toLowerCase().includes(query)) {
+    for (const row of source) {
+      const hay = syriac ? row[3].replace(/[\u0700-\u070d]/g, "") : row[3].toLowerCase();
+      if (hay.includes(needle)) {
         found.push(row);
         if (found.length === 40) break;
       }
     }
     return found;
-  }, [q, rows]);
+  }, [q, rows, syRows]);
 
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-40 flex items-start justify-center bg-scrim px-4 pt-16" onClick={onClose}>
+    <div className="fixed inset-0 z-40 flex items-start justify-center bg-scrim px-4 pt-sheet" onClick={onClose}>
       <div
         role="dialog"
         aria-modal="true"
         aria-label="Search the New Testament"
-        className="max-h-[70vh] w-full max-w-xl overflow-hidden rounded-lg border border-line bg-paper shadow-none"
+        className="max-h-sheet w-full max-w-xl overflow-hidden rounded-lg border border-line bg-paper shadow-none"
         onClick={(event) => event.stopPropagation()}
       >
         <div className="border-b border-line p-3">
@@ -67,7 +80,7 @@ export function SearchPanel({ open, onClose }: Props) {
             autoFocus
             value={q}
             onChange={(event) => setQ(event.target.value)}
-            placeholder="Search Murdock’s English"
+            placeholder="A word, in English or Syriac"
             className="w-full bg-transparent font-serif text-lg text-ink outline-none placeholder:text-muted"
           />
         </div>
@@ -75,7 +88,10 @@ export function SearchPanel({ open, onClose }: Props) {
           {err && <p className="p-4 text-sm text-garnet">{err}</p>}
           {!rows && !err && <p className="p-4 text-sm text-muted">Opening the concordance…</p>}
           {rows && q.trim().length < 2 && (
-            <p className="p-4 text-sm text-muted">Type two letters. Search runs across all 27 books.</p>
+            <p className="p-4 text-sm text-muted">Type two letters, or a Syriac word.</p>
+          )}
+          {rows && /[\u0700-\u074F]/.test(q) && !syRows && (
+            <p className="p-4 text-sm text-muted">Opening the Syriac…</p>
           )}
           {hits.map(([id, chapter, verse, text]) => {
             const meta = bookMeta(id);
@@ -96,12 +112,14 @@ export function SearchPanel({ open, onClose }: Props) {
                 <span className="text-sm text-gold">
                   {meta?.name ?? id} {chapter}:{verse}
                 </span>
-                <span className="mt-1 block text-sm leading-relaxed text-ink">{text}</span>
+                <span className={`mt-1 block text-sm leading-relaxed text-ink ${/[\u0700-\u074F]/.test(text) ? "font-syriac text-xl text-syriac" : ""}`} dir={/[\u0700-\u074F]/.test(text) ? "rtl" : "ltr"} lang={/[\u0700-\u074F]/.test(text) ? "syr" : "en"}>
+                  {text}
+                </span>
               </button>
             );
           })}
-          {rows && q.trim().length >= 2 && hits.length === 0 && (
-            <p className="p-4 text-sm text-muted">Nothing in Murdock matches that.</p>
+          {((/[\u0700-\u074F]/.test(q) ? syRows : rows) && q.trim().length >= 2 && hits.length === 0) && (
+            <p className="p-4 text-sm text-muted">Nothing in this edition matches that.</p>
           )}
         </div>
       </div>

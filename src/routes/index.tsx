@@ -1,28 +1,29 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Menu, Moon, Search, Sun } from "lucide-react";
 import { BOOKS, SECTIONS } from "@/data/edition";
 import { SearchPanel } from "@/components/search-panel";
-import { TOTAL_VERSES, chapterCount } from "@/lib/scripture";
+import { chapterCount } from "@/lib/scripture";
 import { usePrefs } from "@/lib/use-prefs";
 
 export const Route = createFileRoute("/")({ component: Home });
 
 function Home() {
-  const { prefs, patch } = usePrefs();
+  const { prefs, patch, ready } = usePrefs();
   const [search, setSearch] = useState(false);
   const [open, setOpen] = useState(false);
   const last = prefs.last;
   const lastBook = BOOKS.find((b) => b.id === last?.book);
 
   return (
-    <div className="min-h-screen bg-paper text-ink">
-      <header className="sticky top-0 z-20 flex items-center justify-between border-b border-line bg-paper px-4 py-3">
+    <div className="min-h-app bg-paper text-ink">
+      <header className="sticky top-0 z-20 border-b border-line bg-paper pt-safe">
+        <div className="flex items-center justify-between px-4 py-3">
         <button type="button" className="flex min-h-11 items-center gap-2" onClick={() => setOpen(true)} aria-label="Books">
           <Menu className="size-5" />
           <span className="font-serif text-sm">Books</span>
         </button>
-        <p className="font-serif text-xl">Injell</p>
+        <p className="font-serif text-xl">Injeel</p>
         <div className="flex items-center">
           <button type="button" className="flex size-11 items-center justify-center" onClick={() => setSearch(true)} aria-label="Search">
             <Search className="size-5" />
@@ -36,45 +37,52 @@ function Home() {
             {prefs.theme === "night" ? <Sun className="size-5" /> : <Moon className="size-5" />}
           </button>
         </div>
+        </div>
       </header>
 
-      <main className="mx-auto max-w-3xl px-5 pb-16 pt-8">
+      <main className="mx-auto max-w-3xl px-5 pb-page pt-8">
         <p className="font-syriac text-3xl text-syriac" lang="syr" dir="rtl">
-          ܦܫܝܛܬܐ
+          ܐܘܢܓܠܝܘܢ
         </p>
-        <h1 className="mt-2 font-serif text-4xl font-semibold tracking-tight">Injell</h1>
-        <p className="mt-2 font-serif text-xl text-garnet">The Original Words Kept</p>
+        <h1 className="mt-2 font-serif text-4xl font-semibold tracking-tight">Injeel</h1>
+        <p className="mt-2 font-serif text-xl text-garnet">The words of Y'shua, kept.</p>
         <p className="mt-4 max-w-xl text-base leading-relaxed text-muted">
-          Followers of Christ our Lord. Restored from the Peshitta — a multicultural study, side by side.
-          The classical Syriac stays on the page. Beside it: English, Spanish, Chinese, modern Syriac, German, and Japanese.
-          {TOTAL_VERSES.toLocaleString()} verses.
+          The Peshitta stays on the page. Open the Gospel.
         </p>
 
-        {last && lastBook && (
+        {ready && (
           <Link
             to="/read/$book/$chapter"
-            params={{ book: last.book, chapter: String(last.chapter) }}
-            className="mt-6 flex min-h-11 items-center justify-between border border-line bg-raised px-4 py-3"
+            params={{ book: last?.book ?? "john", chapter: String(last?.chapter ?? 1) }}
+            hash={last?.verse ? `v-${last.verse}` : undefined}
+            className="mt-6 flex min-h-14 items-center justify-between border border-line bg-raised px-4 py-3"
           >
             <span>
-              <span className="block text-xs text-gold">Continue</span>
+              <span className="block text-xs text-gold">{last && lastBook ? "Continue" : "Open"}</span>
               <span className="font-serif text-lg">
-                {lastBook.name} {last.chapter}
+                {last && lastBook ? `${lastBook.name} ${last.chapter}:${last.verse}` : "John 1"}
               </span>
             </span>
             <span className="font-syriac text-2xl text-syriac" lang="syr" dir="rtl">
-              {lastBook.sy}
+              {(lastBook ?? BOOKS.find((item) => item.id === "john"))?.sy}
             </span>
           </Link>
         )}
 
-        <div className="mt-8 flex gap-4 text-sm">
-          <Link to="/study" className="text-garnet">
-            How to read this edition
+        <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-sm">
+          <Link to="/words" className="inline-flex min-h-11 items-center text-garnet">
+            Words of Y'shua
           </Link>
-          <button type="button" className="text-garnet" onClick={() => setSearch(true)}>
+          <Link to="/study" className="inline-flex min-h-11 items-center text-garnet">
+            About this Injeel
+          </Link>
+          <button type="button" className="min-h-11 text-garnet" onClick={() => setSearch(true)}>
             Search
           </button>
+          <InstallButton />
+          <Link to="/privacy" className="inline-flex min-h-11 items-center text-muted">
+            Privacy
+          </Link>
         </div>
 
         {SECTIONS.map((section) => (
@@ -85,7 +93,8 @@ function Home() {
                 <li key={book.id} className="border-b border-line">
                   <Link
                     to="/read/$book/$chapter"
-                    params={{ book: book.id, chapter: "1" }}
+                    params={{ book: book.id, chapter: last?.book === book.id ? String(last.chapter) : "1" }}
+                    hash={last?.book === book.id && last.verse > 1 ? `v-${last.verse}` : undefined}
                     className="flex min-h-14 items-center justify-between gap-3 py-2"
                   >
                     <span className="min-w-0">
@@ -106,17 +115,49 @@ function Home() {
         ))}
       </main>
 
-      {open && <BookDrawer onClose={() => setOpen(false)} />}
+      {open && <BookDrawer onClose={() => setOpen(false)} place={last} />}
       <SearchPanel open={search} onClose={() => setSearch(false)} />
     </div>
   );
 }
 
-function BookDrawer({ onClose }: { onClose: () => void }) {
+type InstallPrompt = Event & { prompt: () => Promise<void> };
+
+function InstallButton() {
+  const prompt = useRef<InstallPrompt | null>(null);
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    if (window.matchMedia("(display-mode: standalone)").matches) return;
+    function onPrompt(event: Event) {
+      event.preventDefault();
+      prompt.current = event as InstallPrompt;
+      setReady(true);
+    }
+    window.addEventListener("beforeinstallprompt", onPrompt);
+    return () => window.removeEventListener("beforeinstallprompt", onPrompt);
+  }, []);
+
+  if (!ready) return null;
+  return (
+    <button
+      type="button"
+      className="min-h-11 text-garnet"
+      onClick={() => {
+        void prompt.current?.prompt();
+        setReady(false);
+      }}
+    >
+      Install
+    </button>
+  );
+}
+
+function BookDrawer({ onClose, place }: { onClose: () => void; place?: { book: string; chapter: number; verse: number } }) {
   return (
     <div className="fixed inset-0 z-30 flex bg-scrim" onClick={onClose}>
       <nav
-        className="h-full w-80 max-w-[85%] overflow-y-auto bg-paper p-4"
+        className="h-full w-80 max-w-[85%] overflow-y-auto bg-paper p-4 pt-safe pb-safe"
         onClick={(event) => event.stopPropagation()}
         aria-label="Books of the New Testament"
       >
@@ -133,7 +174,8 @@ function BookDrawer({ onClose }: { onClose: () => void }) {
               <Link
                 key={book.id}
                 to="/read/$book/$chapter"
-                params={{ book: book.id, chapter: "1" }}
+                params={{ book: book.id, chapter: place?.book === book.id ? String(place.chapter) : "1" }}
+                hash={place?.book === book.id && place.verse > 1 ? `v-${place.verse}` : undefined}
                 onClick={onClose}
                 className="flex min-h-11 items-center justify-between border-b border-line py-1"
               >
@@ -145,8 +187,11 @@ function BookDrawer({ onClose }: { onClose: () => void }) {
             ))}
           </div>
         ))}
-        <Link to="/study" onClick={onClose} className="mt-2 inline-flex min-h-11 items-center text-garnet">
-          About this edition
+        <Link to="/words" onClick={onClose} className="mt-2 inline-flex min-h-11 items-center text-garnet">
+          Words of Y'shua
+        </Link>
+        <Link to="/study" onClick={onClose} className="inline-flex min-h-11 items-center text-garnet">
+          About this Injeel
         </Link>
       </nav>
     </div>
