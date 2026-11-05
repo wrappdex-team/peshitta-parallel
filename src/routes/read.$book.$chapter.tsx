@@ -16,8 +16,22 @@ import {
   type WordGloss,
 } from "@/lib/scripture";
 import { usePrefs } from "@/lib/use-prefs";
+import { SITE_ORIGIN } from "@/lib/site";
 
 export const Route = createFileRoute("/read/$book/$chapter")({
+  head: ({ params }) => {
+    const name = bookMeta(params.book)?.name ?? "Reading";
+    return {
+      meta: [
+        { title: `${name} ${params.chapter} — Injeel` },
+        {
+          name: "description",
+          content: `${name} ${params.chapter}. Classical Syriac of the Peshitta beside a modern reading.`,
+        },
+      ],
+      links: [{ rel: "canonical", href: `${SITE_ORIGIN}/read/${params.book}/${params.chapter}` }],
+    };
+  },
   component: Reader,
 });
 

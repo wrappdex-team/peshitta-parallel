@@ -4,9 +4,19 @@ import { Menu, Moon, Search, Sun } from "lucide-react";
 import { BOOKS, SECTIONS } from "@/data/edition";
 import { SearchPanel } from "@/components/search-panel";
 import { chapterCount } from "@/lib/scripture";
+import { SITE_DESCRIPTION, SITE_ORIGIN } from "@/lib/site";
 import { usePrefs } from "@/lib/use-prefs";
 
-export const Route = createFileRoute("/")({ component: Home });
+export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: "Injeel — the Peshitta New Testament" },
+      { name: "description", content: SITE_DESCRIPTION },
+    ],
+    links: [{ rel: "canonical", href: `${SITE_ORIGIN}/` }],
+  }),
+  component: Home,
+});
 
 function Home() {
   const { prefs, patch, ready } = usePrefs();

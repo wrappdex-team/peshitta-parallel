@@ -1,6 +1,17 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { SITE_ORIGIN } from "@/lib/site";
 
 export const Route = createFileRoute("/privacy")({
+  head: () => ({
+    meta: [
+      { title: "Privacy — Injeel" },
+      {
+        name: "description",
+        content: "Injeel keeps your place on this device. Read sends a chapter only when you ask it to speak.",
+      },
+    ],
+    links: [{ rel: "canonical", href: `${SITE_ORIGIN}/privacy` }],
+  }),
   component: Privacy,
 });
 

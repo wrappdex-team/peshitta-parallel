@@ -1,8 +1,17 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { SITE_ORIGIN } from "@/lib/site";
 
 export const Route = createFileRoute("/study")({
   head: () => ({
-    meta: [{ title: "About this Injeel — Injeel" }],
+    meta: [
+      { title: "About this Injeel — Injeel" },
+      {
+        name: "description",
+        content:
+          "Why this book carries the spirit of Y'shua, kept by the first churches and read today from the Peshitta.",
+      },
+    ],
+    links: [{ rel: "canonical", href: `${SITE_ORIGIN}/study` }],
   }),
   component: Study,
 });

@@ -3,10 +3,18 @@ import { useEffect, useState } from "react";
 import { BOOKS } from "@/data/edition";
 import { GOSPELS, isJesus } from "@/lib/jesus";
 import { loadBook, type BookFile, type Verse } from "@/lib/scripture";
+import { SITE_ORIGIN } from "@/lib/site";
 
 export const Route = createFileRoute("/words")({
   head: () => ({
-    meta: [{ title: "Words of Y'shua — Injeel" }],
+    meta: [
+      { title: "Words of Y'shua — Injeel" },
+      {
+        name: "description",
+        content: "The words Y'shua spoke in the Gospels, in classical Syriac beside a modern reading.",
+      },
+    ],
+    links: [{ rel: "canonical", href: `${SITE_ORIGIN}/words` }],
   }),
   component: Words,
 });

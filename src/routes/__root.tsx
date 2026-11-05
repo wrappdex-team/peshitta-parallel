@@ -4,19 +4,17 @@ import { PreviewHostBridge } from "@/components/preview-host-bridge";
 import { NativeShell, ThemeColor } from "@/components/device-shell";
 import appCss from "../styles.css?url";
 
-const APP_NAME = "Injeel";
+import { SITE_DESCRIPTION, SITE_NAME, SITE_ORIGIN } from "@/lib/site";
 
 export const Route = createRootRoute({
   head: () => ({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
-      { title: APP_NAME },
-      {
-        name: "description",
-        content:
-          "Injeel. The original words, kept. Followers of Y'shua our Master. Restored from the Peshitta — a multicultural study, side by side.",
-      },
+      { title: SITE_NAME },
+      { name: "description", content: SITE_DESCRIPTION },
+      { name: "application-name", content: SITE_NAME },
+      { name: "robots", content: "index, follow, max-image-preview:large" },
       { name: "theme-color", content: "#f3efe4" },
     ],
     links: [
@@ -40,6 +38,32 @@ export const Route = createRootRoute({
         />
         <PreviewHostBridge />
         <ThemeColor />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@graph": [
+                {
+                  "@type": "WebSite",
+                  name: SITE_NAME,
+                  url: `${SITE_ORIGIN}/`,
+                  description: SITE_DESCRIPTION,
+                  inLanguage: ["en", "syr", "ar", "fr", "ru", "es", "zh", "de", "ja"],
+                },
+                {
+                  "@type": "WebApplication",
+                  name: SITE_NAME,
+                  url: `${SITE_ORIGIN}/`,
+                  applicationCategory: "EducationalApplication",
+                  operatingSystem: "Any",
+                  offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+                  description: SITE_DESCRIPTION,
+                },
+              ],
+            }),
+          }}
+        />
         <NativeShell />
         <AuthProvider>
           <Outlet />

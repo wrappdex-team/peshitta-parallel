@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://peshitta-parallel.vercel.app/sitemap.xml
