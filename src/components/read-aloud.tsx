@@ -198,21 +198,24 @@ export function ReadAloud({ book, chapter, deviceVoice, speed, lang, onDeviceVoi
   function speakPhrase(text: string, token: number) {
     return new Promise<"done" | "stopped">((resolve) => {
       const synth = window.speechSynthesis;
-      if (!synth || run.current !== token) {
+      if (!synth || run.current !== token || !text.trim()) {
         resolve("stopped");
         return;
       }
       const utter = new SpeechSynthesisUtterance(text);
-      const picked = findVoice(deviceVoiceRef.current, langRef.current);
-      if (picked) {
+      const tongue = languageById(langRef.current).tts;
+      // On Android Chrome, forcing a voice often speaks nothing. Set the language
+      // and let the phone use the voice it already has, unless one was chosen.
+      const picked = deviceVoiceRef.current ? findVoice(deviceVoiceRef.current, langRef.current) : null;
+      if (picked && !/android/i.test(navigator.userAgent)) {
         utter.voice = picked;
         utter.lang = picked.lang;
-      } else {
-        const tongue = languageById(langRef.current).tts;
-        if (tongue !== "syr") utter.lang = tongue;
+      } else if (tongue !== "syr") {
+        utter.lang = tongue;
       }
       utter.rate = speedRef.current / 100;
       utter.pitch = 1;
+      utter.volume = 1;
       let settled = false;
       const phrase = loop.current;
       const finish = (result: "done" | "stopped") => {
@@ -221,9 +224,25 @@ export function ReadAloud({ book, chapter, deviceVoice, speed, lang, onDeviceVoi
         resolve(result);
       };
       utter.onend = () => finish(loop.current === phrase && stopping.current === "none" && run.current === token ? "done" : "stopped");
-      utter.onerror = () => finish("stopped");
-      synth.resume();
-      synth.speak(utter);
+      utter.onerror = (event) => {
+        if (event.error && event.error !== "interrupted" && event.error !== "canceled") {
+          setError("This phone did not speak. Check the voice in Settings, then Text-to-speech.");
+        }
+        finish("stopped");
+      };
+      // cancel() immediately before speak() is silent on Android Chrome.
+      const clear = synth.speaking || synth.pending;
+      if (clear) synth.cancel();
+      const go = () => {
+        if (run.current !== token || stopping.current !== "none") {
+          finish("stopped");
+          return;
+        }
+        synth.speak(utter);
+        synth.resume();
+      };
+      if (clear) window.setTimeout(go, 120);
+      else go();
     });
   }
 
@@ -283,8 +302,7 @@ export function ReadAloud({ book, chapter, deviceVoice, speed, lang, onDeviceVoi
     place.current = here;
     spoken.current = { ...here, lang };
     const synth = window.speechSynthesis;
-    synth.cancel();
-    synth.resume();
+    if (synth.speaking || synth.pending) synth.cancel();
     setStatus("playing");
     let rows = readyLines.current;
     if (!rows) {
