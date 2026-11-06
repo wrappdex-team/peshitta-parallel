@@ -281,10 +281,12 @@ function Reader() {
           chapter={chapterNo}
           voice={prefs.voice === "rex" ? "rex" : "ara"}
           deviceVoice={prefs.deviceVoice}
+          speed={prefs.speed}
           lang={languageById(prefs.lang).id}
           fromVerse={focus}
           onVoice={(voice) => patch({ voice })}
           onDeviceVoice={(deviceVoice) => patch({ deviceVoice })}
+          onSpeed={(speed) => patch({ speed })}
           onVerse={setHeard}
           onAdvance={(place) => go(place)}
           onStudio={() => {

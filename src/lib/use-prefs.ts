@@ -12,6 +12,7 @@ export type Prefs = {
   notes: boolean;
   voice: VoiceId;
   deviceVoice: string;
+  speed: number;
   lang: LangId;
   lang2: LangId | "none";
   last?: { book: string; chapter: number; verse: number };
@@ -27,9 +28,16 @@ const DEFAULTS: Prefs = {
   notes: true,
   voice: "ara",
   deviceVoice: "",
+  speed: 100,
   lang: "en",
   lang2: "none",
 };
+
+function clampSpeed(value: unknown) {
+  const speed = Math.round(Number(value));
+  if (!Number.isFinite(speed)) return 100;
+  return Math.min(150, Math.max(50, speed));
+}
 
 function read(): Prefs {
   try {
@@ -39,13 +47,14 @@ function read(): Prefs {
     const face = parsed.face === "sy" || parsed.face === "tr" || parsed.face === "both" ? parsed.face : DEFAULTS.face;
     const voice = parsed.voice === "rex" ? "rex" : "ara";
     const deviceVoice = typeof parsed.deviceVoice === "string" ? parsed.deviceVoice.slice(0, 300) : "";
+    const speed = clampSpeed(parsed.speed);
     const lang2 = parsed.lang2 && parsed.lang2 !== "none" ? languageById(parsed.lang2).id : "none";
     const saved = parsed.last;
     const last =
       saved && typeof saved.book === "string"
         ? { book: saved.book, chapter: Number(saved.chapter) || 1, verse: Number(saved.verse) || 1 }
         : undefined;
-    return { ...DEFAULTS, ...parsed, face, voice, deviceVoice, lang: languageById(parsed.lang ?? "en").id, lang2, last };
+    return { ...DEFAULTS, ...parsed, face, voice, deviceVoice, speed, lang: languageById(parsed.lang ?? "en").id, lang2, last };
   } catch {
     return DEFAULTS;
   }

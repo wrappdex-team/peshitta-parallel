@@ -10,9 +10,11 @@ type Props = {
   chapter: number;
   voice: VoiceId;
   deviceVoice: string;
+  speed: number;
   lang: LangId;
   onVoice: (voice: VoiceId) => void;
   onDeviceVoice: (voice: string) => void;
+  onSpeed: (speed: number) => void;
   onVerse: (verse: number | null) => void;
   onAdvance: (place: Place) => void;
   onStudio: () => void;
@@ -95,7 +97,7 @@ async function linesFor(place: Place, lang: LangId, from: number): Promise<Line[
   return rows;
 }
 
-export function ReadAloud({ book, chapter, deviceVoice, lang, onDeviceVoice, onVerse, onAdvance, onStudio, onChapter, fromVerse = 1 }: Props) {
+export function ReadAloud({ book, chapter, deviceVoice, speed, lang, onDeviceVoice, onSpeed, onVerse, onAdvance, onStudio, onChapter, fromVerse = 1 }: Props) {
   const [status, setStatus] = useState<"idle" | "playing" | "paused">("idle");
   const [carry, setCarry] = useState(false);
   const [error, setError] = useState("");
@@ -111,6 +113,7 @@ export function ReadAloud({ book, chapter, deviceVoice, lang, onDeviceVoice, onV
   const onAdvanceRef = useRef(onAdvance);
   const onChapterRef = useRef(onChapter);
   const deviceVoiceRef = useRef(deviceVoice);
+  const speedRef = useRef(speed);
   const langRef = useRef(lang);
   const fromRef = useRef(fromVerse);
   const resumeOnVisible = useRef(false);
@@ -123,6 +126,7 @@ export function ReadAloud({ book, chapter, deviceVoice, lang, onDeviceVoice, onV
   onAdvanceRef.current = onAdvance;
   onChapterRef.current = onChapter;
   deviceVoiceRef.current = deviceVoice;
+  speedRef.current = speed;
   langRef.current = lang;
   fromRef.current = fromVerse;
 
@@ -192,7 +196,7 @@ export function ReadAloud({ book, chapter, deviceVoice, lang, onDeviceVoice, onV
         const tongue = languageById(langRef.current).tts;
         if (tongue !== "syr") utter.lang = tongue;
       }
-      utter.rate = 1;
+      utter.rate = speedRef.current / 100;
       utter.pitch = 1;
       let settled = false;
       const phrase = loop.current;
@@ -357,10 +361,22 @@ export function ReadAloud({ book, chapter, deviceVoice, lang, onDeviceVoice, onV
       utter.voice = picked;
       utter.lang = picked.lang;
     }
-    utter.rate = 1;
+    utter.rate = speedRef.current / 100;
     utter.pitch = 1;
     synth.resume();
     synth.speak(utter);
+  }
+
+  function setSpeed(next: number, restart: boolean) {
+    const value = Math.min(150, Math.max(50, Math.round(next)));
+    speedRef.current = value;
+    onSpeed(value);
+    if (!restart) return;
+    if (statusRef.current !== "playing" && statusRef.current !== "paused") return;
+    window.speechSynthesis?.cancel();
+    stopping.current = "none";
+    setStatus("playing");
+    void speakFrom(run.current, index.current);
   }
 
   const playing = status === "playing";
@@ -394,6 +410,26 @@ export function ReadAloud({ book, chapter, deviceVoice, lang, onDeviceVoice, onV
               </option>
             ))}
           </select>
+        </label>
+        <label className="flex min-h-11 shrink-0 items-center gap-2 px-3">
+          <span className="text-xs tracking-widest text-muted">SPEED</span>
+          <input
+            type="range"
+            min={50}
+            max={150}
+            step={1}
+            value={Math.min(150, Math.max(50, speed || 100))}
+            aria-label="Reading speed"
+            aria-valuemin={50}
+            aria-valuemax={150}
+            aria-valuenow={speed}
+            aria-valuetext={`${speed} percent`}
+            onChange={(event) => setSpeed(Number(event.target.value), false)}
+            onPointerUp={() => setSpeed(speedRef.current, true)}
+            onKeyUp={() => setSpeed(speedRef.current, true)}
+            className="h-11 w-32 accent-gold"
+          />
+          <span className="w-11 text-sm tabular-nums text-gold">{speed}%</span>
         </label>
         <button
           type="button"
