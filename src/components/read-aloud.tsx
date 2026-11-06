@@ -195,7 +195,7 @@ export function ReadAloud({ book, chapter, deviceVoice, speed, lang, onDeviceVoi
     setVoices(orderedVoices(lang));
   }, [lang]);
 
-  function speakPhrase(text: string, token: number) {
+  function speakPhrase(text: string, token: number, plain = false) {
     return new Promise<"done" | "stopped">((resolve) => {
       const synth = window.speechSynthesis;
       if (!synth || run.current !== token || !text.trim()) {
@@ -204,16 +204,17 @@ export function ReadAloud({ book, chapter, deviceVoice, speed, lang, onDeviceVoi
       }
       const utter = new SpeechSynthesisUtterance(text);
       const tongue = languageById(langRef.current).tts;
-      const picked = deviceVoiceRef.current ? findVoice(deviceVoiceRef.current, langRef.current) : null;
-      const local = listVoices().find((voice) => voice.localService && voice.lang.toLowerCase().startsWith(tongue.split("-")[0]));
-      const voice = picked ?? local ?? null;
-      if (voice) {
-        utter.voice = voice;
-        utter.lang = voice.lang;
-      } else if (tongue !== "syr") {
-        utter.lang = tongue === "en" ? "en-US" : tongue;
+      const android = /android/i.test(navigator.userAgent);
+      // Android Chrome fails with synthesis-failed when a voice is forced or the rate is not 1.
+      if (!plain && !android && deviceVoiceRef.current) {
+        const picked = findVoice(deviceVoiceRef.current, langRef.current);
+        if (picked) {
+          utter.voice = picked;
+          utter.lang = picked.lang;
+        }
       }
-      utter.rate = speedRef.current / 100;
+      if (!utter.lang && tongue !== "syr") utter.lang = tongue === "en" ? "en-US" : tongue;
+      utter.rate = plain || android ? 1 : speedRef.current / 100;
       utter.pitch = 1;
       utter.volume = 1;
       let settled = false;
@@ -226,12 +227,25 @@ export function ReadAloud({ book, chapter, deviceVoice, speed, lang, onDeviceVoi
       utter.onend = () => finish(loop.current === phrase && stopping.current === "none" && run.current === token ? "done" : "stopped");
       utter.onerror = (event) => {
         const reason = event.error || "unknown";
-        if (reason !== "interrupted" && reason !== "canceled") {
-          setError(`This phone did not speak (${reason}).`);
+        if (!plain && reason === "synthesis-failed") {
+          void speakPhrase(text, token, true).then(finish);
+          return;
         }
+        if (reason !== "interrupted" && reason !== "canceled") setError(`This phone did not speak (${reason}).`);
         finish("stopped");
       };
-      synth.speak(utter);
+      const go = () => {
+        if (run.current !== token || stopping.current !== "none") {
+          finish("stopped");
+          return;
+        }
+        synth.resume();
+        synth.speak(utter);
+      };
+      if (synth.speaking || synth.pending) {
+        synth.cancel();
+        window.setTimeout(go, 250);
+      } else go();
     });
   }
 
