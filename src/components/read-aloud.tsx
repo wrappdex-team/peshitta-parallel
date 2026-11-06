@@ -205,7 +205,7 @@ export function ReadAloud({ book, chapter, deviceVoice, speed, lang, onDeviceVoi
       const utter = new SpeechSynthesisUtterance(text);
       const tongue = languageById(langRef.current).tts;
       const android = /android/i.test(navigator.userAgent);
-      // Android Chrome fails with synthesis-failed when a voice is forced or the rate is not 1.
+      // Android Chrome fails with synthesis-failed when a voice is forced.
       if (!plain && !android && deviceVoiceRef.current) {
         const picked = findVoice(deviceVoiceRef.current, langRef.current);
         if (picked) {
@@ -214,7 +214,7 @@ export function ReadAloud({ book, chapter, deviceVoice, speed, lang, onDeviceVoi
         }
       }
       if (!utter.lang && tongue !== "syr") utter.lang = tongue === "en" ? "en-US" : tongue;
-      utter.rate = plain || android ? 1 : speedRef.current / 100;
+      utter.rate = plain ? 1 : speedRef.current / 100;
       utter.pitch = 1;
       utter.volume = 1;
       let settled = false;
@@ -420,16 +420,10 @@ export function ReadAloud({ book, chapter, deviceVoice, speed, lang, onDeviceVoi
     synth.speak(utter);
   }
 
-  function setSpeed(next: number, restart: boolean) {
+  function setSpeed(next: number) {
     const value = Math.min(150, Math.max(50, Math.round(next)));
     speedRef.current = value;
     onSpeed(value);
-    if (!restart) return;
-    if (statusRef.current !== "playing" && statusRef.current !== "paused") return;
-    window.speechSynthesis?.cancel();
-    stopping.current = "none";
-    setStatus("playing");
-    void speakFrom(run.current, index.current);
   }
 
   const playing = status === "playing";
@@ -509,9 +503,7 @@ export function ReadAloud({ book, chapter, deviceVoice, speed, lang, onDeviceVoi
             aria-valuemax={150}
             aria-valuenow={speed}
             aria-valuetext={`${speed} percent`}
-            onChange={(event) => setSpeed(Number(event.target.value), false)}
-            onPointerUp={() => setSpeed(speedRef.current, true)}
-            onKeyUp={() => setSpeed(speedRef.current, true)}
+            onChange={(event) => setSpeed(Number(event.target.value))}
             className="h-11 w-32 accent-gold"
           />
           <span className="w-11 text-sm tabular-nums text-gold">{speed}%</span>
