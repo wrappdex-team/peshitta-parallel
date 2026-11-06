@@ -204,14 +204,14 @@ export function ReadAloud({ book, chapter, deviceVoice, speed, lang, onDeviceVoi
       }
       const utter = new SpeechSynthesisUtterance(text);
       const tongue = languageById(langRef.current).tts;
-      // On Android Chrome, forcing a voice often speaks nothing. Set the language
-      // and let the phone use the voice it already has, unless one was chosen.
       const picked = deviceVoiceRef.current ? findVoice(deviceVoiceRef.current, langRef.current) : null;
-      if (picked && !/android/i.test(navigator.userAgent)) {
-        utter.voice = picked;
-        utter.lang = picked.lang;
+      const local = listVoices().find((voice) => voice.localService && voice.lang.toLowerCase().startsWith(tongue.split("-")[0]));
+      const voice = picked ?? local ?? null;
+      if (voice) {
+        utter.voice = voice;
+        utter.lang = voice.lang;
       } else if (tongue !== "syr") {
-        utter.lang = tongue;
+        utter.lang = tongue === "en" ? "en-US" : tongue;
       }
       utter.rate = speedRef.current / 100;
       utter.pitch = 1;
@@ -225,24 +225,13 @@ export function ReadAloud({ book, chapter, deviceVoice, speed, lang, onDeviceVoi
       };
       utter.onend = () => finish(loop.current === phrase && stopping.current === "none" && run.current === token ? "done" : "stopped");
       utter.onerror = (event) => {
-        if (event.error && event.error !== "interrupted" && event.error !== "canceled") {
-          setError("This phone did not speak. Check the voice in Settings, then Text-to-speech.");
+        const reason = event.error || "unknown";
+        if (reason !== "interrupted" && reason !== "canceled") {
+          setError(`This phone did not speak (${reason}).`);
         }
         finish("stopped");
       };
-      // cancel() immediately before speak() is silent on Android Chrome.
-      const clear = synth.speaking || synth.pending;
-      if (clear) synth.cancel();
-      const go = () => {
-        if (run.current !== token || stopping.current !== "none") {
-          finish("stopped");
-          return;
-        }
-        synth.speak(utter);
-        synth.resume();
-      };
-      if (clear) window.setTimeout(go, 120);
-      else go();
+      synth.speak(utter);
     });
   }
 
@@ -302,7 +291,6 @@ export function ReadAloud({ book, chapter, deviceVoice, speed, lang, onDeviceVoi
     place.current = here;
     spoken.current = { ...here, lang };
     const synth = window.speechSynthesis;
-    if (synth.speaking || synth.pending) synth.cancel();
     setStatus("playing");
     let rows = readyLines.current;
     if (!rows) {
