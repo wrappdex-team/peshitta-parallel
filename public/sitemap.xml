@@ -17,6 +17,10 @@
     <priority>0.3</priority>
   </url>
   <url>
+    <loc>https://peshitta-parallel.vercel.app/seal</loc>
+    <priority>0.4</priority>
+  </url>
+  <url>
     <loc>https://peshitta-parallel.vercel.app/read/matthew/1</loc>
     <priority>0.7</priority>
   </url>

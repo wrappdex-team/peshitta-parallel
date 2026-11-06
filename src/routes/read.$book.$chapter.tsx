@@ -17,6 +17,7 @@ import {
 } from "@/lib/scripture";
 import { usePrefs } from "@/lib/use-prefs";
 import { SITE_ORIGIN } from "@/lib/site";
+import { noteChapter } from "@/lib/readings";
 
 export const Route = createFileRoute("/read/$book/$chapter")({
   head: ({ params }) => {
@@ -129,6 +130,27 @@ function Reader() {
 
   const total = chapterCount(book);
   const verses = doc?.chapters[chapterNo - 1];
+
+  useEffect(() => {
+    const last = verses?.[verses.length - 1];
+    if (!last) return;
+    const node = document.getElementById(`v-${last.v}`);
+    if (!node) return;
+    let timer = 0;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        window.clearTimeout(timer);
+        if (!entry?.isIntersecting) return;
+        timer = window.setTimeout(() => noteChapter(book, chapterNo), 800);
+      },
+      { threshold: 0.5 },
+    );
+    observer.observe(node);
+    return () => {
+      window.clearTimeout(timer);
+      observer.disconnect();
+    };
+  }, [book, chapterNo, verses]);
   const index = BOOKS.findIndex((b) => b.id === book);
   const prev = chapterNo > 1 ? { book, chapter: chapterNo - 1 } : index > 0 ? { book: BOOKS[index - 1].id, chapter: chapterCount(BOOKS[index - 1].id) } : null;
   const next = chapterNo < total ? { book, chapter: chapterNo + 1 } : index >= 0 && index < BOOKS.length - 1 ? { book: BOOKS[index + 1].id, chapter: 1 } : null;
@@ -258,9 +280,11 @@ function Reader() {
           book={book}
           chapter={chapterNo}
           voice={prefs.voice === "rex" ? "rex" : "ara"}
+          deviceVoice={prefs.deviceVoice}
           lang={languageById(prefs.lang).id}
           fromVerse={focus}
           onVoice={(voice) => patch({ voice })}
+          onDeviceVoice={(deviceVoice) => patch({ deviceVoice })}
           onVerse={setHeard}
           onAdvance={(place) => go(place)}
           onStudio={() => {
@@ -268,6 +292,7 @@ function Reader() {
             setPicked(selected || picked || verses?.[0]?.en || "");
             setStudio(true);
           }}
+          onChapter={(place) => noteChapter(place.book, place.chapter)}
         />
 
         {err && <p className="mt-6 text-garnet">{err}</p>}

@@ -4,6 +4,7 @@ import { Menu, Moon, Search, Sun } from "lucide-react";
 import { BOOKS, SECTIONS } from "@/data/edition";
 import { SearchPanel } from "@/components/search-panel";
 import { chapterCount } from "@/lib/scripture";
+import { bookProgress, testamentProgress, useReadings } from "@/lib/readings";
 import { SITE_DESCRIPTION, SITE_ORIGIN } from "@/lib/site";
 import { usePrefs } from "@/lib/use-prefs";
 
@@ -20,6 +21,8 @@ export const Route = createFileRoute("/")({
 
 function Home() {
   const { prefs, patch, ready } = usePrefs();
+  const { counts, ready: readingsReady } = useReadings();
+  const whole = testamentProgress(counts);
   const [search, setSearch] = useState(false);
   const [open, setOpen] = useState(false);
   const last = prefs.last;
@@ -77,6 +80,9 @@ function Home() {
         )}
 
         <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-sm">
+          <Link to="/seal" className="inline-flex min-h-11 items-center text-garnet">
+            Your reading{readingsReady ? ` · ${whole.times > 0 ? 100 : whole.percent}%` : ""}
+          </Link>
           <Link to="/words" className="inline-flex min-h-11 items-center text-garnet">
             Words of Y'shua
           </Link>
@@ -107,7 +113,7 @@ function Home() {
                     <span className="min-w-0">
                       <span className="block font-serif text-lg">{book.name}</span>
                       <span className="block text-sm text-muted">
-                        {chapterCount(book.id)} chapters
+                        {readingsReady ? bookCaption(book.id, counts) : `${chapterCount(book.id)} chapters`}
                         {book.later ? " · later Syriac" : ""}
                       </span>
                     </span>
@@ -129,6 +135,13 @@ function Home() {
 }
 
 type InstallPrompt = Event & { prompt: () => Promise<void> };
+
+function bookCaption(id: string, counts: Parameters<typeof bookProgress>[0]) {
+  const progress = bookProgress(counts, id);
+  if (progress.times > 0) return `read ${progress.times === 1 ? "once" : progress.times === 2 ? "twice" : `${progress.times} times`}`;
+  if (progress.ahead > 0) return `${progress.ahead} of ${progress.of} chapters`;
+  return `${progress.of} chapters`;
+}
 
 function InstallButton() {
   const prompt = useRef<InstallPrompt | null>(null);

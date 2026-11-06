@@ -7,7 +7,7 @@ export const Route = createFileRoute("/privacy")({
       { title: "Privacy — Injeel" },
       {
         name: "description",
-        content: "Injeel keeps your place on this device. Read sends a chapter only when you ask it to speak.",
+        content: "Injeel keeps your place on this device. Read uses the voice already on this device.",
       },
     ],
     links: [{ rel: "canonical", href: `${SITE_ORIGIN}/privacy` }],
@@ -24,10 +24,10 @@ function Privacy() {
         </Link>
         <h1 className="mt-6 font-serif text-4xl">Privacy</h1>
         <p className="mt-4 text-base leading-relaxed">
-          Injeel does not ask for an account. The chapter you last read, the languages beside it, and any voice clip already played stay on this device.
+          Injeel does not ask for an account. The chapter you last read, how many times you have finished a chapter, and the languages beside it stay on this device.
         </p>
         <p className="mt-4 text-base leading-relaxed">
-          Pressing Read sends that chapter’s text to make the spoken voice, and only then. Studio sends the line you chose, and only when you ask it to.
+          Pressing Read speaks that chapter with the voice already on this phone or computer. Nothing is sent to make the voice. Studio sends the line you chose, and only when you ask it to.
         </p>
         <p className="mt-4 text-base leading-relaxed text-muted">
           The site and the installed app are the same reader. Putting Injeel on a home screen does not collect anything more.

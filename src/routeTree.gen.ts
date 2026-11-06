@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as SealRouteImport } from './routes/seal'
 import { Route as StudyRouteImport } from './routes/study'
 import { Route as WordsRouteImport } from './routes/words'
 import { Route as ReadBookChapterRouteImport } from './routes/read.$book.$chapter'
@@ -23,6 +24,11 @@ const IndexRoute = IndexRouteImport.update({
 const PrivacyRoute = PrivacyRouteImport.update({
   id: '/privacy',
   path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SealRoute = SealRouteImport.update({
+  id: '/seal',
+  path: '/seal',
   getParentRoute: () => rootRouteImport,
 } as any)
 const StudyRoute = StudyRouteImport.update({
@@ -44,6 +50,7 @@ const ReadBookChapterRoute = ReadBookChapterRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/privacy': typeof PrivacyRoute
+  '/seal': typeof SealRoute
   '/study': typeof StudyRoute
   '/words': typeof WordsRoute
   '/read/$book/$chapter': typeof ReadBookChapterRoute
@@ -51,6 +58,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/privacy': typeof PrivacyRoute
+  '/seal': typeof SealRoute
   '/study': typeof StudyRoute
   '/words': typeof WordsRoute
   '/read/$book/$chapter': typeof ReadBookChapterRoute
@@ -59,22 +67,31 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/privacy': typeof PrivacyRoute
+  '/seal': typeof SealRoute
   '/study': typeof StudyRoute
   '/words': typeof WordsRoute
   '/read/$book/$chapter': typeof ReadBookChapterRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/privacy' | '/study' | '/words' | '/read/$book/$chapter'
+  fullPaths:
+    '/' | '/privacy' | '/seal' | '/study' | '/words' | '/read/$book/$chapter'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/privacy' | '/study' | '/words' | '/read/$book/$chapter'
+  to: '/' | '/privacy' | '/seal' | '/study' | '/words' | '/read/$book/$chapter'
   id:
-    '__root__' | '/' | '/privacy' | '/study' | '/words' | '/read/$book/$chapter'
+    | '__root__'
+    | '/'
+    | '/privacy'
+    | '/seal'
+    | '/study'
+    | '/words'
+    | '/read/$book/$chapter'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   PrivacyRoute: typeof PrivacyRoute
+  SealRoute: typeof SealRoute
   StudyRoute: typeof StudyRoute
   WordsRoute: typeof WordsRoute
   ReadBookChapterRoute: typeof ReadBookChapterRoute
@@ -94,6 +111,13 @@ declare module '@tanstack/react-router' {
       path: '/privacy'
       fullPath: '/privacy'
       preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/seal': {
+      id: '/seal'
+      path: '/seal'
+      fullPath: '/seal'
+      preLoaderRoute: typeof SealRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/study': {
@@ -123,6 +147,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   PrivacyRoute: PrivacyRoute,
+  SealRoute: SealRoute,
   StudyRoute: StudyRoute,
   WordsRoute: WordsRoute,
   ReadBookChapterRoute: ReadBookChapterRoute,

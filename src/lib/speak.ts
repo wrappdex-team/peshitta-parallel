@@ -177,6 +177,25 @@ export function chapterPieces(book: string, chapter: number, verses: Verse[], li
   return pieces;
 }
 
+/** One line per verse, for the device's own voice. The first line names the chapter. */
+export function readingLines(
+  book: string,
+  chapter: number,
+  verses: Verse[],
+  lines: string[],
+  lang: LangId,
+  from = 1,
+): { v: number; text: string }[] {
+  const bits = verses
+    .map((verse, index) => ({ v: verse.v, text: cleanEnglish(lines[index] || "") }))
+    .filter((bit) => bit.text.length > 0);
+  if (!bits.length) return [];
+  const chosen = bits.filter((bit) => bit.v >= Math.max(1, from));
+  const rows = chosen.length ? chosen : bits;
+  const lead = rows[0]?.v === bits[0]?.v ? leadIn(lang, spokenName(book, lang), chapter) : "";
+  return rows.map((bit, index) => ({ v: bit.v, text: index === 0 && lead ? `${lead}${bit.text}` : bit.text }));
+}
+
 const cache = new Map<string, SpeakOk>();
 const CACHE_MAX = 10;
 const hits = new Map<string, number[]>();

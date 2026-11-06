@@ -15,7 +15,6 @@
  *   runtime hook's return value, and `render:html` does not exist in Nitro v3.
  */
 import installPageTemplate from "../../scripts/install-page.html?raw";
-import { SITE_ORIGIN } from "../../src/lib/site";
 import { grokOgIdentity } from "virtual:grok-og-identity";
 import {
   acceptsHtml,
@@ -54,57 +53,6 @@ function injectHeadStreaming(response: Response, host: string): Response {
   );
   const headers = new Headers(response.headers);
   headers.delete("content-length");
-  return new Response(transformed, {
-    status: response.status,
-    statusText: response.statusText,
-    headers,
-  });
-}
-
-const SHARE_IMAGE_TAGS =
-  `<meta property="og:image" content="${SITE_ORIGIN}/og.jpg">` +
-  `<meta property="og:image:width" content="1200">` +
-  `<meta property="og:image:height" content="630">` +
-  `<meta property="og:image:alt" content="Injeel">` +
-  `<meta name="twitter:image" content="${SITE_ORIGIN}/og.jpg">`;
-
-/** A *.vercel.app host is not given an og:image by the platform. Add the cloth thumbnail when it is missing. */
-function ensureShareImage(response: Response): Response {
-  const headers = new Headers(response.headers);
-  headers.delete("content-length");
-  const decoder = new TextDecoder();
-  const encoder = new TextEncoder();
-  let pending = "";
-  let sealed = false;
-  const transformed = response.body!.pipeThrough(
-    new TransformStream<Uint8Array, Uint8Array>({
-      transform(chunk, controller) {
-        if (sealed) {
-          controller.enqueue(chunk);
-          return;
-        }
-        pending += decoder.decode(chunk, { stream: true });
-        const at = pending.toLowerCase().indexOf("</head>");
-        if (at === -1) {
-          if (pending.length > 120000) {
-            controller.enqueue(encoder.encode(pending));
-            pending = "";
-            sealed = true;
-          }
-          return;
-        }
-        const already = pending.slice(0, at).includes('property="og:image"');
-        const html = already ? pending : pending.slice(0, at) + SHARE_IMAGE_TAGS + pending.slice(at);
-        controller.enqueue(encoder.encode(html));
-        pending = "";
-        sealed = true;
-      },
-      flush(controller) {
-        pending += decoder.decode();
-        if (pending) controller.enqueue(encoder.encode(pending));
-      },
-    }),
-  );
   return new Response(transformed, {
     status: response.status,
     statusText: response.statusText,
@@ -157,7 +105,7 @@ export default async function grokPwaMiddleware(
     String(result.headers.get("content-type") ?? "").includes("text/html") &&
     !result.headers.get("content-encoding")
   ) {
-    return ensureShareImage(injectHeadStreaming(result, requestHost(event)));
+    return injectHeadStreaming(result, requestHost(event));
   }
   return result;
 }
