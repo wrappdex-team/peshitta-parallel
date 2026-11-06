@@ -289,11 +289,6 @@ function Reader() {
           onSpeed={(speed) => patch({ speed })}
           onVerse={setHeard}
           onAdvance={(place) => go(place)}
-          onStudio={() => {
-            const selected = window.getSelection()?.toString().replace(/\s+/g, " ").trim() ?? "";
-            setPicked(selected || picked || verses?.[0]?.en || "");
-            setStudio(true);
-          }}
           onChapter={(place) => noteChapter(place.book, place.chapter)}
         />
 
@@ -315,10 +310,6 @@ function Reader() {
             showNotes={prefs.notes}
             onWord={onWord}
             onTerm={onTerm}
-            onStudio={(text) => {
-              setPicked(text);
-              setStudio(true);
-            }}
             listening={heard === verse.v}
             bookName={meta?.name ?? book}
             lang2={prefs.lang2}
@@ -389,6 +380,18 @@ function Reader() {
             <Link to="/study" className="inline-flex min-h-11 items-center text-garnet" onClick={() => setMenu(false)}>
               About this Injeel
             </Link>
+            <button
+              type="button"
+              className="mt-2 block min-h-11 text-left text-sm text-muted"
+              onClick={() => {
+                setMenu(false);
+                const selected = window.getSelection()?.toString().replace(/\s+/g, " ").trim() ?? "";
+                setPicked(selected || picked || verses?.[0]?.en || "");
+                setStudio(true);
+              }}
+            >
+              Studio · premium
+            </button>
           </nav>
         </div>
       )}
@@ -486,6 +489,19 @@ function Reader() {
                   </button>
                 ))}
               </div>
+              <p className="mt-6 text-xs tracking-widest text-gold">PREMIUM</p>
+              <button
+                type="button"
+                className="mt-1 min-h-11 text-left text-sm text-muted"
+                onClick={() => {
+                  setReading(false);
+                  const selected = window.getSelection()?.toString().replace(/\s+/g, " ").trim() ?? "";
+                  setPicked(selected || picked || verses?.[0]?.en || "");
+                  setStudio(true);
+                }}
+              >
+                Studio · AI voice and images
+              </button>
             </div>
           </div>
         </div>

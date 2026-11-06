@@ -17,7 +17,6 @@ type Props = {
   onSpeed: (speed: number) => void;
   onVerse: (verse: number | null) => void;
   onAdvance: (place: Place) => void;
-  onStudio: () => void;
   onChapter?: (place: Place) => void;
   fromVerse?: number;
 };
@@ -97,7 +96,7 @@ async function linesFor(place: Place, lang: LangId, from: number): Promise<Line[
   return rows;
 }
 
-export function ReadAloud({ book, chapter, deviceVoice, speed, lang, onDeviceVoice, onSpeed, onVerse, onAdvance, onStudio, onChapter, fromVerse = 1 }: Props) {
+export function ReadAloud({ book, chapter, deviceVoice, speed, lang, onDeviceVoice, onSpeed, onVerse, onAdvance, onChapter, fromVerse = 1 }: Props) {
   const [status, setStatus] = useState<"idle" | "playing" | "paused">("idle");
   const [carry, setCarry] = useState(false);
   const [error, setError] = useState("");
@@ -115,6 +114,7 @@ export function ReadAloud({ book, chapter, deviceVoice, speed, lang, onDeviceVoi
   const deviceVoiceRef = useRef(deviceVoice);
   const speedRef = useRef(speed);
   const langRef = useRef(lang);
+  const readyLines = useRef<Line[] | null>(null);
   const fromRef = useRef(fromVerse);
   const resumeOnVisible = useRef(false);
   const stopping = useRef<"none" | "pause" | "halt">("none");
@@ -159,6 +159,21 @@ export function ReadAloud({ book, chapter, deviceVoice, speed, lang, onDeviceVoi
     // A new chapter, voice, or language must not keep speaking the previous one.
     // An automatic advance sets `spoken` first, so the reading continues.
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [book, chapter, lang]);
+
+  useEffect(() => {
+    let live = true;
+    readyLines.current = null;
+    linesFor({ book, chapter }, lang, 1)
+      .then((rows) => {
+        if (live) readyLines.current = rows;
+      })
+      .catch(() => {
+        if (live) readyLines.current = null;
+      });
+    return () => {
+      live = false;
+    };
   }, [book, chapter, lang]);
 
   useEffect(() => {
@@ -267,24 +282,42 @@ export function ReadAloud({ book, chapter, deviceVoice, speed, lang, onDeviceVoi
     const here = { book, chapter };
     place.current = here;
     spoken.current = { ...here, lang };
-    // A tap has to start the voice before any wait, or a phone will refuse it.
-    window.speechSynthesis.cancel();
-    const kick = new SpeechSynthesisUtterance(" ");
-    kick.volume = 0;
-    window.speechSynthesis.speak(kick);
+    const synth = window.speechSynthesis;
+    synth.cancel();
+    synth.resume();
     setStatus("playing");
-    try {
-      lines.current = await linesFor(here, lang, from);
-    } catch (err) {
-      if (run.current !== token) return;
-      spoken.current = null;
-      setStatus("idle");
-      setError(err instanceof Error ? err.message : "The voice could not read this chapter.");
-      return;
+    let rows = readyLines.current;
+    if (!rows) {
+      try {
+        rows = await linesFor(here, lang, 1);
+        readyLines.current = rows;
+      } catch (err) {
+        if (run.current !== token) return;
+        spoken.current = null;
+        setStatus("idle");
+        setError(err instanceof Error ? err.message : "The voice could not read this chapter.");
+        return;
+      }
     }
     if (run.current !== token) return;
-    const startAt = lines.current.findIndex((row) => row.v >= from);
+    lines.current = rows;
+    const startAt = rows.findIndex((row) => row.v >= from);
     index.current = startAt >= 0 ? startAt : 0;
+    // Speak the first words in this tap, before any later wait, or a phone will stay silent.
+    const first = rows[index.current];
+    if (first) {
+      const piece = phrases(first.text)[0] ?? first.text;
+      const opened = speakPhrase(piece, token);
+      const rest = phrases(first.text).slice(1);
+      const head = await opened;
+      if (head !== "done" || run.current !== token) return;
+      for (const phrase of rest) {
+        if (run.current !== token || stopping.current !== "none") return;
+        const result = await speakPhrase(phrase, token);
+        if (result !== "done" || run.current !== token) return;
+      }
+      index.current += 1;
+    }
     await speakFrom(token, index.current);
   }
 
@@ -380,20 +413,52 @@ export function ReadAloud({ book, chapter, deviceVoice, speed, lang, onDeviceVoi
   }
 
   const playing = status === "playing";
+  const active = status !== "idle";
   const label = playing ? "Pause" : status === "paused" ? "Resume" : "Read";
 
   return (
     <div className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-paper pb-safe md:static md:z-auto md:border-t-0 md:border-b md:pb-0">
+      {active && (
+        <div className="mx-auto flex max-w-5xl items-center border-b border-line">
+          <button
+            type="button"
+            onClick={toggle}
+            className="flex min-h-11 shrink-0 items-center gap-1.5 px-3 text-garnet"
+            aria-label={playing ? "Pause the reading" : "Resume the reading"}
+          >
+            {playing ? <Pause className="size-4" /> : <Play className="size-4" />}
+            {label}
+          </button>
+          <button
+            type="button"
+            onClick={toggleCarry}
+            aria-pressed={carry}
+            aria-label={carry ? "Stop after this chapter" : "Keep reading through this book and into the next"}
+            className={`min-h-11 shrink-0 px-3 ${carry ? "text-garnet" : "text-muted"}`}
+          >
+            {carry ? "Continuing" : "Continue"}
+          </button>
+          <button type="button" onClick={halt} className="flex min-h-11 shrink-0 items-center gap-1 px-3 text-muted">
+            <Square className="size-3.5" />
+            Stop
+          </button>
+          <span className="ml-auto flex min-h-11 shrink-0 items-center px-3 text-sm text-gold">
+            {status === "paused" ? "Paused" : carry ? "Through the book" : "This chapter"}
+          </span>
+        </div>
+      )}
       <div className="toolbar-scroll mx-auto flex max-w-5xl items-center overflow-x-auto">
-        <button
-          type="button"
-          onClick={toggle}
-          className="flex min-h-11 shrink-0 items-center gap-1.5 px-3 text-garnet"
-          aria-label={playing ? "Pause the reading" : status === "paused" ? "Resume the reading" : fromVerse > 1 ? "Read from this verse" : "Read this chapter aloud"}
-        >
-          {playing ? <Pause className="size-4" /> : <Play className="size-4" />}
-          {label}
-        </button>
+        {!active && (
+          <button
+            type="button"
+            onClick={toggle}
+            className="flex min-h-11 shrink-0 items-center gap-1.5 px-3 text-garnet"
+            aria-label={fromVerse > 1 ? "Read from this verse" : "Read this chapter aloud"}
+          >
+            <Play className="size-4" />
+            {label}
+          </button>
+        )}
         <label className="flex min-h-11 shrink-0 items-center px-2">
           <span className="sr-only">Voice on this device</span>
           <select
@@ -431,26 +496,8 @@ export function ReadAloud({ book, chapter, deviceVoice, speed, lang, onDeviceVoi
           />
           <span className="w-11 text-sm tabular-nums text-gold">{speed}%</span>
         </label>
-        <button
-          type="button"
-          onClick={toggleCarry}
-          aria-pressed={carry}
-          aria-label={carry ? "Stop after this chapter" : "Continue into the next chapter"}
-          className={`min-h-11 shrink-0 px-3 ${carry ? "text-garnet" : "text-muted"}`}
-        >
-          Continue
-        </button>
-        {status !== "idle" && (
-          <button type="button" onClick={halt} className="flex min-h-11 shrink-0 items-center gap-1 px-3 text-muted">
-            <Square className="size-3.5" />
-            Stop
-          </button>
-        )}
-        <button type="button" onClick={onStudio} className="min-h-11 shrink-0 px-3 text-muted">
-          Studio
-        </button>
         <span className="ml-auto flex min-h-11 shrink-0 items-center px-3 text-sm text-gold">
-          {status === "paused" ? "Paused" : carry && playing ? "Continues" : status === "idle" && fromVerse > 1 ? `From ${fromVerse}` : status === "idle" ? languageById(lang).label : "This device"}
+          {status === "idle" && fromVerse > 1 ? `From ${fromVerse}` : status === "idle" ? languageById(lang).label : ""}
         </span>
       </div>
       {error && <p className="px-3 pb-2 text-sm text-garnet">{error}</p>}

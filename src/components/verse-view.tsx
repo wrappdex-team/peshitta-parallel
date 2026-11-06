@@ -28,7 +28,6 @@ type Props = {
   showNotes: boolean;
   onWord: (info: WordGloss | null, surface: string) => void;
   onTerm: (key: string) => void;
-  onStudio: (text: string) => void;
   listening?: boolean;
 };
 
@@ -52,7 +51,6 @@ export function VerseView({
   showNotes,
   onWord,
   onTerm,
-  onStudio,
   listening = false,
 }: Props) {
   const [copied, setCopied] = useState("");
@@ -109,10 +107,6 @@ export function VerseView({
     observer.observe(el);
     return () => observer.disconnect();
   }, [words, verse.sy, verse.v]);
-
-  function studioText() {
-    return [verse.sy, parallel || verse.en, second ? parallel2 : ""].filter(Boolean).join("\n");
-  }
 
   return (
     <article ref={articleRef} id={`v-${verse.v}`} className={`scroll-mt-40 border-b border-line py-5 ${listening ? "bg-gold-soft -mx-4 px-4" : ""}`}>
@@ -191,9 +185,6 @@ export function VerseView({
             </button>
             <button type="button" className="min-h-11 px-2 text-muted" onClick={() => copy("link")}>
               {copied === "link" ? "Copied" : "Link"}
-            </button>
-            <button type="button" className="min-h-11 px-2 text-muted" onClick={() => onStudio(studioText())}>
-              Studio
             </button>
           </div>
           {verse.col && (

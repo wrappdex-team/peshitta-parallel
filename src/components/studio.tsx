@@ -167,7 +167,7 @@ export function Studio({ open, passage, onClose }: Props) {
       >
         <div className="flex items-start justify-between gap-3">
           <div>
-            <p className="text-xs tracking-widest text-gold">STUDIO</p>
+            <p className="text-xs tracking-widest text-gold">STUDIO · PREMIUM</p>
             <h2 className="font-serif text-2xl">From these words</h2>
           </div>
           <button type="button" className="min-h-11 px-2 text-garnet" onClick={onClose}>
