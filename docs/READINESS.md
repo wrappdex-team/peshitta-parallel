@@ -101,7 +101,7 @@ live crawler has already applied an undeployed change.
 ## Local verification record
 
 Dependency installation with lifecycle scripts disabled succeeded. Unit and
-repository tests (265 passed, four explicit upstream-document skips), scoped
+repository tests (267 passed, four explicit upstream-document skips), scoped
 ESLint on all changed code, the structural regression audit, TypeScript, compilation and
 in-process built SSR SEO checks passed. Strict data completeness correctly
 failed with all 78 unresolved fields reported. Four missing upstream-document
@@ -149,3 +149,50 @@ no hydration/console errors, and exactly one effective robots/canonical policy
 in the document head. Then smoke-test language switching, RTL, search, word
 study and `/seal`; do not start paid media requests during that test. The
 in-process SSR checks are not browser/hydration verification.
+
+## Follow-up: non-media backend error contract
+
+The non-media backend audit found a concrete connector-helper reliability bug:
+`src/lib/app-data/client.server.ts` could report `{ ok: true }` for an HTTP 429
+or 503 when an inconsistent upstream JSON body declared `ok: true`. An
+unfollowed HTTP redirect could likewise be reported as success, despite the
+request explicitly using `redirect: "manual"`.
+
+A regression using a fully stubbed fetch failed before the fix (actual `ok`
+was true, expected false). Non-2xx transport status is now authoritative while
+existing 401 sign-in and 403 access-denied handling stays unchanged. New tests
+cover contradictory 302/429/503 bodies, genuine 200 success and 200 application
+failure. No real connector, credential, database or provider call was made.
+An existing empty catch now documents its unchanged token-digest fallback so
+scoped lint can run without disabling its rule.
+
+Reachability matters: this connector helper/readiness hook is scaffold code,
+not currently referenced by INjeel's reader/study routes; the root AuthProvider
+is a passthrough, and no `src/routes/api/auth` handler exists. Compiled-bundle
+inspection found no connector helper/readiness symbols. A local uncredentialed
+GET of `/api/auth/get-session` returned 404, while the public PWA manifest
+returned 200. This fix strengthens a retained library contract; it is **not**
+proof of an active production authentication vulnerability or newly added
+account functionality. Do not add login requirements to free reading merely
+to make an auth audit look complete.
+
+Review before enabling connector/auth scaffolding: gate error responses can
+include upstream detail; failure memo identity uses decoded token claims;
+`callTool` has no explicit request timeout; and an exceptional auth-cookie
+logging branch includes a cookie preview. These are code-review concerns,
+not verified live exploits. The separately identified media/site-key fallback
+and process-local rate limits remain deferred; no media/player code is changed.
+
+For this slice, unit tests (267 passed, four upstream-document skips),
+TypeScript and scoped ESLint passed. Compilation and compiled-SSR regressions
+ran in an isolated tracked-source INjeel snapshot outside the live QA checkout,
+with only the current helper/test patch overlaid and shared installed
+dependencies. Its environment was cleared and no migration was run. This
+avoided replacing artifacts beneath the still-running local QA server, which
+continues serving the earlier reader-validation build. Aikido remains
+unavailable; no further retry or completed security scan is claimed.
+
+The manual voice update reached remote main as `2eee55e` during this audit,
+changing read-aloud, speak, jesus, words and styles files. No changed-file
+overlap with this PR was found; none of that incoming work was integrated,
+modified or overwritten. Local test claims do not certify the new voice build.

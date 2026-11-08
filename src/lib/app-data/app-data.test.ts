@@ -54,6 +54,52 @@ async function withStubbedGate(
 }
 
 describe("callTool failure memo", () => {
+  it("preserves genuine 2xx success and application-level failure results", async () => {
+    await withStubbedGate(200, { ok: true, data: { value: "kept" } }, async (calls) => {
+      const result = await callTool(
+        "google_drive_search",
+        { q: "transport-success" },
+        {
+          connectorType: ConnectorType.GoogleDrive,
+          token: fakeJwt({ sub: "transport-success" }),
+        },
+      );
+      assert.deepEqual(result, { ok: true, data: { value: "kept" } });
+      assert.equal(calls(), 1);
+    });
+    await withStubbedGate(200, { ok: false, errorMessage: "tool-rejected" }, async (calls) => {
+      const result = await callTool(
+        "google_drive_search",
+        { q: "application-error" },
+        {
+          connectorType: ConnectorType.GoogleDrive,
+          token: fakeJwt({ sub: "application-error" }),
+        },
+      );
+      assert.deepEqual(result, { ok: false, data: null, errorMessage: "tool-rejected" });
+      assert.equal(calls(), 1);
+    });
+  });
+
+  it("never reports an upstream HTTP failure or redirect as success even if its JSON says ok", async () => {
+    for (const status of [302, 429, 503]) {
+      await withStubbedGate(status, { ok: true, data: { misleading: true } }, async (calls) => {
+        const result = await callTool(
+          "google_drive_search",
+          { q: `http-status-precedence-${status}` },
+          {
+            connectorType: ConnectorType.GoogleDrive,
+            token: fakeJwt({ sub: `status-precedence-${status}` }),
+          },
+        );
+        assert.equal(result.ok, false);
+        assert.equal(result.data, null);
+        assert.equal(result.errorMessage, `HTTP ${status}`);
+        assert.equal(calls(), 1);
+      });
+    }
+  });
+
   it("replays an identical failure within the memo window without refetching", async () => {
     await withStubbedGate(500, { ok: false, errorMessage: "boom" }, async (calls) => {
       const options = {
