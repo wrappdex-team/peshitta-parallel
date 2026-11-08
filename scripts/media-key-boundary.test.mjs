@@ -12,6 +12,7 @@ const readerKey = `xai-${"reader-fixture-".repeat(3)}`;
 const sources = {
   agent: "src/lib/agent.ts",
   rateLimit: "src/lib/local-rate-limit.ts",
+  deadline: "src/lib/provider-deadline.ts",
   studio: "src/lib/studio.ts",
   speak: "src/lib/speak.ts",
   studioUI: "src/components/studio.tsx",
@@ -40,7 +41,7 @@ function load(name, globals) {
   return exports;
 }
 
-function fixture() {
+function fixture({ provider, signal } = {}) {
   let siteReads = 0;
   let bookLoads = 0;
   let time = 0;
@@ -52,6 +53,22 @@ function fixture() {
       maps.push(this);
     }
   }
+  const timers = new Map();
+  let nextTimer = 0;
+  const setTimer = (callback, ms) => {
+    const id = ++nextTimer;
+    timers.set(id, { callback, at: time + ms });
+    return id;
+  };
+  const advance = (ms) => {
+    time += ms;
+    for (const [id, timer] of timers) {
+      if (timer.at <= time) {
+        timers.delete(id);
+        timer.callback();
+      }
+    }
+  };
   const calls = [];
   const agent = load("agent", {
     // Only this synthetic object exists in the VM; never inherit process.env.
@@ -69,13 +86,22 @@ function fixture() {
     },
   });
   const rateLimit = load("rateLimit", { Map: TrackedMap, performance: { now: () => time } });
+  const deadline = load("deadline", {
+    AbortController,
+    setTimeout: setTimer,
+    clearTimeout: (id) => timers.delete(id),
+  });
   const globals = {
     Buffer,
+    AbortController,
+    setTimeout: setTimer,
+    clearTimeout: (id) => timers.delete(id),
     Map: TrackedMap,
     Date: { now: () => time },
     require(name) {
       if (name === "@/lib/agent") return agent;
       if (name === "@/lib/local-rate-limit") return rateLimit;
+      if (name === "@/lib/provider-deadline") return deadline;
       if (name === "@/data/edition") return { BOOKS: [{ id: "fixture", name: "Fixture" }] };
       if (name === "@/lib/languages") return { languageById: () => ({ id: "en", tts: "en" }) };
       if (name === "@/lib/jesus") return { isJesus: () => false };
@@ -92,6 +118,7 @@ function fixture() {
           getRequest: () =>
             new Request("https://fixture.invalid/", {
               headers: { "x-forwarded-for": callerIP },
+              signal,
             }),
         };
       if (name === "@tanstack/react-start")
@@ -105,7 +132,12 @@ function fixture() {
       throw new Error(`Unexpected test import: ${name}`);
     },
     async fetch(url, init) {
-      calls.push({ url, authorization: init.headers.Authorization ?? init.headers["x-api-key"] });
+      calls.push({
+        url,
+        authorization: init.headers.Authorization ?? init.headers["x-api-key"],
+        signal: init.signal,
+      });
+      if (provider) return provider(url, init);
       if (url.endsWith("/chat/completions"))
         return Response.json({ choices: [{ message: { content: "fixture prompt" } }] });
       if (url.endsWith("/messages"))
@@ -133,6 +165,7 @@ function fixture() {
       if (name === "react/jsx-runtime") return jsxRuntime;
       if (name === "@/lib/agent") return agent;
       if (name === "@/lib/local-rate-limit") return rateLimit;
+      if (name === "@/lib/provider-deadline") return deadline;
       if (name === "@/lib/studio") return studio;
       throw new Error(`Unexpected UI test import: ${name}`);
     },
@@ -146,9 +179,8 @@ function fixture() {
     siteReads: () => siteReads,
     bookLoads: () => bookLoads,
     maps,
-    advance: (ms) => {
-      time += ms;
-    },
+    advance,
+    pendingTimers: () => timers.size,
     setCaller: (ip) => {
       callerIP = ip;
     },
@@ -386,4 +418,192 @@ test("parallel uncached legacy requests retain the existing eighty-request quota
   );
   assert.equal(results.filter((result) => result.ok).length, 80);
   assert.equal(f.calls.length, 80);
+});
+
+async function flushWork() {
+  for (let i = 0; i < 30; i++) await Promise.resolve();
+}
+
+test("a stalled image fetch settles with a sanitized deadline error and no retry", async () => {
+  const f = fixture({ provider: () => new Promise(() => {}) });
+  let result;
+  void f.studio.makeImage({ ...requests.makeImage, agentKey: readerKey }).then((value) => {
+    result = value;
+  });
+  await flushWork();
+  assert.equal(f.calls.length, 1);
+  f.advance(240000);
+  await flushWork();
+  assert.equal(result?.ok, false, "stalled fetch must not leave the handler pending");
+  assert.match(result.error, /time|deadline/i);
+  assert.equal(f.calls[0].signal.aborted, true);
+  assert.equal(f.calls.length, 1);
+  assert.equal(f.pendingTimers(), 0);
+});
+
+test("a rejected video status fetch returns a sanitized result instead of throwing", async () => {
+  const f = fixture({ provider: () => Promise.reject(new Error(`fixture secret ${readerKey}`)) });
+  const result = await f.studio.checkVideo({ ...requests.checkVideo, agentKey: readerKey });
+  assert.equal(result.ok, false);
+  assert.doesNotMatch(result.error, /fixture secret|reader-fixture/);
+});
+
+const stalledCases = [
+  { name: "shapePrompt", key: `sk-${"reader-fixture-".repeat(3)}`, input: requests.shapePrompt },
+  {
+    name: "shapePrompt",
+    key: `sk-ant-${"reader-fixture-".repeat(3)}`,
+    input: requests.shapePrompt,
+  },
+  { name: "makeImage", key: `sk-${"reader-fixture-".repeat(3)}`, input: requests.makeImage },
+  ...Object.keys(requests).map((name) => ({ name, key: readerKey, input: requests[name] })),
+  { name: "makeAudio", key: `sk-${"reader-fixture-".repeat(3)}`, input: requests.makeAudio },
+  { name: "speakPart", key: readerKey, input: legacyRequest },
+  { name: "speakPart", key: `sk-${"reader-fixture-".repeat(3)}`, input: legacyRequest },
+];
+
+test("every active provider boundary and registered legacy provider bounds stalled headers and bodies", async () => {
+  for (const entry of stalledCases) {
+    for (const stage of ["fetch", "body"]) {
+      const pending = () => new Promise(() => {});
+      const f = fixture({
+        provider:
+          stage === "fetch" ? pending : () => ({ ok: true, json: pending, arrayBuffer: pending }),
+      });
+      const handler = entry.name === "speakPart" ? f.speak.speakPart : f.studio[entry.name];
+      let result;
+      void handler({ ...entry.input, agentKey: entry.key }).then((value) => {
+        result = value;
+      });
+      await flushWork();
+      assert.equal(f.calls.length, 1, `${entry.name}/${stage}`);
+      const deadline = entry.name === "checkVideo" ? 15000 : 240000;
+      f.advance(deadline - 1);
+      await flushWork();
+      assert.equal(result, undefined, "no early deadline");
+      f.advance(1);
+      await flushWork();
+      assert.equal(result?.ok, false, `${entry.name}/${stage} must settle`);
+      assert.match(result.error, /timed out/);
+      assert.equal(f.calls[0].signal.aborted, true);
+      assert.equal(f.calls.length, 1, "no timeout retries");
+      assert.equal(f.pendingTimers(), 0);
+      assert.equal(f.siteReads(), 0);
+    }
+  }
+});
+
+test("aborted visitors make no provider requests and in-flight cancellation settles without retry", async () => {
+  for (const entry of stalledCases) {
+    for (const alreadyAborted of [true, false]) {
+      const controller = new AbortController();
+      if (alreadyAborted) controller.abort();
+      const f = fixture({ signal: controller.signal, provider: () => new Promise(() => {}) });
+      const handler = entry.name === "speakPart" ? f.speak.speakPart : f.studio[entry.name];
+      const pending = handler({ ...entry.input, agentKey: entry.key });
+      await flushWork();
+      if (!alreadyAborted) controller.abort();
+      const result = await pending;
+      assert.equal(result.ok, false);
+      assert.match(result.error, /cancelled/);
+      assert.equal(f.calls.length, alreadyAborted ? 0 : 1);
+      if (f.calls.length) assert.equal(f.calls[0].signal.aborted, true);
+      assert.equal(f.pendingTimers(), 0);
+    }
+  }
+});
+
+test("provider network and invalid-body failures are sanitized across all media handlers", async () => {
+  for (const entry of stalledCases) {
+    for (const stage of ["fetch", "body"]) {
+      const fail = () => Promise.reject(new Error(`fixture private ${entry.key}`));
+      const f = fixture({
+        provider: stage === "fetch" ? fail : () => ({ ok: true, json: fail, arrayBuffer: fail }),
+      });
+      const handler = entry.name === "speakPart" ? f.speak.speakPart : f.studio[entry.name];
+      const result = await handler({ ...entry.input, agentKey: entry.key });
+      assert.equal(result.ok, false);
+      assert.doesNotMatch(result.error, /fixture private|reader-fixture/);
+      assert.equal(f.calls.length, 1);
+      assert.equal(f.pendingTimers(), 0);
+    }
+  }
+});
+
+test("translated audio shares one budget and cannot initiate speech after a late translation", async () => {
+  let release;
+  const f = fixture({
+    provider: () =>
+      new Promise((resolve) => {
+        release = resolve;
+      }),
+  });
+  const pending = f.studio.makeAudio({
+    ...requests.makeAudio,
+    language: "Spanish",
+    agentKey: readerKey,
+  });
+  await flushWork();
+  assert.match(f.calls[0].url, /chat\/completions/);
+  f.advance(240000);
+  assert.equal((await pending).ok, false);
+  release(Response.json({ choices: [{ message: { content: "synthetic test output" } }] }));
+  await flushWork();
+  assert.equal(f.calls.length, 1, "late translation must not start a paid audio operation");
+});
+
+test("late legacy speech cannot populate the cache after its handler timed out", async () => {
+  let release;
+  const f = fixture({
+    provider: () =>
+      new Promise((resolve) => {
+        release = resolve;
+      }),
+  });
+  const pending = f.speak.speakPart({ ...legacyRequest, agentKey: readerKey });
+  await flushWork();
+  f.advance(240000);
+  assert.equal((await pending).ok, false);
+  release(
+    Response.json({
+      audio: "Zml4dHVyZQ==",
+      audio_timestamps: { graph_chars: [], graph_times: [[0, 1]] },
+    }),
+  );
+  await flushWork();
+  assert.equal(f.maps[1].size, 0, "late audio must not be cached");
+  assert.equal(f.calls.length, 1);
+});
+
+test("existing legacy transient-status retry remains inside the shared deadline", async () => {
+  let count = 0;
+  const f = fixture({
+    provider: () =>
+      ++count === 1
+        ? new Response(null, { status: 503 })
+        : Response.json({
+            audio: "Zml4dHVyZQ==",
+            audio_timestamps: { graph_chars: [], graph_times: [[0, 1]] },
+          }),
+  });
+  const pending = f.speak.speakPart({ ...legacyRequest, agentKey: readerKey });
+  await flushWork();
+  f.advance(600);
+  assert.equal((await pending).ok, true);
+  assert.equal(f.calls.length, 2, "preserve existing one transient-status retry only");
+  assert.equal(f.pendingTimers(), 0);
+});
+
+test("success and existing HTTP failures release request timers without altering results", async () => {
+  const success = fixture();
+  for (const [name, input] of Object.entries(requests)) {
+    assert.equal((await success.studio[name]({ ...input, agentKey: readerKey })).ok, true);
+    assert.equal(success.pendingTimers(), 0);
+  }
+  const failure = fixture({ provider: () => new Response(null, { status: 401 }) });
+  const result = await failure.studio.makeImage({ ...requests.makeImage, agentKey: readerKey });
+  assert.equal(result.ok, false);
+  assert.equal(result.error, "The image could not be made. Try a shorter prompt.");
+  assert.equal(failure.pendingTimers(), 0);
+  assert.equal(failure.calls[0].signal.aborted, true);
 });
