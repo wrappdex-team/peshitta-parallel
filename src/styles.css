@@ -106,6 +106,9 @@
 @utility pb-dock {
   padding-bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px));
 }
+@utility pb-player {
+  padding-bottom: calc(8rem + env(safe-area-inset-bottom, 0px));
+}
 @utility pt-sheet {
   padding-top: calc(env(safe-area-inset-top, 0px) + 1rem);
 }

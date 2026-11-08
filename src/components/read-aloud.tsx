@@ -1,9 +1,11 @@
 import { Pause, Play, Square } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { BOOKS } from "@/data/edition";
 import { languageById, type LangId } from "@/lib/languages";
 import { chapterCount, loadBook, loadParallel } from "@/lib/scripture";
 import { readingLines, type VoiceId } from "@/lib/speak";
+
+type Line = { v: number; text: string; chapter?: number; key?: string };
 
 type Props = {
   book: string;
@@ -19,10 +21,31 @@ type Props = {
   onAdvance: (place: Place) => void;
   onChapter?: (place: Place) => void;
   fromVerse?: number;
+  /** Speak this sequence instead of every verse in the chapter. */
+  loadLines?: (place: Place, lang: LangId) => Promise<Line[]>;
+  /** Where Continue goes. Defaults to the next chapter, then the next book. */
+  nextPlaceOf?: (place: Place) => Place | null;
+  /** `${chapter}:${verse}` to begin at, when a list jumps chapters. */
+  startKey?: string;
+  /** Shown on the idle bar, such as "From 5:3". */
+  fromLabel?: string;
+  onHeard?: (line: { book: string; chapter: number; verse: number } | null) => void;
+  /** Keep the bar on the bottom of wide screens too. */
+  pin?: boolean;
+  kind?: "chapter" | "words";
 };
 
 type Place = { book: string; chapter: number };
-type Line = { v: number; text: string };
+
+function locate(rows: Line[], from: number, key: string) {
+  if (key) {
+    const hit = rows.findIndex((row) => row.key === key);
+    if (hit >= 0) return hit;
+  }
+  if (rows.some((row) => row.key)) return 0;
+  const startAt = rows.findIndex((row) => row.v >= from);
+  return startAt >= 0 ? startAt : 0;
+}
 
 function nextPlace(book: string, chapter: number): Place | null {
   const total = chapterCount(book);
@@ -96,7 +119,28 @@ async function linesFor(place: Place, lang: LangId, from: number): Promise<Line[
   return rows;
 }
 
-export function ReadAloud({ book, chapter, deviceVoice, speed, lang, onDeviceVoice, onSpeed, onVerse, onAdvance, onChapter, fromVerse = 1 }: Props) {
+export type ReadAloudHandle = { readFrom: (key?: string) => void };
+
+export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
+  book,
+  chapter,
+  deviceVoice,
+  speed,
+  lang,
+  onDeviceVoice,
+  onSpeed,
+  onVerse,
+  onAdvance,
+  onChapter,
+  fromVerse = 1,
+  loadLines,
+  nextPlaceOf,
+  startKey = "",
+  fromLabel = "",
+  onHeard,
+  pin = false,
+  kind = "chapter",
+}: Props, ref) {
   const [status, setStatus] = useState<"idle" | "playing" | "paused">("idle");
   const [carry, setCarry] = useState(false);
   const [error, setError] = useState("");
@@ -111,24 +155,52 @@ export function ReadAloud({ book, chapter, deviceVoice, speed, lang, onDeviceVoi
   const onVerseRef = useRef(onVerse);
   const onAdvanceRef = useRef(onAdvance);
   const onChapterRef = useRef(onChapter);
+  const onHeardRef = useRef(onHeard);
+  const loadLinesRef = useRef(loadLines);
+  const nextPlaceOfRef = useRef(nextPlaceOf);
   const deviceVoiceRef = useRef(deviceVoice);
   const speedRef = useRef(speed);
   const langRef = useRef(lang);
   const readyLines = useRef<Line[] | null>(null);
   const fromRef = useRef(fromVerse);
+  const startKeyRef = useRef(startKey);
   const resumeOnVisible = useRef(false);
   const stopping = useRef<"none" | "pause" | "halt">("none");
   const loop = useRef(0);
   const runner = useRef<(token: number, at: number) => Promise<void>>(async () => {});
+  const startRef = useRef<(from: number) => Promise<void>>(async () => {});
   statusRef.current = status;
   carryRef.current = carry;
   onVerseRef.current = onVerse;
   onAdvanceRef.current = onAdvance;
   onChapterRef.current = onChapter;
+  onHeardRef.current = onHeard;
+  loadLinesRef.current = loadLines;
+  nextPlaceOfRef.current = nextPlaceOf;
   deviceVoiceRef.current = deviceVoice;
   speedRef.current = speed;
   langRef.current = lang;
   fromRef.current = fromVerse;
+  startKeyRef.current = startKey;
+
+  function heard(row: Line | null) {
+    if (!row) {
+      onVerseRef.current(null);
+      onHeardRef.current?.(null);
+      return;
+    }
+    onVerseRef.current(row.v);
+    onHeardRef.current?.({
+      book: place.current.book,
+      chapter: row.chapter ?? place.current.chapter,
+      verse: row.v,
+    });
+  }
+
+  async function loadRows(at: Place, tongue: LangId) {
+    if (loadLinesRef.current) return loadLinesRef.current(at, tongue);
+    return linesFor(at, tongue, 1);
+  }
 
   function silence() {
     try {
@@ -149,7 +221,7 @@ export function ReadAloud({ book, chapter, deviceVoice, speed, lang, onDeviceVoi
     silence();
     setStatus("idle");
     setError("");
-    onVerseRef.current(null);
+    heard(null);
   }
 
   useEffect(() => {
@@ -164,7 +236,9 @@ export function ReadAloud({ book, chapter, deviceVoice, speed, lang, onDeviceVoi
   useEffect(() => {
     let live = true;
     readyLines.current = null;
-    linesFor({ book, chapter }, lang, 1)
+    const load = loadLinesRef.current;
+    const pending = load ? load({ book, chapter }, lang) : linesFor({ book, chapter }, lang, 1);
+    pending
       .then((rows) => {
         if (live) readyLines.current = rows;
       })
@@ -257,13 +331,13 @@ export function ReadAloud({ book, chapter, deviceVoice, speed, lang, onDeviceVoi
       if (!row) {
         const done = place.current;
         onChapterRef.current?.(done);
-        onVerseRef.current(null);
+        heard(null);
         if (!carryRef.current) {
           spoken.current = null;
           setStatus("idle");
           return;
         }
-        const nxt = nextPlace(done.book, done.chapter);
+        const nxt = nextPlaceOfRef.current ? nextPlaceOfRef.current(done) : nextPlace(done.book, done.chapter);
         if (!nxt) {
           spoken.current = null;
           setStatus("idle");
@@ -272,14 +346,23 @@ export function ReadAloud({ book, chapter, deviceVoice, speed, lang, onDeviceVoi
         spoken.current = { ...nxt, lang: langRef.current };
         onAdvanceRef.current(nxt);
         place.current = nxt;
-        lines.current = await linesFor(nxt, langRef.current, 1);
+        try {
+          lines.current = await loadRows(nxt, langRef.current);
+        } catch (err) {
+          if (run.current !== token) return;
+          spoken.current = null;
+          setStatus("idle");
+          setError(err instanceof Error ? err.message : "The voice could not continue.");
+          heard(null);
+          return;
+        }
         cursor = 0;
         index.current = 0;
         if (run.current !== token || loop.current !== mine || stopping.current !== "none") return;
         continue;
       }
       index.current = cursor;
-      onVerseRef.current(row.v);
+      heard(row);
       if (statusRef.current !== "playing") setStatus("playing");
       for (const phrase of phrases(row.text)) {
         if (run.current !== token || loop.current !== mine || stopping.current !== "none") return;
@@ -309,7 +392,7 @@ export function ReadAloud({ book, chapter, deviceVoice, speed, lang, onDeviceVoi
     let rows = readyLines.current;
     if (!rows) {
       try {
-        rows = await linesFor(here, lang, 1);
+        rows = await loadRows(here, langRef.current);
         readyLines.current = rows;
       } catch (err) {
         if (run.current !== token) return;
@@ -321,11 +404,12 @@ export function ReadAloud({ book, chapter, deviceVoice, speed, lang, onDeviceVoi
     }
     if (run.current !== token) return;
     lines.current = rows;
-    const startAt = rows.findIndex((row) => row.v >= from);
-    index.current = startAt >= 0 ? startAt : 0;
+    const startAt = locate(rows, from, startKeyRef.current);
+    index.current = startAt;
     // Speak the first words in this tap, before any later wait, or a phone will stay silent.
     const first = rows[index.current];
     if (first) {
+      heard(first);
       const piece = phrases(first.text)[0] ?? first.text;
       const opened = speakPhrase(piece, token);
       const rest = phrases(first.text).slice(1);
@@ -340,6 +424,14 @@ export function ReadAloud({ book, chapter, deviceVoice, speed, lang, onDeviceVoi
     }
     await speakFrom(token, index.current);
   }
+
+  startRef.current = start;
+  useImperativeHandle(ref, () => ({
+    readFrom(key?: string) {
+      if (key) startKeyRef.current = key;
+      void startRef.current(Math.max(1, fromRef.current || 1));
+    },
+  }), []);
 
   function toggle() {
     if (status === "playing") {
@@ -429,9 +521,14 @@ export function ReadAloud({ book, chapter, deviceVoice, speed, lang, onDeviceVoi
   const playing = status === "playing";
   const active = status !== "idle";
   const label = playing ? "Pause" : status === "paused" ? "Resume" : "Read";
+  const wordsMode = kind === "words";
+  const hereLabel = wordsMode ? "These words" : "This chapter";
+  const throughLabel = wordsMode ? "Through the books" : "Through the book";
+  const continueOn = wordsMode ? "Stop after this book" : "Stop after this chapter";
+  const continueOff = wordsMode ? "Keep reading the words of Y'shua into the next book" : "Keep reading through this book and into the next";
 
   return (
-    <div className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-paper pb-safe md:static md:z-auto md:border-t-0 md:border-b md:pb-0">
+    <div className={`fixed inset-x-0 bottom-0 z-30 border-t border-line bg-paper pb-safe ${pin ? "" : "md:static md:z-auto md:border-t-0 md:border-b md:pb-0"}`}>
       {active && (
         <div className="mx-auto flex max-w-5xl items-center border-b border-line">
           <button
@@ -447,7 +544,7 @@ export function ReadAloud({ book, chapter, deviceVoice, speed, lang, onDeviceVoi
             type="button"
             onClick={toggleCarry}
             aria-pressed={carry}
-            aria-label={carry ? "Stop after this chapter" : "Keep reading through this book and into the next"}
+            aria-label={carry ? continueOn : continueOff}
             className={`min-h-11 shrink-0 px-3 ${carry ? "text-garnet" : "text-muted"}`}
           >
             {carry ? "Continuing" : "Continue"}
@@ -457,7 +554,7 @@ export function ReadAloud({ book, chapter, deviceVoice, speed, lang, onDeviceVoi
             Stop
           </button>
           <span className="ml-auto flex min-h-11 shrink-0 items-center px-3 text-sm text-gold">
-            {status === "paused" ? "Paused" : carry ? "Through the book" : "This chapter"}
+            {status === "paused" ? "Paused" : carry ? throughLabel : hereLabel}
           </span>
         </div>
       )}
@@ -467,7 +564,7 @@ export function ReadAloud({ book, chapter, deviceVoice, speed, lang, onDeviceVoi
             type="button"
             onClick={toggle}
             className="flex min-h-11 shrink-0 items-center gap-1.5 px-3 text-garnet"
-            aria-label={fromVerse > 1 ? "Read from this verse" : "Read this chapter aloud"}
+            aria-label={wordsMode ? "Read these words aloud" : fromVerse > 1 ? "Read from this verse" : "Read this chapter aloud"}
           >
             <Play className="size-4" />
             {label}
@@ -509,10 +606,10 @@ export function ReadAloud({ book, chapter, deviceVoice, speed, lang, onDeviceVoi
           <span className="w-11 text-sm tabular-nums text-gold">{speed}%</span>
         </label>
         <span className="ml-auto flex min-h-11 shrink-0 items-center px-3 text-sm text-gold">
-          {status === "idle" && fromVerse > 1 ? `From ${fromVerse}` : status === "idle" ? languageById(lang).label : ""}
+          {status === "idle" && fromLabel ? fromLabel : status === "idle" && fromVerse > 1 ? `From ${fromVerse}` : status === "idle" ? languageById(lang).label : ""}
         </span>
       </div>
       {error && <p className="px-3 pb-2 text-sm text-garnet">{error}</p>}
     </div>
   );
-}
+});

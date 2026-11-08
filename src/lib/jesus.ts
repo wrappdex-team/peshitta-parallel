@@ -111,3 +111,14 @@ export function isJesus(book: string, chapter: number, verse: number) {
 }
 
 export const GOSPELS = ["matthew", "mark", "luke", "john"] as const;
+
+/** Every book that records words of Y'shua in red. */
+export const RED_BOOKS = ["matthew", "mark", "luke", "john", "acts", "revelation"] as const;
+
+export type RedBook = (typeof RED_BOOKS)[number];
+
+export function nextRedBook(book: string): RedBook | null {
+  const index = RED_BOOKS.indexOf(book as RedBook);
+  if (index < 0 || index >= RED_BOOKS.length - 1) return null;
+  return RED_BOOKS[index + 1];
+}

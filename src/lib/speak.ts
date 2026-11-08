@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { BOOKS } from "@/data/edition";
 import { resolveAgent, type Agent } from "@/lib/agent";
 import { type LangId, languageById } from "@/lib/languages";
+import { isJesus } from "@/lib/jesus";
 import { loadBook, loadParallel, type Verse } from "@/lib/scripture";
 
 export type VoiceId = "ara" | "rex";
@@ -194,6 +195,29 @@ export function readingLines(
   const rows = chosen.length ? chosen : bits;
   const lead = rows[0]?.v === bits[0]?.v ? leadIn(lang, spokenName(book, lang), chapter) : "";
   return rows.map((bit, index) => ({ v: bit.v, text: index === 0 && lead ? `${lead}${bit.text}` : bit.text }));
+}
+
+/** Red-letter sayings only, in book order. A new chapter is named on its first line. */
+export async function sayingLines(book: string, lang: LangId): Promise<{ v: number; text: string; chapter: number; key: string }[]> {
+  const doc = await loadBook(book);
+  const grid = lang === "en" ? null : await loadParallel(lang, book);
+  if (lang !== "en" && !grid) throw new Error("That language is not ready for these words yet.");
+  const rows: { v: number; text: string; chapter: number; key: string }[] = [];
+  let named = 0;
+  doc.chapters.forEach((chapter, index) => {
+    const ch = index + 1;
+    chapter.forEach((verse, verseIndex) => {
+      if (!isJesus(book, ch, verse.v)) return;
+      const raw = lang === "en" ? verse.en : (grid?.[index]?.[verseIndex] ?? "");
+      const text = cleanEnglish(raw);
+      if (!text) return;
+      const lead = ch === named ? "" : leadIn(lang, spokenName(book, lang), ch);
+      named = ch;
+      rows.push({ v: verse.v, chapter: ch, key: `${ch}:${verse.v}`, text: lead ? `${lead}${text}` : text });
+    });
+  });
+  if (!rows.length) throw new Error("These words are not ready in that language.");
+  return rows;
 }
 
 const cache = new Map<string, SpeakOk>();
