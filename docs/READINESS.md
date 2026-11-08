@@ -101,7 +101,7 @@ live crawler has already applied an undeployed change.
 ## Local verification record
 
 Dependency installation with lifecycle scripts disabled succeeded. Unit and
-repository tests (263 passed, four explicit upstream-document skips), scoped
+repository tests (265 passed, four explicit upstream-document skips), scoped
 ESLint on all changed code, the structural regression audit, TypeScript, compilation and
 in-process built SSR SEO checks passed. Strict data completeness correctly
 failed with all 78 unresolved fields reported. Four missing upstream-document
@@ -113,3 +113,39 @@ connector returned `The name org.freedesktop.secrets was not provided by any
 .service files` rather than findings. **Security scanning is not complete**;
 configure the Aikido connector (`/aikido:setup`) and rerun before treating this
 as security-reviewed. No credentials were read to work around the error.
+
+## Follow-up: reader route input boundary
+
+A compiled-SSR reproduction showed that unknown books, chapter zero,
+out-of-range chapters, scientific notation and leading-zero chapters returned
+HTTP 200 with self-canonical URLs. These were successful, indexable shells for
+references that do not exist in the edition (or duplicate numeric spellings).
+
+The reader route now validates against catalog chapter limits in its loader,
+rejects noncanonical/non-integer spellings, and returns a real 404 with a usable
+"All books" recovery link. Missing-reference metadata is noindex/follow and has
+no canonical. Canonical positive integer chapter URLs remain unchanged; this
+pass deliberately rejects alternate numeric spellings rather than inventing
+redirect destinations. Unit tests cover all 260 chapters and their upper bounds;
+compiled SSR checks cover valid first/last/one-chapter references and seven
+invalid paths. This is route reliability/indexing work, not translation review
+or an authorization system.
+
+No audio/player logic is changed. The reader route file also hosts player UI,
+so the incoming manual voice update must be checked for overlapping hunks before
+integration; do not blindly replace that file. Hosted readiness and Vercel
+checks on the initial commit passed before this follow-up; new hosted checks
+must be observed separately. The refreshed Aikido descriptor was retried once
+for this slice and returned the same secret-service error, not scan findings.
+
+### Browser follow-up for the PR preview
+
+A browser-capable agent should check direct navigation and client-side recovery
+on both desktop and mobile: `/read/john/1`, `/read/john/21`,
+`/read/philemon/1`, `/read/not-a-book/1`, `/read/john/0`, `/read/john/22`,
+`/read/john/01` and `/read/john/1e0`. Verify a visible not-found state, the
+"All books" link returning home, normal book/chapter navigation afterwards,
+no hydration/console errors, and exactly one effective robots/canonical policy
+in the document head. Then smoke-test language switching, RTL, search, word
+study and `/seal`; do not start paid media requests during that test. The
+in-process SSR checks are not browser/hydration verification.

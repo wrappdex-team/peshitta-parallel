@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight, Menu, Moon, Search, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
 import { ReadAloud } from "@/components/read-aloud";
@@ -18,9 +18,24 @@ import {
 import { usePrefs } from "@/lib/use-prefs";
 import { SITE_ORIGIN } from "@/lib/site";
 import { noteChapter } from "@/lib/readings";
+import { parseReaderChapter } from "@/lib/reader-reference";
 
 export const Route = createFileRoute("/read/$book/$chapter")({
+  loader: ({ params }) => {
+    if (parseReaderChapter(params.chapter, chapterCount(params.book)) === null) {
+      throw notFound();
+    }
+  },
+  notFoundComponent: ReaderNotFound,
   head: ({ params }) => {
+    if (parseReaderChapter(params.chapter, chapterCount(params.book)) === null) {
+      return {
+        meta: [
+          { title: "Reading not found — Injeel" },
+          { name: "robots", content: "noindex, follow" },
+        ],
+      };
+    }
     const name = bookMeta(params.book)?.name ?? "Reading";
     return {
       meta: [
@@ -35,6 +50,18 @@ export const Route = createFileRoute("/read/$book/$chapter")({
   },
   component: Reader,
 });
+
+function ReaderNotFound() {
+  return (
+    <main className="mx-auto min-h-app max-w-3xl bg-paper px-5 pt-safe pb-page text-ink">
+      <h1 className="pt-6 font-serif text-3xl">Reading not found</h1>
+      <p className="mt-3">That book or chapter is not in this edition.</p>
+      <Link to="/" className="mt-4 inline-flex min-h-11 items-center text-garnet">
+        All books
+      </Link>
+    </main>
+  );
+}
 
 function Reader() {
   const { book, chapter } = Route.useParams();
