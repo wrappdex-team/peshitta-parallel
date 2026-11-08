@@ -188,6 +188,7 @@ function fixture({ provider, signal, cacheCrypto = syntheticCacheCrypto } = {}) 
   const ui = load("studioUI", {
     require(name) {
       if (name === "react") return React;
+      if (name === "@/components/modal") return { Modal: ({ label, children }) => React.createElement("dialog", { "aria-label": label }, children) };
       if (name === "react/jsx-runtime") return jsxRuntime;
       if (name === "@/lib/agent") return agent;
       if (name === "@/lib/local-rate-limit") return rateLimit;

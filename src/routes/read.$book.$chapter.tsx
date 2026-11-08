@@ -1,3 +1,4 @@
+import { Modal } from "@/components/modal";
 import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight, Menu, Moon, Search, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -372,7 +373,7 @@ function Reader() {
       />
 
       {menu && (
-        <div className="fixed inset-0 z-30 flex bg-scrim" onClick={() => setMenu(false)}>
+        <Modal label="Books" className="fixed inset-0 z-30 flex bg-scrim" onClose={() => setMenu(false)}>
           <nav className="h-full w-80 max-w-[85%] overflow-y-auto bg-paper p-4 pt-safe pb-safe" onClick={(event) => event.stopPropagation()} aria-label="Books">
             <div className="mb-3 flex items-center justify-between">
               <h2 className="font-serif text-lg">New Testament</h2>
@@ -420,19 +421,19 @@ function Reader() {
               Studio · premium
             </button>
           </nav>
-        </div>
+        </Modal>
       )}
 
       {sheet && (
-        <div className="fixed inset-0 z-30 flex items-end bg-scrim" onClick={() => setSheet(null)}>
+        <Modal label={sheet.title} className="fixed inset-0 z-30 flex items-end bg-scrim" onClose={() => setSheet(null)}>
           <div
-            role="dialog"
-            aria-modal="true"
             className="w-full border-t border-line bg-paper px-5 py-5 pb-safe"
             onClick={(event) => event.stopPropagation()}
           >
             <div className="mx-auto max-w-3xl">
               <p
+                tabIndex={-1}
+                data-modal-initial
                 className={/[\u0700-\u074F]/.test(sheet.title) ? "font-syriac text-3xl text-syriac" : "font-serif text-2xl"}
                 lang={/[\u0700-\u074F]/.test(sheet.title) ? "syr" : "en"}
                 dir={/[\u0700-\u074F]/.test(sheet.title) ? "rtl" : "ltr"}
@@ -446,16 +447,13 @@ function Reader() {
               </button>
             </div>
           </div>
-        </div>
+        </Modal>
       )}
 
       <SearchPanel open={search} onClose={() => setSearch(false)} />
       {reading && (
-        <div className="fixed inset-0 z-40 flex items-end bg-scrim" onClick={() => setReading(false)}>
+        <Modal label="Reading" className="fixed inset-0 z-40 flex items-end bg-scrim" onClose={() => setReading(false)}>
           <div
-            role="dialog"
-            aria-modal="true"
-            aria-label="Reading"
             className="max-h-sheet w-full overflow-y-auto border-t border-line bg-paper px-5 py-5 pb-safe"
             onClick={(event) => event.stopPropagation()}
           >
@@ -531,7 +529,7 @@ function Reader() {
               </button>
             </div>
           </div>
-        </div>
+        </Modal>
       )}
     </div>
   );
