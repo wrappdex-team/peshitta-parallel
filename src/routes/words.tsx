@@ -1,3 +1,4 @@
+import { Modal } from "@/components/modal";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Play } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
@@ -305,11 +306,8 @@ function Words() {
       </div>
       <Studio open={studio} passage={picked} onClose={() => setStudio(false)} />
       {reading && (
-        <div className="fixed inset-0 z-40 flex items-end bg-scrim" onClick={() => setReading(false)}>
+        <Modal label="Reading" className="fixed inset-0 z-40 flex items-end bg-scrim" onClose={() => setReading(false)}>
           <div
-            role="dialog"
-            aria-modal="true"
-            aria-label="Reading"
             className="max-h-sheet w-full overflow-y-auto border-t border-line bg-paper px-5 py-5 pb-safe"
             onClick={(event) => event.stopPropagation()}
           >
@@ -362,7 +360,7 @@ function Words() {
               </button>
             </div>
           </div>
-        </div>
+        </Modal>
       )}
     </main>
   );

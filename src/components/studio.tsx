@@ -1,3 +1,4 @@
+import { Modal } from "@/components/modal";
 import { useEffect, useRef, useState } from "react";
 import { detectAgent } from "@/lib/agent";
 import { clearSessionProviderKey, restoreSessionProviderKey, saveSessionProviderKey } from "@/lib/provider-key-storage";
@@ -193,11 +194,10 @@ export function Studio({ open, passage, onClose }: Props) {
   }
 
   return (
-    <div className="fixed inset-0 z-40 flex items-end justify-center bg-scrim sm:items-center" onClick={onClose}>
+    <Modal label="Studio" className="fixed inset-0 z-40 flex items-end justify-center bg-scrim sm:items-center" onClose={onClose}>
       <section
         className="max-h-sheet w-full max-w-xl overflow-y-auto border border-line bg-paper p-5 pb-safe"
         onClick={(event) => event.stopPropagation()}
-        aria-label="Studio"
       >
         <div className="flex items-start justify-between gap-3">
           <div>
@@ -364,6 +364,6 @@ export function Studio({ open, passage, onClose }: Props) {
           </div>
         )}
       </section>
-    </div>
+    </Modal>
   );
 }

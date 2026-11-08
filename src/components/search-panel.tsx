@@ -1,3 +1,4 @@
+import { Modal } from "@/components/modal";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { bookMeta } from "@/data/edition";
@@ -56,15 +57,6 @@ export function SearchPanel({ open, onClose }: Props) {
     };
   }, [open, q, langRows]);
 
-  useEffect(() => {
-    if (!open) return;
-    function onKey(event: KeyboardEvent) {
-      if (event.key === "Escape") onClose();
-    }
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [open, onClose]);
-
   const hits = useMemo(() => {
     const query = q.trim();
     if (query.length < 2) return [];
@@ -89,22 +81,22 @@ export function SearchPanel({ open, onClose }: Props) {
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-40 flex items-start justify-center bg-scrim px-4 pt-sheet" onClick={onClose}>
+    <Modal label="Search the New Testament" className="fixed inset-0 z-40 flex items-start justify-center bg-scrim px-4 pt-sheet" onClose={onClose}>
       <div
-        role="dialog"
-        aria-modal="true"
-        aria-label="Search the New Testament"
         className="max-h-sheet w-full max-w-xl overflow-hidden rounded-lg border border-line bg-paper shadow-none"
         onClick={(event) => event.stopPropagation()}
       >
-        <div className="border-b border-line p-3">
+        <div className="flex items-center gap-2 border-b border-line p-3">
           <input
-            autoFocus
+            data-modal-initial
             value={q}
             onChange={(event) => setQ(event.target.value)}
             placeholder="A word, in English, Arabic, French, Russian, or Syriac"
-            className="w-full bg-transparent font-serif text-lg text-ink outline-none placeholder:text-muted"
+            className="min-w-0 flex-1 bg-transparent font-serif text-lg text-ink outline-none placeholder:text-muted"
           />
+          <button type="button" className="min-h-11 shrink-0 px-2 text-garnet" onClick={onClose}>
+            Close
+          </button>
         </div>
         <div className="max-h-[56vh] overflow-y-auto">
           {err && <p className="p-4 text-sm text-garnet">{err}</p>}
@@ -151,6 +143,6 @@ export function SearchPanel({ open, onClose }: Props) {
           )}
         </div>
       </div>
-    </div>
+    </Modal>
   );
 }

@@ -121,6 +121,7 @@ function fixture({ local = new Map(), session = new Map(), deny = {}, server = {
     context(exports, (name) => {
       if (name === "react") return hooks;
       if (name === "react/jsx-runtime") return jsxRuntime;
+      if (name === "@/components/modal") return { Modal: ({ label, children }) => jsxRuntime.jsx("dialog", { "aria-label": label, children }) };
       if (name === "@/lib/agent") return agent;
       if (name === "@/lib/provider-key-storage") return keyStorage;
       if (name === "@/lib/studio")
@@ -544,4 +545,11 @@ test("a thrown old shaping failure cannot overwrite the current passage", async 
   result.reject(new Error("synthetic shaping failure"));
   await work;
   assert.doesNotMatch(markup(page, "passage B"), /could not be shaped|synthetic shaping failure/);
+});
+
+
+test("Studio exposes a named modal dialog rather than a nonmodal sheet section", () => {
+  const page = fixture();
+  const html = renderToStaticMarkup(page.render());
+  assert.match(html, /<dialog[^>]*aria-label="Studio"/);
 });
