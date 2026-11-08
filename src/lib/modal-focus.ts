@@ -16,7 +16,7 @@ function controls(dialog: HTMLDialogElement) {
 function focusInitial(dialog: HTMLDialogElement) {
   const initial = dialog.querySelector<HTMLElement>("[data-modal-initial]");
   const target = initial && visible(initial) ? initial : controls(dialog)[0] ?? dialog;
-  target.focus({ preventScroll: true });
+  target.focus();
 }
 
 export function isTopModal(dialog: HTMLDialogElement) {
@@ -54,7 +54,7 @@ export function activateModal(dialog: HTMLDialogElement, dismiss: () => void) {
     const at = items.indexOf(document.activeElement as HTMLElement);
     if (!items.length || (event.shiftKey ? at <= 0 : at < 0 || at === items.length - 1)) {
       event.preventDefault();
-      (items[event.shiftKey ? items.length - 1 : 0] ?? dialog).focus({ preventScroll: true });
+      (items[event.shiftKey ? items.length - 1 : 0] ?? dialog).focus();
     }
   }
   dialog.addEventListener("cancel", cancel);

@@ -33,7 +33,9 @@ implementation edge cases with a deterministic DOM/native-dialog seam.
   existing title with a programmatic-only tab stop to avoid skipping its text.
 - Tab/ShiftTab wrap visible enabled controls at their boundaries, including
   single-control/empty-content cases. Disabled, hidden, inert and negative-tab
-  controls are excluded from sequential cycling. Browser shortcut modifiers and
+  controls are excluded from sequential cycling. Initial/wrapped focus may scroll
+  the panel to keep that target visible; only opener restoration prevents scroll.
+  Browser shortcut modifiers and
   IME-composition Escape are not intercepted by our key handler.
 - Escape and native cancel dismiss only the top registered modal. There is no
   global Search Escape listener. A backdrop click dismisses only its own top

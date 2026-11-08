@@ -128,6 +128,7 @@ test("Tab and ShiftTab wrap only at the visible enabled control boundaries", () 
   const cleanup = page.activateModal(node, () => {});
   items[6].focus(); const next = node.dispatch("keydown", { key: "Tab" });
   assert.equal(next.defaultPrevented, true); assert.equal(page.document.activeElement, items[0]);
+  assert.notEqual(items[0].focusCalls.at(-1)?.preventScroll, true, "wrapped control must scroll into view in long panels");
   const previous = node.dispatch("keydown", { key: "Tab", shiftKey: true });
   assert.equal(previous.defaultPrevented, true); assert.equal(page.document.activeElement, items[6]);
   items[5].focus(); assert.equal(node.dispatch("keydown", { key: "Tab" }).defaultPrevented, false);
@@ -154,6 +155,7 @@ test("an explicitly focused non-tabstop title advances to the first control", ()
   const { node, items } = page.dialog([{ tag: "p", tabIndex: -1, attrs: ["data-modal-initial", "tabindex"] }, {}, {}]);
   const cleanup = page.activateModal(node, () => {});
   assert.equal(page.document.activeElement, items[0]);
+  assert.notEqual(items[0].focusCalls.at(-1)?.preventScroll, true, "initial title must be visible even if native focus first scrolled to Close");
   assert.equal(node.dispatch("keydown", { key: "Tab" }).defaultPrevented, true);
   assert.equal(page.document.activeElement, items[1]);
   cleanup();
