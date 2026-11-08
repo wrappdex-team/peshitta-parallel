@@ -6,9 +6,9 @@ import { fileURLToPath } from "node:url";
 import test from "node:test";
 import {
   appNameFromHost,
-  createHeadInjector,
+  createHeadInjector as rawCreateHeadInjector,
   grokXCreatorHeadTags,
-  injectGrokPwaHead,
+  injectGrokPwaHead as rawInjectGrokPwaHead,
   isDocumentPath,
   isInstallQuery,
   publicAppHost,
@@ -20,6 +20,23 @@ import {
 import { renderInstallPage } from "./grok-pwa-plugin.mjs";
 
 const TEMPLATE_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
+
+// Generic template cases must not inherit Injeel's title or public/og.jpg.
+const EMPTY_WORKSPACE = mkdtempSync(join(tmpdir(), "grok-pwa-fixture-"));
+const injectGrokPwaHead = (html, ctx = {}) =>
+  rawInjectGrokPwaHead(html, { cwd: EMPTY_WORKSPACE, ...ctx });
+const createHeadInjector = (ctx = {}) =>
+  rawCreateHeadInjector({ cwd: EMPTY_WORKSPACE, ...ctx });
+
+test("Injeel's real identity and demo card remain present", () => {
+  const out = rawInjectGrokPwaHead("<html><head></head></html>", {
+    cwd: TEMPLATE_ROOT,
+  });
+  assert.match(out, /property="og:title" content="Injeel"/);
+  const { site } = snapshotOgIdentity(TEMPLATE_ROOT);
+  assert.equal(site.card, "custom");
+  assert.equal(site.image, "/og.jpg");
+});
 
 test("injects before </head>", () => {
   const out = injectGrokPwaHead("<html><head><title>x</title></head><body></body></html>");

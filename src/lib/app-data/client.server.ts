@@ -278,7 +278,9 @@ function tokenIdentityKey(token: string): string {
             .digest("base64url");
         }
       }
-    } catch {}
+    } catch {
+      // Malformed identity claims fall back to the full-token digest below.
+    }
   }
   return createHash("sha256").update(token).digest("base64url");
 }
@@ -400,7 +402,9 @@ export async function callTool(
     if (json.errorMessage && json.ok === false) {
       return fail(json.errorMessage);
     }
-    if (status >= 400 && json.ok !== true) {
+    // Transport failures and unfollowed redirects cannot be overridden by an
+    // inconsistent JSON body. Keep the 401/403 handling above authoritative.
+    if (status < 200 || status >= 300) {
       return fail(json.errorMessage ?? `HTTP ${status}`);
     }
     if (json.ok === false) {

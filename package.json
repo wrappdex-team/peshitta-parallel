@@ -17,9 +17,13 @@
     "typecheck": "tsc --noEmit",
     "cap:sync": "cap sync",
     "check:auth": "node scripts/check-auth-invariant.mjs",
-    "test": "node --test 'scripts/**/*.test.mjs' && node --experimental-strip-types --test src/lib/app-data/app-data.test.ts src/lib/app-data/readiness-schedule.test.ts src/lib/auth/gate-identity.test.ts src/lib/auth/sign-in-gate.test.ts src/lib/preview-path-prefix.test.ts",
+    "test": "node --test 'scripts/**/*.test.mjs' && node --experimental-strip-types --test src/lib/app-data/app-data.test.ts src/lib/app-data/readiness-schedule.test.ts src/lib/auth/gate-identity.test.ts src/lib/auth/sign-in-gate.test.ts src/lib/preview-path-prefix.test.ts src/lib/reader-reference.test.ts",
     "lint": "eslint .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "build:check": "node scripts/with-app-env.mjs vite build",
+    "check:data": "node scripts/check-scripture-data.mjs",
+    "check:data:strict": "node scripts/check-scripture-data.mjs --strict",
+    "check:seo:built": "node scripts/check-built-seo.mjs"
   },
   "dependencies": {
     "@capacitor/app": "^8.1.2",
