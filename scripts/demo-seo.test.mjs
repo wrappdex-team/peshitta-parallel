@@ -63,3 +63,13 @@ test("verification build cannot invoke migration; CI requests no production secr
     /\$\{\{\s*secrets\.|pull_request_target|npm run db:migrate|npm run build\s*$/m,
   );
 });
+
+test("CI actions use immutable pins with readable versions without changing application Node", () => {
+  const workflow = read(".github/workflows/readiness.yml");
+  const uses = workflow.split("\n").filter((line) => /^\s*- uses:/.test(line));
+  assert.equal(uses.length, 2);
+  for (const line of uses) {
+    assert.match(line, /^\s*- uses: actions\/(?:checkout|setup-node)@[a-f0-9]{40} # v\d+\.\d+\.\d+$/);
+  }
+  assert.match(workflow, /^\s*node-version: 22$/m);
+});

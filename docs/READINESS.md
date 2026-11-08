@@ -23,6 +23,13 @@ required by the readiness workflow. It uses a read-only GitHub token, disables
 checkout credential persistence, and never calls a deployment CLI. Dependency
 install hooks are disabled; do not automatically enable them to fix an install.
 
+CI actions use full upstream commit-SHA pins with readable release comments.
+Their Node 24 **action runtime** requires runner v2.327.1 or later; this is
+separate from the application's unchanged Node 22 test/build version.
+`.github/dependabot.yml` proposes weekly GitHub Actions-only updates, limited to
+two open update PRs. It does not update npm dependencies or configure automatic
+merging. Review action release notes and passing checks before approving updates.
+
 The workflow is a regression gate, not a release gate. No external AI/media
 API is exercised, and no hosted database is used. It does not establish that all
 study interactions, accessibility, native packaging, auth or paid API abuse
