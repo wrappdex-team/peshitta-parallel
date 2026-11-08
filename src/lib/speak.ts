@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { BOOKS } from "@/data/edition";
 import { resolveAgent, type Agent } from "@/lib/agent";
+import { createLocalRateLimiter } from "@/lib/local-rate-limit";
 import { type LangId, languageById } from "@/lib/languages";
 import { isJesus } from "@/lib/jesus";
 import { loadBook, loadParallel, type Verse } from "@/lib/scripture";
@@ -222,19 +223,10 @@ export async function sayingLines(book: string, lang: LangId): Promise<{ v: numb
 
 const cache = new Map<string, SpeakOk>();
 const CACHE_MAX = 10;
-const hits = new Map<string, number[]>();
+const limiter = createLocalRateLimiter();
 
 function allow(ip: string) {
-  const now = Date.now();
-  const windowMs = 10 * 60 * 1000;
-  const recent = (hits.get(ip) ?? []).filter((t) => now - t < windowMs);
-  if (recent.length >= 80) {
-    hits.set(ip, recent);
-    return false;
-  }
-  recent.push(now);
-  hits.set(ip, recent);
-  return true;
+  return limiter.allow(ip, 80);
 }
 
 function remember(key: string, value: SpeakOk) {

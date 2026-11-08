@@ -1,22 +1,10 @@
 import { createServerFn } from "@tanstack/react-start";
 import { resolveAgent, type Agent } from "@/lib/agent";
+import { createLocalRateLimiter } from "@/lib/local-rate-limit";
 
 export type StudioKind = "image" | "video" | "audio";
 
-const hits = new Map<string, number[]>();
-
-function allow(key: string, limit: number) {
-  const now = Date.now();
-  const windowMs = 10 * 60 * 1000;
-  const recent = (hits.get(key) ?? []).filter((t) => now - t < windowMs);
-  if (recent.length >= limit) {
-    hits.set(key, recent);
-    return false;
-  }
-  recent.push(now);
-  hits.set(key, recent);
-  return true;
-}
+const { allow } = createLocalRateLimiter();
 
 async function caller() {
   try {
