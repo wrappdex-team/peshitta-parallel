@@ -437,7 +437,7 @@ test("video polling remains sequential and delivers a successful current-context
   await flushWork();
   await page.tick();
   assert.equal(page.timers.length, 0, "no overlapping scheduled poll while a status call is pending");
-  first.resolve({ ok: true, status: "pending" });
+  first.resolve({ ok: true, status: "waiting" });
   await flushWork();
   assert.equal(page.timers.length, 1);
   await page.tick();
@@ -452,7 +452,7 @@ test("24 pending polls stop without a duplicate submission or misleading retry i
   let starts = 0, polls = 0;
   const page = workFixture("video", {
     startVideo: async () => { starts++; return { ok: true, requestId: "fixture-job" }; },
-    checkVideo: async () => { polls++; return { ok: true, status: "pending" }; },
+    checkVideo: async () => { polls++; return { ok: true, status: "waiting" }; },
   });
   const work = makeButton(page.render(true, "passage A")).props.onClick();
   await flushWork();
@@ -486,7 +486,7 @@ test("a changed passage does not release busy or change the finite background po
   let starts = 0, polls = 0;
   const page = workFixture("video", {
     startVideo: async () => { starts++; return { ok: true, requestId: "fixture-job" }; },
-    checkVideo: async () => { polls++; return { ok: true, status: "pending" }; },
+    checkVideo: async () => { polls++; return { ok: true, status: "waiting" }; },
   });
   const work = makeButton(page.render(true, "passage A")).props.onClick();
   await flushWork();
