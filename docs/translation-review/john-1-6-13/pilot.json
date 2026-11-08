@@ -1,0 +1,420 @@
+{
+  "schema_version": 1,
+  "pilot_id": "injeel-john-1-6-13-syriac-direct-draft-01",
+  "title": "John 1:6–13 — NEW TRANSLATION FROM SYRIAC; AI-ASSISTED UNREVIEWED NOT PUBLISHABLE",
+  "status": "AI_ASSISTED_UNREVIEWED",
+  "publishable": false,
+  "coverage": {
+    "book": "John",
+    "chapter": 1,
+    "verse_ids": [6, 7, 8, 9, 10, 11, 12, 13],
+    "verse_count": 8
+  },
+  "registers": {
+    "el": "contemporary Greek",
+    "he": "biblical-style Hebrew; new translation, not ancient original"
+  },
+  "source": {
+    "frozen_repo_commit": "f2c46a209d3ef9bdfe919beea6ecd33d5b1f7c02",
+    "frozen_repo_path": "src/data/nt/john.json",
+    "whole_file_sha256": "594428548d96fb2667b4db39e457f520db94876bff5cbdaf5c3f96505944f8cb",
+    "pilot_pairs_sha256": "c93e694eb286bf55d2be9dcffc8b24edd0771a5300c369ede7ac805819a0a7e0",
+    "hash_method": "SHA-256 UTF-8 compact literal-Unicode JSON [[v,sy],...] without newline",
+    "adopted_pilot_input": "Frozen repository Syriac verbatim, compared to the identified CrossWire Peshitta 2.0 public-domain digital reference. Module is NOT an exact-match witness for all eight rows.",
+    "comparison_file": "source-verification.json",
+    "module_version": "2.0",
+    "module_zip_sha256": "badce0aa0a9b70a9c81891ed48d5a9e86de1e24d12ad4ad378e060e03cabc7b9",
+    "module_config_sha256": "a4b45f9fdfed3c514f6acd55f90022ae19b4ae4a5c0953adfd17d549ea9e71c7",
+    "rights_scope": "CrossWire explicitly declares its specific Peshitta module text Public Domain. This does not establish the app historical import lineage or blanket rights for databases, scans, fonts or apparatus. Four recorded semkath-form differences are not concealed as exact matches.",
+    "attribution": "BFBS 1905 Syriac text; digital text courtesy John Richards, distributed by CrossWire Bible Society as Peshitta module 2.0 (2020-02-08). Distribution metadata declares Public Domain. Used as the identified comparator/reference for this pilot, not proof of historical app import.",
+    "module_url": "https://www.crosswire.org/sword/modules/ModInfo.jsp?modName=Peshitta",
+    "rights_url": "https://www.crosswire.org/sword/copyright/ModInfoCopyright.jsp?modName=Peshitta",
+    "normalization": "No edits to frozen source fields. Module one trailing ASCII space retained in extraction evidence; semkath codepoint substitutions retained and individually recorded. NFC does not erase them.",
+    "printed_pointing_collation_completed": false,
+    "historical_import_provenance_verified": false
+  },
+  "method": {
+    "english_pivot": false,
+    "target_corpus_copied": false,
+    "provider_calls": false,
+    "external_NC_lexicon_data_copied": false,
+    "description": "AI-assisted direct Syriac analysis and proposed target renderings; historical grammar and lexicon assist interpretation, not replace the input. All phrase analyses are proposals, not independent qualified human scholarship."
+  },
+  "human_review": {
+    "qualified_syriac_completed": false,
+    "qualified_greek_completed": false,
+    "qualified_hebrew_completed": false,
+    "independent_review_required": true,
+    "approval": null
+  },
+  "name_policy": {
+    "registry_file": "names-registry.json",
+    "names_validated": false,
+    "original_pronunciation_claimed": false,
+    "people_places_objects": "One explicit personal name; no place name or named relic/object identified in this passage. Light, world, flesh and blood are semantic terms, not objects to blanket-transliterate. No ethnicity/place inserted for his own."
+  },
+  "verses": [
+    {
+      "id": "John.1.6",
+      "source_reference": "John 1:6",
+      "sy": "ܗܘܐ ܒܪܢܫܐ ܕܐܫܬܕܪ ܡܢ ܐܠܗܐ ܫܡܗ ܝܘܚܢܢ ܀",
+      "sy_sha256_utf8": "2c95a6711504fe9e6791b0e202894c1e988f128bea6817b0554e53a35819db97",
+      "review_status": "AI_ASSISTED_UNREVIEWED",
+      "publishable": false,
+      "el": {
+        "register": "contemporary Greek",
+        "text": "Υπήρξε ένας άνθρωπος που στάλθηκε από τον Θεό· το όνομά του ήταν Γιοχανάν.",
+        "review_status": "AI_ASSISTED_UNREVIEWED",
+        "text_sha256_utf8": "4a384f223584a53d87304726bd5d18709c8d6bc5a5e7eb11c7e14ad3fcdb1672"
+      },
+      "he": {
+        "register": "biblical-style Hebrew; new translation, not ancient original",
+        "text": "היה איש אשר נשלח מאת אלהים ושמו יוחנן׃",
+        "review_status": "AI_ASSISTED_UNREVIEWED",
+        "text_sha256_utf8": "a37ae01c9616267ffd35e074801580fa14cb42afa77060f94d0fd741ac65d986"
+      },
+      "alignments": [
+        {
+          "sy": "ܗܘܐ ܒܪܢܫܐ ܕܐܫܬܕܪ ܡܢ ܐܠܗܐ",
+          "el_proposed": "Υπήρξε ένας άνθρωπος που στάλθηκε από τον Θεό",
+          "he_proposed": "היה איש אשר נשלח מאת אלהים",
+          "analysis_status": "PROPOSED_REQUIRES_HUMAN_REVIEW",
+          "note": "Human being plus a passive sending construction. Greek ypirkse is an introduction, not a claim this person was created at that moment. Sent from God is not translated as a claim about physical divine location."
+        },
+        {
+          "sy": "ܫܡܗ ܝܘܚܢܢ",
+          "el_proposed": "το όνομά του ήταν Γιοχανάν",
+          "he_proposed": "ושמו יוחנן",
+          "analysis_status": "PROPOSED_REQUIRES_HUMAN_REVIEW",
+          "note": "The visible Syriac name is preserved in the source and name registry. Greek Giochanan is a tentative target-script representation, not attested original pronunciation; Hebrew is a letter-correspondence proposal. Greek adds an explicit copula; Hebrew adds a linking waw for readability."
+        }
+      ],
+      "blocking_review_topics": ["name-representation-unreviewed", "sending-construction"]
+    },
+    {
+      "id": "John.1.7",
+      "source_reference": "John 1:7",
+      "sy": "ܗܢܐ ܐܬܐ ܠܣܗܕܘܬܐ ܕܢܣܗܕ ܥܠ ܢܘܗܪܐ ܕܟܠܢܫ ܢܗܝܡܢ ܒܐܝܕܗ ܀",
+      "sy_sha256_utf8": "3cb08bfc15011114f8b68938d23e687810ea4fc90e86abf66767e188c5d4701d",
+      "review_status": "AI_ASSISTED_UNREVIEWED",
+      "publishable": false,
+      "el": {
+        "register": "contemporary Greek",
+        "text": "Αυτός ήρθε για μαρτυρία, για να μαρτυρήσει για το φως, ώστε κάθε άνθρωπος να πιστέψει μέσω αυτού.",
+        "review_status": "AI_ASSISTED_UNREVIEWED",
+        "text_sha256_utf8": "524004e544ae87086c95cabc50b753ac14ca119d8cd02889dd1044cf786d28d4"
+      },
+      "he": {
+        "register": "biblical-style Hebrew; new translation, not ancient original",
+        "text": "הוא בא לעדות להעיד על האור למען יאמין כל אדם על ידו׃",
+        "review_status": "AI_ASSISTED_UNREVIEWED",
+        "text_sha256_utf8": "d7b7fcc9d2c88fe255f6230543c37e570a02989b32b480754844ac5ca275f10a"
+      },
+      "alignments": [
+        {
+          "sy": "ܗܢܐ ܐܬܐ ܠܣܗܕܘܬܐ",
+          "el_proposed": "Αυτός ήρθε για μαρτυρία",
+          "he_proposed": "הוא בא לעדות",
+          "analysis_status": "PROPOSED_REQUIRES_HUMAN_REVIEW",
+          "note": "Purpose/witness proposal. Repository semkath U+0723 differs from module U+0724 here; preserved, not repaired. Greek and Hebrew pronouns reduce the source demonstrative force."
+        },
+        {
+          "sy": "ܕܢܣܗܕ ܥܠ ܢܘܗܪܐ",
+          "el_proposed": "για να μαρτυρήσει για το φως",
+          "he_proposed": "להעיד על האור",
+          "analysis_status": "PROPOSED_REQUIRES_HUMAN_REVIEW",
+          "note": "Proposed purpose clause rather than a command. A second semkath-form difference is recorded here. Test contemporary Greek fluency without erasing deliberate repetition."
+        },
+        {
+          "sy": "ܕܟܠܢܫ ܢܗܝܡܢ ܒܐܝܕܗ",
+          "el_proposed": "ώστε κάθε άνθρωπος να πιστέψει μέσω αυτού",
+          "he_proposed": "למען יאמין כל אדם על ידו",
+          "analysis_status": "PROPOSED_REQUIRES_HUMAN_REVIEW",
+          "note": "Purpose, not an assertion all people actually believe. By-his-hand is proposed idiomatically as agency here; Greek does not retain a physical hand noun. Referent of the suffix needs review; do not silently treat the witness as the light or insert a recipient of belief not explicit here."
+        }
+      ],
+      "blocking_review_topics": [
+        "semkath-encoding-difference",
+        "testimony-purpose",
+        "agency-referent"
+      ]
+    },
+    {
+      "id": "John.1.8",
+      "source_reference": "John 1:8",
+      "sy": "ܠܐ ܗܘ ܗܘܐ ܢܘܗܪܐ ܐܠܐ ܕܢܣܗܕ ܥܠ ܢܘܗܪܐ ܀",
+      "sy_sha256_utf8": "5d2679b88e8d5c84e67f613c369f2ffb438e7a7a404bcbc28d905a6592a638b9",
+      "review_status": "AI_ASSISTED_UNREVIEWED",
+      "publishable": false,
+      "el": {
+        "register": "contemporary Greek",
+        "text": "Εκείνος δεν ήταν το φως, αλλά ήρθε για να μαρτυρήσει για το φως.",
+        "review_status": "AI_ASSISTED_UNREVIEWED",
+        "text_sha256_utf8": "544463000a4260ab6ec1e4b5c3137b3227bd07a67331306aab5a1636660504b7"
+      },
+      "he": {
+        "register": "biblical-style Hebrew; new translation, not ancient original",
+        "text": "לא הוא היה האור כי אם בא להעיד על האור׃",
+        "review_status": "AI_ASSISTED_UNREVIEWED",
+        "text_sha256_utf8": "21b2bd230e9c0cb2516cb29083eea1a197c507e94126d4f3944e5defbfb23b75"
+      },
+      "alignments": [
+        {
+          "sy": "ܠܐ ܗܘ ܗܘܐ ܢܘܗܪܐ",
+          "el_proposed": "Εκείνος δεν ήταν το φως",
+          "he_proposed": "לא הוא היה האור",
+          "analysis_status": "PROPOSED_REQUIRES_HUMAN_REVIEW",
+          "note": "Emphatic contrast: that person is not the light. Greek/Hebrew articles and demonstrative choice are editorial."
+        },
+        {
+          "sy": "ܐܠܐ ܕܢܣܗܕ ܥܠ ܢܘܗܪܐ",
+          "el_proposed": "αλλά ήρθε για να μαρτυρήσει για το φως",
+          "he_proposed": "כי אם בא להעיד על האור",
+          "analysis_status": "PROPOSED_REQUIRES_HUMAN_REVIEW",
+          "note": "Greek irthe and Hebrew ba are supplied from the preceding context to resolve target ellipsis. They are not repeated source verbs in this verse. Recorded semkath-form difference remains visible."
+        }
+      ],
+      "blocking_review_topics": ["semkath-encoding-difference", "supplied-ellipsis"],
+      "supplied_target_words": {
+        "el": ["ήρθε"],
+        "he": ["בא"],
+        "source_repeats_come_verb": false,
+        "context_reference": "John 1:7; ellipsis resolved editorially"
+      }
+    },
+    {
+      "id": "John.1.9",
+      "source_reference": "John 1:9",
+      "sy": "ܐܝܬܘܗܝ ܗܘܐ ܓܝܪ ܢܘܗܪܐ ܕܫܪܪܐ ܕܡܢܗܪ ܠܟܠܢܫ ܕܐܬܐ ܠܥܠܡܐ ܀",
+      "sy_sha256_utf8": "ad6ceef5f14576cc53e92dcde3fffd112b6bf510deff08c04219c5493d658532",
+      "review_status": "AI_ASSISTED_UNREVIEWED",
+      "publishable": false,
+      "el": {
+        "register": "contemporary Greek",
+        "text": "Γιατί υπήρχε το αληθινό φως, που φωτίζει κάθε άνθρωπο που έρχεται στον κόσμο.",
+        "review_status": "AI_ASSISTED_UNREVIEWED",
+        "text_sha256_utf8": "784103e0612fa28fbe9f6560d62ecd70b4b0c07586cc3375e1360ef1e3f4c3b2"
+      },
+      "he": {
+        "register": "biblical-style Hebrew; new translation, not ancient original",
+        "text": "כי היה האור האמתי המאיר לכל אדם הבא לעולם׃",
+        "review_status": "AI_ASSISTED_UNREVIEWED",
+        "text_sha256_utf8": "51f1a688acd206af1f10034d7c8cf82ea6db371797940f5f2341fbe9e58c61be"
+      },
+      "alignments": [
+        {
+          "sy": "ܐܝܬܘܗܝ ܗܘܐ ܓܝܪ ܢܘܗܪܐ ܕܫܪܪܐ",
+          "el_proposed": "Γιατί υπήρχε το αληθινό φως",
+          "he_proposed": "כי היה האור האמתי",
+          "analysis_status": "PROPOSED_REQUIRES_HUMAN_REVIEW",
+          "note": "Existential opening is provisional. The source construction can require a referential rather than impersonal analysis. True/genuine/light-of-truth nuance must be decided; Greek and Hebrew adjective choices are proposals, not a copied target original."
+        },
+        {
+          "sy": "ܕܡܢܗܪ ܠܟܠܢܫ ܕܐܬܐ ܠܥܠܡܐ",
+          "el_proposed": "που φωτίζει κάθε άνθρωπο που έρχεται στον κόσμο",
+          "he_proposed": "המאיר לכל אדם הבא לעולם",
+          "analysis_status": "PROPOSED_REQUIRES_HUMAN_REVIEW",
+          "note": "UNRESOLVED attachment: this draft attaches coming into the world to each human. Attachment to the light is a live review alternative. Unpointed source and modern verse boundaries do not alone settle that choice. Present tense is proposed."
+        }
+      ],
+      "blocking_review_topics": [
+        "coming-relative-attachment",
+        "true-light-nuance",
+        "referential-existential"
+      ]
+    },
+    {
+      "id": "John.1.10",
+      "source_reference": "John 1:10",
+      "sy": "ܒܥܠܡܐ ܗܘܐ ܘܥܠܡܐ ܒܐܝܕܗ ܗܘܐ ܘܥܠܡܐ ܠܐ ܝܕܥܗ ܀",
+      "sy_sha256_utf8": "500c465a13a79b2d2849a88bd125b2efce4e313a3922ef43759797ca527f0c33",
+      "review_status": "AI_ASSISTED_UNREVIEWED",
+      "publishable": false,
+      "el": {
+        "register": "contemporary Greek",
+        "text": "Ήταν στον κόσμο, και ο κόσμος ήρθε στην ύπαρξη με το χέρι του, και ο κόσμος δεν τον γνώρισε.",
+        "review_status": "AI_ASSISTED_UNREVIEWED",
+        "text_sha256_utf8": "2adc0ce9e1ab993bb6c0e9c3c4ce6ebbfd414c0e8b45db8fae35c144804f34e4"
+      },
+      "he": {
+        "register": "biblical-style Hebrew; new translation, not ancient original",
+        "text": "בעולם היה והעולם נהיה בידו והעולם לא ידעו׃",
+        "review_status": "AI_ASSISTED_UNREVIEWED",
+        "text_sha256_utf8": "88a59eb3bee7ae32b59eaee1476d63d7f7e82f23dff5f7edb2589ee7217cc42c"
+      },
+      "alignments": [
+        {
+          "sy": "ܒܥܠܡܐ ܗܘܐ",
+          "el_proposed": "Ήταν στον κόσμο",
+          "he_proposed": "בעולם היה",
+          "analysis_status": "PROPOSED_REQUIRES_HUMAN_REVIEW",
+          "note": "World rather than age is the proposed contextual rendering of alma. Unexpressed subject/referent needs review after verse 9."
+        },
+        {
+          "sy": "ܘܥܠܡܐ ܒܐܝܕܗ ܗܘܐ",
+          "el_proposed": "και ο κόσμος ήρθε στην ύπαρξη με το χέρι του",
+          "he_proposed": "והעולם נהיה בידו",
+          "analysis_status": "PROPOSED_REQUIRES_HUMAN_REVIEW",
+          "note": "Same hand/agency and coming-to-be decisions as 1:3. Literal target wording can sound bodily or possessive; do not infer physical hands. Alternatives are idiomatic through him / al yado."
+        },
+        {
+          "sy": "ܘܥܠܡܐ ܠܐ ܝܕܥܗ",
+          "el_proposed": "και ο κόσμος δεν τον γνώρισε",
+          "he_proposed": "והעולם לא ידעו",
+          "analysis_status": "PROPOSED_REQUIRES_HUMAN_REVIEW",
+          "note": "Knew versus recognized/acknowledged remains a contextual choice. Greek masculine ton links a personal referent; light is grammatically neuter in Greek, so reference must not be inferred solely from translated gender."
+        }
+      ],
+      "blocking_review_topics": ["agency-hand", "alma-world", "knew-referent"]
+    },
+    {
+      "id": "John.1.11",
+      "source_reference": "John 1:11",
+      "sy": "ܠܕܝܠܗ ܐܬܐ ܘܕܝܠܗ ܠܐ ܩܒܠܘܗܝ ܀",
+      "sy_sha256_utf8": "f41d10f34948a756277522931e2e9e1ac64b23f108eaa5387ba0099744fbc901",
+      "review_status": "AI_ASSISTED_UNREVIEWED",
+      "publishable": false,
+      "el": {
+        "register": "contemporary Greek",
+        "text": "Ήρθε σε όσα ήταν δικά του, και οι δικοί του δεν τον δέχτηκαν.",
+        "review_status": "AI_ASSISTED_UNREVIEWED",
+        "text_sha256_utf8": "15b8d7bedf130c80cd1877a4f3de513bd6186d6aa23271d21b01b8f20497a25a"
+      },
+      "he": {
+        "register": "biblical-style Hebrew; new translation, not ancient original",
+        "text": "אל אשר לו בא ואשר לו לא קבלוהו׃",
+        "review_status": "AI_ASSISTED_UNREVIEWED",
+        "text_sha256_utf8": "f08bb7c5a806b948cb7181f903363bde2deb44f30fbea9cd83e8a0e0e4a3e3d4"
+      },
+      "alignments": [
+        {
+          "sy": "ܠܕܝܠܗ ܐܬܐ",
+          "el_proposed": "Ήρθε σε όσα ήταν δικά του",
+          "he_proposed": "אל אשר לו בא",
+          "analysis_status": "PROPOSED_REQUIRES_HUMAN_REVIEW",
+          "note": "Possessive expression without an explicit noun. Greek supplies a neuter-plural nominalization; Hebrew retains ellipsis. Home/domain/possessions are interpretive alternatives, not named places in the source."
+        },
+        {
+          "sy": "ܘܕܝܠܗ ܠܐ ܩܒܠܘܗܝ",
+          "el_proposed": "και οι δικοί του δεν τον δέχτηκαν",
+          "he_proposed": "ואשר לו לא קבלוהו",
+          "analysis_status": "PROPOSED_REQUIRES_HUMAN_REVIEW",
+          "note": "Plural receiving verb informs the proposal his own people. Do not insert a specific nation, ethnic group, household or place. Hebrew qbl is a deliberately source-near stylistic choice requiring target-register review."
+        }
+      ],
+      "blocking_review_topics": ["possessive-ellipsis", "no-ethnic-expansion"]
+    },
+    {
+      "id": "John.1.12",
+      "source_reference": "John 1:12",
+      "sy": "ܐܝܠܝܢ ܕܝܢ ܕܩܒܠܘܗܝ ܝܗܒ ܠܗܘܢ ܫܘܠܛܢܐ ܕܒܢܝܐ ܕܐܠܗܐ ܢܗܘܘܢ ܠܐܝܠܝܢ ܕܡܗܝܡܢܝܢ ܒܫܡܗ ܀",
+      "sy_sha256_utf8": "724484c889a286c256406fd50c45db95947c1b8128089169442544769462045e",
+      "review_status": "AI_ASSISTED_UNREVIEWED",
+      "publishable": false,
+      "el": {
+        "register": "contemporary Greek",
+        "text": "Σε όσους όμως τον δέχτηκαν έδωσε το δικαίωμα να γίνουν παιδιά του Θεού, σε εκείνους που πιστεύουν στο όνομά του.",
+        "review_status": "AI_ASSISTED_UNREVIEWED",
+        "text_sha256_utf8": "9c1459885d31cd12676c263d49561c8a00842482148569b2137e5baccf056887"
+      },
+      "he": {
+        "register": "biblical-style Hebrew; new translation, not ancient original",
+        "text": "אך לאשר קבלוהו נתן להם זכות להיות בנים לאלהים לאשר מאמינים בשמו׃",
+        "review_status": "AI_ASSISTED_UNREVIEWED",
+        "text_sha256_utf8": "2999e4e363a44bf0f66b73a2d363587f4dae6cf20dc84feaf34978c034adb433"
+      },
+      "alignments": [
+        {
+          "sy": "ܐܝܠܝܢ ܕܝܢ ܕܩܒܠܘܗܝ",
+          "el_proposed": "Σε όσους όμως τον δέχτηκαν",
+          "he_proposed": "אך לאשר קבלוהו",
+          "analysis_status": "PROPOSED_REQUIRES_HUMAN_REVIEW",
+          "note": "Contrast with the nonreceiving group. Keep receiving terminology consistent with 1:11 without equating it automatically to a later doctrinal formula."
+        },
+        {
+          "sy": "ܝܗܒ ܠܗܘܢ ܫܘܠܛܢܐ ܕܒܢܝܐ ܕܐܠܗܐ ܢܗܘܘܢ",
+          "el_proposed": "έδωσε το δικαίωμα να γίνουν παιδιά του Θεού",
+          "he_proposed": "נתן להם זכות להיות בנים לאלהים",
+          "analysis_status": "PROPOSED_REQUIRES_HUMAN_REVIEW",
+          "note": "UNRESOLVED shultana: right/authorization is the paired draft decision, not an established exclusive sense; authority/power/capacity are alternatives. Hebrew zkhut is not a claim of ancient biblical diction. Greek children versus Hebrew sons must be reviewed for inclusive scope and kinship imagery."
+        },
+        {
+          "sy": "ܠܐܝܠܝܢ ܕܡܗܝܡܢܝܢ ܒܫܡܗ",
+          "el_proposed": "σε εκείνους που πιστεύουν στο όνομά του",
+          "he_proposed": "לאשר מאמינים בשמו",
+          "analysis_status": "PROPOSED_REQUIRES_HUMAN_REVIEW",
+          "note": "Believing in his name is retained; the name is not supplied as an absent proper noun. Connection between the two relative groups and tense/aspect need review."
+        }
+      ],
+      "blocking_review_topics": [
+        "shultana-right-authority",
+        "children-sons",
+        "belief-name-reference"
+      ]
+    },
+    {
+      "id": "John.1.13",
+      "source_reference": "John 1:13",
+      "sy": "ܐܝܠܝܢ ܕܠܘ ܡܢ ܕܡܐ ܘܠܐ ܡܢ ܨܒܝܢܐ ܕܒܣܪܐ ܘܠܐ ܡܢ ܨܒܝܢܐ ܕܓܒܪܐ ܐܠܐ ܡܢ ܐܠܗܐ ܐܬܝܠܕܘ ܀",
+      "sy_sha256_utf8": "ff06a20ad677eb1ffe1ea98527487ec5399abb46ec97b1861dfd24851dc1a7b8",
+      "review_status": "AI_ASSISTED_UNREVIEWED",
+      "publishable": false,
+      "el": {
+        "register": "contemporary Greek",
+        "text": "Αυτοί δεν γεννήθηκαν από αίμα, ούτε από θέληση της σάρκας, ούτε από θέληση άντρα, αλλά από τον Θεό.",
+        "review_status": "AI_ASSISTED_UNREVIEWED",
+        "text_sha256_utf8": "d4734c24d25a328ed11fd2e5f937f462d97deb1d016da2b80ed6e2f140bd3b81"
+      },
+      "he": {
+        "register": "biblical-style Hebrew; new translation, not ancient original",
+        "text": "אשר לא מדם ולא מרצון בשר ולא מרצון איש כי אם מאלהים נולדו׃",
+        "review_status": "AI_ASSISTED_UNREVIEWED",
+        "text_sha256_utf8": "555429dc24be4301a9c5b0ec616af08aa0b3d5a648ab6fde9f12ce053f4b3a4d"
+      },
+      "alignments": [
+        {
+          "sy": "ܐܝܠܝܢ ܕܠܘ ܡܢ ܕܡܐ",
+          "el_proposed": "Αυτοί δεν γεννήθηκαν από αίμα",
+          "he_proposed": "אשר לא מדם",
+          "analysis_status": "PROPOSED_REQUIRES_HUMAN_REVIEW",
+          "note": "Greek shifts the repeated plural relative into an independent pronoun and moves the final source birth verb forward. Blood is a mass-noun proposal; number cannot simply be inferred from absent plural points in this unpointed text."
+        },
+        {
+          "sy": "ܘܠܐ ܡܢ ܨܒܝܢܐ ܕܒܣܪܐ",
+          "el_proposed": "ούτε από θέληση της σάρκας",
+          "he_proposed": "ולא מרצון בשר",
+          "analysis_status": "PROPOSED_REQUIRES_HUMAN_REVIEW",
+          "note": "Will/desire and flesh are provisional terms. Do not add a sexual or moral judgment not expressed by the source. Semkath form differs from the module within bsra."
+        },
+        {
+          "sy": "ܘܠܐ ܡܢ ܨܒܝܢܐ ܕܓܒܪܐ",
+          "el_proposed": "ούτε από θέληση άντρα",
+          "he_proposed": "ולא מרצון איש",
+          "analysis_status": "PROPOSED_REQUIRES_HUMAN_REVIEW",
+          "note": "Man/male or husband is unresolved. Do not replace by an unqualified generic human will or insert father without explaining the decision."
+        },
+        {
+          "sy": "ܐܠܐ ܡܢ ܐܠܗܐ ܐܬܝܠܕܘ",
+          "el_proposed": "αλλά από τον Θεό",
+          "he_proposed": "כי אם מאלהים נולדו",
+          "analysis_status": "PROPOSED_REQUIRES_HUMAN_REVIEW",
+          "note": "Greek final clause shares the moved birth verb; alignment note records the reordering instead of pretending every source word maps locally. Plural birth construction is retained; no silent import of a singular target-edition variant."
+        }
+      ],
+      "blocking_review_topics": [
+        "semkath-encoding-difference",
+        "blood-number",
+        "flesh-will",
+        "gabra-man-husband",
+        "birth-plural-reordering"
+      ],
+      "reordered_target_material": {
+        "source_verb": "ܐܬܝܠܕܘ",
+        "el_verb": "γεννήθηκαν",
+        "source_position": "final clause",
+        "el_position": "first clause",
+        "status": "PROPOSED_UNREVIEWED"
+      }
+    }
+  ]
+}
