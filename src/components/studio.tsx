@@ -85,10 +85,11 @@ export function Studio({ open, passage, onClose }: Props) {
     else localStorage.removeItem(AGENT_KEY);
     setAgent(next);
     setDraft("");
-    setStatus(next ? "Your agent is connected. Studio calls use it." : "Disconnected. The site agent will be used.");
+    setStatus(next ? "Provider key saved. Studio requests use your key." : "Disconnected. Add your own provider key to use Studio.");
   }
 
   async function shape() {
+    if (!connected) return setStatus("Add your own provider key to use Studio.");
     setBusy(true);
     setStatus("Shaping a prompt from the passage…");
     try {
@@ -104,6 +105,7 @@ export function Studio({ open, passage, onClose }: Props) {
   }
 
   async function make() {
+    if (!connected) return setStatus("Add your own provider key to use Studio.");
     setBusy(true);
     setImage("");
     setVideo("");
@@ -177,9 +179,12 @@ export function Studio({ open, passage, onClose }: Props) {
         <p className="mt-3 border-l-2 border-gold pl-3 text-sm leading-relaxed text-muted">{passage || "Highlight a line on the page, then open the studio."}</p>
 
         <div className="mt-4 border border-line p-3">
-          <p className="text-xs tracking-widest text-gold">{connected ? "YOUR AGENT" : "CONNECT YOUR AGENT"}</p>
+          <p className="text-xs tracking-widest text-gold">{connected ? "YOUR PROVIDER KEY" : "YOUR PROVIDER KEY REQUIRED"}</p>
           <p className="mt-1 text-sm text-muted">
-            {connected ? `Connected to ${connected.kind === "xai" ? "xAI" : connected.kind === "openai" ? "OpenAI" : "Claude"}. The key stays on this device.` : "Paste an xAI, OpenAI, or Claude key. The reader and the studio will use it. The key stays on this device."}
+            {connected ? `${connected.kind === "xai" ? "xAI" : connected.kind === "openai" ? "OpenAI" : "Claude"} key saved.` : "Studio requires your own provider key. Use xAI for media, OpenAI for images/audio, or Claude for prompt shaping."}
+          </p>
+          <p className="mt-1 text-xs text-muted">
+            Saved on this device; sent through this server to your provider when you request Studio work. Provider charges apply. Reading and device Read need no key.
           </p>
           <div className="mt-2 flex gap-2">
             <input
@@ -200,7 +205,7 @@ export function Studio({ open, passage, onClose }: Props) {
                 onClick={() => {
                   localStorage.removeItem(AGENT_KEY);
                   setAgent("");
-                  setStatus("Disconnected.");
+                  setStatus("Provider key removed. Studio requires your own key; reading and device Read still work.");
                 }}
               >
                 Clear
@@ -288,10 +293,10 @@ export function Studio({ open, passage, onClose }: Props) {
           />
         </label>
         <div className="mt-4 flex flex-wrap gap-2">
-          <button type="button" disabled={busy || !passage} onClick={shape} className="min-h-11 border border-garnet px-4 text-garnet disabled:opacity-40">
+          <button type="button" disabled={busy || !passage || !connected} onClick={shape} className="min-h-11 border border-garnet px-4 text-garnet disabled:opacity-40">
             Shape the prompt
           </button>
-          <button type="button" disabled={busy || !passage} onClick={make} className="min-h-11 bg-garnet px-4 text-paper disabled:opacity-40">
+          <button type="button" disabled={busy || !passage || !connected} onClick={make} className="min-h-11 bg-garnet px-4 text-paper disabled:opacity-40">
             Make {kind === "image" ? "the still" : kind === "video" ? "the film" : "the voice"}
           </button>
         </div>

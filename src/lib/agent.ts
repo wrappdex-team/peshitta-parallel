@@ -12,13 +12,9 @@ export function detectAgent(raw: string): Agent | null {
   return null;
 }
 
+/** Media requests use only the visitor-supplied key, never a site credential. */
 export function resolveAgent(agentKey?: string): Agent | null {
-  const supplied = String(agentKey ?? "").trim();
-  // Only omission/blank input opts into the existing optional site-funded path.
-  // An explicit unrecognized key must not silently select a different payer.
-  if (supplied) return detectAgent(supplied);
-  const site = detectAgent(process.env.XAI_API_KEY || "");
-  return site?.kind === "xai" ? site : null;
+  return detectAgent(String(agentKey ?? ""));
 }
 
 export const AGENT_STORE = "injeel-agent";
