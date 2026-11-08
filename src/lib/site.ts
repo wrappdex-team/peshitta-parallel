@@ -1,4 +1,4 @@
-/** Live origin until injeel.faith is pointed here. Change this one line at launch, then the sitemap and robots.txt. */
+/** Current demo origin. No custom domain is configured; update sitemap and robots together only after an approved domain launch. */
 export const SITE_ORIGIN = "https://peshitta-parallel.vercel.app";
 
 export const SITE_NAME = "Injeel";

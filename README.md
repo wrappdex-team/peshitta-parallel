@@ -7,7 +7,7 @@ The classical Syriac stays on the page. Beside it: James Murdock’s English, or
 ## Run locally
 
 ```bash
-npm install
+npm ci --ignore-scripts
 npm run dev
 ```
 
@@ -16,5 +16,17 @@ Open the app at `http://localhost:8080`.
 ## Scripts
 
 - `npm run dev` — development server
-- `npm run build` — production build
+- `npm run build:check` — production compilation only; safe verification path (no migrations)
+- `npm run build` — legacy production compilation **and database migration**; not a routine CI check
+- `npm test` — unit and repository regression tests (four upstream-document tests skip if their untracked source docs are absent)
+- `npm run check:data` — structural audit; prints known gaps and fails new regressions
+- `npm run check:data:strict` — fails on every remaining data gap
+- `npm run check:seo:built` — validate compiled SSR metadata after `build:check`
 - `npm run typecheck` — TypeScript check
+
+## Readiness and source review
+
+This is still a demo, not a certified translation or production-ready release.
+See [readiness checks and unresolved gaps](docs/READINESS.md) and the
+[original-names and source review policy](docs/SOURCE_REVIEW.md).
+No new translations or scripture/licence changes are included in this pass.

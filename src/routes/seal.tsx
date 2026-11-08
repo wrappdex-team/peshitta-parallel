@@ -8,6 +8,7 @@ export const Route = createFileRoute("/seal")({
   head: () => ({
     meta: [
       { title: "Your reading — Injeel" },
+      { name: "robots", content: "noindex, follow" },
       {
         name: "description",
         content: "How much of the Injeel you have read, and the seal for reading the whole New Testament.",
