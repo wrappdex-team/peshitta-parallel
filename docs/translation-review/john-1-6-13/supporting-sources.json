@@ -1,0 +1,49 @@
+{
+  "consulted_date": "2026-11-08 America/Toronto",
+  "policy": "Public access is not redistribution permission. Only the specific module declaration and identified historical PD aids are relied on; own notes, not a copyright clearance warranty.",
+  "sources": [
+    {
+      "id": "crosswire-module-2.0",
+      "kind": "specific_digital_source_distribution",
+      "url": "https://www.crosswire.org/sword/modules/ModInfo.jsp?modName=Peshitta",
+      "rights_url": "https://www.crosswire.org/sword/copyright/ModInfoCopyright.jsp?modName=Peshitta",
+      "download_url": "https://crosswire.org/ftpmirror/pub/sword/packages/rawzip/Peshitta.zip",
+      "attribution": "BFBS 1905; digital text courtesy John Richards; CrossWire Bible Society, Peshitta module 2.0, 2020-02-08",
+      "item_rights_evidence": "Downloaded bundled configuration explicitly states DistributionLicense=Public Domain; copy retained with matching hash. The website declaration and downloaded package identify this module.",
+      "rights_limits": "Not a licence for unrelated transcriptions, SEDRA/dukhrana data, apparatus, databases, scans or fonts. Original app-import lineage unresolved. Website/SVN config version 1.1 is not substituted for bundled 2.0.",
+      "incorporated": "Eight short module extraction records/config as source comparison evidence, with attribution. Frozen repo has four semkath codepoint differences, explicitly recorded; no blanket provenance certification."
+    },
+    {
+      "id": "payne-smith-1903",
+      "kind": "historical_lexicon_assistance_not_translation_input",
+      "citation": "Jessie Payne Smith (Mrs. Margoliouth), A Compendious Syriac Dictionary (Oxford: Clarendon Press, 1903), printed p.97, right column, drk Aphʿel entry.",
+      "url": "https://commons.wikimedia.org/wiki/File:A_compendious_Syriac_Dictionary.pdf",
+      "download_url": "https://upload.wikimedia.org/wikipedia/commons/1/10/A_compendious_Syriac_Dictionary.pdf",
+      "item_rights_evidence": "Specific Commons file page labels the 1903 work public domain in its source country and life+70 jurisdictions and in the US as published before 1931. The page links the exact PDF consulted. This is an affirmative item-level declaration, not a claim that every online lexicon is reusable.",
+      "attribution": "Jessie Payne Smith/Margoliouth, editor; Oxford Clarendon Press, 1903; digital scan credited on Commons to AlexanderRahm.",
+      "examined": "Downloaded PDF page103 visually inspected, printed page97. Root drk and Aphʿel physical/cognitive ranges read. OCR used only to locate the entry; OCR Syriac unreliable.",
+      "interpretive_limit": "Supports a range including arrival, overtaking/seizing, attainment, apprehending/understanding. Does not identify the intended John1:5 sense. No claim that the dictionary itself settles dominance/overcoming.",
+      "incorporated": "Own short paraphrase and citation only. No scan image, complete dictionary, OCR export or modern database incorporated."
+    },
+    {
+      "id": "noldeke-crichton-1904",
+      "kind": "historical_grammar_assistance_not_translation_input",
+      "citation": "Theodor Nöldeke, Compendious Syriac Grammar, translated by James Alexander Crichton (Williams & Norgate, 1904), §§1–4,6–13,16,18–19.",
+      "url": "https://en.wikisource.org/wiki/Compendious_Syriac_Grammar",
+      "section_url": "https://en.wikisource.org/wiki/Compendious_Syriac_Grammar/Part_1/Chapter_1",
+      "item_rights_evidence": "Historical work page explicitly labels the work public domain (US publication before 1931 and indicated term jurisdictions). Attribution retained. Modern Wikisource contributions/transcriptions can have separate terms; none are imported into this packet.",
+      "examined": "Actual linked Orthography chapter read, not only table of contents: letter and Hebrew-equivalent table; approximate/traditional pronunciation and vowel systems; plural points; variable interpunctuation and recitation accents.",
+      "interpretive_limit": "Evidence for orthographic/pointing caution, not a grammar citation proving particular unpointed syntax in this passage. The syntax sections listed in the TOC were NOT read and are not used as authority here. Greek name spelling is our editorial proposal, not a form attested by this source.",
+      "incorporated": "Own paraphrase and source links only; no HTML, complete transcription or scan copied."
+    },
+    {
+      "id": "bfbs-print-collation-boundary",
+      "kind": "printed_edition_reference_not_completed_collation",
+      "url": "https://archive.org/details/newtestamentinsy00unse/page/n133/mode/1up",
+      "examined": "Earlier packet visually compared the start of John at scan leaf133, not an independent qualified collation of all 1:6–13.",
+      "rights_evidence": "No affirmative image-redistribution permission established in this work.",
+      "incorporated": "URL only. No image in this packet or any repository material.",
+      "interpretive_limit": "Cannot claim scanned pointing or punctuation has been fully checked for 1:6–13."
+    }
+  ]
+}

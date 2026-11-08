@@ -1,0 +1,136 @@
+{
+  "title": "John 1:1–5 follow-up review 02 — AI-ASSISTED UNREVIEWED; NEW TRANSLATION FROM SYRIAC; NOT PUBLISHABLE",
+  "status": "AI_ASSISTED_UNREVIEWED",
+  "publishable": false,
+  "coverage": [1, 2, 3, 4, 5],
+  "baseline_pilot_sha256": "97b887f1eb21aa79dede55527dd4158a80d9239c1597240e666319eb38b3035e",
+  "baseline_pr_head": "f2c46a209d3ef9bdfe919beea6ecd33d5b1f7c02",
+  "audit_policy": "Append-only review of existing draft, not silent replacement or independent human review. Original five source strings and proposed target texts preserved here and in existing PR. All alternatives are proposals; none approved.",
+  "human_review_completed": false,
+  "reviews": [
+    {
+      "id": "John.1.1",
+      "sy": "ܒܪܫܝܬ ܐܝܬܘܗܝ ܗܘܐ ܡܠܬܐ ܘܗܘ ܡܠܬܐ ܐܝܬܘܗܝ ܗܘܐ ܠܘܬ ܐܠܗܐ ܘܐܠܗܐ ܐܝܬܘܗܝ ܗܘܐ ܗܘ ܡܠܬܐ ܀",
+      "source_sha256_utf8": "9baada8f8efc7733bdf2693ad8ec555c684b7ec3171f7275893a3f7a07d77d85",
+      "prior_el": "Στην αρχή υπήρχε ο Λόγος, και ο Λόγος ήταν μαζί με τον Θεό, και Θεός ήταν ο Λόγος.",
+      "prior_he": "בראשית היה הדבר והדבר היה עם אלהים ואלהים היה הדבר׃",
+      "prior_draft_unchanged": true,
+      "review_status": "AI_ASSISTED_UNREVIEWED",
+      "publishable": false,
+      "source_anchor": "ܡܠܬܐ / ܠܘܬ ܐܠܗܐ / ܘܐܠܗܐ ܐܝܬܘܗܝ ܗܘܐ ܗܘ ܡܠܬܐ",
+      "assessment": "mltha → capitalized Logos / definite ha-davar is an editorial lexical/title choice, not a recovery of Greek original wording. Alternatives include an ordinary word/speech term; choosing it changes connotations and needs review. The final clause must be parsed from Syriac syntax, not simply reverse-mapped from familiar Greek article rules. The unpointed ending of alha alone does not mechanically decide a/an/the or a theological metaphysics. Lwth as together-with versus toward/at requires relational/contextual review. Neither the current word order nor English tradition certifies the analysis.",
+      "alternatives": []
+    },
+    {
+      "id": "John.1.2",
+      "sy": "ܗܢܐ ܐܝܬܘܗܝ ܗܘܐ ܒܪܫܝܬ ܠܘܬ ܐܠܗܐ ܀",
+      "source_sha256_utf8": "de4f875e66a8e70071c8c3b861e9c47f1a9b64479f79a8a93400382885b8472e",
+      "prior_el": "Αυτός υπήρχε στην αρχή μαζί με τον Θεό.",
+      "prior_he": "הוא היה בראשית עם אלהים׃",
+      "prior_draft_unchanged": true,
+      "review_status": "AI_ASSISTED_UNREVIEWED",
+      "publishable": false,
+      "source_anchor": "ܗܢܐ / ܠܘܬ ܐܠܗܐ",
+      "assessment": "Current Greek aftos / Hebrew hu are reasonable working back-references but weaken the overt demonstrative. Greek this one / Hebrew zeh are explicit alternatives. Do not convert Syriac grammatical agreement into proof of a particular account of personhood. Lwth decision should remain consistent with 1:1.",
+      "alternatives": [
+        {
+          "scope": "demonstrative opening only",
+          "el": "Αυτός εδώ",
+          "he": "זה",
+          "status": "PROPOSED_UNREVIEWED",
+          "note": "More demonstrative, potentially awkward/register-sensitive; not a settled replacement."
+        }
+      ]
+    },
+    {
+      "id": "John.1.3",
+      "sy": "ܟܠ ܒܐܝܕܗ ܗܘܐ ܘܒܠܥܕܘܗܝ ܐܦܠܐ ܚܕܐ ܗܘܬ ܡܕܡ ܕܗܘܐ ܀",
+      "source_sha256_utf8": "1551e1c9ebb004950a2e4c17c6f49efacdd9a89ff7324101eacc0e616938492b",
+      "prior_el": "Όλα ήρθαν στην ύπαρξη με το χέρι του, και χωρίς αυτόν δεν ήρθε στην ύπαρξη ούτε ένα πράγμα από όσα ήρθαν στην ύπαρξη.",
+      "prior_he": "הכל נהיה בידו ובלעדיו לא נהיה דבר אחד מכל אשר נהיה׃",
+      "prior_draft_unchanged": true,
+      "review_status": "AI_ASSISTED_UNREVIEWED",
+      "publishable": false,
+      "source_anchor": "ܒܐܝܕܗ / ܗܘܐ / ܡܕܡ ܕܗܘܐ",
+      "assessment": "Current hand wording risks bodily/possession readings. Source hand-expression is retained in the audit record; an idiomatic agency rendering is an explicit alternative, not loss of a named object. Coming into existence is a contextual hwa decision; do not claim every hwa means created. The app/module verse segmentation keeps mdm dhwa at 1:3 but cannot itself settle grammatical attachment or original sentence punctuation. Existing partitive Greek apo osa / Hebrew mikol expands a relative and is not a separate source all. Compare the following life clause directly before choosing.",
+      "alternatives": [
+        {
+          "scope": "agency phrase only",
+          "el": "μέσω αυτού",
+          "he": "על ידו",
+          "status": "PROPOSED_UNREVIEWED",
+          "note": "Idiomatic agency pair; Greek loses the literal hand image. Same expression must be reviewed contextually in 1:7 and 1:10."
+        },
+        {
+          "scope": "1:3–4 boundary analysis, not a finished replacement verse",
+          "el": null,
+          "he": null,
+          "status": "UNRESOLVED",
+          "note": "Compare attachment of what came to be backwards to the negative clause versus forwards into the life clause. Do not move source words, change verse mapping, or invent a manuscript punctuation decision."
+        }
+      ]
+    },
+    {
+      "id": "John.1.4",
+      "sy": "ܒܗ ܚܝܐ ܗܘܐ ܘܚܝܐ ܐܝܬܝܗܘܢ ܢܘܗܪܐ ܕܒܢܝܢܫܐ ܀",
+      "source_sha256_utf8": "f0d1cf46b39fdd13ac10815f589b1527ff73e66d635d898496ed684511c96bf2",
+      "prior_el": "Σ’ αυτόν υπήρχε ζωή, και η ζωή ήταν το φως των ανθρώπων.",
+      "prior_he": "בו היו חיים והחיים היו אור בני האדם׃",
+      "prior_draft_unchanged": true,
+      "review_status": "AI_ASSISTED_UNREVIEWED",
+      "publishable": false,
+      "source_anchor": "ܒܗ ܚܝܐ ܗܘܐ / ܘܚܝܐ ܐܝܬܝܗܘܢ ܢܘܗܪܐ",
+      "assessment": "Current Hebrew plural agreement follows target hayyim; it is not a multiple-lives interpretation. In-him versus an instrumental reading, and its antecedent, remain review matters. Current Greek/Hebrew second clauses use past-tense copulas, but the source ithayhon construction is not itself an explicit repeated hwa. A present/current identification should be considered instead of inheriting familiar Greek past-tense wording. Absence of points/plural marks in the frozen source does not settle all analysis.",
+      "alternatives": [
+        {
+          "scope": "second clause only; source tense/aspect review alternative",
+          "el": "και η ζωή είναι το φως των ανθρώπων",
+          "he": "והחיים הם אור בני האדם",
+          "status": "PROPOSED_UNREVIEWED",
+          "note": "Explicit present/copying no past copula. This is an editorial alternative, not a certified source reading."
+        }
+      ]
+    },
+    {
+      "id": "John.1.5",
+      "sy": "ܘܗܘ ܢܘܗܪܐ ܒܚܫܘܟܐ ܡܢܗܪ ܘܚܫܘܟܐ ܠܐ ܐܕܪܟܗ ܀",
+      "source_sha256_utf8": "780f84ddafff284a9781debfbd384ef37fbdde01d78de9fd84bc8d12578a5ed2",
+      "prior_el": "Και εκείνο το φως λάμπει μέσα στο σκοτάδι, και το σκοτάδι δεν το κυρίευσε.",
+      "prior_he": "והאור ההוא מאיר בחשך והחשך לא השיגו׃",
+      "prior_draft_unchanged": true,
+      "review_status": "AI_ASSISTED_UNREVIEWED",
+      "publishable": false,
+      "source_anchor": "ܘܚܫܘܟܐ ܠܐ ܐܕܪܟܗ",
+      "assessment": "MATERIAL MISMATCH: current Greek kyrielise proposes overpowering/mastery; current Hebrew hisigo can convey reach/overtake/attain and is not a transparent matching domination rendering. Their semantic equivalence must not be claimed. The directly inspected 1903 lexicon gives the Aphʿel drk range physical/mental arrival, following/overtaking/seizing, attainment, apprehending/understanding. It does not select John 1:5 or prove victory is the contextual sense. No main alternative is promoted. Human review must choose paired semantics or explicitly retain a marked interpretive difference.",
+      "alternatives": [
+        {
+          "id": "reach-overtake",
+          "scope": "full second clause",
+          "el": "και το σκοτάδι δεν το έφτασε",
+          "he": "והחשך לא השיגו",
+          "status": "PROPOSED_UNREVIEWED",
+          "rationale": "Preserves a reach/overtake direction. Metaphorical reaching of light still needs contextual justification; Greek eftase can be narrower than overtook. The ancient lexical range alone does not make it best."
+        },
+        {
+          "id": "cognitive",
+          "scope": "full second clause",
+          "el": "και το σκοτάδι δεν το κατανόησε",
+          "he": "והחשך לא הבינו",
+          "status": "PROPOSED_UNREVIEWED",
+          "rationale": "Paired understanding/apprehension proposal. Personifies darkness as understanding and selects a cognitive sense; possible lexical range is not proof that the passage intends it."
+        },
+        {
+          "id": "domination",
+          "scope": "full second clause",
+          "el": "και το σκοτάδι δεν το κυρίευσε",
+          "he": "והחשך לא גבר עליו",
+          "status": "PROPOSED_UNREVIEWED",
+          "rationale": "Paired mastery/overcoming interpretation, preserving the original Greek direction but explicitly replacing Hebrew semantics if chosen. Victory is a contextual extrapolation, not an exclusive dictionary gloss established by this research."
+        }
+      ],
+      "lexical_support": "Jessie Payne Smith (Mrs. Margoliouth), A Compendious Syriac Dictionary (Oxford: Clarendon Press, 1903), printed p.97 right column, s.v. drk, Aphʿel; Commons PDF page103 visually inspected. Own paraphrase only.",
+      "lexical_support_url": "https://commons.wikimedia.org/wiki/File:A_compendious_Syriac_Dictionary.pdf",
+      "main_alternative_selected": null
+    }
+  ]
+}

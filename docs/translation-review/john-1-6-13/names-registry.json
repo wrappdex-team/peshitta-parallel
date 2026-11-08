@@ -1,0 +1,18 @@
+[
+  {
+    "identity_key": "john-gospel-witness-1-6",
+    "syriac_source_form": "ܝܘܚܢܢ",
+    "reference": "John 1:6",
+    "consonant_label": "y-w-ḥ-n-n",
+    "el_proposed": "Γιοχανάν",
+    "he_proposed": "יוחנן",
+    "status": "PROPOSED_UNREVIEWED_ORTHOGRAPHIC_REPRESENTATIONS",
+    "pronunciation_verified": false,
+    "pronunciation_tradition_selected": null,
+    "name_identity_human_reviewed": false,
+    "rationale": "Hebrew yod/waw/heth/nun/nun is proposed by script correspondence. Greek Giochanan is a readability-oriented spelling, not a reversible mapping or a claim about first-century sound, stress, gemination or East/West Syriac vowels. Greek chi does not exactly represent Syriac heth; no equivalent sound is claimed. Conventional localized Ioannis is not silently substituted. Full source form retained in source text and registry.",
+    "support": "Noldeke/Crichton 1904, Compendious Syriac Grammar §§1–4, especially letter table and approximate pronunciation/vowel-letter distinctions; target name spelling is editorial, not attested there.",
+    "support_url": "https://en.wikisource.org/wiki/Compendious_Syriac_Grammar/Part_1/Chapter_1",
+    "uncertainty": "The unpointed source does not authorize a unique vocalization. Readers must not treat Greek spelling as pronunciation evidence. No audio or reconstructed original is provided."
+  }
+]
