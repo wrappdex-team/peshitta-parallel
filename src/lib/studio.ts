@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { resolveAgent, type Agent } from "@/lib/agent";
 import { createLocalRateLimiter } from "@/lib/local-rate-limit";
+import { withProviderDeadline } from "@/lib/provider-deadline";
 
 export type StudioKind = "image" | "video" | "audio";
 
@@ -9,10 +10,11 @@ const { allow } = createLocalRateLimiter();
 async function caller() {
   try {
     const { getRequest } = await import("@tanstack/react-start/server");
-    const forwarded = getRequest().headers.get("x-forwarded-for");
-    return forwarded?.split(",")[0]?.trim() || "reader";
+    const request = getRequest();
+    const forwarded = request.headers.get("x-forwarded-for");
+    return { ip: forwarded?.split(",")[0]?.trim() || "reader", signal: request.signal };
   } catch {
-    return "reader";
+    return { ip: "reader", signal: undefined };
   }
 }
 
@@ -51,9 +53,11 @@ const TTS_CODE: Record<string, string> = {
   sureth: "syr",
 };
 
-async function ask(agent: Agent, system: string, user: string): Promise<{ ok: true; text: string } | { ok: false; error: string }> {
+async function ask(agent: Agent, system: string, user: string, signal: AbortSignal): Promise<{ ok: true; text: string } | { ok: false; error: string }> {
+  signal.throwIfAborted();
   if (agent.kind === "anthropic") {
     const res = await fetch("https://api.anthropic.com/v1/messages", {
+      signal,
       method: "POST",
       headers: { "content-type": "application/json", "x-api-key": agent.key, "anthropic-version": "2023-06-01" },
       body: JSON.stringify({ model: "claude-sonnet-4-5", max_tokens: 500, system, messages: [{ role: "user", content: user }] }),
@@ -64,6 +68,7 @@ async function ask(agent: Agent, system: string, user: string): Promise<{ ok: tr
     return text ? { ok: true, text } : { ok: false, error: "The prompt came back empty." };
   }
   const res = await fetch(agent.kind === "openai" ? "https://api.openai.com/v1/chat/completions" : "https://api.x.ai/v1/chat/completions", {
+    signal,
     method: "POST",
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${agent.key}` },
     body: JSON.stringify({
@@ -96,23 +101,26 @@ export const shapePrompt = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const agent = agentOf(data.agentKey);
     if (!agent) return { ok: false as const, error: "Add your own xAI, OpenAI, or Claude key to use Studio." };
-    const ip = await caller();
+    const { ip, signal: requestSignal } = await caller();
     if (!allow(`${ip}:shape`, 30)) return { ok: false as const, error: "The studio needs a short rest." };
 
-    const role =
-      data.kind === "audio"
-        ? `Write a short spoken reading of the passage in ${data.language || "the same language as the passage"}. Return only the lines to be spoken.`
-        : data.kind === "video"
-          ? "Write one image-and-motion prompt for a quiet 6-second film of the passage. No people as identifiable living persons. Return only the prompt."
-          : "Write one still-image prompt for the passage. No identifiable living persons. Return only the prompt.";
+    return withProviderDeadline("generation", async (signal) => {
+      const role =
+        data.kind === "audio"
+          ? `Write a short spoken reading of the passage in ${data.language || "the same language as the passage"}. Return only the lines to be spoken.`
+          : data.kind === "video"
+            ? "Write one image-and-motion prompt for a quiet 6-second film of the passage. No people as identifiable living persons. Return only the prompt."
+            : "Write one still-image prompt for the passage. No identifiable living persons. Return only the prompt.";
 
-    const shaped = await ask(
-      agent,
-      "You help a reader make art from a passage of the Peshitta New Testament. Stay close to the words given. Do not add doctrine that is not in the passage. Keep the prompt under 80 words.",
-      `${role}\nPassage: ${data.text}\nStyle the reader asked for: ${data.style || "quiet manuscript light"}`,
-    );
-    if (!shaped.ok) return shaped;
-    return { ok: true as const, prompt: shaped.text };
+      const shaped = await ask(
+        agent,
+        "You help a reader make art from a passage of the Peshitta New Testament. Stay close to the words given. Do not add doctrine that is not in the passage. Keep the prompt under 80 words.",
+        `${role}\nPassage: ${data.text}\nStyle the reader asked for: ${data.style || "quiet manuscript light"}`,
+        signal,
+      );
+      if (!shaped.ok) return shaped;
+      return { ok: true as const, prompt: shaped.text };
+    }, requestSignal);
   });
 
 export const makeImage = createServerFn({ method: "POST" })
@@ -125,24 +133,27 @@ export const makeImage = createServerFn({ method: "POST" })
     const agent = agentOf(data.agentKey);
     if (!agent) return { ok: false as const, error: "Add your own xAI or OpenAI key to make an image." };
     if (agent.kind === "anthropic") return { ok: false as const, error: "Claude can shape the prompt. A still needs an xAI or OpenAI key." };
-    const ip = await caller();
+    const { ip, signal: requestSignal } = await caller();
     if (!allow(`${ip}:image`, 8)) return { ok: false as const, error: "Image making needs a short rest." };
 
-    const res = await fetch(agent.kind === "openai" ? "https://api.openai.com/v1/images/generations" : "https://api.x.ai/v1/images/generations", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${agent.key}` },
-      body: JSON.stringify(
-        agent.kind === "openai"
-          ? { model: "dall-e-3", prompt: data.prompt, n: 1, size: "1024x1024", response_format: "b64_json" }
-          : { model: "grok-imagine-image", prompt: data.prompt, n: 1, response_format: "b64_json" },
-      ),
-    });
-    if (!res.ok) return { ok: false as const, error: "The image could not be made. Try a shorter prompt." };
-    const body = (await res.json()) as { data?: { b64_json?: string; url?: string }[] };
-    const first = body.data?.[0];
-    if (first?.b64_json) return { ok: true as const, src: `data:image/png;base64,${first.b64_json}` };
-    if (first?.url) return { ok: true as const, src: first.url };
-    return { ok: false as const, error: "No image came back." };
+    return withProviderDeadline("generation", async (signal) => {
+      const res = await fetch(agent.kind === "openai" ? "https://api.openai.com/v1/images/generations" : "https://api.x.ai/v1/images/generations", {
+        signal,
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${agent.key}` },
+        body: JSON.stringify(
+          agent.kind === "openai"
+            ? { model: "dall-e-3", prompt: data.prompt, n: 1, size: "1024x1024", response_format: "b64_json" }
+            : { model: "grok-imagine-image", prompt: data.prompt, n: 1, response_format: "b64_json" },
+        ),
+      });
+      if (!res.ok) return { ok: false as const, error: "The image could not be made. Try a shorter prompt." };
+      const body = (await res.json()) as { data?: { b64_json?: string; url?: string }[] };
+      const first = body.data?.[0];
+      if (first?.b64_json) return { ok: true as const, src: `data:image/png;base64,${first.b64_json}` };
+      if (first?.url) return { ok: true as const, src: first.url };
+      return { ok: false as const, error: "No image came back." };
+    }, requestSignal);
   });
 
 export const startVideo = createServerFn({ method: "POST" })
@@ -155,22 +166,25 @@ export const startVideo = createServerFn({ method: "POST" })
     const agent = agentOf(data.agentKey);
     if (!agent) return { ok: false as const, error: "Add your own xAI key to make a film." };
     if (agent.kind !== "xai") return { ok: false as const, error: "Film is an xAI studio. Paste an xAI key for that." };
-    const ip = await caller();
+    const { ip, signal: requestSignal } = await caller();
     if (!allow(`${ip}:video`, 3)) return { ok: false as const, error: "Video making needs a short rest." };
 
-    const res = await fetch("https://api.x.ai/v1/videos/generations", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${agent.key}` },
-      body: JSON.stringify({
-        model: "grok-imagine-video-1.5",
-        prompt: data.prompt,
-        duration: 6,
-      }),
-    });
-    if (!res.ok) return { ok: false as const, error: "The film could not be started." };
-    const body = (await res.json()) as { request_id?: string };
-    if (!body.request_id) return { ok: false as const, error: "No film request came back." };
-    return { ok: true as const, requestId: body.request_id };
+    return withProviderDeadline("generation", async (signal) => {
+      const res = await fetch("https://api.x.ai/v1/videos/generations", {
+        signal,
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${agent.key}` },
+        body: JSON.stringify({
+          model: "grok-imagine-video-1.5",
+          prompt: data.prompt,
+          duration: 6,
+        }),
+      });
+      if (!res.ok) return { ok: false as const, error: "The film could not be started." };
+      const body = (await res.json()) as { request_id?: string };
+      if (!body.request_id) return { ok: false as const, error: "No film request came back." };
+      return { ok: true as const, requestId: body.request_id };
+    }, requestSignal);
   });
 
 export const checkVideo = createServerFn({ method: "POST" })
@@ -183,14 +197,18 @@ export const checkVideo = createServerFn({ method: "POST" })
     const agent = agentOf(data.agentKey);
     if (!agent) return { ok: false as const, error: "Add your own xAI key to check a film." };
     if (agent.kind !== "xai") return { ok: false as const, error: "Film is an xAI studio. Paste an xAI key for that." };
-    const res = await fetch(`https://api.x.ai/v1/videos/${data.requestId}`, {
-      headers: { Authorization: `Bearer ${agent.key}` },
-    });
-    if (!res.ok) return { ok: false as const, error: "The film could not be checked." };
-    const body = (await res.json()) as { status?: string; video?: { url?: string } };
-    if (body.status === "done" && body.video?.url) return { ok: true as const, status: "done" as const, src: body.video.url };
-    if (body.status === "failed" || body.status === "expired") return { ok: false as const, error: "The film did not finish." };
-    return { ok: true as const, status: "waiting" as const };
+    const { signal: requestSignal } = await caller();
+    return withProviderDeadline("status", async (signal) => {
+      const res = await fetch(`https://api.x.ai/v1/videos/${data.requestId}`, {
+        signal,
+        headers: { Authorization: `Bearer ${agent.key}` },
+      });
+      if (!res.ok) return { ok: false as const, error: "The film could not be checked." };
+      const body = (await res.json()) as { status?: string; video?: { url?: string } };
+      if (body.status === "done" && body.video?.url) return { ok: true as const, status: "done" as const, src: body.video.url };
+      if (body.status === "failed" || body.status === "expired") return { ok: false as const, error: "The film did not finish." };
+      return { ok: true as const, status: "waiting" as const };
+    }, requestSignal);
   });
 
 const VOICES = new Set([
@@ -210,49 +228,54 @@ export const makeAudio = createServerFn({ method: "POST" })
     const agent = agentOf(data.agentKey);
     if (!agent) return { ok: false as const, error: "Add your own xAI or OpenAI key to make audio." };
     if (agent.kind === "anthropic") return { ok: false as const, error: "Claude can shape the words. Hearing them needs an xAI or OpenAI key." };
-    const ip = await caller();
+    const { ip, signal: requestSignal } = await caller();
     if (!allow(`${ip}:audio`, 12)) return { ok: false as const, error: "Audio making needs a short rest." };
 
-    let spoken = data.text;
-    if (data.language && data.language.toLowerCase() !== "english") {
-      const tr = await ask(agent, "Translate the passage. Return only the translation, no notes.", `Translate into ${data.language}:\n${data.text}`);
-      if (tr.ok) spoken = clip(tr.text, 700);
-    }
+    return withProviderDeadline("generation", async (signal) => {
+      let spoken = data.text;
+      if (data.language && data.language.toLowerCase() !== "english") {
+        const tr = await ask(agent, "Translate the passage. Return only the translation, no notes.", `Translate into ${data.language}:\n${data.text}`, signal);
+        if (tr.ok) spoken = clip(tr.text, 700);
+      }
 
-    if (agent.kind === "openai") {
-      const made = await fetch("https://api.openai.com/v1/audio/speech", {
+      signal.throwIfAborted();
+      if (agent.kind === "openai") {
+        const made = await fetch("https://api.openai.com/v1/audio/speech", {
+          signal,
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${agent.key}` },
+          body: JSON.stringify({ model: "tts-1", voice: data.voice === "rex" ? "onyx" : "alloy", input: spoken, response_format: "mp3" }),
+        });
+        if (!made.ok) return { ok: false as const, error: "The voice could not make this." };
+        const audio = Buffer.from(await made.arrayBuffer()).toString("base64");
+        if (!audio) return { ok: false as const, error: "No audio came back." };
+        return { ok: true as const, src: `data:audio/mpeg;base64,${audio}`, spoken };
+      }
+
+      const code = TTS_CODE[data.language.toLowerCase()] || "auto";
+      const voice = VOICES.has(data.voice) ? data.voice : "ara";
+      const res = await fetch("https://api.x.ai/v1/tts", {
+        signal,
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${agent.key}` },
-        body: JSON.stringify({ model: "tts-1", voice: data.voice === "rex" ? "onyx" : "alloy", input: spoken, response_format: "mp3" }),
+        body: JSON.stringify({
+          text: spoken,
+          voice_id: voice,
+          language: code,
+          output_format: { codec: "mp3", sample_rate: 24000, bit_rate: 64000 },
+        }),
       });
-      if (!made.ok) return { ok: false as const, error: "The voice could not make this." };
-      const audio = Buffer.from(await made.arrayBuffer()).toString("base64");
+      if (!res.ok) return { ok: false as const, error: "The voice could not make this. Try a built-in voice." };
+      const buf = Buffer.from(await res.arrayBuffer());
+      const ctype = res.headers.get("content-type") || "";
+      let audio = "";
+      if (ctype.includes("json")) {
+        const body = JSON.parse(buf.toString("utf8")) as { audio?: string };
+        audio = body.audio || "";
+      } else {
+        audio = buf.toString("base64");
+      }
       if (!audio) return { ok: false as const, error: "No audio came back." };
       return { ok: true as const, src: `data:audio/mpeg;base64,${audio}`, spoken };
-    }
-
-    const code = TTS_CODE[data.language.toLowerCase()] || "auto";
-    const voice = VOICES.has(data.voice) ? data.voice : "ara";
-    const res = await fetch("https://api.x.ai/v1/tts", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${agent.key}` },
-      body: JSON.stringify({
-        text: spoken,
-        voice_id: voice,
-        language: code,
-        output_format: { codec: "mp3", sample_rate: 24000, bit_rate: 64000 },
-      }),
-    });
-    if (!res.ok) return { ok: false as const, error: "The voice could not make this. Try a built-in voice." };
-    const buf = Buffer.from(await res.arrayBuffer());
-    const ctype = res.headers.get("content-type") || "";
-    let audio = "";
-    if (ctype.includes("json")) {
-      const body = JSON.parse(buf.toString("utf8")) as { audio?: string };
-      audio = body.audio || "";
-    } else {
-      audio = buf.toString("base64");
-    }
-    if (!audio) return { ok: false as const, error: "No audio came back." };
-    return { ok: true as const, src: `data:audio/mpeg;base64,${audio}`, spoken };
+    }, requestSignal);
   });

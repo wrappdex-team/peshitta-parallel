@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { BOOKS } from "@/data/edition";
 import { resolveAgent, type Agent } from "@/lib/agent";
 import { createLocalRateLimiter } from "@/lib/local-rate-limit";
+import { withProviderDeadline } from "@/lib/provider-deadline";
 import { type LangId, languageById } from "@/lib/languages";
 import { isJesus } from "@/lib/jesus";
 import { loadBook, loadParallel, type Verse } from "@/lib/scripture";
@@ -317,11 +318,10 @@ export const speakPart = createServerFn({ method: "POST" })
       output_format: { codec: "mp3", sample_rate: 24000, bit_rate: 128000 },
     };
 
-    try {
-      if (signal?.aborted) return { ok: false, error: "The voice was cut off. Press Read to continue." };
+    const result = await withProviderDeadline("generation", async (providerSignal): Promise<SpeakResult> => {
       let result: SpeakOk;
       if (agent.kind === "xai") {
-        const spoken = await speakXai(agent, body, signal);
+        const spoken = await speakXai(agent, body, providerSignal);
         if (!spoken.ok) return spoken;
         result = {
           ok: true,
@@ -333,15 +333,15 @@ export const speakPart = createServerFn({ method: "POST" })
           cues: cuesFrom(piece.text, piece.spans, spoken.chars, spoken.times),
         };
       } else {
-        const spoken = await speakOpenAI(agent, piece, data.voice, signal);
+        const spoken = await speakOpenAI(agent, piece, data.voice, providerSignal);
         if (!spoken.ok) return spoken;
         result = { ...spoken, part: data.part, parts: pieces.length };
       }
-      remember(key, result);
       return result;
-    } catch {
-      return { ok: false, error: "The voice was cut off. Press Read to continue." };
-    }
+    }, signal);
+    // A late/aborted provider result must not populate the shared cache.
+    if (result.ok) remember(key, result);
+    return result;
   });
 
 async function speakXai(
