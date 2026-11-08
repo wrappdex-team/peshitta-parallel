@@ -107,7 +107,7 @@ export const shapePrompt = createServerFn({ method: "POST" })
   })
   .handler(async ({ data }) => {
     const agent = agentOf(data.agentKey);
-    if (!agent) return { ok: false as const, error: "Connect an xAI, OpenAI, or Claude key first." };
+    if (!agent) return { ok: false as const, error: "Add your own xAI, OpenAI, or Claude key to use Studio." };
     const ip = await caller();
     if (!allow(`${ip}:shape`, 30)) return { ok: false as const, error: "The studio needs a short rest." };
 
@@ -135,7 +135,7 @@ export const makeImage = createServerFn({ method: "POST" })
   })
   .handler(async ({ data }) => {
     const agent = agentOf(data.agentKey);
-    if (!agent) return { ok: false as const, error: "Connect an xAI, OpenAI, or Claude key first." };
+    if (!agent) return { ok: false as const, error: "Add your own xAI or OpenAI key to make an image." };
     if (agent.kind === "anthropic") return { ok: false as const, error: "Claude can shape the prompt. A still needs an xAI or OpenAI key." };
     const ip = await caller();
     if (!allow(`${ip}:image`, 8)) return { ok: false as const, error: "Image making needs a short rest." };
@@ -165,7 +165,7 @@ export const startVideo = createServerFn({ method: "POST" })
   })
   .handler(async ({ data }) => {
     const agent = agentOf(data.agentKey);
-    if (!agent) return { ok: false as const, error: "Connect an xAI key to make a film." };
+    if (!agent) return { ok: false as const, error: "Add your own xAI key to make a film." };
     if (agent.kind !== "xai") return { ok: false as const, error: "Film is an xAI studio. Paste an xAI key for that." };
     const ip = await caller();
     if (!allow(`${ip}:video`, 3)) return { ok: false as const, error: "Video making needs a short rest." };
@@ -193,7 +193,7 @@ export const checkVideo = createServerFn({ method: "POST" })
   })
   .handler(async ({ data }) => {
     const agent = agentOf(data.agentKey);
-    if (!agent) return { ok: false as const, error: "Connect an xAI key to make a film." };
+    if (!agent) return { ok: false as const, error: "Add your own xAI key to check a film." };
     if (agent.kind !== "xai") return { ok: false as const, error: "Film is an xAI studio. Paste an xAI key for that." };
     const res = await fetch(`https://api.x.ai/v1/videos/${data.requestId}`, {
       headers: { Authorization: `Bearer ${agent.key}` },
@@ -220,7 +220,7 @@ export const makeAudio = createServerFn({ method: "POST" })
   })
   .handler(async ({ data }) => {
     const agent = agentOf(data.agentKey);
-    if (!agent) return { ok: false as const, error: "Connect an xAI or OpenAI key to hear this." };
+    if (!agent) return { ok: false as const, error: "Add your own xAI or OpenAI key to make audio." };
     if (agent.kind === "anthropic") return { ok: false as const, error: "Claude can shape the words. Hearing them needs an xAI or OpenAI key." };
     const ip = await caller();
     if (!allow(`${ip}:audio`, 12)) return { ok: false as const, error: "Audio making needs a short rest." };

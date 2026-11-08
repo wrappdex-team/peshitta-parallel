@@ -2,7 +2,7 @@ export type AgentKind = "xai" | "openai" | "anthropic";
 
 export type Agent = { kind: AgentKind; key: string };
 
-/** Tell an xAI, OpenAI, or Claude key apart. The key stays on the reader's device. */
+/** Recognize supported key formats; acceptance is still decided by the provider. */
 export function detectAgent(raw: string): Agent | null {
   const key = raw.trim();
   if (key.length < 20 || key.length > 300) return null;
@@ -12,11 +12,9 @@ export function detectAgent(raw: string): Agent | null {
   return null;
 }
 
+/** Media requests use only the visitor-supplied key, never a site credential. */
 export function resolveAgent(agentKey?: string): Agent | null {
-  const given = detectAgent(String(agentKey ?? ""));
-  if (given) return given;
-  const site = detectAgent(process.env.XAI_API_KEY || "");
-  return site?.kind === "xai" ? site : null;
+  return detectAgent(String(agentKey ?? ""));
 }
 
 export const AGENT_STORE = "injeel-agent";

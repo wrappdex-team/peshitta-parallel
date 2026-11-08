@@ -269,13 +269,18 @@ export const speakPart = createServerFn({ method: "POST" })
     const part = Number(input?.part);
     const voice = input?.voice;
     const lang = languageById(String(input?.lang ?? "")).id;
-    const agentKey = String(input?.agentKey ?? "").slice(0, 300);
+    const agentKey = String(input?.agentKey ?? "");
     if (!/^[a-z0-9]+$/.test(book) || !VOICES.has(voice) || lang !== input?.lang || !Number.isInteger(chapter) || chapter < 1 || chapter > 150 || !Number.isInteger(part) || part < 0 || part > 40) {
       throw new Error("That reading could not be requested.");
     }
     return { book, chapter, voice, part, lang, agentKey };
   })
   .handler(async ({ data }): Promise<SpeakResult> => {
+    // Require a visitor key before either cached audio or provider work is available.
+    const agent = resolveAgent(data.agentKey);
+    if (!agent) return { ok: false, error: "Generated audio requires your own xAI or OpenAI key. Device Read does not need a key." };
+    if (agent.kind === "anthropic") return { ok: false, error: "Claude can shape prompts, but generated audio needs your own xAI or OpenAI key." };
+
     const key = `${data.book}:${data.chapter}:${data.voice}:${data.lang}:${data.part}`;
     const cached = cache.get(key);
     if (cached) return cached;
@@ -294,10 +299,6 @@ export const speakPart = createServerFn({ method: "POST" })
     if (!pieces.length) return { ok: false, error: "This chapter has nothing to read in that language." };
     const piece = pieces[data.part];
     if (!piece) return { ok: false, error: "That part of the chapter is missing." };
-
-    const agent = resolveAgent(data.agentKey);
-    if (!agent) return { ok: false, error: "Connect an agent to hear this. Paste an xAI or OpenAI key under the reader." };
-    if (agent.kind === "anthropic") return { ok: false, error: "Claude can shape the studio, but it has no reading voice. Add an xAI or OpenAI key to hear the chapter." };
 
     let ip = "reader";
     let signal: AbortSignal | undefined;
