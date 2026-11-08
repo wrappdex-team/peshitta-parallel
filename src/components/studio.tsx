@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { detectAgent } from "@/lib/agent";
 import { clearSessionProviderKey, restoreSessionProviderKey, saveSessionProviderKey } from "@/lib/provider-key-storage";
 import { checkVideo, makeAudio, makeImage, shapePrompt, startVideo, type StudioKind } from "@/lib/studio";
@@ -35,6 +35,13 @@ export function Studio({ open, passage, onClose }: Props) {
   const [customTongue, setCustomTongue] = useState("");
   const [voice, setVoice] = useState("ara");
   const [customVoice, setCustomVoice] = useState("");
+  const passageActivity = useRef({ active: false });
+
+  useEffect(() => {
+    const activity = { active: true };
+    passageActivity.current = activity;
+    return () => { activity.active = false; };
+  }, [passage]);
 
   useEffect(() => {
     const restored = restoreSessionProviderKey();
@@ -99,24 +106,35 @@ export function Studio({ open, passage, onClose }: Props) {
     setStatus(saved.ok && next ? "Provider key saved for this tab. Studio requests use your key." : "Disconnected. Add your own provider key to use Studio.");
   }
 
+  // A completed request belongs to the passage it started from, even A → B → A.
+  // Do not cancel/resubmit provider work or release busy early on navigation.
+  function passageUpdates() {
+    const activity = passageActivity.current;
+    return (update: () => void) => { if (activity.active) update(); };
+  }
+
   async function shape() {
     if (!connected) return setStatus("Add your own provider key to use Studio.");
+    const publish = passageUpdates();
     setBusy(true);
     setStatus("Shaping a prompt from the passage…");
     try {
       const result = await shapePrompt({ data: { text: passage, style, kind, language, agentKey: agent } });
-      setBusy(false);
-      if (!result.ok) return setStatus(result.error);
-      setPrompt(result.prompt);
-      setStatus("You can change the prompt before making it.");
+      publish(() => {
+        if (!result.ok) return setStatus(result.error);
+        setPrompt(result.prompt);
+        setStatus("You can change the prompt before making it.");
+      });
     } catch {
-      setBusy(false);
-      setStatus("The prompt could not be shaped.");
+      publish(() => setStatus("The prompt could not be shaped."));
+    } finally {
+      if (passageActivity.current.active) setBusy(false);
     }
   }
 
   async function make() {
     if (!connected) return setStatus("Add your own provider key to use Studio.");
+    const publish = passageUpdates();
     setBusy(true);
     setImage("");
     setVideo("");
@@ -125,49 +143,52 @@ export function Studio({ open, passage, onClose }: Props) {
       if (kind === "image") {
         setStatus("Making the still…");
         const result = await makeImage({ data: { prompt: prompt || passage, agentKey: agent } });
-        setBusy(false);
-        if (!result.ok) return setStatus(result.error);
-        setImage(result.src);
-        setStatus("Still is ready.");
+        publish(() => {
+          if (!result.ok) return setStatus(result.error);
+          setImage(result.src);
+          setStatus("Still is ready.");
+        });
         return;
       }
       if (kind === "audio") {
         setStatus(`Translating into ${language} and making the voice…`);
         const result = await makeAudio({ data: { text: prompt || passage, voice: voiceId, language, agentKey: agent } });
-        setBusy(false);
-        if (!result.ok) return setStatus(result.error);
-        setAudio(result.src);
-        setStatus("Voice is ready.");
+        publish(() => {
+          if (!result.ok) return setStatus(result.error);
+          setAudio(result.src);
+          setStatus("Voice is ready.");
+        });
         return;
       }
       setStatus("Starting a short film…");
       const started = await startVideo({ data: { prompt: prompt || passage, agentKey: agent } });
       if (!started.ok) {
-        setBusy(false);
-        setStatus(started.error);
+        publish(() => setStatus(started.error));
         return;
       }
       for (let i = 0; i < 24; i++) {
         await new Promise((resolve) => setTimeout(resolve, 5000));
         const checked = await checkVideo({ data: { requestId: started.requestId, agentKey: agent } });
         if (!checked.ok) {
-          setBusy(false);
-          setStatus(checked.error);
+          publish(() => setStatus(checked.error));
           return;
         }
         if (checked.status === "done") {
-          setVideo(checked.src);
-          setBusy(false);
-          setStatus("Film is ready.");
+          publish(() => {
+            setVideo(checked.src);
+            setStatus("Film is ready.");
+          });
           return;
         }
-        setStatus("The film is still being made…");
+        publish(() => setStatus("The film is still being made…"));
       }
-      setBusy(false);
-      setStatus("The film is taking longer than expected. Try again in a moment.");
+      publish(() => setStatus("Status checking stopped after 24 checks. The provider may still finish this film. Check your provider before starting another; Make starts a new request."));
     } catch {
-      setBusy(false);
-      setStatus("That call did not finish. Try again.");
+      publish(() => setStatus("That call did not finish. Your provider may still process it. Check your provider before making another request."));
+    } finally {
+      // The original operation still owns busy after a passage change.
+      // Only skip this update if this Studio instance has been unmounted.
+      if (passageActivity.current.active) setBusy(false);
     }
   }
 
