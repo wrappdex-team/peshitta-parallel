@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import * as nodeCrypto from "node:crypto";
 import { readFileSync } from "node:fs";
 import { test } from "node:test";
 import { runInNewContext } from "node:vm";
@@ -13,6 +14,7 @@ const sources = {
   agent: "src/lib/agent.ts",
   rateLimit: "src/lib/local-rate-limit.ts",
   deadline: "src/lib/provider-deadline.ts",
+  cacheScope: "src/lib/credential-cache-scope.ts",
   studio: "src/lib/studio.ts",
   speak: "src/lib/speak.ts",
   studioUI: "src/components/studio.tsx",
@@ -41,7 +43,22 @@ function load(name, globals) {
   return exports;
 }
 
-function fixture({ provider, signal } = {}) {
+const syntheticCacheCrypto = {
+  subtle: {
+    async generateKey() {
+      return { seed: Buffer.alloc(32, 1) };
+    },
+    async sign(algorithm, key, data) {
+      assert.equal(algorithm, "HMAC");
+      const signature = nodeCrypto.createHmac("sha256", key.seed).update(data).digest();
+      return signature.buffer.slice(
+        signature.byteOffset,
+        signature.byteOffset + signature.byteLength,
+      );
+    },
+  },
+};
+function fixture({ provider, signal, cacheCrypto = syntheticCacheCrypto } = {}) {
   let siteReads = 0;
   let bookLoads = 0;
   let time = 0;
@@ -91,6 +108,7 @@ function fixture({ provider, signal } = {}) {
     setTimeout: setTimer,
     clearTimeout: (id) => timers.delete(id),
   });
+  const cacheScope = load("cacheScope", { crypto: cacheCrypto, TextEncoder });
   const globals = {
     Buffer,
     AbortController,
@@ -102,6 +120,7 @@ function fixture({ provider, signal } = {}) {
       if (name === "@/lib/agent") return agent;
       if (name === "@/lib/local-rate-limit") return rateLimit;
       if (name === "@/lib/provider-deadline") return deadline;
+      if (name === "@/lib/credential-cache-scope") return cacheScope;
       if (name === "@/data/edition") return { BOOKS: [{ id: "fixture", name: "Fixture" }] };
       if (name === "@/lib/languages") return { languageById: () => ({ id: "en", tts: "en" }) };
       if (name === "@/lib/jesus") return { isJesus: () => false };
@@ -166,6 +185,7 @@ function fixture({ provider, signal } = {}) {
       if (name === "@/lib/agent") return agent;
       if (name === "@/lib/local-rate-limit") return rateLimit;
       if (name === "@/lib/provider-deadline") return deadline;
+      if (name === "@/lib/credential-cache-scope") return cacheScope;
       if (name === "@/lib/studio") return studio;
       throw new Error(`Unexpected UI test import: ${name}`);
     },
@@ -606,4 +626,115 @@ test("success and existing HTTP failures release request timers without altering
   assert.equal(result.error, "The image could not be made. Try a shorter prompt.");
   assert.equal(failure.pendingTimers(), 0);
   assert.equal(failure.calls[0].signal.aborted, true);
+});
+
+test("a different visitor credential cannot reuse another credential's warm legacy cache", async () => {
+  const f = fixture({
+    provider: (url, init) =>
+      init.headers.Authorization === `Bearer ${readerKey}`
+        ? Response.json({
+            audio: "owner-a-audio",
+            audio_timestamps: { graph_chars: [], graph_times: [[0, 1]] },
+          })
+        : new Response(null, { status: 401 }),
+  });
+  assert.equal((await f.speak.speakPart({ ...legacyRequest, agentKey: readerKey })).ok, true);
+  const other = `xai-${"other-fixture-".repeat(3)}`;
+  const result = await f.speak.speakPart({ ...legacyRequest, agentKey: other });
+  assert.equal(
+    result.ok,
+    false,
+    "unverified different credential must not receive owner A's cached audio",
+  );
+  assert.equal(f.calls.length, 2);
+  assert.equal(f.siteReads(), 0);
+});
+
+test("one credential cannot seed a different credential's cached generated reading", async () => {
+  const other = `xai-${"other-fixture-".repeat(3)}`;
+  for (const [first, second] of [
+    [readerKey, other],
+    [other, readerKey],
+  ]) {
+    const f = fixture({
+      provider: (url, init) =>
+        Response.json({
+          audio:
+            init.headers.Authorization === `Bearer ${readerKey}`
+              ? "owner-a-audio"
+              : "owner-b-audio",
+          audio_timestamps: { graph_chars: [], graph_times: [[0, 1]] },
+        }),
+    });
+    const a = await f.speak.speakPart({ ...legacyRequest, agentKey: first });
+    const b = await f.speak.speakPart({ ...legacyRequest, agentKey: second });
+    assert.equal(a.ok, true);
+    assert.equal(b.ok, true);
+    assert.notEqual(a.audio, b.audio, "each credential must get its own provider result");
+    assert.equal(f.calls.length, 2);
+    assert.equal((await f.speak.speakPart({ ...legacyRequest, agentKey: first })).audio, a.audio);
+    assert.equal(f.calls.length, 2, "same credential still reuses its own result");
+  }
+});
+
+test("legacy cache separates providers but normalizes whitespace for the same credential", async () => {
+  const f = fixture();
+  const xai = await f.speak.speakPart({ ...legacyRequest, agentKey: readerKey });
+  assert.equal(xai.ok, true);
+  const again = await f.speak.speakPart({ ...legacyRequest, agentKey: `  ${readerKey}  ` });
+  assert.equal(again.audio, xai.audio);
+  assert.equal(f.calls.length, 1);
+  const openai = await f.speak.speakPart({
+    ...legacyRequest,
+    agentKey: `sk-${"reader-fixture-".repeat(3)}`,
+  });
+  assert.equal(openai.ok, true);
+  assert.notEqual(openai.audio, xai.audio);
+  assert.equal(f.calls.length, 2);
+  const keys = [...f.maps[1].keys()];
+  for (const key of keys) {
+    const tuple = JSON.parse(key);
+    assert.match(tuple[0], /^[0-9a-f]{64}$/);
+    assert.equal(tuple[1], "fixture");
+    assert.doesNotMatch(key, /reader-fixture|xai-|sk-/);
+    assert.ok(!key.includes(Buffer.from(readerKey).toString("base64")));
+  }
+  assert.doesNotMatch(JSON.stringify([xai, openai]), new RegExp(JSON.parse(keys[0])[0]));
+});
+
+test("cache scoping failure fails closed without provider, book or site-credential access", async () => {
+  const f = fixture({
+    cacheCrypto: {
+      subtle: {
+        generateKey() {
+          throw new Error("private synthetic failure");
+        },
+      },
+    },
+  });
+  const result = await f.speak.speakPart({ ...legacyRequest, agentKey: readerKey });
+  assert.equal(result.ok, false);
+  assert.equal(result.error, "Generated audio could not be prepared. Try again later.");
+  assert.equal(f.calls.length, 0);
+  assert.equal(f.bookLoads(), 0);
+  assert.equal(f.siteReads(), 0);
+});
+
+test("scoped legacy cache keeps the existing ten-entry bound and reference dimensions", async () => {
+  const f = fixture();
+  for (let i = 0; i < 12; i++) {
+    assert.equal(
+      (await f.speak.speakPart({ ...legacyRequest, book: `cachefixture${i}`, agentKey: readerKey }))
+        .ok,
+      true,
+    );
+  }
+  assert.equal(f.maps[1].size, 10);
+  assert.ok(![...f.maps[1].keys()].some((key) => JSON.parse(key)[1] === "cachefixture0"));
+  const before = f.calls.length;
+  assert.equal(
+    (await f.speak.speakPart({ ...legacyRequest, book: "cachefixture11", agentKey: readerKey })).ok,
+    true,
+  );
+  assert.equal(f.calls.length, before);
 });

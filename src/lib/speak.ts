@@ -3,6 +3,7 @@ import { BOOKS } from "@/data/edition";
 import { resolveAgent, type Agent } from "@/lib/agent";
 import { createLocalRateLimiter } from "@/lib/local-rate-limit";
 import { withProviderDeadline } from "@/lib/provider-deadline";
+import { createCredentialCacheScope } from "@/lib/credential-cache-scope";
 import { type LangId, languageById } from "@/lib/languages";
 import { isJesus } from "@/lib/jesus";
 import { loadBook, loadParallel, type Verse } from "@/lib/scripture";
@@ -223,6 +224,7 @@ export async function sayingLines(book: string, lang: LangId): Promise<{ v: numb
 }
 
 const cache = new Map<string, SpeakOk>();
+const cacheScope = /* @__PURE__ */ createCredentialCacheScope();
 const CACHE_MAX = 10;
 const limiter = createLocalRateLimiter();
 
@@ -274,7 +276,14 @@ export const speakPart = createServerFn({ method: "POST" })
     if (!agent) return { ok: false, error: "Generated audio requires your own xAI or OpenAI key. Device Read does not need a key." };
     if (agent.kind === "anthropic") return { ok: false, error: "Claude can shape prompts, but generated audio needs your own xAI or OpenAI key." };
 
-    const key = `${data.book}:${data.chapter}:${data.voice}:${data.lang}:${data.part}`;
+    let owner: string;
+    try {
+      owner = await cacheScope(agent);
+    } catch {
+      // No unscoped/raw-key fallback if cryptographic initialization fails.
+      return { ok: false, error: "Generated audio could not be prepared. Try again later." };
+    }
+    const key = JSON.stringify([owner, data.book, data.chapter, data.voice, data.lang, data.part]);
     const cached = cache.get(key);
     if (cached) return cached;
 
