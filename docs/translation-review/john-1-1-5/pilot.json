@@ -1,0 +1,261 @@
+{
+  "schema_version": 1,
+  "pilot_id": "injeel-john-1-1-5-syriac-direct-draft-01",
+  "title": "John 1:1–5 — AI-assisted UNREVIEWED direct-Syriac working drafts",
+  "status": "AI_ASSISTED_UNREVIEWED",
+  "publishable": false,
+  "coverage": {
+    "book": "John",
+    "chapter": 1,
+    "verse_ids": [1, 2, 3, 4, 5],
+    "verse_count": 5
+  },
+  "registers": {
+    "el": "contemporary Greek",
+    "he": "biblical-style Hebrew; new translation, not ancient original"
+  },
+  "method": {
+    "input": "Syriac source strings only; no English-pivot script or provider calls",
+    "target_corpus_consulted": false,
+    "external_lexicon_data_copied": false,
+    "claim": "AI-assisted direct analysis and proposed target-language renderings, not qualified human scholarship or certified translation",
+    "limits": "Familiar terminology may converge with historical translations; no claim of independently recovering lost original wording. All lexical/grammatical analyses in this packet are provisional."
+  },
+  "source": {
+    "adopted_reference": "CrossWire Peshitta module 2.0, BFBS 1905 digital text, John 1:1–5 only",
+    "historical_import_provenance_verified": false,
+    "rights_declaration": "DistributionLicense=Public Domain; specific downloaded module text",
+    "attribution": "Syriac source: British and Foreign Bible Society, 1905; digital text courtesy John Richards, distributed by CrossWire Bible Society as Peshitta module 2.0 (2020-02-08). Distribution metadata declares Public Domain. John 1:1–5 checked against frozen INjeel input.",
+    "module_url": "https://www.crosswire.org/sword/modules/ModInfo.jsp?modName=Peshitta",
+    "rights_url": "https://www.crosswire.org/sword/copyright/ModInfoCopyright.jsp?modName=Peshitta",
+    "download_url": "https://crosswire.org/ftpmirror/pub/sword/packages/rawzip/Peshitta.zip",
+    "module_zip_sha256": "badce0aa0a9b70a9c81891ed48d5a9e86de1e24d12ad4ad378e060e03cabc7b9",
+    "bundled_conf_sha256": "a4b45f9fdfed3c514f6acd55f90022ae19b4ae4a5c0953adfd17d549ea9e71c7",
+    "frozen_repo_commit": "ca2eee2d4ec5a2080aaf57656629c501ff255df1",
+    "frozen_repo_path": "src/data/nt/john.json",
+    "frozen_whole_file_sha256": "594428548d96fb2667b4db39e457f520db94876bff5cbdaf5c3f96505944f8cb",
+    "pilot_pairs_sha256": "151546fe2142c8cb808c345c94757a9a7d1da2bd4294da9f647e26788c9f6dd1",
+    "pilot_pairs_hash_algorithm": "SHA-256 UTF-8 compact JSON [[verse_number,sy],...] with literal Unicode, no trailing newline",
+    "normalization": "The module extraction has one trailing U+0020 per verse; remove that only. The adopted strings match the frozen app strings without any other changes. Both unpointed, NFC.",
+    "verse_mapping": "Module KJV versification; retain maddem dhwa at end of 1:3 for this candidate; grammar/attachment independently unresolved.",
+    "pointing_review": "Printed-edition pointing and punctuation not encoded in adopted digital strings; qualified review outstanding.",
+    "scope_exclusions": [
+      "scan images",
+      "fonts",
+      "lexicon databases",
+      "modern apparatus",
+      "other passages"
+    ]
+  },
+  "human_review": {
+    "qualified_syriac_completed": false,
+    "qualified_greek_completed": false,
+    "qualified_hebrew_completed": false,
+    "independent_review_required": true,
+    "approval": null
+  },
+  "name_policy": {
+    "personal_place_names_present": false,
+    "names_validated": false,
+    "future_requirement": "Retain source-script identity keys and sourced target-script transliterations in a reviewed person/place/object registry. Do not silently substitute localized names or invent first-century pronunciation."
+  },
+  "verses": [
+    {
+      "id": "John.1.1",
+      "source_reference": "John 1:1",
+      "sy": "ܒܪܫܝܬ ܐܝܬܘܗܝ ܗܘܐ ܡܠܬܐ ܘܗܘ ܡܠܬܐ ܐܝܬܘܗܝ ܗܘܐ ܠܘܬ ܐܠܗܐ ܘܐܠܗܐ ܐܝܬܘܗܝ ܗܘܐ ܗܘ ܡܠܬܐ ܀",
+      "sy_sha256_utf8": "9baada8f8efc7733bdf2693ad8ec555c684b7ec3171f7275893a3f7a07d77d85",
+      "review_status": "AI_ASSISTED_UNREVIEWED",
+      "publishable": false,
+      "el": {
+        "register": "contemporary Greek",
+        "text": "Στην αρχή υπήρχε ο Λόγος, και ο Λόγος ήταν μαζί με τον Θεό, και Θεός ήταν ο Λόγος.",
+        "review_status": "AI_ASSISTED_UNREVIEWED"
+      },
+      "he": {
+        "register": "biblical-style Hebrew; new translation, not ancient original",
+        "text": "בראשית היה הדבר והדבר היה עם אלהים ואלהים היה הדבר׃",
+        "review_status": "AI_ASSISTED_UNREVIEWED"
+      },
+      "alignments": [
+        {
+          "sy": "ܒܪܫܝܬ ܐܝܬܘܗܝ ܗܘܐ ܡܠܬܐ",
+          "el_proposed": "Στην αρχή υπήρχε ο Λόγος",
+          "he_proposed": "בראשית היה הדבר",
+          "analysis_status": "PROPOSED_REQUIRES_HUMAN_REVIEW",
+          "note": "Working analysis: opening temporal expression plus an existential/past construction and mltha. The capitalized Greek term and Hebrew definiteness are target editorial choices; no assertion of an ancient target original."
+        },
+        {
+          "sy": "ܘܗܘ ܡܠܬܐ ܐܝܬܘܗܝ ܗܘܐ ܠܘܬ ܐܠܗܐ",
+          "el_proposed": "και ο Λόγος ήταν μαζί με τον Θεό",
+          "he_proposed": "והדבר היה עם אלהים",
+          "analysis_status": "PROPOSED_REQUIRES_HUMAN_REVIEW",
+          "note": "Working analysis: the repeated mltha is related to alha by lwth. Together-with is a proposed relational reading, not proof of a spatial or metaphysical account."
+        },
+        {
+          "sy": "ܘܐܠܗܐ ܐܝܬܘܗܝ ܗܘܐ ܗܘ ܡܠܬܐ",
+          "el_proposed": "και Θεός ήταν ο Λόγος",
+          "he_proposed": "ואלהים היה הדבר",
+          "analysis_status": "PROPOSED_REQUIRES_HUMAN_REVIEW",
+          "note": "Working analysis: preserve the source-fronted divine term in the proposed target order. Predicate/subject identification and definiteness need Syriac and target review; source word order alone does not settle theology."
+        }
+      ],
+      "blocking_review_topics": [
+        "mltha-term",
+        "alha-predication",
+        "lwth-relation",
+        "editorial-definiteness"
+      ]
+    },
+    {
+      "id": "John.1.2",
+      "source_reference": "John 1:2",
+      "sy": "ܗܢܐ ܐܝܬܘܗܝ ܗܘܐ ܒܪܫܝܬ ܠܘܬ ܐܠܗܐ ܀",
+      "sy_sha256_utf8": "de4f875e66a8e70071c8c3b861e9c47f1a9b64479f79a8a93400382885b8472e",
+      "review_status": "AI_ASSISTED_UNREVIEWED",
+      "publishable": false,
+      "el": {
+        "register": "contemporary Greek",
+        "text": "Αυτός υπήρχε στην αρχή μαζί με τον Θεό.",
+        "review_status": "AI_ASSISTED_UNREVIEWED"
+      },
+      "he": {
+        "register": "biblical-style Hebrew; new translation, not ancient original",
+        "text": "הוא היה בראשית עם אלהים׃",
+        "review_status": "AI_ASSISTED_UNREVIEWED"
+      },
+      "alignments": [
+        {
+          "sy": "ܗܢܐ ܐܝܬܘܗܝ ܗܘܐ ܒܪܫܝܬ ܠܘܬ ܐܠܗܐ",
+          "el_proposed": "Αυτός υπήρχε στην αρχή μαζί με τον Θεό",
+          "he_proposed": "הוא היה בראשית עם אלהים",
+          "analysis_status": "PROPOSED_REQUIRES_HUMAN_REVIEW",
+          "note": "Working analysis: hna points back to the previous referent; pronouns make that link explicit. They are less demonstrative than the source form; gender/reference and any personification need review."
+        }
+      ],
+      "blocking_review_topics": ["demonstrative-reference", "lwth-relation"]
+    },
+    {
+      "id": "John.1.3",
+      "source_reference": "John 1:3",
+      "sy": "ܟܠ ܒܐܝܕܗ ܗܘܐ ܘܒܠܥܕܘܗܝ ܐܦܠܐ ܚܕܐ ܗܘܬ ܡܕܡ ܕܗܘܐ ܀",
+      "sy_sha256_utf8": "1551e1c9ebb004950a2e4c17c6f49efacdd9a89ff7324101eacc0e616938492b",
+      "review_status": "AI_ASSISTED_UNREVIEWED",
+      "publishable": false,
+      "el": {
+        "register": "contemporary Greek",
+        "text": "Όλα ήρθαν στην ύπαρξη με το χέρι του, και χωρίς αυτόν δεν ήρθε στην ύπαρξη ούτε ένα πράγμα από όσα ήρθαν στην ύπαρξη.",
+        "review_status": "AI_ASSISTED_UNREVIEWED"
+      },
+      "he": {
+        "register": "biblical-style Hebrew; new translation, not ancient original",
+        "text": "הכל נהיה בידו ובלעדיו לא נהיה דבר אחד מכל אשר נהיה׃",
+        "review_status": "AI_ASSISTED_UNREVIEWED"
+      },
+      "alignments": [
+        {
+          "sy": "ܟܠ ܒܐܝܕܗ ܗܘܐ",
+          "el_proposed": "Όλα ήρθαν στην ύπαρξη με το χέρι του",
+          "he_proposed": "הכל נהיה בידו",
+          "analysis_status": "PROPOSED_REQUIRES_HUMAN_REVIEW",
+          "note": "Working analysis: kl plus a hand-expression and hwa. Coming into existence is an interpretive contextual reading. Preserve hand language in the first draft; decide whether literal wording wrongly suggests a physical hand or, in Hebrew, mere possession."
+        },
+        {
+          "sy": "ܘܒܠܥܕܘܗܝ ܐܦܠܐ ܚܕܐ ܗܘܬ",
+          "el_proposed": "και χωρίς αυτόν δεν ήρθε στην ύπαρξη ούτε ένα πράγμα",
+          "he_proposed": "ובלעדיו לא נהיה דבר אחד",
+          "analysis_status": "PROPOSED_REQUIRES_HUMAN_REVIEW",
+          "note": "Working analysis: negative exception with one. Greek supplies a noun here and Hebrew places dbr here for idiomatic syntax; no second source noun is being claimed."
+        },
+        {
+          "sy": "ܡܕܡ ܕܗܘܐ",
+          "el_proposed": "από όσα ήρθαν στην ύπαρξη",
+          "he_proposed": "מכל אשר נהיה",
+          "analysis_status": "PROPOSED_REQUIRES_HUMAN_REVIEW",
+          "note": "Working analysis: proposed dependent relative/partitive attachment to the negative clause. The target partitive and Hebrew kl are interpretive expansions, not separate Syriac words; reviewer may prefer less expansion or different attachment."
+        }
+      ],
+      "blocking_review_topics": [
+        "agency-hand",
+        "hwa-eventivity",
+        "relative-attachment-1-3-4",
+        "target-expansion"
+      ]
+    },
+    {
+      "id": "John.1.4",
+      "source_reference": "John 1:4",
+      "sy": "ܒܗ ܚܝܐ ܗܘܐ ܘܚܝܐ ܐܝܬܝܗܘܢ ܢܘܗܪܐ ܕܒܢܝܢܫܐ ܀",
+      "sy_sha256_utf8": "f0d1cf46b39fdd13ac10815f589b1527ff73e66d635d898496ed684511c96bf2",
+      "review_status": "AI_ASSISTED_UNREVIEWED",
+      "publishable": false,
+      "el": {
+        "register": "contemporary Greek",
+        "text": "Σ’ αυτόν υπήρχε ζωή, και η ζωή ήταν το φως των ανθρώπων.",
+        "review_status": "AI_ASSISTED_UNREVIEWED"
+      },
+      "he": {
+        "register": "biblical-style Hebrew; new translation, not ancient original",
+        "text": "בו היו חיים והחיים היו אור בני האדם׃",
+        "review_status": "AI_ASSISTED_UNREVIEWED"
+      },
+      "alignments": [
+        {
+          "sy": "ܒܗ ܚܝܐ ܗܘܐ",
+          "el_proposed": "Σ’ αυτόν υπήρχε ζωή",
+          "he_proposed": "בו היו חיים",
+          "analysis_status": "PROPOSED_REQUIRES_HUMAN_REVIEW",
+          "note": "Working analysis: life with an in-him expression and hwa. Pronoun reference and whether in/by/through is intended require review. Hebrew plural agreement is target grammar, not a claim of multiple lives."
+        },
+        {
+          "sy": "ܘܚܝܐ ܐܝܬܝܗܘܢ ܢܘܗܪܐ ܕܒܢܝܢܫܐ",
+          "el_proposed": "και η ζωή ήταν το φως των ανθρώπων",
+          "he_proposed": "והחיים היו אור בני האדם",
+          "analysis_status": "PROPOSED_REQUIRES_HUMAN_REVIEW",
+          "note": "Working analysis: life identified with light for humanity. Greek anthropoi and Hebrew bnei ha-adam are proposed generic-human renderings, not a male-only restriction. Copular aspect/tense must be independently checked."
+        }
+      ],
+      "blocking_review_topics": [
+        "life-agreement",
+        "referent-bh",
+        "humanity-term",
+        "relative-attachment-1-3-4"
+      ]
+    },
+    {
+      "id": "John.1.5",
+      "source_reference": "John 1:5",
+      "sy": "ܘܗܘ ܢܘܗܪܐ ܒܚܫܘܟܐ ܡܢܗܪ ܘܚܫܘܟܐ ܠܐ ܐܕܪܟܗ ܀",
+      "sy_sha256_utf8": "780f84ddafff284a9781debfbd384ef37fbdde01d78de9fd84bc8d12578a5ed2",
+      "review_status": "AI_ASSISTED_UNREVIEWED",
+      "publishable": false,
+      "el": {
+        "register": "contemporary Greek",
+        "text": "Και εκείνο το φως λάμπει μέσα στο σκοτάδι, και το σκοτάδι δεν το κυρίευσε.",
+        "review_status": "AI_ASSISTED_UNREVIEWED"
+      },
+      "he": {
+        "register": "biblical-style Hebrew; new translation, not ancient original",
+        "text": "והאור ההוא מאיר בחשך והחשך לא השיגו׃",
+        "review_status": "AI_ASSISTED_UNREVIEWED"
+      },
+      "alignments": [
+        {
+          "sy": "ܘܗܘ ܢܘܗܪܐ ܒܚܫܘܟܐ ܡܢܗܪ",
+          "el_proposed": "Και εκείνο το φως λάμπει μέσα στο σκοτάδι",
+          "he_proposed": "והאור ההוא מאיר בחשך",
+          "analysis_status": "PROPOSED_REQUIRES_HUMAN_REVIEW",
+          "note": "Working analysis: renewed reference to that light, darkness and a shining expression. Proposed present tense should be checked against the Syriac form and discourse."
+        },
+        {
+          "sy": "ܘܚܫܘܟܐ ܠܐ ܐܕܪܟܗ",
+          "el_proposed": "και το σκοτάδι δεν το κυρίευσε",
+          "he_proposed": "והחשך לא השיגו",
+          "analysis_status": "PROPOSED_REQUIRES_HUMAN_REVIEW",
+          "note": "UNRESOLVED lexical/contextual choice. Greek currently proposes overpowering; Hebrew offers a less narrowed reach/overtake expression. These are not yet a semantically harmonized pair. Neither is asserted to exhaust the Syriac sense."
+        }
+      ],
+      "blocking_review_topics": ["adrkh-unresolved", "aspect-1-5", "cross-target-semantic-mismatch"]
+    }
+  ]
+}
