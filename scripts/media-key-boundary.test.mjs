@@ -18,6 +18,7 @@ const sources = {
   studio: "src/lib/studio.ts",
   speak: "src/lib/speak.ts",
   studioUI: "src/components/studio.tsx",
+  keyStorage: "src/lib/provider-key-storage.ts",
 };
 const compiled = Object.fromEntries(
   Object.entries(sources).map(([name, path]) => [
@@ -178,6 +179,12 @@ function fixture({ provider, signal, cacheCrypto = syntheticCacheCrypto } = {}) 
   };
   const studio = load("studio", globals);
   const speak = load("speak", globals);
+  const keyStorage = load("keyStorage", {
+    require(name) {
+      assert.equal(name, "@/lib/agent");
+      return agent;
+    },
+  });
   const ui = load("studioUI", {
     require(name) {
       if (name === "react") return React;
@@ -187,6 +194,7 @@ function fixture({ provider, signal, cacheCrypto = syntheticCacheCrypto } = {}) 
       if (name === "@/lib/provider-deadline") return deadline;
       if (name === "@/lib/credential-cache-scope") return cacheScope;
       if (name === "@/lib/studio") return studio;
+      if (name === "@/lib/provider-key-storage") return keyStorage;
       throw new Error(`Unexpected UI test import: ${name}`);
     },
   });

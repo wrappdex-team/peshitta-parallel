@@ -3,27 +3,46 @@
 Baseline: released main `d88a2f1f0893cb7d7b9640ce6192fd2072be9f7c`.
 Fresh explicit permission is required before merge/production publication.
 
-## Active storage behavior: observed in source and dummy-only tests
+## Authorized session-only storage policy
 
-Studio reads `injeel-agent` from origin-local `localStorage`, keeps it in React
-state, saves the trimmed recognized key back to that store and removes it when
-the existing Clear control is used. The stored credential is raw, not encrypted;
-the password input masks editing but does not protect the saved value from
-JavaScript executing in the page's origin. Studio sends the supplied key through
-its server functions to the selected provider for requested work, as existing
-copy discloses. Format recognition is not provider validation or user identity.
+This follow-up replaces Studio's previous raw `localStorage` credential with raw
+**sessionStorage** under the app's exact `injeel-agent` key. Same-tab refresh
+normally retains it. Session data is normally tab-scoped, but browser restore,
+opener and duplicate-tab behaviors can preserve/copy it. Tab/session storage is
+not encrypted-key protection, a guarantee of secure erasure, or XSS prevention:
+JavaScript executing in the origin can still access an in-use/saved session key.
 
-A compiled-component event/effect harness proves restore, Save/reload and Clear
-against an exclusively synthetic Map-backed storage object and dummy key. It also
-checks that a restored key is not inserted into rendered markup or the blank
-password field. No real browser profile/storage, provider credential, account or
-provider request is accessed. These are component tests, not browser/hydration QA.
+On Studio component mount/open and Save/Clear, the app attempts to remove only
+its exact old persistent `injeel-agent` entry, **without reading its value or
+copying it to session storage**. Visitors with only a previously device-saved key
+must re-enter it. Other settings/progress are not cleared; existing nonsecret
+Studio preferences remain in localStorage. Cleanup and policy replacement occur
+only when this code is used after deployment; no real browser values were
+inspected, deleted or migrated during development.
 
-This is **potential credential exposure if same-origin JavaScript is injected or
-compromised**, not proof of an exploitable XSS vulnerability. No raw HTML/eval or
-key-logging sink was found in the narrowly reviewed Studio/agent/speech files;
-that is not a whole-app XSS or dependency/third-party-script security audit.
-This PR does not change persistence, migrate/delete saved keys, or claim encryption.
+Restore/Save/Clear catch denied storage access and operations. There is no
+persistent or active-memory fallback when session storage fails: Studio remains
+or becomes disconnected, while reading/device speech remains available. Save
+failure also attempts to remove a stale session entry. If the browser blocks
+legacy/session removal, fixed visible warnings explain that stored values may
+remain and a session key may return after refresh. A blocked Clear disconnects
+current React state; it cannot guarantee deletion from storage that denies access.
+The password draft may remain for a manual retry after Save failure but is not
+activated as a provider credential.
+
+Compiled-component event/effect tests use only synthetic Map-backed local and
+session stores, dummy keys and simulated denial. They cover Save/refresh/Clear,
+legacy cleanup without reads/copying, no persistent credential writes or broad
+clears, preserved unrelated values, blocked reads/writes/removal/accessors and
+honest lifecycle/error copy. No real browser profile/storage, credential, account
+or provider request is accessed. These are component tests, not browser QA.
+
+This reduces retention; it is **not proof of fixing an exploitable XSS
+vulnerability**. No raw HTML/eval or key-logging sink was found in the narrowly
+reviewed Studio/agent/speech files, not a whole-app/third-party/dependency audit.
+Studio still sends the supplied key through its server functions to the selected
+provider for requested work. Format recognition is not provider validation or
+human identity. No encryption or account/auth infrastructure is introduced.
 
 ## Proven backend cache boundary defect
 
@@ -72,16 +91,16 @@ revalidate provider acceptance/revocation. Existing no-TTL, process-local/restar
 and multi-instance cache limitations remain. Any fresh identity/expiry policy
 requires separate review; this PR does not introduce accounts or durable storage.
 
-## Storage policy decision deliberately left open
+## Review and remaining scope
 
-Possible separately approved choices are memory-only keys (re-enter after reload),
-sessionStorage (tab/session retention, still JavaScript-readable), or explicit
-opt-in device persistence with honest risk disclosure. None prevents hostile
-JavaScript from accessing an in-use key; reducing storage lifetime is not an XSS
-fix. Migration/deletion of existing saved keys needs an explicit user decision.
-No such policy or real saved key was changed in this pass.
-The isolated compiled public-asset manifest is byte-identical to the released
-baseline; the HMAC helper is retained only in the server build.
+The user explicitly approved preparation of session-only storage, not publication.
+Memory-only or opt-in persistent alternatives are not implemented. Browser-specific
+restore/duplicate behavior, mobile and hydration interactions still need real
+browser review in an isolated profile; no real key or generation request is needed
+for that smoke test. The cache-only initial patch left public assets identical;
+this authorized storage follow-up intentionally changes the Studio client code.
+HMAC cache isolation, BYOK, quotas, deadlines, free reader/browser speech, player
+logic, content and other storage keys remain unchanged.
 
 Aikido's known setup outage is not retried; no completed security scan or live
 provider/browser security assessment is claimed. Shared-process rate-limit,

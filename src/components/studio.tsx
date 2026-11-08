@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { AGENT_STORE, detectAgent } from "@/lib/agent";
+import { detectAgent } from "@/lib/agent";
+import { clearSessionProviderKey, restoreSessionProviderKey, saveSessionProviderKey } from "@/lib/provider-key-storage";
 import { checkVideo, makeAudio, makeImage, shapePrompt, startVideo, type StudioKind } from "@/lib/studio";
 
-const AGENT_KEY = AGENT_STORE;
 const STUDIO_KEY = "injeel-studio";
 const STYLES = ["Manuscript gold", "Quiet watercolor", "Night and lamp", "Eastern icon light", "Open landscape"];
 const VOICES = ["ara", "rex", "eve", "leo", "luna", "orion", "aurora", "atlas", "iris", "helios"];
@@ -30,15 +30,22 @@ export function Studio({ open, passage, onClose }: Props) {
   const [audio, setAudio] = useState("");
   const [agent, setAgent] = useState("");
   const [draft, setDraft] = useState("");
+  const [keyNotice, setKeyNotice] = useState("");
   const [tongue, setTongue] = useState("English");
   const [customTongue, setCustomTongue] = useState("");
   const [voice, setVoice] = useState("ara");
   const [customVoice, setCustomVoice] = useState("");
 
   useEffect(() => {
-    const saved = localStorage.getItem(AGENT_KEY) || "";
-    setAgent(saved);
+    const restored = restoreSessionProviderKey();
     setDraft("");
+    if (!open) {
+      setAgent("");
+      setKeyNotice("");
+      return;
+    }
+    setAgent(restored.key);
+    setKeyNotice(restored.notice);
     try {
       const prefs = JSON.parse(localStorage.getItem(STUDIO_KEY) || "{}") as Partial<{
         kind: StudioKind;
@@ -57,7 +64,11 @@ export function Studio({ open, passage, onClose }: Props) {
 
   useEffect(() => {
     if (!open) return;
-    localStorage.setItem(STUDIO_KEY, JSON.stringify({ kind, style, tongue, voice }));
+    try {
+      localStorage.setItem(STUDIO_KEY, JSON.stringify({ kind, style, tongue, voice }));
+    } catch {
+      /* Nonsecret preferences are optional when browser storage is denied. */
+    }
   }, [open, kind, style, tongue, voice]);
 
   useEffect(() => {
@@ -81,11 +92,11 @@ export function Studio({ open, passage, onClose }: Props) {
       setStatus("That key was not recognized. Use an xAI key (xai-), an OpenAI key (sk-), or a Claude key (sk-ant-).");
       return;
     }
-    if (next) localStorage.setItem(AGENT_KEY, next);
-    else localStorage.removeItem(AGENT_KEY);
-    setAgent(next);
-    setDraft("");
-    setStatus(next ? "Provider key saved. Studio requests use your key." : "Disconnected. Add your own provider key to use Studio.");
+    const saved = next ? saveSessionProviderKey(next) : clearSessionProviderKey();
+    setAgent(saved.ok ? next : "");
+    setKeyNotice(saved.notice);
+    if (saved.ok) setDraft("");
+    setStatus(saved.ok && next ? "Provider key saved for this tab. Studio requests use your key." : "Disconnected. Add your own provider key to use Studio.");
   }
 
   async function shape() {
@@ -181,11 +192,15 @@ export function Studio({ open, passage, onClose }: Props) {
         <div className="mt-4 border border-line p-3">
           <p className="text-xs tracking-widest text-gold">{connected ? "YOUR PROVIDER KEY" : "YOUR PROVIDER KEY REQUIRED"}</p>
           <p className="mt-1 text-sm text-muted">
-            {connected ? `${connected.kind === "xai" ? "xAI" : connected.kind === "openai" ? "OpenAI" : "Claude"} key saved.` : "Studio requires your own provider key. Use xAI for media, OpenAI for images/audio, or Claude for prompt shaping."}
+            {connected ? `${connected.kind === "xai" ? "xAI" : connected.kind === "openai" ? "OpenAI" : "Claude"} key saved for this tab.` : "Studio requires your own provider key. Use xAI for media, OpenAI for images/audio, or Claude for prompt shaping."}
           </p>
           <p className="mt-1 text-xs text-muted">
-            Saved on this device; sent through this server to your provider when you request Studio work. Provider charges apply. Reading and device Read need no key.
+            Uses tab-session storage instead of the app's persistent key storage. Refresh normally keeps it; browser restore or tab duplication may preserve or copy session data. This is not secure erasure or XSS protection.
           </p>
+          <p className="mt-1 text-xs text-muted">
+            Old device-saved keys are removed when storage access permits, never copied; re-enter your key if needed. Keys are sent through this server to your provider for requested Studio work. Provider charges apply. Reading and device Read need no key.
+          </p>
+          {keyNotice && <p role="status" className="mt-2 text-xs text-garnet">{keyNotice}</p>}
           <div className="mt-2 flex gap-2">
             <input
               type="password"
@@ -195,7 +210,7 @@ export function Studio({ open, passage, onClose }: Props) {
               className="min-h-11 flex-1 border border-line bg-raised px-3 text-ink"
               autoComplete="off"
             />
-            <button type="button" disabled={!draft.trim()} className="min-h-11 bg-garnet px-3 text-paper disabled:opacity-40" onClick={saveAgent}>
+            <button type="button" aria-label="Save provider key for this tab" disabled={!draft.trim()} className="min-h-11 bg-garnet px-3 text-paper disabled:opacity-40" onClick={saveAgent}>
               Save
             </button>
             {connected && (
@@ -203,9 +218,11 @@ export function Studio({ open, passage, onClose }: Props) {
                 type="button"
                 className="min-h-11 px-2 text-garnet"
                 onClick={() => {
-                  localStorage.removeItem(AGENT_KEY);
+                  const cleared = clearSessionProviderKey();
                   setAgent("");
-                  setStatus("Provider key removed. Studio requires your own key; reading and device Read still work.");
+                  setDraft("");
+                  setKeyNotice(cleared.notice);
+                  setStatus(cleared.ok ? "Session provider key removed. Reading and device Read still work." : "Provider key disconnected. Check the storage warning above.");
                 }}
               >
                 Clear
