@@ -300,6 +300,11 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
       };
       utter.onend = () => finish(loop.current === phrase && stopping.current === "none" && run.current === token ? "done" : "stopped");
       utter.onerror = (event) => {
+        // A canceled/replaced phrase no longer owns errors or fallback speech.
+        if (settled || run.current !== token || loop.current !== phrase || stopping.current !== "none") {
+          finish("stopped");
+          return;
+        }
         const reason = event.error || "unknown";
         if (!plain && reason === "synthesis-failed") {
           void speakPhrase(text, token, true).then(finish);
