@@ -23,9 +23,15 @@ const dummy = `xai-${"synthetic-storage-fixture-".repeat(2)}`;
 
 // Component event/effect harness only: never browser storage, real keys or providers.
 const storageSource = compile("src/lib/provider-key-storage.ts");
-function fixture({ local = new Map(), session = new Map(), deny = {} } = {}) {
+function fixture({ local = new Map(), session = new Map(), deny = {}, server = {} } = {}) {
   const states = [];
   const dependencies = [];
+  const cleanups = [];
+  const refs = [];
+  const timers = [];
+  let refIndex = 0;
+  let unmounted = false;
+  let unmountedWrites = 0;
   let stateIndex = 0;
   let effectIndex = 0;
   let effects = [];
@@ -57,7 +63,7 @@ function fixture({ local = new Map(), session = new Map(), deny = {} } = {}) {
   }
   const objects = { local: storage("local", local), session: storage("session", session) };
   function context(exports, require) {
-    const value = { exports, require };
+    const value = { exports, require, setTimeout(callback, ms) { timers.push({ callback, ms }); } };
     for (const name of ["local", "session"]) {
       Object.defineProperty(value, `${name}Storage`, {
         get() {
@@ -80,12 +86,17 @@ function fixture({ local = new Map(), session = new Map(), deny = {} } = {}) {
     }),
   );
   const hooks = {
+    useRef(initial) {
+      const slot = refIndex++;
+      return refs[slot] ??= { current: initial };
+    },
     useState(initial) {
       const slot = stateIndex++;
       if (slot >= states.length) states[slot] = initial;
       return [
         states[slot],
         (next) => {
+          if (unmounted) unmountedWrites++;
           const value = typeof next === "function" ? next(states[slot]) : next;
           if (value !== states[slot]) {
             states[slot] = value;
@@ -97,7 +108,10 @@ function fixture({ local = new Map(), session = new Map(), deny = {} } = {}) {
     useEffect(effect, deps) {
       const slot = effectIndex++;
       if (!dependencies[slot] || deps.some((value, i) => !Object.is(value, dependencies[slot][i])))
-        effects.push(effect);
+        effects.push(() => {
+          cleanups[slot]?.();
+          cleanups[slot] = effect();
+        });
       dependencies[slot] = deps;
     },
   };
@@ -113,7 +127,8 @@ function fixture({ local = new Map(), session = new Map(), deny = {} } = {}) {
         return new Proxy(
           {},
           {
-            get() {
+            get(_, name) {
+              if (server[name]) return server[name];
               return () => {
                 throw new Error("No provider action may run in storage tests");
               };
@@ -127,6 +142,19 @@ function fixture({ local = new Map(), session = new Map(), deny = {} } = {}) {
     local,
     session,
     calls,
+    timers,
+    async tick() {
+      assert.ok(timers.length, "a scheduled polling delay exists");
+      const timer = timers.shift();
+      assert.equal(timer.ms, 5000, "preserve the existing five-second delay");
+      timer.callback();
+      await flushWork();
+    },
+    unmount() {
+      for (const cleanup of cleanups) cleanup?.();
+      unmounted = true;
+    },
+    unmountedWrites() { return unmountedWrites; },
     assertPolicy() {
       assert.ok(
         !calls.some(
@@ -137,12 +165,12 @@ function fixture({ local = new Map(), session = new Map(), deny = {} } = {}) {
       );
       assert.ok(!calls.some(([, op]) => op === "clear"), "never broadly clear storage");
     },
-    render(open = true) {
+    render(open = true, passage = "synthetic fixture passage") {
       for (let i = 0; i < 8; i++) {
-        stateIndex = effectIndex = 0;
+        stateIndex = effectIndex = refIndex = 0;
         effects = [];
         dirty = false;
-        const tree = exports.Studio({ open, passage: "synthetic fixture passage", onClose() {} });
+        const tree = exports.Studio({ open, passage, onClose() {} });
         for (const effect of effects) effect();
         if (!dirty) return tree;
       }
@@ -302,4 +330,218 @@ test("closed Studio mount cleans the legacy key without retaining an active in-m
   assert.equal(page.local.has(agent.AGENT_STORE), false);
   assert.match(renderToStaticMarkup(page.render(true)), /YOUR PROVIDER KEY REQUIRED/);
   page.assertPolicy();
+});
+
+
+// Real component handlers, mocked server functions and manually advanced delays:
+// no browser storage, provider credentials, networking or paid jobs.
+async function flushWork() {
+  for (let i = 0; i < 20; i++) await Promise.resolve();
+}
+function deferred() {
+  let resolve, reject;
+  const promise = new Promise((yes, no) => { resolve = yes; reject = no; });
+  return { promise, resolve, reject };
+}
+function workFixture(kind, server) {
+  return fixture({
+    local: new Map([["injeel-studio", JSON.stringify({ kind })]]),
+    session: new Map([[agent.AGENT_STORE, dummy]]),
+    server,
+  });
+}
+const makeButton = (tree) => find(tree, (node) => node.type === "button" && Array.isArray(node.props.children) && node.props.children[0] === "Make ");
+const markup = (page, passage = "passage A") => renderToStaticMarkup(page.render(true, passage));
+
+test("late video completion cannot attach an old job to a newly opened passage", async () => {
+  const checked = deferred();
+  const starts = [], polls = [];
+  const page = workFixture("video", {
+    startVideo: async ({ data }) => { starts.push(data); return { ok: true, requestId: "fixture-job" }; },
+    checkVideo: ({ data }) => { polls.push(data); return checked.promise; },
+  });
+  const work = makeButton(page.render(true, "passage A")).props.onClick();
+  await flushWork();
+  await page.tick();
+  page.render(false, "passage A");
+  const reopened = page.render(true, "passage B");
+  assert.equal(makeButton(reopened).props.disabled, true, "do not unlock another generation while old work is active");
+  checked.resolve({ ok: true, status: "done", src: "https://fixture.invalid/old-passage.mp4" });
+  await work;
+  assert.equal(starts.length, 1);
+  assert.equal(starts[0].prompt, "passage A");
+  assert.equal(polls.length, 1);
+  assert.equal(polls[0].requestId, "fixture-job");
+  const html = markup(page, "passage B");
+  assert.doesNotMatch(html, /old-passage|Film is ready/);
+  assert.equal(makeButton(page.render(true, "passage B")).props.disabled, false);
+  page.assertPolicy();
+});
+
+test("returning to the same passage does not revive an invalidated shaping result", async () => {
+  const result = deferred();
+  const page = workFixture("video", { shapePrompt: () => result.promise });
+  const work = button(page.render(true, "passage A"), "Shape the prompt").props.onClick();
+  page.render(true, "passage B");
+  page.render(true, "passage A");
+  result.resolve({ ok: true, prompt: "obsolete fixture prompt" });
+  await work;
+  assert.doesNotMatch(markup(page), /obsolete fixture prompt|You can change the prompt/);
+});
+
+for (const kind of ["image", "audio"]) {
+  test(`late ${kind} completion cannot repopulate a reset passage`, async () => {
+    const result = deferred();
+    const page = workFixture(kind, { [kind === "image" ? "makeImage" : "makeAudio"]: () => result.promise });
+    const work = makeButton(page.render(true, "passage A")).props.onClick();
+    page.render(true, "passage B");
+    result.resolve({ ok: true, src: "https://fixture.invalid/obsolete-output" });
+    await work;
+    assert.doesNotMatch(markup(page, "passage B"), /obsolete-output|is ready/);
+  });
+}
+
+test("late video errors cannot overwrite new-passage status", async () => {
+  const checked = deferred();
+  const page = workFixture("video", {
+    startVideo: async () => ({ ok: true, requestId: "fixture-job" }),
+    checkVideo: () => checked.promise,
+  });
+  const work = makeButton(page.render(true, "passage A")).props.onClick();
+  await flushWork();
+  await page.tick();
+  page.render(true, "passage B");
+  checked.resolve({ ok: false, error: "obsolete fixture failure" });
+  await work;
+  assert.doesNotMatch(markup(page, "passage B"), /obsolete fixture failure/);
+});
+
+test("unmounted Studio never receives completion state writes", async () => {
+  const result = deferred();
+  const page = workFixture("image", { makeImage: () => result.promise });
+  const work = makeButton(page.render()).props.onClick();
+  page.unmount();
+  result.resolve({ ok: true, src: "https://fixture.invalid/image" });
+  await work;
+  assert.equal(page.unmountedWrites(), 0);
+});
+
+test("video polling remains sequential and delivers a successful current-context film", async () => {
+  const first = deferred();
+  let starts = 0, polls = 0;
+  const page = workFixture("video", {
+    startVideo: async () => { starts++; return { ok: true, requestId: "fixture-job" }; },
+    checkVideo: () => ++polls === 1 ? first.promise : Promise.resolve({ ok: true, status: "done", src: "https://fixture.invalid/current.mp4" }),
+  });
+  const work = makeButton(page.render(true, "passage A")).props.onClick();
+  await flushWork();
+  await page.tick();
+  assert.equal(page.timers.length, 0, "no overlapping scheduled poll while a status call is pending");
+  first.resolve({ ok: true, status: "waiting" });
+  await flushWork();
+  assert.equal(page.timers.length, 1);
+  await page.tick();
+  await work;
+  assert.equal(starts, 1);
+  assert.equal(polls, 2);
+  assert.match(markup(page), /current.mp4/);
+  assert.match(markup(page), /Film is ready/);
+});
+
+test("24 pending polls stop without a duplicate submission or misleading retry instruction", async () => {
+  let starts = 0, polls = 0;
+  const page = workFixture("video", {
+    startVideo: async () => { starts++; return { ok: true, requestId: "fixture-job" }; },
+    checkVideo: async () => { polls++; return { ok: true, status: "waiting" }; },
+  });
+  const work = makeButton(page.render(true, "passage A")).props.onClick();
+  await flushWork();
+  for (let i = 0; i < 24; i++) await page.tick();
+  await work;
+  assert.equal(starts, 1);
+  assert.equal(polls, 24);
+  assert.equal(page.timers.length, 0);
+  assert.doesNotMatch(markup(page), /Try again/);
+  assert.match(markup(page), /Make starts a new request/);
+});
+
+
+test("closing and reopening the same passage preserves an already-running film", async () => {
+  const checked = deferred();
+  const page = workFixture("video", {
+    startVideo: async () => ({ ok: true, requestId: "fixture-job" }),
+    checkVideo: () => checked.promise,
+  });
+  const work = makeButton(page.render(true, "passage A")).props.onClick();
+  await flushWork();
+  await page.tick();
+  page.render(false, "passage A");
+  assert.equal(makeButton(page.render(true, "passage A")).props.disabled, true);
+  checked.resolve({ ok: true, status: "done", src: "https://fixture.invalid/same-passage.mp4" });
+  await work;
+  assert.match(markup(page), /same-passage.mp4/);
+});
+
+test("a changed passage does not release busy or change the finite background polling budget", async () => {
+  let starts = 0, polls = 0;
+  const page = workFixture("video", {
+    startVideo: async () => { starts++; return { ok: true, requestId: "fixture-job" }; },
+    checkVideo: async () => { polls++; return { ok: true, status: "waiting" }; },
+  });
+  const work = makeButton(page.render(true, "passage A")).props.onClick();
+  await flushWork();
+  page.render(true, "passage B");
+  for (let i = 0; i < 24; i++) {
+    assert.equal(makeButton(page.render(true, "passage B")).props.disabled, true);
+    await page.tick();
+    assert.doesNotMatch(markup(page, "passage B"), /film is still being made|Status checking stopped/);
+  }
+  await work;
+  assert.equal(starts, 1);
+  assert.equal(polls, 24);
+  assert.equal(page.timers.length, 0);
+  assert.equal(makeButton(page.render(true, "passage B")).props.disabled, false);
+});
+
+test("late submission failure neither starts polling nor overwrites a changed passage", async () => {
+  const started = deferred();
+  let polls = 0;
+  const page = workFixture("video", {
+    startVideo: () => started.promise,
+    checkVideo: () => { polls++; throw new Error("Unexpected status call"); },
+  });
+  const work = makeButton(page.render(true, "passage A")).props.onClick();
+  page.render(true, "passage B");
+  started.resolve({ ok: false, error: "obsolete submission failure" });
+  await work;
+  assert.equal(polls, 0);
+  assert.equal(page.timers.length, 0);
+  assert.doesNotMatch(markup(page, "passage B"), /obsolete submission failure/);
+});
+
+test("thrown polling errors are sanitized and do not suggest a blind retry", async () => {
+  let starts = 0, polls = 0;
+  const page = workFixture("video", {
+    startVideo: async () => { starts++; return { ok: true, requestId: "fixture-job" }; },
+    checkVideo: async () => { polls++; throw new Error("synthetic-sensitive-provider-body"); },
+  });
+  const work = makeButton(page.render(true, "passage A")).props.onClick();
+  await flushWork();
+  await page.tick();
+  await work;
+  assert.equal(starts, 1);
+  assert.equal(polls, 1);
+  assert.equal(page.timers.length, 0);
+  assert.doesNotMatch(markup(page), /synthetic-sensitive-provider-body|Try again/);
+  assert.match(markup(page), /provider may still process it/);
+});
+
+test("a thrown old shaping failure cannot overwrite the current passage", async () => {
+  const result = deferred();
+  const page = workFixture("video", { shapePrompt: () => result.promise });
+  const work = button(page.render(true, "passage A"), "Shape the prompt").props.onClick();
+  page.render(true, "passage B");
+  result.reject(new Error("synthetic shaping failure"));
+  await work;
+  assert.doesNotMatch(markup(page, "passage B"), /could not be shaped|synthetic shaping failure/);
 });
