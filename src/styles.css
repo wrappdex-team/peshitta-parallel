@@ -7,6 +7,8 @@
 @import "@fontsource/noto-sans-jp/400.css";
 @import "@fontsource/noto-naskh-arabic/arabic-400.css";
 @import "@fontsource/noto-serif/cyrillic-400.css";
+@import "@fontsource/noto-serif/greek-400.css";
+@import "@fontsource/noto-serif-hebrew/hebrew-400.css";
 
 :root {
   --paper: #f3efe4;
@@ -53,6 +55,8 @@
   --font-kana: "Noto Sans JP", "Noto Sans SC", "Newsreader", sans-serif;
   --font-arab: "Noto Naskh Arabic", "Noto Sans Arabic", serif;
   --font-cyr: "Noto Serif", "Newsreader", serif;
+  --font-greek: "Noto Serif", "Newsreader", serif;
+  --font-hebrew: "Noto Serif Hebrew", "Noto Serif", serif;
   --color-scrim: var(--scrim);
 }
 

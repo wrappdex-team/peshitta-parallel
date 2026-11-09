@@ -28,6 +28,8 @@ const VOICES = new Set<VoiceId>(["ara", "rex"]);
 /** Keep each clip under the host response limit while staying near 128 kbps. */
 const CHUNK: Record<LangId, number> = {
   en: 1500,
+  el: 1400,
+  he: 1100,
   es: 1500,
   fr: 1500,
   de: 1500,
@@ -39,6 +41,26 @@ const CHUNK: Record<LangId, number> = {
 };
 
 const LOCAL_NAMES: Record<Exclude<LangId, "en">, Record<string, string>> = {
+  el: {
+    matthew: "Ματταί", mark: "Μαρκός", luke: "Λουκά", john: "Γιοχανάν", acts: "Πράξεις", romans: "Ρωμαίους",
+    "1corinthians": "Πρώτη προς Κορινθίους", "2corinthians": "Δεύτερη προς Κορινθίους", galatians: "Γαλάτες",
+    ephesians: "Εφέσιους", philippians: "Φιλιππησίους", colossians: "Κολοσσαείς",
+    "1thessalonians": "Πρώτη προς Θεσσαλονικείς", "2thessalonians": "Δεύτερη προς Θεσσαλονικείς",
+    "1timothy": "Πρώτη προς Τιμόθεο", "2timothy": "Δεύτερη προς Τιμόθεο", titus: "Τίτο", philemon: "Φιλήμονα",
+    hebrews: "Εβραίους", james: "Γιακόβ", "1peter": "Πρώτη του Κεφά", "2peter": "Δεύτερη του Κεφά",
+    "1john": "Πρώτη του Γιοχανάν", "2john": "Δεύτερη του Γιοχανάν", "3john": "Τρίτη του Γιοχανάν", jude: "Γεχούντα",
+    revelation: "Αποκάλυψη",
+  },
+  he: {
+    matthew: "מתי", mark: "מרקוס", luke: "לוקא", john: "יוחנן", acts: "מעשי השליחים", romans: "אל הרומאים",
+    "1corinthians": "הראשונה אל הקורינתים", "2corinthians": "השנייה אל הקורינתים", galatians: "אל הגלטים",
+    ephesians: "אל האפסים", philippians: "אל הפיליפים", colossians: "אל הקולוסים",
+    "1thessalonians": "הראשונה אל התסלוניקים", "2thessalonians": "השנייה אל התסלוניקים",
+    "1timothy": "הראשונה אל טימותאוס", "2timothy": "השנייה אל טימותאוס", titus: "אל טיטוס", philemon: "אל פילמון",
+    hebrews: "אל העברים", james: "יעקב", "1peter": "הראשונה של כיפא", "2peter": "השנייה של כיפא",
+    "1john": "הראשונה של יוחנן", "2john": "השנייה של יוחנן", "3john": "השלישית של יוחנן", jude: "יהודה",
+    revelation: "ההתגלות",
+  },
   es: {
     matthew: "Mateo", mark: "Marcos", luke: "Lucas", john: "Juan", acts: "Hechos", romans: "Romanos",
     "1corinthians": "Primera de Corintios", "2corinthians": "Segunda de Corintios", galatians: "Gálatas",
@@ -110,6 +132,8 @@ const LOCAL_NAMES: Record<Exclude<LangId, "en">, Record<string, string>> = {
 };
 
 function leadIn(lang: LangId, name: string, chapter: number) {
+  if (lang === "el") return `${name}, κεφάλαιο ${chapter}. `;
+  if (lang === "he") return `${name}, פרק ${chapter}. `;
   if (lang === "es") return `${name}, capítulo ${chapter}. `;
   if (lang === "zh") return `${name}，第${chapter}章。`;
   if (lang === "de") return `${name}, Kapitel ${chapter}. `;

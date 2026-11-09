@@ -83,6 +83,12 @@ function Study() {
             The names as they were carried.
           </p>
           <p>
+            The contemporary Greek and the contemporary Hebrew do that same work. They are not Koine, and they
+            are not the Hebrew of the prophets. They are how those sentences are said now. The names stay:
+            Ιεσούα, ישוע, Ελοχίμ, אלוהים, Μασιάχ, משיח, Κεφά, כיפא. Where the Peshitta and a later Greek copy
+            part company, these lines stay with the Syriac.
+          </p>
+          <p>
             The old Peshitta collection held the Gospels, the Acts, Paul, and the letters the first Syriac
             churches already read. Five books were brought into Syriac afterward, and this reader marks them.
             Do not get distracted by that. The gospel was not waiting on a later appendix. Death is in Matthew.

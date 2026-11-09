@@ -36,9 +36,13 @@ function readingFace(id: LangId) {
       ? "font-syriac text-2xl leading-normal"
       : language.face === "arab"
         ? "font-arab text-xl leading-relaxed"
-        : language.face === "cyrl"
-          ? "font-cyr text-lg leading-relaxed"
-          : "font-serif text-lg leading-relaxed";
+        : language.face === "hebrew"
+          ? "font-hebrew text-xl leading-relaxed"
+          : language.face === "greek"
+            ? "font-greek text-lg leading-relaxed"
+            : language.face === "cyrl"
+              ? "font-cyr text-lg leading-relaxed"
+              : "font-serif text-lg leading-relaxed";
   return { dir: language.dir, face, code: language.face === "syriac" ? "syr" : language.id };
 }
 
@@ -326,7 +330,7 @@ function Words() {
                     type="button"
                     aria-pressed={prefs.lang === item.id}
                     onClick={() => patch({ lang: item.id === prefs.lang2 ? prefs.lang : item.id, lang2: item.id === prefs.lang2 ? "none" : prefs.lang2 })}
-                    className={`min-h-11 px-3 ${prefs.lang === item.id ? "text-garnet" : "text-muted"} ${item.face === "syriac" ? "font-syriac text-lg" : item.face === "arab" ? "font-arab text-lg" : item.face === "cyrl" ? "font-cyr" : ""}`}
+                    className={`min-h-11 px-3 ${prefs.lang === item.id ? "text-garnet" : "text-muted"} ${item.face === "syriac" ? "font-syriac text-lg" : item.face === "arab" ? "font-arab text-lg" : item.face === "hebrew" ? "font-hebrew text-lg" : item.face === "greek" ? "font-greek" : item.face === "cyrl" ? "font-cyr" : ""}`}
                   >
                     {item.label}
                   </button>
@@ -348,7 +352,7 @@ function Words() {
                     type="button"
                     aria-pressed={prefs.lang2 === item.id}
                     onClick={() => patch({ lang2: item.id })}
-                    className={`min-h-11 px-3 ${prefs.lang2 === item.id ? "text-garnet" : "text-muted"} ${item.face === "syriac" ? "font-syriac text-lg" : item.face === "arab" ? "font-arab text-lg" : item.face === "cyrl" ? "font-cyr" : ""}`}
+                    className={`min-h-11 px-3 ${prefs.lang2 === item.id ? "text-garnet" : "text-muted"} ${item.face === "syriac" ? "font-syriac text-lg" : item.face === "arab" ? "font-arab text-lg" : item.face === "hebrew" ? "font-hebrew text-lg" : item.face === "greek" ? "font-greek" : item.face === "cyrl" ? "font-cyr" : ""}`}
                   >
                     {item.label}
                   </button>

@@ -4,4 +4,4 @@ export const SITE_ORIGIN = "https://peshitta-parallel.vercel.app";
 export const SITE_NAME = "Injeel";
 
 export const SITE_DESCRIPTION =
-  "Injeel. The words of Y'shua, kept. The Peshitta New Testament in classical Syriac, read beside English, Arabic, French, Russian, and more.";
+  "Injeel. The words of Y'shua, kept. The Peshitta New Testament in classical Syriac, read beside English, contemporary Greek, contemporary Hebrew, Arabic, French, Russian, and more.";

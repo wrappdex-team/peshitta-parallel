@@ -4,6 +4,16 @@ import { useNavigate } from "@tanstack/react-router";
 import { bookMeta } from "@/data/edition";
 import { loadLanguageSearch, loadSearch, loadSyriacSearch, type SearchRow } from "@/lib/scripture";
 
+function scriptOf(query: string) {
+  if (/[\u0700-\u074F]/.test(query)) return "syr";
+  if (/[\u0590-\u05FF]/.test(query)) return "he";
+  if (/[\u0600-\u06FF]/.test(query)) return "ar";
+  if (/[\u0370-\u03FF]/.test(query)) return "el";
+  if (/[\u0400-\u04FF]/.test(query)) return "ru";
+  if (/[àâäéèêëïîôùûüçœæ]/i.test(query)) return "fr";
+  return "";
+}
+
 type Props = {
   open: boolean;
   onClose: () => void;
@@ -42,8 +52,8 @@ export function SearchPanel({ open, onClose }: Props) {
   useEffect(() => {
     if (!open) return;
     const query = q.trim();
-    const lang = /[\u0600-\u06FF]/.test(query) ? "ar" : /[\u0400-\u04FF]/.test(query) ? "ru" : /[àâäéèêëïîôùûüçœæ]/i.test(query) ? "fr" : "";
-    if (!lang || langRows[lang]) return;
+    const lang = scriptOf(query);
+    if (!lang || lang === "syr" || langRows[lang]) return;
     let live = true;
     loadLanguageSearch(lang)
       .then((data) => {
@@ -60,11 +70,9 @@ export function SearchPanel({ open, onClose }: Props) {
   const hits = useMemo(() => {
     const query = q.trim();
     if (query.length < 2) return [];
-    const syriac = /[\u0700-\u074F]/.test(query);
-    const arabic = /[\u0600-\u06FF]/.test(query);
-    const cyrillic = /[\u0400-\u04FF]/.test(query);
-    const french = /[àâäéèêëïîôùûüçœæ]/i.test(query);
-    const source = syriac ? syRows : arabic ? langRows.ar : cyrillic ? langRows.ru : french ? langRows.fr : rows;
+    const syriac = scriptOf(query) === "syr";
+    const tongue = scriptOf(query);
+    const source = syriac ? syRows : tongue ? langRows[tongue] : rows;
     if (!source) return [];
     const needle = syriac ? query.replace(/[\u0700-\u070d]/g, "") : query.toLowerCase();
     const found: SearchRow[] = [];
@@ -91,7 +99,7 @@ export function SearchPanel({ open, onClose }: Props) {
             data-modal-initial
             value={q}
             onChange={(event) => setQ(event.target.value)}
-            placeholder="A word, in English, Arabic, French, Russian, or Syriac"
+            placeholder="A word, in English, Greek, Hebrew, Arabic, French, Russian, or Syriac"
             className="min-w-0 flex-1 bg-transparent font-serif text-lg text-ink outline-none placeholder:text-muted"
           />
           <button type="button" className="min-h-11 shrink-0 px-2 text-garnet" onClick={onClose}>
@@ -104,13 +112,19 @@ export function SearchPanel({ open, onClose }: Props) {
           {rows && q.trim().length < 2 && (
             <p className="p-4 text-sm text-muted">Type two letters, or a Syriac word.</p>
           )}
-          {rows && /[\u0600-\u06FF]/.test(q) && !langRows.ar && (
+          {rows && scriptOf(q) === "he" && !langRows.he && (
+            <p className="p-4 text-sm text-muted">Opening the Hebrew…</p>
+          )}
+          {rows && scriptOf(q) === "el" && !langRows.el && (
+            <p className="p-4 text-sm text-muted">Opening the Greek…</p>
+          )}
+          {rows && scriptOf(q) === "ar" && !langRows.ar && (
             <p className="p-4 text-sm text-muted">Opening the Arabic…</p>
           )}
-          {rows && /[\u0400-\u04FF]/.test(q) && !langRows.ru && (
+          {rows && scriptOf(q) === "ru" && !langRows.ru && (
             <p className="p-4 text-sm text-muted">Opening the Russian…</p>
           )}
-          {rows && /[àâäéèêëïîôùûüçœæ]/i.test(q) && !langRows.fr && (
+          {rows && scriptOf(q) === "fr" && !langRows.fr && (
             <p className="p-4 text-sm text-muted">Opening the French…</p>
           )}
           {hits.map(([id, chapter, verse, text]) => {
@@ -132,7 +146,7 @@ export function SearchPanel({ open, onClose }: Props) {
                 <span className="text-sm text-gold">
                   {meta?.name ?? id} {chapter}:{verse}
                 </span>
-                <span className={`mt-1 block text-sm leading-relaxed text-ink ${/[\u0700-\u074F]/.test(text) ? "font-syriac text-xl text-syriac" : /[\u0600-\u06FF]/.test(text) ? "font-arab text-lg" : /[\u0400-\u04FF]/.test(text) ? "font-cyr" : ""}`} dir={/[\u0700-\u074F\u0600-\u06FF]/.test(text) ? "rtl" : "ltr"} lang={/[\u0700-\u074F]/.test(text) ? "syr" : /[\u0600-\u06FF]/.test(text) ? "ar" : /[\u0400-\u04FF]/.test(text) ? "ru" : "en"}>
+                <span className={`mt-1 block text-sm leading-relaxed text-ink ${/[\u0700-\u074F]/.test(text) ? "font-syriac text-xl text-syriac" : /[\u0590-\u05FF]/.test(text) ? "font-hebrew text-lg" : /[\u0600-\u06FF]/.test(text) ? "font-arab text-lg" : /[\u0370-\u03FF]/.test(text) ? "font-greek" : /[\u0400-\u04FF]/.test(text) ? "font-cyr" : ""}`} dir={/[\u0700-\u074F\u0590-\u05FF\u0600-\u06FF]/.test(text) ? "rtl" : "ltr"} lang={/[\u0700-\u074F]/.test(text) ? "syr" : /[\u0590-\u05FF]/.test(text) ? "he" : /[\u0600-\u06FF]/.test(text) ? "ar" : /[\u0370-\u03FF]/.test(text) ? "el" : /[\u0400-\u04FF]/.test(text) ? "ru" : "en"}>
                   {text}
                 </span>
               </button>
