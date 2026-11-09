@@ -27,13 +27,5 @@
       "source": "/sitemap.xml",
       "headers": [{ "key": "Cache-Control", "value": "public, max-age=3600" }]
     }
-  ],
-  "redirects": [
-    {
-      "source": "/:path*",
-      "has": [{ "type": "host", "value": "www.injeel.news" }],
-      "destination": "https://injeel.news/:path*",
-      "permanent": true
-    }
   ]
 }
