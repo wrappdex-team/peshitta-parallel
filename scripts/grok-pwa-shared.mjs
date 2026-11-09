@@ -16,12 +16,14 @@ const SHARE_META_KEYS = new Set([
   "og:image",
   "og:image:width",
   "og:image:height",
+  "og:image:alt",
   "og:type",
   "og:url",
   "og:site_name",
   "twitter:card",
   "twitter:title",
   "twitter:image",
+  "twitter:image:alt",
   "twitter:description",
   "x:game:image",
   "x:game:image:width",
@@ -110,10 +112,27 @@ export function publicAppHost(hostHeader) {
  * request host / X-Forwarded-Host. Never prefer request Host on a published
  * app — Envoy rewrites it to `*.vercel.app`.
  */
-export function resolvePublicHost(hostHeader) {
-  return (
-    publicAppHost(process.env?.VITE_PUBLIC_HOSTNAME) || publicAppHost(hostHeader)
-  );
+export function declaredOriginHost(site = {}) {
+  const raw = String(site.origin ?? "").trim();
+  if (!raw) return "";
+  let host = "";
+  try {
+    host = new URL(raw).hostname.toLowerCase();
+  } catch {
+    return "";
+  }
+  const plain = publicAppHost(host);
+  if (plain) return plain;
+  // A named production app may live on vercel.app. Preview hashes and the
+  // platform domains stay rejected unless this site declares that exact origin.
+  if (!isVercelSystemHost(host)) return "";
+  const label = host.endsWith(".vercel.app") ? host.slice(0, -".vercel.app".length) : "";
+  if (!/^[a-z0-9-]{3,40}$/.test(label) || label === "demo" || label === "www") return "";
+  return host;
+}
+
+export function resolvePublicHost(hostHeader, site = {}) {
+  return publicAppHost(process.env?.VITE_PUBLIC_HOSTNAME) || publicAppHost(hostHeader) || declaredOriginHost(site);
 }
 
 export function isInstallQuery(url) {
@@ -151,29 +170,60 @@ export function stripInstallParams(url) {
   return rest ? `${path}?${rest}` : path;
 }
 
-export function renderInstallPageHtml(template, { host, url } = {}) {
+export function renderInstallPageHtml(template, { host, url, site } = {}) {
+  const resolved = site && typeof site === "object" ? site : readOgSite();
+  const fromHost = appNameFromHost(host);
+  const name =
+    fromHost !== DEFAULT_APP_NAME
+      ? fromHost
+      : String(resolved.name ?? "").trim() ||
+        String(resolved.title ?? "").trim() ||
+        DEFAULT_APP_NAME;
   return String(template)
-    .replaceAll("{{APP_NAME}}", escapeHtml(appNameFromHost(host)))
+    .replaceAll("{{APP_NAME}}", escapeHtml(name))
     .replaceAll("{{APP_URL}}", escapeHtml(stripInstallParams(url)));
 }
 
-export function renderWebManifest(hostHeader) {
-  const name = appNameFromHost(hostHeader);
+export function renderWebManifest(hostHeader, site) {
+  const resolved = site && typeof site === "object" ? site : readOgSite();
+  const fromHost = appNameFromHost(hostHeader);
+  const hostIsReal = fromHost !== DEFAULT_APP_NAME;
+  const name = hostIsReal
+    ? fromHost
+    : String(resolved.name ?? "").trim() ||
+      String(resolved.title ?? "").trim() ||
+      DEFAULT_APP_NAME;
+  const shortName = hostIsReal ? fromHost : String(resolved.short_name ?? "").trim() || name;
+  const description = hostIsReal ? "" : String(resolved.description ?? "").trim();
   return JSON.stringify(
     {
       name,
-      short_name: name,
+      short_name: shortName,
+      description: description || undefined,
       id: "/",
       start_url: "/",
       scope: "/",
       display: "standalone",
-      background_color: "#000000",
-      theme_color: "#000000",
+      background_color: "#f3efe4",
+      theme_color: "#f3efe4",
       icons: [
         {
           src: "/__grok/icon-180.png",
           sizes: "180x180",
           type: "image/png",
+          purpose: "any",
+        },
+        {
+          src: "/__grok/icon-192.png",
+          sizes: "192x192",
+          type: "image/png",
+          purpose: "any",
+        },
+        {
+          src: "/__grok/icon-512.png",
+          sizes: "512x512",
+          type: "image/png",
+          purpose: "any",
         },
       ],
     },
@@ -347,14 +397,16 @@ export function grokOgHeadTags({
   cwd = process.cwd(),
 } = {}) {
   const title = resolveOgTitle(site, appName, host, documentTitle);
-  const publicHost = resolvePublicHost(host);
+  const publicHost = resolvePublicHost(host, site);
+  const description = String(site.description ?? "").trim();
   const tags = [
     `<meta name="twitter:card" content="summary_large_image">`,
     `<meta property="og:title" content="${escapeHtml(title)}">`,
+    `<meta name="twitter:title" content="${escapeHtml(title)}">`,
   ];
-  const description = String(site.description ?? "").trim();
   if (description) {
     tags.push(`<meta property="og:description" content="${escapeHtml(description)}">`);
+    tags.push(`<meta name="twitter:description" content="${escapeHtml(description)}">`);
   }
   if (String(site.type ?? "").toLowerCase() === "x:game") {
     tags.push(`<meta property="og:type" content="x:game">`);
@@ -367,9 +419,13 @@ export function grokOgHeadTags({
       : `${ogServiceUrl()}/v1/card.png?host=${encodeURIComponent(publicHost)}&title=${encodeURIComponent(title)}`;
     const color = !custom ? placeholderCardColor(site) : "";
     if (color) image += `&color=${encodeURIComponent(color)}`;
+    const alt = description ? `${title}. ${description}` : title;
     tags.push(`<meta property="og:image" content="${escapeHtml(image)}">`);
     tags.push(`<meta property="og:image:width" content="1200">`);
     tags.push(`<meta property="og:image:height" content="630">`);
+    tags.push(`<meta property="og:image:alt" content="${escapeHtml(alt)}">`);
+    tags.push(`<meta name="twitter:image" content="${escapeHtml(image)}">`);
+    tags.push(`<meta name="twitter:image:alt" content="${escapeHtml(alt)}">`);
     const banner = String(site.banner ?? "").trim();
     if (banner) {
       const bannerUrl = `https://${publicHost}${banner.startsWith("/") ? banner : `/${banner}`}`;

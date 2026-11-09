@@ -140,4 +140,158 @@
   html {
     scroll-behavior: auto;
   }
+  .scroll-leaf,
+  .scroll-stage[data-turn] .scroll-roller {
+    animation: none;
+  }
+}
+
+/* A manuscript scroll. The rollers are the way forward and back. */
+.scroll-stage {
+  width: min(26.75rem, 100%);
+  filter: drop-shadow(0 24px 40px rgb(28 22 18 / 0.42));
+}
+.scroll-pull {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  color: #f6efe0;
+}
+.scroll-pull:disabled .scroll-pull-word {
+  opacity: 0.45;
+}
+.scroll-pull-word {
+  min-height: 1rem;
+  font-family: var(--font-serif);
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  text-shadow: 0 1px 2px rgb(28 22 18 / 0.55);
+}
+.scroll-roller {
+  position: relative;
+  display: block;
+  height: 20px;
+  width: calc(100% - 1.35rem);
+  border-radius: 999px;
+  background-image: repeating-linear-gradient(
+    180deg,
+    #f3e6c8 0px,
+    #c99655 2px,
+    #7a4e24 5px,
+    #4e3218 8px,
+    #a8753c 11px,
+    #f6ead0 14px
+  );
+  background-size: 100% 14px;
+  box-shadow:
+    inset 0 1px 0 rgb(255 248 230 / 0.8),
+    inset 0 -3px 3px rgb(40 22 8 / 0.55),
+    0 2px 2px rgb(28 22 18 / 0.28);
+}
+.scroll-roller::before,
+.scroll-roller::after {
+  content: "";
+  position: absolute;
+  top: -6px;
+  width: 13px;
+  height: 32px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, #3a2614, #f0d48a 38%, #8a6230 62%, #2c1c0e);
+  box-shadow: 0 1px 2px rgb(28 22 18 / 0.45);
+}
+.scroll-roller::before {
+  left: -6px;
+}
+.scroll-roller::after {
+  right: -6px;
+}
+.scroll-parchment {
+  position: relative;
+  z-index: 1;
+  max-height: min(32rem, calc(100dvh - 9.5rem));
+  margin-top: -11px;
+  margin-bottom: -11px;
+  overflow-y: auto;
+  border-inline: 1px solid #c4ae82;
+  background-color: #f4ead6;
+  background-image:
+    radial-gradient(120% 55% at 50% 0%, rgb(255 252 244 / 0.75), transparent 46%),
+    radial-gradient(90% 40% at 50% 100%, rgb(150 110 55 / 0.1), transparent 50%),
+    linear-gradient(90deg, rgb(88 56 22 / 0.28), transparent 8%, transparent 92%, rgb(88 56 22 / 0.28));
+  padding: 1.7rem 1.45rem 1.45rem;
+  color: #1c1612;
+  box-shadow:
+    inset 0 16px 14px -10px rgb(70 44 16 / 0.42),
+    inset 0 -16px 14px -10px rgb(70 44 16 / 0.42);
+}
+.scroll-leaf[data-dir="down"] {
+  animation: scroll-unroll-down 680ms cubic-bezier(0.16, 0.84, 0.28, 1) both;
+}
+.scroll-leaf[data-dir="up"] {
+  animation: scroll-unroll-up 680ms cubic-bezier(0.16, 0.84, 0.28, 1) both;
+}
+.scroll-stage[data-turn="down"] .scroll-roller {
+  animation: roller-down 680ms linear;
+}
+.scroll-stage[data-turn="up"] .scroll-roller {
+  animation: roller-up 680ms linear;
+}
+@keyframes scroll-unroll-down {
+  0% {
+    clip-path: inset(0 0 100% 0);
+    opacity: 0.2;
+  }
+  40% {
+    opacity: 1;
+  }
+  100% {
+    clip-path: inset(0 0 0 0);
+    opacity: 1;
+  }
+}
+@keyframes scroll-unroll-up {
+  0% {
+    clip-path: inset(100% 0 0 0);
+    opacity: 0.2;
+  }
+  40% {
+    opacity: 1;
+  }
+  100% {
+    clip-path: inset(0);
+    opacity: 1;
+  }
+}
+@keyframes roller-down {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 0 28px;
+  }
+}
+@keyframes roller-up {
+  from {
+    background-position: 0 28px;
+  }
+  to {
+    background-position: 0 0;
+  }
+}
+[data-theme="night"] .scroll-parchment {
+  border-color: #3a342c;
+  background-color: #1a1612;
+  background-image:
+    radial-gradient(120% 50% at 50% 0%, rgb(246 231 168 / 0.08), transparent 46%),
+    linear-gradient(90deg, rgb(0 0 0 / 0.5), transparent 10%, transparent 90%, rgb(0 0 0 / 0.5));
+  color: var(--ink);
+  box-shadow:
+    inset 0 16px 14px -10px rgb(0 0 0 / 0.65),
+    inset 0 -16px 14px -10px rgb(0 0 0 / 0.65);
 }

@@ -1,6 +1,9 @@
 {
   "title": "Injeel",
+  "name": "Injeel / Good News",
+  "short_name": "Injeel",
   "description": "The words of Y'shua, kept. The Peshitta New Testament in classical Syriac, beside English, Arabic, French, Russian, and more.",
   "card": "custom",
-  "image": "/og.jpg"
+  "image": "/og.jpg",
+  "origin": "https://peshitta-parallel.vercel.app"
 }

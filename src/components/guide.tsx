@@ -12,11 +12,15 @@ import {
 } from "@/lib/guide";
 
 type Mode = "welcome" | "steps" | "panel" | "books";
+type Dir = "down" | "up";
+
+const CENTER = "fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-[rgb(28_22_18/0.55)] px-4 py-6";
 
 export function Guide() {
   const [ready, setReady] = useState(false);
   const [mode, setMode] = useState<Mode | null>(null);
   const [step, setStep] = useState(0);
+  const [dir, setDir] = useState<Dir>("down");
   const [family, setFamily] = useState(FAMILIES[0].id);
   const [bread, setBread] = useState<Bread>(BREADS_FALLBACK);
 
@@ -27,6 +31,7 @@ export function Guide() {
     function onOpen(event: Event) {
       const detail = (event as CustomEvent<string>).detail;
       if (detail === "steps") {
+        setDir("down");
         setStep(0);
         setMode("steps");
       } else if (detail === "books") {
@@ -51,6 +56,7 @@ export function Guide() {
 
   function begin() {
     finishWelcome();
+    setDir("down");
     setStep(0);
     setMode("steps");
   }
@@ -60,9 +66,15 @@ export function Guide() {
     setMode(null);
   }
 
+  function go(next: number) {
+    setDir(next > step ? "down" : "up");
+    setStep(next);
+  }
+
   if (!ready) return null;
 
   const current = STEPS[step];
+  const last = step >= STEPS.length - 1;
 
   return (
     <>
@@ -78,35 +90,45 @@ export function Guide() {
       )}
 
       {mode === "welcome" && (
-        <Modal label="Daily bread" className="fixed inset-0 z-50 flex items-end justify-center bg-scrim px-4 pb-safe sm:items-center" onClose={dismissAll}>
-          <Sheet>
-            <p className="font-syriac text-2xl text-syriac" lang="syr" dir="rtl">
+        <Modal label="Daily bread" className={CENTER} onClose={dismissAll}>
+          <Scroll
+            leafKey="welcome"
+            dir="down"
+            bottom={{ label: "Unroll the guide", onClick: begin, initial: true }}
+          >
+            <p className="text-center font-syriac text-2xl text-syriac" lang="syr" dir="rtl">
               ܐܘܢܓܠܝܘܢ
             </p>
-            <p className="mt-3 text-xs tracking-widest text-gold">DAILY BREAD</p>
-            <h2 className="mt-2 font-serif text-3xl font-semibold tracking-tight">Come and see.</h2>
-            <p className="mt-3 text-base leading-relaxed">
+            <p className="mt-3 text-center text-xs tracking-widest text-gold">DAILY BREAD</p>
+            <h2 className="mt-2 text-center font-serif text-3xl font-semibold tracking-tight">Come and see.</h2>
+            <p className="mt-3 text-center text-base leading-relaxed">
               The words of Y'shua, kept in the Syriac of the Peshitta. This is a desk. Open a book, hear a line, touch a word.
             </p>
-            <blockquote className="mt-5 border-s-2 border-garnet ps-4">
+            <blockquote className="mt-5 border-s-2 border-garnet ps-4 text-start">
               <p className="font-serif text-lg leading-snug">{bread.line}</p>
               <p className="mt-2 text-sm text-gold">{bread.from}</p>
             </blockquote>
-            <div className="mt-6 flex flex-col gap-2 sm:flex-row">
-              <button type="button" data-modal-initial className="min-h-11 bg-garnet px-4 text-paper" onClick={begin}>
-                Begin the guide
-              </button>
-              <button type="button" className="min-h-11 border border-line px-4" onClick={dismissAll}>
+            <div className="mt-5 text-center">
+              <button type="button" className="min-h-11 px-3 text-sm text-muted" onClick={dismissAll}>
                 Not now
               </button>
             </div>
-          </Sheet>
+          </Scroll>
         </Modal>
       )}
 
       {mode === "steps" && current && (
-        <Modal label="Guide" className="fixed inset-0 z-50 flex items-end justify-center bg-scrim px-4 pb-safe sm:items-center" onClose={finishSteps}>
-          <Sheet>
+        <Modal label="Guide" className={CENTER} onClose={finishSteps}>
+          <Scroll
+            leafKey={step}
+            dir={dir}
+            top={{ label: "Roll back", onClick: () => go(step - 1), disabled: step === 0 }}
+            bottom={{
+              label: last ? "Begin reading" : "Unroll",
+              onClick: last ? finishSteps : () => go(step + 1),
+              initial: true,
+            }}
+          >
             <div className="flex items-center justify-between gap-3">
               <p className="text-xs tracking-widest text-gold">
                 {current.kicker.toUpperCase()} · {step + 1} OF {STEPS.length}
@@ -116,33 +138,22 @@ export function Guide() {
               </button>
             </div>
             <h2 className="mt-2 font-serif text-3xl font-semibold tracking-tight">{current.title}</h2>
-            <p className="mt-3 text-base leading-relaxed">{current.body}</p>
-            <div className="mt-6 flex items-center justify-between gap-3">
-              <button
-                type="button"
-                className="min-h-11 px-3 text-sm text-muted disabled:opacity-40"
-                disabled={step === 0}
-                onClick={() => setStep((n) => Math.max(0, n - 1))}
-              >
-                Back
-              </button>
-              {step < STEPS.length - 1 ? (
-                <button type="button" data-modal-initial className="min-h-11 bg-garnet px-4 text-paper" onClick={() => setStep((n) => n + 1)}>
-                  Next
-                </button>
-              ) : (
-                <button type="button" data-modal-initial className="min-h-11 bg-garnet px-4 text-paper" onClick={finishSteps}>
-                  Begin reading
-                </button>
-              )}
+            <div className="mt-3 h-px w-16 bg-gold" />
+            <p className="mt-3 text-base leading-relaxed" aria-live="polite">
+              {current.body}
+            </p>
+            <div className="mt-6 flex justify-center gap-1.5" aria-hidden="true">
+              {STEPS.map((_, index) => (
+                <span key={index} className={`h-px w-5 ${index <= step ? "bg-gold" : "bg-[#c9b48a]"}`} />
+              ))}
             </div>
-          </Sheet>
+          </Scroll>
         </Modal>
       )}
 
       {mode === "panel" && (
-        <Modal label="Guide" className="fixed inset-0 z-50 flex items-end justify-center bg-scrim px-4 pb-safe sm:items-center" onClose={() => setMode(null)}>
-          <Sheet>
+        <Modal label="Guide" className={CENTER} onClose={() => setMode(null)}>
+          <Scroll leafKey="panel" dir="down">
             <div className="flex items-start justify-between gap-3">
               <div>
                 <p className="text-xs tracking-widest text-gold">TODAY’S BREAD</p>
@@ -162,29 +173,30 @@ export function Guide() {
               <li>Lines in red are the words of Y'shua.</li>
             </ul>
             <div className="mt-5 flex flex-col gap-2">
-              <button type="button" className="min-h-11 border border-line px-4 text-start" onClick={() => setMode("books")}>
+              <button type="button" className="min-h-11 border border-[#c9b48a] px-4 text-start" onClick={() => setMode("books")}>
                 <span className="block font-serif text-lg text-ink">The books</span>
                 <span className="block text-sm text-muted">Gospels, Acts, letters, the unveiling</span>
               </button>
               <button
                 type="button"
-                className="min-h-11 border border-line px-4 text-start"
+                className="min-h-11 border border-[#c9b48a] px-4 text-start"
                 onClick={() => {
+                  setDir("down");
                   setStep(0);
                   setMode("steps");
                 }}
               >
                 <span className="block font-serif text-lg text-ink">Walk the guide again</span>
-                <span className="block text-sm text-muted">Seven short steps, then it hides</span>
+                <span className="block text-sm text-muted">Seven short steps. Unroll each one.</span>
               </button>
             </div>
-          </Sheet>
+          </Scroll>
         </Modal>
       )}
 
       {mode === "books" && (
-        <Modal label="The books" className="fixed inset-0 z-50 flex items-end justify-center bg-scrim px-4 pb-safe sm:items-center" onClose={() => setMode("panel")}>
-          <Sheet>
+        <Modal label="The books" className={CENTER} onClose={() => setMode("panel")}>
+          <Scroll leafKey="books" dir="down">
             <div className="flex items-center justify-between gap-3">
               <button type="button" className="min-h-11 px-1 text-sm text-garnet" onClick={() => setMode("panel")}>
                 Back
@@ -201,7 +213,7 @@ export function Guide() {
               {FAMILIES.map((item) => {
                 const open = family === item.id;
                 return (
-                  <div key={item.id} className="border border-line">
+                  <div key={item.id} className="border border-[#c9b48a]">
                     <button
                       type="button"
                       className="flex min-h-11 w-full items-center justify-between gap-3 px-3 py-2 text-start"
@@ -213,12 +225,12 @@ export function Guide() {
                         <span className="block text-sm text-gold">{item.books}</span>
                       </span>
                     </button>
-                    {open && <p className="border-t border-line px-3 py-3 text-sm leading-relaxed">{item.body}</p>}
+                    {open && <p className="border-t border-[#c9b48a] px-3 py-3 text-sm leading-relaxed">{item.body}</p>}
                   </div>
                 );
               })}
             </div>
-          </Sheet>
+          </Scroll>
         </Modal>
       )}
     </>
@@ -230,10 +242,52 @@ const BREADS_FALLBACK: Bread = {
   from: "John 1:1",
 };
 
-function Sheet({ children }: { children: ReactNode }) {
+function Scroll({
+  children,
+  leafKey,
+  dir,
+  top,
+  bottom,
+}: {
+  children: ReactNode;
+  leafKey: string | number;
+  dir: Dir;
+  top?: { label: string; onClick: () => void; disabled?: boolean };
+  bottom?: { label: string; onClick: () => void; initial?: boolean };
+}) {
   return (
-    <div className="max-h-sheet w-full max-w-lg overflow-y-auto border border-line bg-paper px-5 py-6 text-ink sm:px-6">
-      {children}
+    <div className="scroll-stage" data-turn={dir}>
+      {top ? (
+        <button type="button" className="scroll-pull" disabled={top.disabled} aria-label={top.label} onClick={top.onClick}>
+          <span className="scroll-pull-word">{top.label}</span>
+          <span className="scroll-roller" aria-hidden="true" />
+        </button>
+      ) : (
+        <div className="scroll-pull" aria-hidden="true">
+          <span className="scroll-roller" />
+        </div>
+      )}
+      <div className="scroll-parchment">
+        <div key={leafKey} className="scroll-leaf" data-dir={dir}>
+          {children}
+        </div>
+      </div>
+      {bottom ? (
+        <button
+          type="button"
+          className="scroll-pull"
+          aria-label={bottom.label}
+          data-modal-initial={bottom.initial ? true : undefined}
+          onClick={bottom.onClick}
+        >
+          <span className="scroll-roller" aria-hidden="true" />
+          <span className="scroll-pull-word">{bottom.label}</span>
+        </button>
+      ) : (
+        <div className="scroll-pull" aria-hidden="true">
+          <span className="scroll-roller" />
+        </div>
+      )}
     </div>
   );
 }
