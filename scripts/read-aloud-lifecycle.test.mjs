@@ -215,6 +215,24 @@ test("missing language match does not silently speak with another language", asy
   assert.match(page.html(), /No matching voice/);
 });
 
+test("new Greek and Hebrew readings match their own voices and fail closed otherwise", async () => {
+  const greekOnlyEnglish = fixture();
+  greekOnlyEnglish.render({ lang: "el" }); await flushWork();
+  button(greekOnlyEnglish.render(), "Read this chapter aloud").props.onClick(); await flushWork();
+  assert.equal(greekOnlyEnglish.spoken.length, 0);
+  assert.match(greekOnlyEnglish.html(), /No matching voice/);
+  for (const [lang, voiceLang] of [["el", "el-GR"], ["he", "he-IL"], ["he", "iw_IL"]]) {
+    const page = fixture({ voices: [
+      { name: "Synthetic English", lang: "en-US", voiceURI: "fixture-en", localService: true },
+      { name: `Synthetic ${voiceLang}`, lang: voiceLang, voiceURI: `fixture-${voiceLang}`, localService: false },
+    ] });
+    page.render({ lang }); await flushWork();
+    button(page.render(), "Read this chapter aloud").props.onClick(); await flushWork();
+    assert.equal(page.spoken.length, 1, voiceLang);
+    assert.equal(page.spoken[0].lang, voiceLang, voiceLang);
+  }
+});
+
 test("explicitly chosen fallback is allowed and setup help covers all requested platforms", async () => {
   const page = fixture();
   page.render({ lang: "es", deviceVoice: "fixture-en" }); await flushWork();

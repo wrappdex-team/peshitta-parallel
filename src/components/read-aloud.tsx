@@ -86,21 +86,29 @@ function listVoices() {
   });
 }
 
+// Some Android/Chrome engines still report Hebrew with the legacy ISO 639 code "iw".
+const VOICE_ALIASES: Record<string, string[]> = { he: ["he", "iw"] };
+
+function voiceMatches(voice: SpeechSynthesisVoice, lang: LangId) {
+  const prefix = languageById(lang).tts.toLowerCase().split("-")[0];
+  if (prefix === "syr") return false;
+  const code = voice.lang.toLowerCase().replace("_", "-").split("-")[0];
+  return (VOICE_ALIASES[prefix] ?? [prefix]).includes(code);
+}
+
 function findVoice(key: string, lang: LangId) {
   const all = listVoices();
   if (key) {
     const exact = all.find((voice) => voiceKey(voice) === key);
     if (exact) return exact;
   }
-  const prefix = languageById(lang).tts.toLowerCase().split("-")[0];
-  return all.find((voice) => voice.lang.toLowerCase().replace("_", "-").split("-")[0] === prefix);
+  return all.find((voice) => voiceMatches(voice, lang));
 }
 
 function orderedVoices(lang: LangId) {
-  const prefix = languageById(lang).tts.toLowerCase().split("-")[0];
   return [...listVoices()].sort((a, b) => {
-    const aMatch = prefix !== "syr" && a.lang.toLowerCase().replace("_", "-").startsWith(prefix) ? 0 : 1;
-    const bMatch = prefix !== "syr" && b.lang.toLowerCase().replace("_", "-").startsWith(prefix) ? 0 : 1;
+    const aMatch = voiceMatches(a, lang) ? 0 : 1;
+    const bMatch = voiceMatches(b, lang) ? 0 : 1;
     if (aMatch !== bMatch) return aMatch - bMatch;
     if (a.localService !== b.localService) return a.localService ? -1 : 1;
     return a.name.localeCompare(b.name);

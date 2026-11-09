@@ -99,6 +99,23 @@ export async function loadSyriacSearch(): Promise<SearchRow[]> {
 
 const PUNCT = /[\u0700-\u070d.,:;]/g;
 
+export type SyriacPiece = { kind: "space"; text: string } | { kind: "word"; text: string; word: string };
+
+export function syriacPieces(sy: string): SyriacPiece[] {
+  const out: SyriacPiece[] = [];
+  for (const part of sy.split(/(\s+)/)) {
+    if (!part) continue;
+    if (!part.trim()) {
+      out.push({ kind: "space", text: part });
+      continue;
+    }
+    const word = part.replace(PUNCT, "");
+    if (!word) out.push({ kind: "space", text: part });
+    else out.push({ kind: "word", text: part, word });
+  }
+  return out;
+}
+
 export function syriacWords(sy: string): string[] {
   const out: string[] = [];
   for (const part of sy.split(/\s+/)) {
@@ -162,42 +179,220 @@ export type WordGloss = {
   via?: string;
 };
 
-export function glossWord(word: string): WordGloss | null {
-  const direct = lex[word];
-  if (direct) return { word, gloss: direct.g, roman: direct.r, note: direct.n };
+export type WordAffix = { sy: string; gloss: string };
 
-  const box: { best: { score: number; gloss: string; roman: string; note: string; via: string } | null } = { best: null };
-  const consider = (score: number, gloss: string, roman: string, note: string, via: string) => {
-    if (!box.best || score > box.best.score) box.best = { score, gloss, roman, note, via };
+export type WordStudy = {
+  word: string;
+  gloss: string;
+  roman: string;
+  note: string;
+  via: string;
+  prefixes: WordAffix[];
+  stem: string;
+  suffixes: WordAffix[];
+  root: string[];
+  rootKind: "triliteral" | "skeleton";
+  rootNote: string;
+  kin: { word: string; gloss: string; roman: string }[];
+};
+
+const LETTER_GLOSS: Record<string, string> = { "ܘ": "and", "ܕ": "of", "ܒ": "in", "ܠ": "to" };
+
+const ROOT_ROMAN: Record<string, string> = {
+  "ܐ": "ʾ", "ܒ": "b", "ܓ": "g", "ܕ": "d", "ܗ": "h", "ܘ": "w", "ܙ": "z",
+  "ܚ": "ḥ", "ܛ": "ṭ", "ܝ": "y", "ܟ": "k", "ܠ": "l", "ܡ": "m", "ܢ": "n",
+  "ܣ": "s", "ܥ": "ʿ", "ܦ": "p", "ܨ": "ṣ", "ܩ": "q", "ܪ": "r", "ܫ": "š", "ܬ": "t",
+};
+
+const WEAK = new Set(["ܐ", "ܘ", "ܝ"]);
+
+export function rootRoman(letters: string[]) {
+  return letters.map((letter) => ROOT_ROMAN[letter] ?? letter).join("–");
+}
+
+function consonantsOf(stem: string) {
+  return [...stem].filter((letter) => ROOT_ROMAN[letter]);
+}
+
+function proposeRoot(stem: string): { letters: string[]; kind: "triliteral" | "skeleton"; note: string } {
+  let body = stem;
+  let letters = consonantsOf(body);
+  if (body.endsWith("ܬܐ") && letters.length > 3) {
+    body = body.slice(0, -2);
+    letters = consonantsOf(body);
+  }
+  if (body.startsWith("ܐܬ") && letters.length > 3) {
+    const rest = consonantsOf(body.slice(2));
+    const reduced = dropWeak(rest);
+    if (reduced.length === 3) return { letters: reduced, kind: "triliteral", note: "The eth- prefix is set aside. What remains is a triliteral." };
+  }
+  if (letters[0] === "ܡ" && letters.length >= 4) {
+    const reduced = dropWeak(letters.slice(1));
+    if (reduced.length === 3) return { letters: reduced, kind: "triliteral", note: "The mem of a derived noun or participle is set aside. What remains is a triliteral." };
+  }
+  if (letters.length === 3) return { letters, kind: "triliteral", note: "Three consonants stand in the stem." };
+  const reduced = dropWeak(letters);
+  if (reduced.length === 3 && letters.length !== reduced.length) {
+    return { letters: reduced, kind: "triliteral", note: "Weak letters are set aside. The triliteral under the form is proposed, not proved from a photograph." };
+  }
+  if (letters.length > 3) return { letters, kind: "skeleton", note: "More than three consonants. The skeleton is shown whole, not forced into three." };
+  return { letters, kind: "skeleton", note: letters.length ? "Fewer than three consonants. A particle, or a root that has worn thin." : "No consonants to set under a root." };
+}
+
+function dropWeak(letters: string[]) {
+  if (letters.length === 4 && letters.filter((letter) => WEAK.has(letter)).length === 1) {
+    return letters.filter((letter) => !WEAK.has(letter));
+  }
+  const strong = letters.filter((letter) => !WEAK.has(letter));
+  return strong.length === 3 ? strong : letters;
+}
+
+function letterPrefixes(pre: string): WordAffix[] {
+  return [...pre].map((sy) => ({ sy, gloss: LETTER_GLOSS[sy] ?? "" }));
+}
+
+type Parse = {
+  prefixes: WordAffix[];
+  stem: string;
+  suffixes: WordAffix[];
+  gloss: string;
+  roman: string;
+  note: string;
+  via: string;
+  score: number;
+};
+
+function bestParse(word: string): Parse | null {
+  let best: Parse | null = null;
+  const consider = (next: Parse) => {
+    if (!best || next.score > best.score) best = next;
   };
-
   for (const pre of PREFIXES) {
     if (!word.startsWith(pre)) continue;
     const stem = word.slice(pre.length);
     if (stem.length < 2) continue;
     const hit = lexeme(stem);
     if (hit) {
-      consider(stem.length + 20, joinPrefix(pre, hit.g), hit.r ? `${PREFIX_GLOSS[pre]} ${hit.r}` : "", hit.n, `The prefixed letter is “${PREFIX_GLOSS[pre]}.” The stem is ${hit.g}.`);
+      consider({
+        prefixes: letterPrefixes(pre),
+        stem,
+        suffixes: [],
+        gloss: joinPrefix(pre, hit.g),
+        roman: hit.r ? `${PREFIX_GLOSS[pre]} ${hit.r}` : "",
+        note: hit.n,
+        via: `Prefixed “${PREFIX_GLOSS[pre]}.” The stem is ${hit.g}.`,
+        score: stem.length + 20,
+      });
     }
     for (const [suf, who] of SUFFIXES) {
       if (!stem.endsWith(suf) || stem.length - suf.length < 2) continue;
       const core = stem.slice(0, -suf.length);
       const base = lexeme(core);
       if (!base || !nominal(base.g)) continue;
-      consider(core.length, joinPrefix(pre, `${who} ${base.g}`), base.r, base.n, `Prefix “${PREFIX_GLOSS[pre]},” ending “${who}.” The stem is ${base.g}.`);
+      consider({
+        prefixes: letterPrefixes(pre),
+        stem: core,
+        suffixes: [{ sy: suf, gloss: who }],
+        gloss: joinPrefix(pre, `${who} ${base.g}`),
+        roman: base.r,
+        note: base.n,
+        via: `Prefix “${PREFIX_GLOSS[pre]},” ending “${who}.” The stem is ${base.g}.`,
+        score: core.length,
+      });
     }
   }
-
   for (const [suf, who] of SUFFIXES) {
     if (!word.endsWith(suf) || word.length - suf.length < 2) continue;
     const core = word.slice(0, -suf.length);
     const base = lexeme(core);
     if (!base || !nominal(base.g)) continue;
-    consider(core.length, `${who} ${base.g}`, base.r, base.n, `The ending is “${who}.” The stem is ${base.g}.`);
+    consider({
+      prefixes: [],
+      stem: core,
+      suffixes: [{ sy: suf, gloss: who }],
+      gloss: `${who} ${base.g}`,
+      roman: base.r,
+      note: base.n,
+      via: `The ending is “${who}.” The stem is ${base.g}.`,
+      score: core.length,
+    });
   }
+  return best;
+}
 
-  if (!box.best) return null;
-  return { word, gloss: box.best.gloss, roman: box.best.roman, note: box.best.note, via: box.best.via };
+function normGloss(text: string) {
+  return text.toLowerCase().replace(/[“”"',.;:]/g, " ").replace(/\s+/g, " ").trim();
+}
+
+/** A peeled analysis is used only when it says the same thing as the lexicon, or when the lexicon has no whole form. */
+function trustedParse(word: string, direct: LexEntry | undefined) {
+  const parsed = bestParse(word);
+  if (!parsed || (!parsed.prefixes.length && !parsed.suffixes.length)) return null;
+  if (direct && normGloss(direct.g) !== normGloss(parsed.gloss)) return null;
+  return parsed;
+}
+
+function trustedStem(key: string) {
+  const parsed = trustedParse(key, lex[key]);
+  return parsed?.stem || key;
+}
+
+let rootIndex: Map<string, string[]> | null = null;
+
+function kinOf(letters: string, surface: string) {
+  if (!rootIndex) {
+    rootIndex = new Map();
+    for (const key of Object.keys(lex)) {
+      const skeleton = consonantsOf(trustedStem(key)).join("");
+      if (skeleton.length < 2) continue;
+      const list = rootIndex.get(skeleton) ?? [];
+      if (list.length < 40) list.push(key);
+      rootIndex.set(skeleton, list);
+    }
+  }
+  const keys = rootIndex.get(letters) ?? [];
+  return keys
+    .filter((key) => key !== surface)
+    .sort((a, b) => a.length - b.length || a.localeCompare(b))
+    .slice(0, 8)
+    .map((key) => ({ word: key, gloss: lex[key]?.g ?? "", roman: lex[key]?.r ?? "" }));
+}
+
+function nameCore(gloss: string) {
+  return gloss.replace(/^(and|of|in|to|that|his|her|their|your|my|our)\s+/i, "").split(/[,;]/)[0].trim();
+}
+
+export function studyWord(word: string): WordStudy {
+  const direct = lex[word];
+  const parsed = trustedParse(word, direct);
+  const stem = parsed?.stem || word;
+  const root = proposeRoot(stem);
+  const core = nameCore(direct?.g || parsed?.gloss || "");
+  const named = /^[A-Z][A-Za-z'’\-]+$/.test(core);
+  return {
+    word,
+    gloss: direct?.g || parsed?.gloss || "",
+    roman: direct?.r || parsed?.roman || "",
+    note: direct?.n || parsed?.note || "",
+    via: parsed?.via || "",
+    prefixes: parsed?.prefixes ?? [],
+    stem,
+    suffixes: parsed?.suffixes ?? [],
+    root: root.letters,
+    rootKind: named ? "skeleton" : root.kind,
+    rootNote: named
+      ? `“${core}” is a name. The letters below are how the name is spelled, not a verb root.`
+      : root.note,
+    kin: kinOf(consonantsOf(stem).join(""), word),
+  };
+}
+
+export function glossWord(word: string): WordGloss | null {
+  const direct = lex[word];
+  if (direct) return { word, gloss: direct.g, roman: direct.r, note: direct.n };
+  const parsed = bestParse(word);
+  if (!parsed) return null;
+  return { word, gloss: parsed.gloss, roman: parsed.roman, note: parsed.note, via: parsed.via || undefined };
 }
 
 export const TERM_NOTES: Record<string, { title: string; body: string }> = {

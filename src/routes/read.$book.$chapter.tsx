@@ -1,3 +1,4 @@
+import { WordStudySheet } from "@/components/word-study";
 import { Modal } from "@/components/modal";
 import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight, Menu, Moon, Search, Sun } from "lucide-react";
@@ -13,7 +14,9 @@ import {
   chapterCount,
   loadBook,
   loadParallel,
+  studyWord,
   type WordGloss,
+  type WordStudy,
 } from "@/lib/scripture";
 import { usePrefs } from "@/lib/use-prefs";
 import { SITE_ORIGIN } from "@/lib/site";
@@ -76,7 +79,7 @@ function Reader() {
   const [parallel2, setParallel2] = useState<string[][] | null>(null);
   const [search, setSearch] = useState(false);
   const [menu, setMenu] = useState(false);
-  const [sheet, setSheet] = useState<{ title: string; roman: string; body: string } | null>(null);
+  const [sheet, setSheet] = useState<{ title: string; roman: string; body: string } | { study: WordStudy } | null>(null);
   const [heard, setHeard] = useState<number | null>(null);
   const [studio, setStudio] = useState(false);
   const [picked, setPicked] = useState("");
@@ -207,20 +210,8 @@ function Reader() {
     window.scrollTo(0, 0);
   }
 
-  function onWord(info: WordGloss | null, surface: string) {
-    if (!info) {
-      setSheet({
-        title: surface,
-        roman: "",
-        body: "This form is not in the study lexicon. The English sentence above is the reading of the whole verse.",
-      });
-      return;
-    }
-    setSheet({
-      title: surface,
-      roman: info.roman,
-      body: [info.gloss, info.via, info.note].filter(Boolean).join(" "),
-    });
+  function onWord(_info: WordGloss | null, surface: string) {
+    setSheet({ study: studyWord(surface) });
   }
 
   function onTerm(key: string) {
@@ -405,23 +396,33 @@ function Reader() {
       )}
 
       {sheet && (
-        <Modal label={sheet.title} className="fixed inset-0 z-30 flex items-end bg-scrim" onClose={() => setSheet(null)}>
+        <Modal label={"study" in sheet ? "Word" : sheet.title} className="fixed inset-0 z-30 flex items-end bg-scrim" onClose={() => setSheet(null)}>
           <div
-            className="w-full border-t border-line bg-paper px-5 py-5 pb-safe"
+            className="max-h-sheet w-full overflow-y-auto border-t border-line bg-paper px-5 py-5 pb-safe"
             onClick={(event) => event.stopPropagation()}
           >
             <div className="mx-auto max-w-3xl">
-              <p
-                tabIndex={-1}
-                data-modal-initial
-                className={/[\u0700-\u074F]/.test(sheet.title) ? "font-syriac text-3xl text-syriac" : "font-serif text-2xl"}
-                lang={/[\u0700-\u074F]/.test(sheet.title) ? "syr" : "en"}
-                dir={/[\u0700-\u074F]/.test(sheet.title) ? "rtl" : "ltr"}
-              >
-                {sheet.title}
-              </p>
-              {sheet.roman && <p className="mt-1 text-sm text-gold">{sheet.roman}</p>}
-              <p className="mt-3 leading-relaxed">{sheet.body}</p>
+              {"study" in sheet ? (
+                <WordStudySheet
+                  study={sheet.study}
+                  langs={[languageById(prefs.lang).id, ...(prefs.lang2 !== "none" ? [languageById(prefs.lang2).id] : [])]}
+                  onPick={(surface) => setSheet({ study: studyWord(surface) })}
+                />
+              ) : (
+                <>
+                  <p
+                    tabIndex={-1}
+                    data-modal-initial
+                    className={/[\u0700-\u074F]/.test(sheet.title) ? "font-syriac text-3xl text-syriac" : "font-serif text-2xl"}
+                    lang={/[\u0700-\u074F]/.test(sheet.title) ? "syr" : "en"}
+                    dir={/[\u0700-\u074F]/.test(sheet.title) ? "rtl" : "ltr"}
+                  >
+                    {sheet.title}
+                  </p>
+                  {sheet.roman && <p className="mt-1 text-sm text-gold">{sheet.roman}</p>}
+                  <p className="mt-3 leading-relaxed">{sheet.body}</p>
+                </>
+              )}
               <button type="button" className="mt-4 min-h-11 text-garnet" onClick={() => setSheet(null)}>
                 Close
               </button>
@@ -466,7 +467,7 @@ function Reader() {
                     type="button"
                     aria-pressed={prefs.lang === item.id}
                     onClick={() => patch({ lang: item.id === prefs.lang2 ? prefs.lang : item.id, lang2: item.id === prefs.lang2 ? "none" : prefs.lang2 })}
-                    className={`min-h-11 px-3 ${prefs.lang === item.id ? "text-garnet" : "text-muted"} ${item.face === "syriac" ? "font-syriac text-lg" : item.face === "arab" ? "font-arab text-lg" : item.face === "cyrl" ? "font-cyr" : ""}`}
+                    className={`min-h-11 px-3 ${prefs.lang === item.id ? "text-garnet" : "text-muted"} ${item.face === "syriac" ? "font-syriac text-lg" : item.face === "arab" ? "font-arab text-lg" : item.face === "hebrew" ? "font-hebrew text-lg" : item.face === "greek" ? "font-greek" : item.face === "cyrl" ? "font-cyr" : ""}`}
                   >
                     {item.label}
                   </button>
@@ -488,7 +489,7 @@ function Reader() {
                     type="button"
                     aria-pressed={prefs.lang2 === item.id}
                     onClick={() => patch({ lang2: item.id })}
-                    className={`min-h-11 px-3 ${prefs.lang2 === item.id ? "text-garnet" : "text-muted"} ${item.face === "syriac" ? "font-syriac text-lg" : item.face === "arab" ? "font-arab text-lg" : item.face === "cyrl" ? "font-cyr" : ""}`}
+                    className={`min-h-11 px-3 ${prefs.lang2 === item.id ? "text-garnet" : "text-muted"} ${item.face === "syriac" ? "font-syriac text-lg" : item.face === "arab" ? "font-arab text-lg" : item.face === "hebrew" ? "font-hebrew text-lg" : item.face === "greek" ? "font-greek" : item.face === "cyrl" ? "font-cyr" : ""}`}
                   >
                     {item.label}
                   </button>

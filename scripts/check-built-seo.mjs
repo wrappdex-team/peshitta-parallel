@@ -4,6 +4,22 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import app from "../.vercel/output/functions/__server.func/index.mjs";
 
+// Rendered text of one verse article: words may be split into tappable elements.
+const decode = (text) =>
+  text
+    .replace(/&#x([0-9a-f]+);/gi, (_, hex) => String.fromCodePoint(parseInt(hex, 16)))
+    .replace(/&#(\d+);/g, (_, dec) => String.fromCodePoint(Number(dec)))
+    .replace(/&quot;/g, '"')
+    .replace(/&#x27;|&apos;/g, "'")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&amp;/g, "&");
+function verseText(visible, v) {
+  const article = visible.match(new RegExp(`<article\\b[^>]*id="v-${v}"[^>]*>([\\s\\S]*?)</article>`));
+  assert.ok(article, `verse ${v} article rendered`);
+  return decode(article[1].replace(/<[^>]+>/g, ""));
+}
+
 for (const path of ["/", "/seal", "/words", "/read/john/1", "/read/john/21", "/read/philemon/1"]) {
   const syntheticKey = "synthetic-private-key-never-serialize";
   const response = await app.fetch(
@@ -28,8 +44,14 @@ for (const path of ["/", "/seal", "/words", "/read/john/1", "/read/john/21", "/r
       verses.length,
       "every chapter verse must be SSR-rendered",
     );
-    assert.ok(visible.includes(verses[0].sy), "first source verse visible without JavaScript");
-    assert.ok(visible.includes(verses.at(-1).sy), "last source verse visible without JavaScript");
+    assert.ok(
+      verseText(visible, verses[0].v).includes(verses[0].sy),
+      "first source verse visible without JavaScript",
+    );
+    assert.ok(
+      verseText(visible, verses.at(-1).v).includes(verses.at(-1).sy),
+      "last source verse visible without JavaScript",
+    );
     assert.doesNotMatch(visible, /Opening the chapter/);
   }
   if (path === "/words") {
