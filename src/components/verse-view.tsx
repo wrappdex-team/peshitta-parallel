@@ -12,6 +12,8 @@ import {
 } from "@/lib/scripture";
 import { useEffect, useRef, useState } from "react";
 
+import type { Annotation, Highlight } from "@/lib/annotations";
+
 type Props = {
   book: string;
   bookName: string;
@@ -25,15 +27,26 @@ type Props = {
   lang2: LangId | "none";
   parallel2: string;
   pending2: boolean;
-  size: 0 | 1 | 2;
+  size: 0 | 1 | 2 | 3 | 4;
+  line: 0 | 1 | 2;
   showNotes: boolean;
+  annotation?: Annotation;
+  onHighlight: () => void;
+  onNote: (note: string) => void;
+  onBookmark: () => void;
   onWord: (info: WordGloss | null, surface: string) => void;
   onTerm: (key: string) => void;
   listening?: boolean;
 };
 
-const SY = ["text-xl leading-relaxed", "text-2xl leading-relaxed", "text-3xl leading-relaxed"] as const;
-const EN = ["text-base leading-relaxed", "text-lg leading-relaxed", "text-xl leading-relaxed"] as const;
+const SY = ["text-lg", "text-xl", "text-2xl", "text-3xl", "text-4xl"] as const;
+const EN = ["text-sm", "text-base", "text-lg", "text-xl", "text-2xl"] as const;
+const LEADING = ["leading-snug", "leading-relaxed", "leading-loose"] as const;
+const HIGHLIGHT: Record<Highlight, string> = {
+  gold: "bg-gold-soft",
+  garnet: "bg-garnet/10",
+  ink: "bg-ink/5",
+};
 
 export function VerseView({
   book,
@@ -49,7 +62,12 @@ export function VerseView({
   parallel2,
   pending2,
   size,
+  line,
   showNotes,
+  annotation,
+  onHighlight,
+  onNote,
+  onBookmark,
   onWord,
   onTerm,
   listening = false,
@@ -109,18 +127,53 @@ export function VerseView({
     return () => observer.disconnect();
   }, [words, verse.sy, verse.v]);
 
+  const [noteOpen, setNoteOpen] = useState(false);
+  const [draft, setDraft] = useState(annotation?.note ?? "");
+  const highlight = annotation?.highlight;
+
   return (
-    <article ref={articleRef} id={`v-${verse.v}`} className={`scroll-mt-40 border-b border-line py-5 ${listening ? "bg-gold-soft -mx-4 px-4" : ""}`}>
+    <article
+      ref={articleRef}
+      id={`v-${verse.v}`}
+      className={`scroll-mt-40 border-b border-line py-5 ${listening ? "bg-gold-soft -mx-4 px-4" : ""} ${highlight ? HIGHLIGHT[highlight] : ""}`}
+    >
       <div className="flex gap-3">
         <a href={`#v-${verse.v}`} className="w-8 shrink-0 pt-1 text-right font-serif text-sm text-gold">
           {verse.v}
+          {annotation?.bookmark && <span className="ml-1 text-garnet">•</span>}
         </a>
         <div className="min-w-0 flex-1">
+          <div className="mb-1 flex justify-end gap-1 text-xs text-muted">
+            <button type="button" className="min-h-8 px-1 hover:text-ink" onClick={onHighlight} aria-label="Highlight">
+              Mark
+            </button>
+            <button type="button" className="min-h-8 px-1 hover:text-ink" onClick={onBookmark} aria-label="Bookmark">
+              {annotation?.bookmark ? "Saved" : "Save"}
+            </button>
+            <button type="button" className="min-h-8 px-1 hover:text-ink" onClick={() => setNoteOpen((v) => !v)} aria-label="Note">
+              Note
+            </button>
+          </div>
+          {noteOpen && (
+            <div className="mb-2">
+              <textarea
+                value={draft}
+                onChange={(e) => setDraft(e.target.value)}
+                placeholder="A note for this verse"
+                className="w-full rounded border border-line bg-raised p-2 text-sm"
+                rows={2}
+              />
+              <button type="button" className="mt-1 text-sm text-garnet" onClick={() => { onNote(draft); setNoteOpen(false); }}>
+                Keep note
+              </button>
+            </div>
+          )}
+          {annotation?.note && !noteOpen && <p className="mb-2 text-sm italic text-muted">{annotation.note}</p>}
           {showSy && (
             missingSy ? (
               <p className="text-sm text-muted">This verse number is not in the Syriac text.</p>
             ) : (
-              <p dir="rtl" lang="syr" className={`glow font-syriac ${syColor} ${SY[size]}`}>
+              <p dir="rtl" lang="syr" className={`glow font-syriac ${syColor} ${SY[size]} ${LEADING[line]}`}>
                 {syriacPieces(verse.sy).map((piece, i) =>
                   piece.kind === "space" ? (
                     <span key={i}>{piece.text}</span>
@@ -169,6 +222,7 @@ export function VerseView({
                 lang={lang}
                 language={language}
                 size={size}
+                line={line}
                 ink={ink}
                 marks={marks}
                 chapter={chapter}
@@ -183,6 +237,7 @@ export function VerseView({
                   lang={lang2 as LangId}
                   language={second}
                   size={size}
+                  line={line}
                   ink={ink}
                   marks={[]}
                   chapter={chapter}
@@ -212,9 +267,7 @@ export function VerseView({
                   key={`${mark.kind}-${i}`}
                   className="text-sm leading-relaxed text-muted"
                 >
-                  <span className="mr-2 text-gold">{i + 1}</span>
-                  <span className="mr-2 text-garnet">{mark.kind}</span>
-                  {mark.text}
+                  <span className="text-gold">{mark.kind}</span> {mark.text}
                 </li>
               ))}
             </ol>
@@ -232,6 +285,7 @@ function Parallel({
   lang,
   language,
   size,
+  line,
   ink,
   marks,
   chapter,
@@ -242,66 +296,39 @@ function Parallel({
   text: string;
   emptyEn: boolean;
   lang: LangId;
-  language: { dir: string };
-  size: 0 | 1 | 2;
+  language: ReturnType<typeof languageById>;
+  size: 0 | 1 | 2 | 3 | 4;
+  line: 0 | 1 | 2;
   ink: string;
   marks: { kind: string; text: string }[];
   chapter: number;
   verse: number;
   onTerm: (key: string) => void;
 }) {
-  const typeface =
-    lang === "aii"
-      ? "font-syriac text-syriac"
-      : lang === "ar"
-        ? "font-arab"
-        : lang === "he"
-          ? "font-hebrew"
-          : lang === "el"
-            ? "font-greek"
-            : lang === "ru"
-              ? "font-cyr"
-              : lang === "zh"
-                ? "font-han"
-                : lang === "ja"
-                  ? "font-kana"
-                  : "font-serif";
-  if (pending) return <p className="text-sm text-muted">This language is still being set beside the Peshitta.</p>;
-  if (!text) {
-    return (
-      <p className="text-sm text-muted">
-        {emptyEn ? "Murdock does not number this verse by itself. The words sit in the neighboring verse." : "This verse has no line in this language yet."}
-      </p>
-    );
-  }
+  if (pending) return <p className="text-sm text-muted">Loading…</p>;
+  if (!text && emptyEn) return <p className="text-sm text-muted">This verse is empty in the English text.</p>;
+  if (!text) return <p className="text-sm text-muted">This verse is not yet in {language.label}.</p>;
+  const runs = lang === "en" ? englishRuns(text) : [{ kind: "text" as const, text }];
   return (
-    <p lang={lang === "aii" ? "syr" : lang} dir={language.dir} className={`glow ${ink} ${typeface} ${EN[size]}`}>
-      {lang === "en" ? <English text={text} onTerm={onTerm} /> : text}
-      {marks.map((mark, i) => (
-        <a key={`${mark.kind}-${i}`} href={`#n-${chapter}-${verse}-${i}`} className="ml-1 align-super text-xs text-garnet">
-          {i + 1}
-        </a>
-      ))}
+    <p className={`${EN[size]} ${LEADING[line]} ${ink} ${language.face === "syriac" ? "font-syriac" : language.face === "arab" ? "font-arab" : language.face === "hebrew" ? "font-hebrew" : language.face === "greek" ? "font-greek" : language.face === "cyrl" ? "font-cyr" : ""}`} dir={language.dir} lang={language.lang}>
+      {runs.map((run, i) =>
+        run.kind === "term" ? (
+          <button key={i} type="button" className="text-garnet underline decoration-gold/40" onClick={() => onTerm(run.key)}>
+            {run.text}
+          </button>
+        ) : (
+          <span key={i}>{run.text}</span>
+        ),
+      )}
+      {marks.length > 0 && (
+        <sup className="text-gold">
+          {marks.map((_, i) => (
+            <a key={i} href={`#n-${chapter}-${verse}-${i}`} className="ml-0.5">
+              {i + 1}
+            </a>
+          ))}
+        </sup>
+      )}
     </p>
-  );
-}
-
-function English({ text, onTerm }: { text: string; onTerm: (key: string) => void }) {
-  return (
-    <>
-      {englishRuns(text).map((run, i) => {
-        if (run.kind === "em") return <em key={i}>{run.text}</em>;
-        if (run.kind === "term") {
-          const note = TERM_NOTES[run.key];
-          if (!note) return <span key={i}>{run.text}</span>;
-          return (
-            <button key={i} type="button" onClick={() => onTerm(run.key)} className="border-b border-gold">
-              {run.text}
-            </button>
-          );
-        }
-        return <span key={i}>{run.text}</span>;
-      })}
-    </>
   );
 }
