@@ -1,7 +1,8 @@
 # First readiness pass — not a production certification
 
-Scope: INjeel only, demo at https://peshitta-parallel.vercel.app. No domain
-purchase, migration, deployment, licence change or new translation in this pass.
+Scope: INjeel only. Canonical origin is https://injeel.news. The previous host
+https://peshitta-parallel.vercel.app stays live as an alias and is not the
+canonical URL. No migration or licence change in this note.
 
 ## Reproducible checks
 
@@ -82,7 +83,8 @@ search landing page: it is omitted from the sitemap and marked `noindex, follow`
 It is deliberately not blocked in robots.txt, so crawlers can read the directive.
 This is indexing hygiene, **not a claim of a private-data exposure or access
 control**. Root public indexing, canonical URLs, existing structured data and
-share assets are retained; no ratings or unpurchased domain are invented.
+share assets are retained; no ratings are invented. Canonical URLs use
+https://injeel.news.
 Static regressions check these contracts. `check:seo:built` calls the compiled
 Vercel SSR handler in-process for home, `/seal` and John 1, verifying status,
 content markup, a single canonical and a single effective robots directive. It

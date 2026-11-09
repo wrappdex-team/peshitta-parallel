@@ -1,5 +1,10 @@
-/** Current demo origin. No custom domain is configured; update sitemap and robots together only after an approved domain launch. */
-export const SITE_ORIGIN = "https://peshitta-parallel.vercel.app";
+/** Canonical public origin. The previous Vercel host stays live as an alias. */
+export const SITE_ORIGIN = "https://injeel.news";
+
+export const LEGACY_ORIGIN = "https://peshitta-parallel.vercel.app";
+
+/** Hosts that serve this app. Credentialed auth must accept every one of them. */
+export const SITE_ALIASES = [SITE_ORIGIN, "https://www.injeel.news", LEGACY_ORIGIN] as const;
 
 export const SITE_NAME = "Injeel";
 

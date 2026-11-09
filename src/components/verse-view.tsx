@@ -1,6 +1,7 @@
 import { NOTES } from "@/data/edition";
 import { isJesus } from "@/lib/jesus";
 import { languageById, type LangId } from "@/lib/languages";
+import { SITE_ORIGIN } from "@/lib/site";
 import {
   TERM_NOTES,
   englishRuns,
@@ -92,7 +93,7 @@ export function VerseView({
 
   async function copy(kind: "link" | "text") {
     const ref = `${bookName} ${chapter}:${verse.v}`;
-    const link = `${window.location.origin}${window.location.pathname}#v-${verse.v}`;
+    const link = `${SITE_ORIGIN}${window.location.pathname}#v-${verse.v}`;
     const lines = [ref];
     if (verse.sy) lines.push(verse.sy);
     if (parallel) lines.push(parallel);
@@ -310,7 +311,7 @@ function Parallel({
   if (!text) return <p className="text-sm text-muted">This verse is not yet in {language.label}.</p>;
   const runs = lang === "en" ? englishRuns(text) : [{ kind: "text" as const, text }];
   return (
-    <p className={`${EN[size]} ${LEADING[line]} ${ink} ${language.face === "syriac" ? "font-syriac" : language.face === "arab" ? "font-arab" : language.face === "hebrew" ? "font-hebrew" : language.face === "greek" ? "font-greek" : language.face === "cyrl" ? "font-cyr" : ""}`} dir={language.dir} lang={language.lang}>
+    <p className={`${EN[size]} ${LEADING[line]} ${ink} ${language.face === "syriac" ? "font-syriac" : language.face === "arab" ? "font-arab" : language.face === "hebrew" ? "font-hebrew" : language.face === "greek" ? "font-greek" : language.face === "cyrl" ? "font-cyr" : ""}`} dir={language.dir} lang={language.id === "aii" ? "syr" : language.id}>
       {runs.map((run, i) =>
         run.kind === "term" ? (
           <button key={i} type="button" className="text-garnet underline decoration-gold/40" onClick={() => onTerm(run.key)}>

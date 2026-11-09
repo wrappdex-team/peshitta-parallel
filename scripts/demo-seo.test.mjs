@@ -4,7 +4,7 @@ import { test } from "node:test";
 import { snapshotOgIdentity } from "./grok-pwa-shared.mjs";
 
 const read = (path) => readFileSync(new URL(`../${path}`, import.meta.url), "utf8");
-const origin = "https://peshitta-parallel.vercel.app";
+const origin = "https://injeel.news";
 
 test("sitemap covers every catalog chapter exactly once, using only the current demo origin", () => {
   const catalog = JSON.parse(read("src/data/catalog.json"));
@@ -19,7 +19,7 @@ test("sitemap covers every catalog chapter exactly once, using only the current 
   assert.deepEqual(urls.sort(), expected.map((path) => origin + path).sort());
   assert.match(
     read("public/robots.txt"),
-    /Sitemap: https:\/\/peshitta-parallel\.vercel\.app\/sitemap\.xml/,
+    /Sitemap: https:\/\/injeel\.news\/sitemap\.xml/,
   );
   assert.ok(read("src/lib/site.ts").includes(`SITE_ORIGIN = "${origin}"`));
 });

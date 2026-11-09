@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://peshitta-parallel.vercel.app/sitemap.xml
+Sitemap: https://injeel.news/sitemap.xml

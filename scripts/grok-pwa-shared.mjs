@@ -135,6 +135,29 @@ export function resolvePublicHost(hostHeader, site = {}) {
   return publicAppHost(process.env?.VITE_PUBLIC_HOSTNAME) || publicAppHost(hostHeader) || declaredOriginHost(site);
 }
 
+/** Absolute share URL. A baked site origin wins so both hosts advertise injeel.news. */
+export function canonicalShareUrl(site = {}, publicHost = "", path = "") {
+  let base = "";
+  const raw = String(site.origin ?? "").trim();
+  if (raw) {
+    try {
+      const url = new URL(raw);
+      const host = url.hostname.toLowerCase();
+      const allowed =
+        (url.protocol === "https:" || url.protocol === "http:") &&
+        (publicAppHost(host) || declaredOriginHost({ origin: `${url.protocol}//${url.host}` }));
+      if (allowed) base = `${url.protocol}//${url.host}`;
+    } catch {
+      base = "";
+    }
+  }
+  if (!base && publicHost) base = `https://${publicHost}`;
+  if (!base) return "";
+  const clean = String(path || "").split("?")[0].split("#")[0];
+  if (!clean || clean === "/") return `${base}/`;
+  return clean.startsWith("/") ? `${base}${clean}` : base;
+}
+
 export function isInstallQuery(url) {
   const query = String(url ?? "").split("?", 2)[1] ?? "";
   const params = new URLSearchParams(query);
@@ -395,6 +418,7 @@ export function grokOgHeadTags({
   site = {},
   documentTitle = "",
   cwd = process.cwd(),
+  path = "",
 } = {}) {
   const title = resolveOgTitle(site, appName, host, documentTitle);
   const publicHost = resolvePublicHost(host, site);
@@ -407,6 +431,12 @@ export function grokOgHeadTags({
   if (description) {
     tags.push(`<meta property="og:description" content="${escapeHtml(description)}">`);
     tags.push(`<meta name="twitter:description" content="${escapeHtml(description)}">`);
+  }
+  const pageUrl = canonicalShareUrl(site, publicHost, path);
+  if (pageUrl) tags.push(`<meta property="og:url" content="${escapeHtml(pageUrl)}">`);
+  const siteName = String(site.name ?? "").trim();
+  if (siteName && pageUrl) {
+    tags.push(`<meta property="og:site_name" content="${escapeHtml(siteName)}">`);
   }
   if (String(site.type ?? "").toLowerCase() === "x:game") {
     tags.push(`<meta property="og:type" content="x:game">`);
@@ -486,6 +516,7 @@ export function normalizeHeadContext(ctx = {}) {
     creator: ctx.creator ?? readXCreator(),
     creatorId: ctx.creatorId ?? readXCreatorId(),
     host: ctx.host ?? "",
+    path: String(ctx.path ?? "").split("?")[0].split("#")[0],
     cwd,
     site,
   };
@@ -493,7 +524,7 @@ export function normalizeHeadContext(ctx = {}) {
 
 export function injectGrokPwaHead(html, ctx = {}) {
   if (typeof html !== "string") return html;
-  const { site, projectId, creator, creatorId, host, cwd } = normalizeHeadContext(ctx);
+  const { site, projectId, creator, creatorId, host, cwd, path } = normalizeHeadContext(ctx);
   const documentTitle = titleFromDocument(html);
   const appName = resolveOgTitle(
     site,
@@ -514,7 +545,7 @@ export function injectGrokPwaHead(html, ctx = {}) {
 
   next = insertAfterHeadOpen(
     next,
-    grokOgHeadTags({ host, appName, site, documentTitle, cwd }).join(""),
+    grokOgHeadTags({ host, appName, site, documentTitle, cwd, path }).join(""),
   );
 
   if (readGrokExtensionsEnabled() && !next.includes("/grok-app-builder/extensions.js")) {
@@ -566,6 +597,7 @@ export function createHeadInjector(ctx = {}) {
       creator: normalized.creator,
       creatorId: normalized.creatorId,
       host: normalized.host,
+      path: normalized.path,
       cwd: normalized.cwd,
       site: normalized.site,
     });

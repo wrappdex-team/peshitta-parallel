@@ -9,7 +9,8 @@ additional study readings. It brings chapter navigation, word study, search,
 device read-aloud and optional creative media into one reading experience.
 Originally published as **Peshitta Parallel**, the repository retains that name.
 
-[Live site](https://peshitta-parallel.vercel.app) ·
+[Live site](https://injeel.news) ·
+[Previous host](https://peshitta-parallel.vercel.app) ·
 [Developer checks](#verification) ·
 [Source policy](docs/SOURCE_REVIEW.md) ·
 [Security boundaries](#security-and-privacy-boundaries)

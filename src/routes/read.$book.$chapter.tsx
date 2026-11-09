@@ -19,6 +19,7 @@ import {
   type WordStudy,
 } from "@/lib/scripture";
 import { usePrefs } from "@/lib/use-prefs";
+import { useAnnotations } from "@/lib/annotations";
 import { SITE_ORIGIN } from "@/lib/site";
 import { noteChapter } from "@/lib/readings";
 import { parseReaderChapter } from "@/lib/reader-reference";
@@ -73,6 +74,7 @@ function Reader() {
   const chapterNo = Number(chapter);
   const navigate = useNavigate();
   const { prefs, patch } = usePrefs();
+  const annotations = useAnnotations();
   const meta = bookMeta(book);
   const { verses } = Route.useLoaderData();
   const [parallel, setParallel] = useState<string[][] | null>(null);
@@ -168,6 +170,19 @@ function Reader() {
   const index = BOOKS.findIndex((b) => b.id === book);
   const prev = chapterNo > 1 ? { book, chapter: chapterNo - 1 } : index > 0 ? { book: BOOKS[index - 1].id, chapter: chapterCount(BOOKS[index - 1].id) } : null;
   const next = chapterNo < total ? { book, chapter: chapterNo + 1 } : index >= 0 && index < BOOKS.length - 1 ? { book: BOOKS[index + 1].id, chapter: 1 } : null;
+
+  useEffect(() => {
+    function onKey(event: KeyboardEvent) {
+      if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) return;
+      if (event.metaKey || event.ctrlKey || event.altKey) return;
+      if (event.key === "ArrowLeft") go(prev);
+      else if (event.key === "ArrowRight") go(next);
+      else if (event.key === "=" || event.key === "+") patch({ size: Math.min(4, prefs.size + 1) as 0 | 1 | 2 | 3 | 4 });
+      else if (event.key === "-" || event.key === "_") patch({ size: Math.max(0, prefs.size - 1) as 0 | 1 | 2 | 3 | 4 });
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [prev, next, prefs.size, patch]);
 
   useEffect(() => {
     if (!verses) return;
@@ -306,7 +321,12 @@ function Reader() {
             parallel={prefs.lang === "en" ? verse.en : (parallel?.[chapterNo - 1]?.[verseIndex] ?? "")}
             pending={prefs.lang !== "en" && !parallel}
             size={prefs.size}
+            line={prefs.line}
             showNotes={prefs.notes}
+            annotation={annotations.get(book, chapterNo, verse.v)}
+            onHighlight={() => annotations.toggleHighlight(book, chapterNo, verse.v)}
+            onNote={(note) => annotations.setNote(book, chapterNo, verse.v, note)}
+            onBookmark={() => annotations.toggleBookmark(book, chapterNo, verse.v)}
             onWord={onWord}
             onTerm={onTerm}
             listening={heard === verse.v}
@@ -452,11 +472,17 @@ function Reader() {
                 <FaceButton label={languageById(prefs.lang).label} active={prefs.face === "tr"} onClick={() => patch({ face: "tr" })} />
                 <FaceButton label="Words" active={prefs.words} onClick={() => patch({ words: !prefs.words })} />
                 <FaceButton label="Notes" active={prefs.notes} onClick={() => patch({ notes: !prefs.notes })} />
-                <button type="button" className="flex size-11 items-center justify-center" aria-label="Smaller type" onClick={() => patch({ size: (Math.max(0, prefs.size - 1) as 0 | 1 | 2) })}>
-                  A
+                <button type="button" className="flex size-11 items-center justify-center" aria-label="Smaller type" onClick={() => patch({ size: Math.max(0, prefs.size - 1) as 0 | 1 | 2 | 3 | 4 })}>
+                  A−
                 </button>
-                <button type="button" className="flex size-11 items-center justify-center text-lg" aria-label="Larger type" onClick={() => patch({ size: (Math.min(2, prefs.size + 1) as 0 | 1 | 2) })}>
-                  A
+                <button type="button" className="flex size-11 items-center justify-center text-lg" aria-label="Larger type" onClick={() => patch({ size: Math.min(4, prefs.size + 1) as 0 | 1 | 2 | 3 | 4 })}>
+                  A+
+                </button>
+                <button type="button" className="flex size-11 items-center justify-center" aria-label="Tighter lines" onClick={() => patch({ line: Math.max(0, prefs.line - 1) as 0 | 1 | 2 })}>
+                  ≡
+                </button>
+                <button type="button" className="flex size-11 items-center justify-center" aria-label="Looser lines" onClick={() => patch({ line: Math.min(2, prefs.line + 1) as 0 | 1 | 2 })}>
+                  ≡+
                 </button>
               </div>
               <p className="mt-4 text-xs tracking-widest text-gold">LANGUAGE</p>

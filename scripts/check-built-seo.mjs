@@ -78,7 +78,7 @@ for (const path of ["/", "/seal", "/words", "/read/john/1", "/read/john/21", "/r
     (match) => match[0],
   );
   assert.equal(canonicals.length, 1, `${path}: one canonical`);
-  assert.ok(canonicals[0].includes(`href="https://peshitta-parallel.vercel.app${path}"`), path);
+  assert.ok(canonicals[0].includes(`href="https://injeel.news${path}"`), path);
   console.log(
     JSON.stringify({ path, status: response.status, robots, canonical: canonicals[0], main: true }),
   );

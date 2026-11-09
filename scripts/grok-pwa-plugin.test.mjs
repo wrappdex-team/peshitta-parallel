@@ -36,6 +36,28 @@ test("Injeel's real identity and demo card remain present", () => {
   const { site } = snapshotOgIdentity(TEMPLATE_ROOT);
   assert.equal(site.card, "custom");
   assert.equal(site.image, "/og.jpg");
+  assert.equal(site.origin, "https://injeel.news");
+});
+
+test("vercel alias still advertises the injeel.news share card", () => {
+  const prev = process.env.VITE_PUBLIC_HOSTNAME;
+  delete process.env.VITE_PUBLIC_HOSTNAME;
+  try {
+    const out = rawInjectGrokPwaHead("<html><head><title>John 1 — Injeel</title></head></html>", {
+      cwd: TEMPLATE_ROOT,
+      host: "peshitta-parallel.vercel.app",
+      path: "/read/john/1",
+    });
+    assert.match(out, /property="og:url" content="https:\/\/injeel\.news\/read\/john\/1"/);
+    assert.match(out, /property="og:image" content="https:\/\/injeel\.news\/og\.jpg"/);
+    assert.match(out, /property="og:image:width" content="1200"/);
+    assert.match(out, /property="og:image:height" content="630"/);
+    assert.match(out, /name="twitter:card" content="summary_large_image"/);
+    assert.doesNotMatch(out, /peshitta-parallel\.vercel\.app/);
+  } finally {
+    if (prev === undefined) delete process.env.VITE_PUBLIC_HOSTNAME;
+    else process.env.VITE_PUBLIC_HOSTNAME = prev;
+  }
 });
 
 test("injects before </head>", () => {
