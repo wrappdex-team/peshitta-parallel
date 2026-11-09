@@ -1,0 +1,326 @@
+{
+  "schemaVersion": 2,
+  "baseCommit": "520698248d2cc5ecf1ae29f1b338c81f759b53c2",
+  "scope": "Provenance notes for seven verses whose en/el/he fields were empty before Build commit 442b8a8. The Murdock 1852 quotations document the identified English reference print. The SHIPPED wording is Build's (commit 442b8a8), not verbatim Murdock and not this packet's earlier proposal; differences are recorded per entry. This packet changes no scripture text.",
+  "sources": {
+    "existing-injeel-syriac": {
+      "description": "Existing source sy fields at baseCommit; historical import lineage not established. Never normalized or replaced."
+    },
+    "crosswire-peshitta-2.0": {
+      "version": "2.0 (2020-02-08)",
+      "description": "BFBS 1905 digital text courtesy John Richards, CrossWire distribution; comparative seven-verse witness only.",
+      "url": "https://www.crosswire.org/sword/modules/ModInfo.jsp?modName=Peshitta",
+      "rightsUrl": "https://www.crosswire.org/sword/copyright/ModInfoCopyright.jsp?modName=Peshitta",
+      "distributionLicense": "Public Domain",
+      "zipUrl": "https://crosswire.org/ftpmirror/pub/sword/packages/rawzip/Peshitta.zip",
+      "zipSha256": "badce0aa0a9b70a9c81891ed48d5a9e86de1e24d12ad4ad378e060e03cabc7b9"
+    },
+    "murdock-print-1852": {
+      "description": "James Murdock, The New Testament … A Literal Translation from the Syriac Peshito Version, N.Y.: Stanford and Swords, 1852. Seven verse passages visually checked in the identified print, not taken on trust from OCR.",
+      "url": "https://archive.org/details/newtestamentorbo1852murd",
+      "metadataUrl": "https://archive.org/metadata/newtestamentorbo1852murd",
+      "itemRightsMetadata": "possible-copyright-status: NOT_IN_COPYRIGHT; nineteenth-century underlying English text. No scan-image redistribution licence asserted; no images imported."
+    },
+    "crosswire-murdock-1.2": {
+      "version": "1.2 (2002-01-01)",
+      "url": "https://www.crosswire.org/sword/modules/ModInfo.jsp?modName=Murdock",
+      "rightsUrl": "https://www.crosswire.org/sword/copyright/ModInfoCopyright.jsp?modName=Murdock",
+      "distributionLicense": "Public Domain",
+      "zipUrl": "https://crosswire.org/ftpmirror/pub/sword/packages/rawzip/Murdock.zip",
+      "zipSha256": "4f0adeba385acbfa37921f66677d4aaf99e23b4e65ca162f122832689036641f",
+      "finding": "All seven requested references are empty in this module. It is rights/source-history corroboration, NOT the source of the recovered verse quotations. Module About says Published 1852; older repository Murdock-year claims are not silently resolved."
+    }
+  },
+  "entries": [
+    {
+      "book": "matthew",
+      "chapter": 26,
+      "verse": 30,
+      "status": "SHIPPED_BY_BUILD_UNSOURCED_REVIEW_PENDING",
+      "sourceIds": ["existing-injeel-syriac", "crosswire-peshitta-2.0", "murdock-print-1852"],
+      "sourceSyriac": "ܘܫܒܚܘ ܘܢܦܩܘ ܠܛܘܪ ܙܝܬܐ ܀",
+      "sourceSyriacSha256": "f53194db4c9e05c9da9f45d4a9293249b47cc18c12f93208dc3789b4786619db",
+      "comparisonModuleSyriac": "ܘܫܒܚܘ ܘܢܦܩܘ ܠܛܘܪ ܙܝܬܐ ܀ ",
+      "comparisonEditsAfterRemovingOnlyModuleTrailingAsciiSpaces": [],
+      "murdockQuote": "And they sang praises, and went forth to the mount of Olives.",
+      "printLeaf": 78,
+      "printedPage": 54,
+      "printUrl": "https://archive.org/details/newtestamentorbo1852murd/page/n78/mode/1up",
+      "printJp2Sha256": "0b6553304c63f46445410e21b10fb5fb466157e930ca6ce6ab9ac268b38f2e61",
+      "reviewNotes": "Murdock quotation is reference evidence only. Shipped wording is Build's and is not verbatim Murdock; word-level differences (case/punctuation ignored) are listed. Greek/Hebrew are modern renderings by Build; their source path is not recorded.",
+      "rightsNote": "The 1852 Murdock English and identified CrossWire Peshitta text are public-domain source evidence. The shipped en/el/he wording is Build's new rendering, not recovered original text, not independently human-reviewed, and carries no blanket licence warranty.",
+      "shippedRenderings": {
+        "en": "And they sang praise and went out to the mountain of olives.",
+        "el": "Και έψαλαν δοξολογία και βγήκαν στο όρος των ελιών.",
+        "he": "והם שרו שבח ויצאו אל הר הזיתים."
+      },
+      "shippedEnVsMurdockWordDifferences": [
+        {
+          "murdock": "praises",
+          "shipped": "praise"
+        },
+        {
+          "murdock": "forth",
+          "shipped": "out"
+        },
+        {
+          "murdock": "mount",
+          "shipped": "mountain"
+        }
+      ]
+    },
+    {
+      "book": "mark",
+      "chapter": 8,
+      "verse": 19,
+      "status": "SHIPPED_BY_BUILD_UNSOURCED_REVIEW_PENDING",
+      "sourceIds": ["existing-injeel-syriac", "crosswire-peshitta-2.0", "murdock-print-1852"],
+      "sourceSyriac": "ܟܕ ܗܠܝܢ ܚܡܫܐ ܠܚܡܝܢ ܩܨܝܬ ܠܚܡܫܐ ܐܠܦܝܢ ܟܡܐ ܩܘܦܝܢܝܢ ܕܩܨܝܐ ܟܕ ܡܠܝܢ ܫܩܠܬܘܢ ܐܡܪܝܢ ܠܗ ܬܪܥܣܪ ܀",
+      "sourceSyriacSha256": "39cef02a1c80018cccad6049f039bcbe4207b11cbf2fcae4f91903fabde1a782",
+      "comparisonModuleSyriac": "ܟܕ ܗܠܝܢ ܚܡܫܐ ܠܚܡܝܢ ܩܨܝܬ ܠܚܡܫܐ ܐܠܦܝܢ ܟܡܐ ܩܘܦܝܢܝܢ ܕܩܨܝܐ ܟܕ ܡܠܝܢ ܫܩܠܬܘܢ ܐܡܪܝܢ ܠܗ ܬܪܥܤܪ ܀ ",
+      "comparisonEditsAfterRemovingOnlyModuleTrailingAsciiSpaces": [
+        {
+          "operation": "replace",
+          "app": "ܣ",
+          "module": "ܤ",
+          "appRange": [81, 82],
+          "moduleRange": [81, 82]
+        }
+      ],
+      "murdockQuote": "When I broke the five loaves to five thousand, how many baskets full of the fragments took ye up? They say to him: Twelve.",
+      "printLeaf": 102,
+      "printedPage": 78,
+      "printUrl": "https://archive.org/details/newtestamentorbo1852murd/page/n102/mode/1up",
+      "printJp2Sha256": "6e7b19e54c9b0e9ab7ef03b3dc4c4622425543b677cb0de51126ce222fa01f0c",
+      "reviewNotes": "Murdock quotation is reference evidence only. Shipped wording is Build's and is not verbatim Murdock; word-level differences (case/punctuation ignored) are listed. Greek/Hebrew are modern renderings by Build; their source path is not recorded.",
+      "rightsNote": "The 1852 Murdock English and identified CrossWire Peshitta text are public-domain source evidence. The shipped en/el/he wording is Build's new rendering, not recovered original text, not independently human-reviewed, and carries no blanket licence warranty.",
+      "shippedRenderings": {
+        "en": "When I broke these five loaves for the five thousand, how many baskets full of the fragments did you take up? They say to him, Twelve.",
+        "el": "Όταν έκοψα αυτούς τους πέντε άρτους για τις πέντε χιλιάδες, πόσα κοφίνια γεμάτα από τα κομμάτια σηκώσατε; Του λένε: Δώδεκα.",
+        "he": "כשפרסתי את חמשת הלחמים האלה לחמשת האלפים, כמה סלים מלאים בשברים לקחתם? הם אומרים לו: שנים עשר."
+      },
+      "shippedEnVsMurdockWordDifferences": [
+        {
+          "murdock": "the",
+          "shipped": "these"
+        },
+        {
+          "murdock": "to",
+          "shipped": "for the"
+        },
+        {
+          "murdock": "took ye",
+          "shipped": "did you take"
+        }
+      ]
+    },
+    {
+      "book": "mark",
+      "chapter": 9,
+      "verse": 31,
+      "status": "SHIPPED_BY_BUILD_UNSOURCED_REVIEW_PENDING",
+      "sourceIds": ["existing-injeel-syriac", "crosswire-peshitta-2.0", "murdock-print-1852"],
+      "sourceSyriac": "ܡܠܦ ܗܘܐ ܓܝܪ ܠܬܠܡܝܕܘܗܝ ܘܐܡܪ ܠܗܘܢ ܕܒܪܗ ܕܐܢܫܐ ܡܫܬܠܡ ܒܐܝܕܝ ܐܢܫܐ ܘܢܩܛܠܘܢܝܗܝ ܘܡܐ ܕܐܬܩܛܠ ܒܝܘܡܐ ܕܬܠܬܐ ܢܩܘܡ ܀",
+      "sourceSyriacSha256": "9e59961f953492f4f8ea4641ef19fdeef740bdca5d2ea224981862d84a9351a0",
+      "comparisonModuleSyriac": "ܡܠܦ ܗܘܐ ܓܝܪ ܠܬܠܡܝܕܘܗܝ ܘܐܡܪ ܠܗܘܢ ܕܒܪܗ ܕܐܢܫܐ ܡܫܬܠܡ ܒܐܝܕܝ ܐܢܫܐ ܘܢܩܛܠܘܢܝܗܝ ܘܡܐ ܕܐܬܩܛܠ ܒܝܘܡܐ ܕܬܠܬܐ ܢܩܘܡ ܀ ",
+      "comparisonEditsAfterRemovingOnlyModuleTrailingAsciiSpaces": [],
+      "murdockQuote": "For he taught his disciples, and said to them: The Son of man is delivered into the hands of men, and they will kill him; and when he is killed, on the third day, he will rise.",
+      "printLeaf": 105,
+      "printedPage": 81,
+      "printUrl": "https://archive.org/details/newtestamentorbo1852murd/page/n105/mode/1up",
+      "printJp2Sha256": "d9e063610a8d3fd7c532d8efc3e8e6f86d18fdb821f5efae1663007bb9d8a4c5",
+      "reviewNotes": "Murdock quotation is reference evidence only. Shipped wording is Build's and is not verbatim Murdock; word-level differences (case/punctuation ignored) are listed. Greek/Hebrew are modern renderings by Build; their source path is not recorded.",
+      "rightsNote": "The 1852 Murdock English and identified CrossWire Peshitta text are public-domain source evidence. The shipped en/el/he wording is Build's new rendering, not recovered original text, not independently human-reviewed, and carries no blanket licence warranty.",
+      "shippedRenderings": {
+        "en": "For he was teaching his disciples and said to them that the Son of man is handed over into the hands of men, and they will kill him, and when he is killed, on the third day he will rise.",
+        "el": "Γιατί δίδασκε τους μαθητές του και τους έλεγε ότι ο Υιός του ανθρώπου παραδίδεται στα χέρια των ανθρώπων, και θα τον σκοτώσουν, και όταν σκοτωθεί, την τρίτη ημέρα θα αναστηθεί.",
+        "he": "כי הוא היה מלמד את תלמידיו ואומר להם שבן האדם נמסר לידי בני אדם, והם יהרגו אותו, וכשיהרג, ביום השלישי יקום."
+      },
+      "shippedEnVsMurdockWordDifferences": [
+        {
+          "murdock": "taught",
+          "shipped": "was teaching"
+        },
+        {
+          "murdock": "",
+          "shipped": "that"
+        },
+        {
+          "murdock": "delivered",
+          "shipped": "handed over"
+        }
+      ]
+    },
+    {
+      "book": "mark",
+      "chapter": 11,
+      "verse": 19,
+      "status": "SHIPPED_BY_BUILD_UNSOURCED_REVIEW_PENDING",
+      "sourceIds": ["existing-injeel-syriac", "crosswire-peshitta-2.0", "murdock-print-1852"],
+      "sourceSyriac": "ܘܟܕ ܗܘܐ ܪܡܫܐ ܢܦܩܘ ܠܒܪ ܡܢ ܡܕܝܢܬܐ ܀",
+      "sourceSyriacSha256": "d64dd29d451e6a7875823d7913877b44d68947540bc102c30b1e087b8365d319",
+      "comparisonModuleSyriac": "ܘܟܕ ܗܘܐ ܪܡܫܐ ܢܦܩܘ ܠܒܪ ܡܢ ܡܕܝܢܬܐ ܀ ",
+      "comparisonEditsAfterRemovingOnlyModuleTrailingAsciiSpaces": [],
+      "murdockQuote": "And when it was evening, they went out from the city.",
+      "printLeaf": 110,
+      "printedPage": 86,
+      "printUrl": "https://archive.org/details/newtestamentorbo1852murd/page/n110/mode/1up",
+      "printJp2Sha256": "65785d668c01e6fc3dce8f2aa38a89084fbd1f9b406f950643db31739b0f57ee",
+      "reviewNotes": "Murdock quotation is reference evidence only. Shipped wording is Build's and is not verbatim Murdock; word-level differences (case/punctuation ignored) are listed. Greek/Hebrew are modern renderings by Build; their source path is not recorded.",
+      "rightsNote": "The 1852 Murdock English and identified CrossWire Peshitta text are public-domain source evidence. The shipped en/el/he wording is Build's new rendering, not recovered original text, not independently human-reviewed, and carries no blanket licence warranty.",
+      "shippedRenderings": {
+        "en": "And when it was evening, they went out from the city.",
+        "el": "Και όταν έγινε βράδυ, βγήκαν έξω από την πόλη.",
+        "he": "וכשהיה ערב, יצאו אל מחוץ לעיר."
+      },
+      "shippedEnVsMurdockWordDifferences": []
+    },
+    {
+      "book": "luke",
+      "chapter": 18,
+      "verse": 35,
+      "status": "SHIPPED_BY_BUILD_UNSOURCED_REVIEW_PENDING",
+      "sourceIds": ["existing-injeel-syriac", "crosswire-peshitta-2.0", "murdock-print-1852"],
+      "sourceSyriac": "ܘܟܕ ܩܪܝܒ ܠܐܝܪܝܚܘ ܣܡܝܐ ܚܕ ܝܬܒ ܗܘܐ ܥܠ ܝܕ ܐܘܪܚܐ ܘܚܕܪ ܀",
+      "sourceSyriacSha256": "181e41d58b297433efe87bd482916012714ae3e4edf5a7679c235b0e5ca66e85",
+      "comparisonModuleSyriac": "ܘܟܕ ܩܪܝܒ ܠܐܝܪܝܚܘ ܤܡܝܐ ܚܕ ܝܬܒ ܗܘܐ ܥܠ ܝܕ ܐܘܪܚܐ ܘܚܕܪ ܀ ",
+      "comparisonEditsAfterRemovingOnlyModuleTrailingAsciiSpaces": [
+        {
+          "operation": "replace",
+          "app": "ܣ",
+          "module": "ܤ",
+          "appRange": [17, 18],
+          "moduleRange": [17, 18]
+        }
+      ],
+      "murdockQuote": "And as they came near to Jericho, a blind man was sitting by the side of the way, begging.",
+      "printLeaf": 171,
+      "printedPage": 147,
+      "printUrl": "https://archive.org/details/newtestamentorbo1852murd/page/n171/mode/1up",
+      "printJp2Sha256": "1bab4d80921c0096f470ff383fce15ba35531b5c9c99a5bf92ae7237da423035",
+      "reviewNotes": "Murdock quotation is reference evidence only. Shipped wording is Build's and is not verbatim Murdock; word-level differences (case/punctuation ignored) are listed. Greek/Hebrew are modern renderings by Build; their source path is not recorded.",
+      "rightsNote": "The 1852 Murdock English and identified CrossWire Peshitta text are public-domain source evidence. The shipped en/el/he wording is Build's new rendering, not recovered original text, not independently human-reviewed, and carries no blanket licence warranty.",
+      "shippedRenderings": {
+        "en": "And as he drew near to Irikho, a certain blind man was sitting beside the road and begging.",
+        "el": "Και καθώς πλησίαζε στην Ιρίχο, ένας τυφλός καθόταν στην άκρη του δρόμου και ζητιάνευε.",
+        "he": "וכאשר קרב לאירחו, עיוור אחד ישב לצד הדרך וביקש."
+      },
+      "shippedEnVsMurdockWordDifferences": [
+        {
+          "murdock": "they came",
+          "shipped": "he drew"
+        },
+        {
+          "murdock": "jericho",
+          "shipped": "irikho"
+        },
+        {
+          "murdock": "",
+          "shipped": "certain"
+        },
+        {
+          "murdock": "by",
+          "shipped": "beside"
+        },
+        {
+          "murdock": "side of the way",
+          "shipped": "road and"
+        }
+      ]
+    },
+    {
+      "book": "acts",
+      "chapter": 19,
+      "verse": 41,
+      "status": "SHIPPED_BY_BUILD_UNSOURCED_REVIEW_PENDING",
+      "sourceIds": ["existing-injeel-syriac", "crosswire-peshitta-2.0", "murdock-print-1852"],
+      "sourceSyriac": "ܘܟܕ ܗܠܝܢ ܐܡܪ ܫܪܐ ܠܟܢܫܐ ܀",
+      "sourceSyriacSha256": "5b53caa0ac81740621fc21ea2630c329c48ad23c4fae12aa9a1fa1386cdcd2ce",
+      "comparisonModuleSyriac": "ܘܟܕ ܗܠܝܢ ܐܡܪ ܫܪܐ ܠܟܢܫܐ ܀  ",
+      "comparisonEditsAfterRemovingOnlyModuleTrailingAsciiSpaces": [],
+      "murdockQuote": "And having said these things, he dismissed the assembly.",
+      "printLeaf": 280,
+      "printedPage": 256,
+      "printUrl": "https://archive.org/details/newtestamentorbo1852murd/page/n280/mode/1up",
+      "printJp2Sha256": "62706f134e4aaed4804555f34153272ab96c49c04d75ad5904d5f7ab55713901",
+      "reviewNotes": "Murdock quotation is reference evidence only. Shipped wording is Build's and is not verbatim Murdock; word-level differences (case/punctuation ignored) are listed. Greek/Hebrew are modern renderings by Build; their source path is not recorded.",
+      "rightsNote": "The 1852 Murdock English and identified CrossWire Peshitta text are public-domain source evidence. The shipped en/el/he wording is Build's new rendering, not recovered original text, not independently human-reviewed, and carries no blanket licence warranty.",
+      "shippedRenderings": {
+        "en": "And when he had said these things, he dismissed the crowd.",
+        "el": "Και όταν είπε αυτά, διέλυσε το πλήθος.",
+        "he": "וכשאמר את אלה, פיזר את הקהל."
+      },
+      "shippedEnVsMurdockWordDifferences": [
+        {
+          "murdock": "having",
+          "shipped": "when he had"
+        },
+        {
+          "murdock": "assembly",
+          "shipped": "crowd"
+        }
+      ]
+    },
+    {
+      "book": "acts",
+      "chapter": 20,
+      "verse": 17,
+      "status": "SHIPPED_BY_BUILD_UNSOURCED_REVIEW_PENDING",
+      "sourceIds": ["existing-injeel-syriac", "crosswire-peshitta-2.0", "murdock-print-1852"],
+      "sourceSyriac": "ܘܡܢܗ ܡܢ ܡܝܠܝܛܘܣ ܫܕܪ ܐܝܬܝ ܠܩܫܝܫܐ ܕܥܕܬܐ ܕܐܦܣܘܣ ܀",
+      "sourceSyriacSha256": "0c56ef57ef0f617b8e504d73ea79821e690e9ebce8e174aa8d80155452294d20",
+      "comparisonModuleSyriac": "ܘܡܢܗ ܡܢ ܡܝܠܝܛܘܤ ܫܕܪ ܐܝܬܝ ܠܩܫܝܫܐ ܕܥܕܬܐ ܕܐܦܤܘܤ ܀ ",
+      "comparisonEditsAfterRemovingOnlyModuleTrailingAsciiSpaces": [
+        {
+          "operation": "replace",
+          "app": "ܣ",
+          "module": "ܤ",
+          "appRange": [14, 15],
+          "moduleRange": [14, 15]
+        },
+        {
+          "operation": "replace",
+          "app": "ܣ",
+          "module": "ܤ",
+          "appRange": [41, 42],
+          "moduleRange": [41, 42]
+        },
+        {
+          "operation": "replace",
+          "app": "ܣ",
+          "module": "ܤ",
+          "appRange": [43, 44],
+          "moduleRange": [43, 44]
+        }
+      ],
+      "murdockQuote": "And from Miletus, he sent and called the Elders of the church at Ephesus.",
+      "printLeaf": 281,
+      "printedPage": 257,
+      "printUrl": "https://archive.org/details/newtestamentorbo1852murd/page/n281/mode/1up",
+      "printJp2Sha256": "82ec39d2ca7876e203de177302dff9d57cd7a458a65be96644ef2618650fbc88",
+      "reviewNotes": "Murdock quotation is reference evidence only. Shipped wording is Build's and is not verbatim Murdock; word-level differences (case/punctuation ignored) are listed. Greek/Hebrew are modern renderings by Build; their source path is not recorded.",
+      "rightsNote": "The 1852 Murdock English and identified CrossWire Peshitta text are public-domain source evidence. The shipped en/el/he wording is Build's new rendering, not recovered original text, not independently human-reviewed, and carries no blanket licence warranty.",
+      "shippedRenderings": {
+        "en": "And from Miletus he sent and brought the elders of the assembly of Ephesus.",
+        "el": "Και από τη Μίλητο έστειλε και έφερε τους πρεσβύτερους της σύναξης της Εφέσου.",
+        "he": "וממילטוס שלח והביא את זקני העדה של אפסוס."
+      },
+      "shippedEnVsMurdockWordDifferences": [
+        {
+          "murdock": "called",
+          "shipped": "brought"
+        },
+        {
+          "murdock": "church at",
+          "shipped": "assembly of"
+        }
+      ]
+    }
+  ],
+  "shippedBy": {
+    "commit": "442b8a8",
+    "subject": "Restore Peshitta verses that were blank or on the wrong line.",
+    "committedAt": "2026-11-08T20:31:04-05:00",
+    "note": "No source citation was recorded in that commit for these English/Greek/Hebrew fills."
+  }
+}
