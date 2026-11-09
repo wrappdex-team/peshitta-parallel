@@ -13,6 +13,7 @@ import { SITE_ORIGIN } from "@/lib/site";
 import { usePrefs } from "@/lib/use-prefs";
 
 export const Route = createFileRoute("/words")({
+  loader: () => loadBook("matthew"),
   head: () => ({
     meta: [
       { title: "Words of Y'shua — Injeel" },
@@ -51,7 +52,9 @@ function Words() {
   const { prefs, patch } = usePrefs();
   const reader = useRef<ReadAloudHandle>(null);
   const [book, setBook] = useState<RedBook>("matthew");
-  const [doc, setDoc] = useState<BookFile | null>(null);
+  const initialBook = Route.useLoaderData();
+  const [otherBook, setDoc] = useState<BookFile | null>(null);
+  const doc = book === initialBook.id ? initialBook : otherBook?.id === book ? otherBook : null;
   const [parallel, setParallel] = useState<string[][] | null>(null);
   const [parallel2, setParallel2] = useState<string[][] | null>(null);
   const [err, setErr] = useState("");
@@ -68,6 +71,7 @@ function Words() {
     let live = true;
     setDoc(null);
     setErr("");
+    if (book === initialBook.id) return;
     loadBook(book)
       .then((next) => {
         if (live) setDoc(next);
@@ -78,7 +82,7 @@ function Words() {
     return () => {
       live = false;
     };
-  }, [book]);
+  }, [book, initialBook.id]);
 
   useEffect(() => {
     let live = true;
