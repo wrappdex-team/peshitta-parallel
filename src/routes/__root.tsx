@@ -2,6 +2,7 @@ import { createRootRoute, HeadContent, Outlet, Scripts } from "@tanstack/react-r
 import { AuthProvider } from "@/lib/auth/provider";
 import { PreviewHostBridge } from "@/components/preview-host-bridge";
 import { NativeShell, ThemeColor } from "@/components/device-shell";
+import { Guide } from "@/components/guide";
 import appCss from "../styles.css?url";
 
 import { SITE_DESCRIPTION, SITE_NAME, SITE_ORIGIN } from "@/lib/site";
@@ -67,6 +68,7 @@ export const Route = createRootRoute({
         <NativeShell />
         <AuthProvider>
           <Outlet />
+          <Guide />
         </AuthProvider>
         <Scripts />
       </body>

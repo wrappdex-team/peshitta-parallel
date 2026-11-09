@@ -89,6 +89,13 @@ function Home() {
           <Link to="/study" className="inline-flex min-h-11 items-center text-garnet">
             About this Injeel
           </Link>
+          <button
+            type="button"
+            className="min-h-11 text-garnet"
+            onClick={() => window.dispatchEvent(new CustomEvent("injeel-guide", { detail: "panel" }))}
+          >
+            Guide
+          </button>
           <button type="button" className="min-h-11 text-garnet" onClick={() => setSearch(true)}>
             Search
           </button>
