@@ -6,14 +6,26 @@ import { useEffect, useRef, useState } from "react";
 
 type Line = { id: string; label: string; text: string; speak: string; tts: string; face: string; dir: "ltr" | "rtl" };
 
+const PREFIX_SOUND: Record<string, string> = { "ܘ": "w", "ܕ": "d", "ܒ": "b", "ܠ": "l" };
+
+function syriacSay(study: WordStudy) {
+  const sounds = study.prefixes.map((part) => PREFIX_SOUND[part.sy] || "").join("");
+  let stem = (study.roman || study.gloss || "").trim().replace(/^(and|of|in|to|that)\s+/i, "");
+  if (!stem) stem = study.gloss;
+  if (!sounds) return stem;
+  if (new RegExp(`^${sounds}[\\s\\-']`, "i").test(stem)) return stem;
+  return `${sounds}-${stem}`;
+}
+
 function linesFor(study: WordStudy, langs: LangId[]): Line[] {
   const lines: Line[] = [];
-  if (study.roman) {
+  const pronounced = syriacSay(study);
+  if (pronounced) {
     lines.push({
       id: "syr",
       label: "Classical Syriac",
-      text: study.roman,
-      speak: study.roman.replace(/'/g, ""),
+      text: pronounced,
+      speak: pronounced.replace(/'/g, ""),
       tts: "en-US",
       face: "font-serif",
       dir: "ltr",
@@ -28,7 +40,7 @@ function linesFor(study: WordStudy, langs: LangId[]): Line[] {
         id: lang,
         label: language.label,
         text: study.word,
-        speak: study.roman ? study.roman.replace(/'/g, "") : study.word,
+        speak: pronounced.replace(/'/g, "") || study.word,
         tts: "ar",
         face: "font-syriac text-2xl",
         dir: "rtl",
@@ -60,27 +72,29 @@ function linesFor(study: WordStudy, langs: LangId[]): Line[] {
       continue;
     }
     const said = study.gloss ? sayGloss(study.gloss, lang) : "";
+    const rtl = /[\u0590-\u05FF\u0600-\u06FF\u0700-\u074F]/.test(said);
     lines.push({
       id: lang,
       label: language.label,
       text: said,
       speak: said,
       tts: language.tts === "en" ? "en-US" : language.tts,
-      face:
-        lang === "he"
+      face: rtl
+        ? lang === "he"
           ? "font-hebrew text-xl"
           : lang === "ar"
             ? "font-arab text-xl"
-            : lang === "el"
-              ? "font-greek"
-              : lang === "ru"
-                ? "font-cyr"
-                : lang === "zh"
-                  ? "font-han"
-                  : lang === "ja"
-                    ? "font-kana"
-                    : "font-serif",
-      dir: language.dir === "rtl" ? "rtl" : "ltr",
+            : "font-serif"
+        : lang === "el"
+          ? "font-greek"
+          : lang === "ru"
+            ? "font-cyr"
+            : lang === "zh"
+              ? "font-han"
+              : lang === "ja"
+                ? "font-kana"
+                : "font-serif",
+      dir: rtl ? "rtl" : "ltr",
     });
   }
   if (cognate && !langs.includes("he")) {
@@ -141,6 +155,7 @@ export function WordStudySheet({
   langs: LangId[];
   onPick: (surface: string) => void;
 }) {
+  const pronounced = syriacSay(study);
   const lines = linesFor(study, langs);
   const [busy, setBusy] = useState("");
   const run = useRef(0);
@@ -177,13 +192,13 @@ export function WordStudySheet({
       <p tabIndex={-1} data-modal-initial className="font-syriac text-4xl text-syriac" lang="syr" dir="rtl">
         {study.word}
       </p>
-      {study.roman && <p className="mt-1 text-sm text-gold">{study.roman}</p>}
+      {study.roman && <p className="mt-1 text-sm text-gold">{pronounced || study.roman}</p>}
       <p className="mt-2 font-serif text-xl">{study.gloss || "No gloss is settled for this form."}</p>
       {study.via && <p className="mt-2 text-sm leading-relaxed text-muted">{study.via}</p>}
       {study.note && <p className="mt-2 text-sm leading-relaxed">{study.note}</p>}
 
       <p className="mt-5 text-xs tracking-widest text-gold">BUILD</p>
-      <div className="mt-2 flex flex-wrap gap-2" dir="rtl">
+      <div className="mt-2 flex flex-wrap gap-2" dir="ltr">
         {parts.map((part, index) => (
           <div key={`${part.role}-${part.sy}-${index}`} className="rounded-md border border-line px-2 py-1 text-center">
             <span className="block font-syriac text-2xl text-syriac" lang="syr">
@@ -201,12 +216,14 @@ export function WordStudySheet({
         {study.rootKind === "triliteral" ? "TRILITERAL" : "CONSONANTS"}
       </p>
       {study.root.length > 0 ? (
-        <p className="mt-2 font-syriac text-3xl text-syriac" lang="syr" dir="rtl">
-          {study.root.join(" · ")}
-          <span dir="ltr" className="ml-3 align-middle font-serif text-base text-gold">
+        <div className="mt-2">
+          <p className="font-syriac text-3xl text-syriac" lang="syr" dir="rtl">
+            {study.root.join(" · ")}
+          </p>
+          <p dir="ltr" className="mt-1 font-serif text-gold">
             {rootRoman(study.root)}
-          </span>
-        </p>
+          </p>
+        </div>
       ) : (
         <p className="mt-2 text-sm text-muted">No root consonants to show.</p>
       )}

@@ -149,16 +149,178 @@ const SAY: Record<string, Say> = {
   eye: row("eye", "μάτι", "עַיִן", "عين", "œil", "глаз", "ojo", "眼", "Auge", "目", "ܥܝܢܐ"),
   eyes: row("eyes", "μάτια", "עֵינַיִם", "عيون", "yeux", "глаза", "ojos", "眼", "Augen", "目", "ܥܝܢܐ"),
   beginning: row("beginning", "αρχή", "רֵאשִׁית", "بدء", "commencement", "начало", "principio", "起初", "Anfang", "初め", "ܪܫܝܬ"),
+  ye: row("you", "εσείς", "אַתֶּם", "أنتم", "vous", "вы", "vosotros", "你们", "ihr", "あなたがた", "ܐܢܬܘܢ"),
+  thou: row("you", "εσύ", "אַתָּה", "أنت", "tu", "ты", "tú", "你", "du", "あなた", "ܐܢܬ"),
+  thee: row("you", "εσένα", "אוֹתְךָ", "إياك", "toi", "тебя", "ti", "你", "dich", "あなたを", "ܠܟ"),
+  thy: row("your", "σου", "שֶׁלְּךָ", "ـك", "ton", "твой", "tu", "你的", "dein", "あなたの", "ܟ"),
+  shall: row("shall", "θα", "יִ", "سوف", "va", "будет", "ha de", "必", "soll", "であろう", "ܢ"),
+  shalt: row("shall", "θα", "תִּ", "سوف", "vas", "будешь", "has de", "必", "sollst", "であろう", "ܬ"),
+  will: row("will", "θα", "יִ", "سوف", "va", "будет", "va a", "将", "wird", "であろう", "ܢ"),
+  would: row("would", "θα", "הָיָה", "كان", "aurait", "бы", "habría", "会", "würde", "だろう", "ܗܘܐ"),
+  may: row("may", "ας", "יִ", "لي", "puisse", "да", "pueda", "愿", "möge", "ように", "ܢ"),
+  might: row("might", "μπορεί", "יָכוֹל", "قد", "pourrait", "мог", "podría", "也许", "könnte", "かもしれない", "ܡܫܟܚ"),
+  should: row("should", "πρέπει", "צָרִיךְ", "ينبغي", "devrait", "должен", "debe", "应当", "sollte", "べき", "ܘܠܐ"),
+  be: row("be", "να είναι", "הֱיֵה", "كن", "être", "быть", "ser", "成为", "sein", "である", "ܗܘܝ"),
+  am: row("am", "είμαι", "אֲנִי", "أنا", "suis", "есмь", "soy", "是", "bin", "である", "ܐܝܬ"),
+  are: row("are", "είναι", "הֵם", "هم", "sont", "суть", "son", "是", "sind", "である", "ܐܝܬ"),
+  been: row("been", "ήταν", "הָיָה", "كان", "été", "был", "sido", "曾是", "gewesen", "であった", "ܗܘܐ"),
+  being: row("being", "όντας", "הָיֹה", "كائن", "étant", "будучи", "siendo", "正", "seiend", "であり", "ܗܘܐ"),
+  him: row("him", "αυτόν", "אוֹתוֹ", "إياه", "le", "его", "lo", "他", "ihn", "彼を", "ܠܗ"),
+  them: row("them", "αυτούς", "אוֹתָם", "إياهم", "les", "их", "los", "他们", "sie", "彼らを", "ܠܗܘܢ"),
+  it: row("it", "αυτό", "אוֹתוֹ", "إياه", "le", "это", "lo", "它", "es", "それを", "ܠܗ"),
+  its: row("its", "του", "שֶׁלּוֹ", "ـه", "son", "его", "su", "其", "sein", "その", "ܗ"),
+  me: row("me", "με", "אוֹתִי", "إياي", "moi", "меня", "mí", "我", "mich", "私を", "ܠܝ"),
+  us: row("us", "μας", "אוֹתָנוּ", "إيانا", "nous", "нас", "nos", "我们", "uns", "私たちを", "ܠܢ"),
+  let: row("let", "ας", "יְהִי", "ليكن", "que", "пусть", "que", "让", "lass", "させよ", "ܢܗܘܐ"),
+  have: row("have", "έχω", "יֵשׁ", "عند", "ai", "имею", "tengo", "有", "habe", "持っている", "ܐܝܬ"),
+  has: row("has", "έχει", "יֵשׁ", "عند", "a", "имеет", "tiene", "有", "hat", "持っている", "ܐܝܬ"),
+  had: row("had", "είχε", "הָיָה", "كان", "avait", "имел", "tenía", "曾有", "hatte", "持っていた", "ܐܝܬ"),
+  by: row("by", "διά", "בְּ", "بـ", "par", "через", "por", "借着", "durch", "によって", "ܒ"),
+  on: row("on", "πάνω", "עַל", "على", "sur", "на", "sobre", "在", "auf", "の上", "ܥܠ"),
+  at: row("at", "σε", "בְּ", "عند", "à", "у", "en", "在", "bei", "で", "ܒ"),
+  up: row("up", "πάνω", "מַעְלָה", "فوق", "en haut", "вверх", "arriba", "上", "hinauf", "上へ", "ܠܥܠ"),
+  down: row("down", "κάτω", "מַטָּה", "تحت", "en bas", "вниз", "abajo", "下", "hinab", "下へ", "ܠܬܚܬ"),
+  out: row("out", "έξω", "חוּצָה", "خارج", "dehors", "вон", "fuera", "出", "hinaus", "外へ", "ܠܒܪ"),
+  off: row("off", "από", "מִן", "عن", "de", "прочь", "de", "离开", "ab", "離れて", "ܡܢ"),
+  away: row("away", "μακριά", "הָלְאָה", "بعيدا", "au loin", "прочь", "lejos", "离开", "weg", "離れて", "ܠܪܘܚܩܐ"),
+  forth: row("forth", "έξω", "הַחוּצָה", "خارجا", "dehors", "вон", "fuera", "出来", "hervor", "出て", "ܠܒܪ"),
+  before: row("before", "πριν", "לִפְנֵי", "قبل", "avant", "перед", "antes", "以前", "vor", "前に", "ܩܕܡ"),
+  after: row("after", "μετά", "אַחֲרֵי", "بعد", "après", "после", "después", "以后", "nach", "後に", "ܒܬܪ"),
+  about: row("about", "περί", "עַל", "عن", "au sujet de", "о", "acerca de", "关于", "über", "について", "ܥܠ"),
+  which: row("which", "που", "אֲשֶׁר", "الذي", "qui", "который", "que", "所", "welcher", "ところの", "ܕ"),
+  whom: row("whom", "που", "אֲשֶׁר", "الذي", "que", "кого", "quien", "所", "wen", "だれを", "ܕ"),
+  those: row("those", "εκείνοι", "הָהֵם", "أولئك", "ceux", "те", "aquellos", "那些", "jene", "それら", "ܗܢܘܢ"),
+  there: row("there", "εκεί", "שָׁם", "هناك", "là", "там", "allí", "那里", "dort", "そこに", "ܬܡܢ"),
+  here: row("here", "εδώ", "פֹּה", "هنا", "ici", "здесь", "aquí", "这里", "hier", "ここに", "ܗܪܟܐ"),
+  then: row("then", "τότε", "אָז", "حينئذ", "alors", "тогда", "entonces", "那时", "dann", "そのとき", "ܗܝܕܝܢ"),
+  so: row("so", "ούτως", "כֵּן", "هكذا", "ainsi", "так", "así", "如此", "so", "そのように", "ܗܟܢܐ"),
+  or: row("or", "ή", "אוֹ", "أو", "ou", "или", "o", "或", "oder", "または", "ܐܘ"),
+  because: row("because", "επειδή", "יַעַן", "لأن", "parce que", "потому что", "porque", "因为", "weil", "だから", "ܡܛܠ"),
+  therefore: row("therefore", "λοιπόν", "לָכֵן", "لذلك", "donc", "итак", "por tanto", "所以", "darum", "ゆえに", "ܗܟܝܠ"),
+  himself: row("himself", "εαυτόν", "עַצְמוֹ", "نفسه", "lui-même", "себя", "sí mismo", "他自己", "sich", "彼自身", "ܢܦܫܗ"),
+  themselves: row("themselves", "εαυτούς", "עַצְמָם", "أنفسهم", "eux-mêmes", "себя", "sí mismos", "他们自己", "sich", "彼ら自身", "ܢܦܫܗܘܢ"),
+  yourselves: row("yourselves", "εαυτούς", "עַצְמְכֶם", "أنفسكم", "vous-mêmes", "себя", "vosotros mismos", "你们自己", "euch", "あなたがた自身", "ܢܦܫܟܘܢ"),
+  do: row("do", "κάνε", "עֲשֵׂה", "افعل", "fais", "делай", "haz", "做", "tu", "せよ", "ܥܒܕ"),
+  did: row("did", "έκανε", "עָשָׂה", "فعل", "fit", "сделал", "hizo", "做了", "tat", "した", "ܥܒܕ"),
+  make: row("make", "κάνε", "עֲשֵׂה", "اصنع", "fais", "сделай", "haz", "造", "mache", "作れ", "ܥܒܕ"),
+  made: row("made", "έκανε", "עָשָׂה", "صنع", "fit", "сделал", "hizo", "造了", "machte", "作った", "ܥܒܕ"),
+  take: row("take", "πάρε", "קַח", "خذ", "prends", "возьми", "toma", "拿", "nimm", "取れ", "ܢܣܒ"),
+  taken: row("taken", "ελήφθη", "נִלְקַח", "أُخذ", "pris", "взят", "tomado", "被拿", "genommen", "取られた", "ܢܣܝܒ"),
+  put: row("put", "βάλε", "שִׂים", "ضع", "mets", "положи", "pon", "放", "lege", "置け", "ܣܡ"),
+  bring: row("bring", "φέρε", "הָבֵא", "أحضر", "apporte", "принеси", "trae", "带来", "bringe", "持って来い", "ܐܝܬܝ"),
+  brought: row("brought", "έφερε", "הֵבִיא", "أحضر", "apporta", "принёс", "trajo", "带来了", "brachte", "持って来た", "ܐܝܬܝ"),
+  cast: row("cast", "ρίξε", "הַשְׁלֵךְ", "اطرح", "jette", "брось", "echa", "扔", "wirf", "投げよ", "ܫܕܐ"),
+  receive: row("receive", "δέξου", "קַבֵּל", "اقبل", "reçois", "прими", "recibe", "领受", "empfange", "受けよ", "ܩܒܠ"),
+  received: row("received", "έλαβε", "קִבֵּל", "قبل", "reçut", "принял", "recibió", "领受了", "empfing", "受けた", "ܩܒܠ"),
+  given: row("given", "δόθηκε", "נִתַּן", "أُعطي", "donné", "дан", "dado", "被给", "gegeben", "与えられた", "ܝܗܝܒ"),
+  known: row("known", "γνωστό", "נוֹדָע", "معروف", "connu", "известен", "conocido", "被知道", "bekannt", "知られている", "ܝܕܝܥ"),
+  found: row("found", "βρέθηκε", "נִמְצָא", "وُجد", "trouvé", "найден", "hallado", "找到", "gefunden", "見つかった", "ܐܫܬܟܚ"),
+  find: row("find", "βρες", "מְצָא", "جد", "trouve", "найди", "halla", "找", "finde", "見つけよ", "ܐܫܟܚ"),
+  eat: row("eat", "φάε", "אֱכֹל", "كل", "mange", "ешь", "come", "吃", "iss", "食べよ", "ܐܟܠ"),
+  drink: row("drink", "πιες", "שְׁתֵה", "اشرب", "bois", "пей", "bebe", "喝", "trink", "飲め", "ܫܬܐ"),
+  kill: row("kill", "σκότωσε", "הֲרֹג", "اقتل", "tue", "убей", "mata", "杀", "töte", "殺せ", "ܩܛܠ"),
+  killed: row("killed", "σκότωσε", "הָרַג", "قتل", "tua", "убил", "mató", "杀了", "tötete", "殺した", "ܩܛܠ"),
+  enter: row("enter", "μπες", "בֹּא", "ادخل", "entre", "войди", "entra", "进入", "tritt ein", "入れ", "ܥܠ"),
+  deliver: row("deliver", "λύτρωσε", "הַצֵּל", "نج", "délivre", "избавь", "libra", "拯救", "erlöse", "救い出せ", "ܦܨܝ"),
+  keep: row("keep", "φύλαξε", "שְׁמֹר", "احفظ", "garde", "храни", "guarda", "守", "bewahre", "守れ", "ܢܛܪ"),
+  kept: row("kept", "φύλαξε", "שָׁמַר", "حفظ", "garda", "хранил", "guardó", "守了", "bewahrte", "守った", "ܢܛܪ"),
+  speak: row("speak", "μίλα", "דַּבֵּר", "تكلم", "parle", "говори", "habla", "说", "rede", "語れ", "ܡܠܠ"),
+  open: row("open", "άνοιξε", "פְּתַח", "افتح", "ouvre", "открой", "abre", "打开", "öffne", "開け", "ܦܬܚ"),
+  opened: row("opened", "άνοιξε", "פָּתַח", "فتح", "ouvrit", "открыл", "abrió", "打开了", "öffnete", "開けた", "ܦܬܚ"),
+  judge: row("judge", "κρίνε", "שְׁפֹט", "احكم", "juge", "суди", "juzga", "审判", "richte", "さばけ", "ܕܘܢ"),
+  pray: row("pray", "προσευχήσου", "הִתְפַּלֵּל", "صل", "prie", "молись", "ora", "祷告", "bete", "祈れ", "ܨܠܝ"),
+  prayer: row("prayer", "προσευχή", "תְּפִלָּה", "صلاة", "prière", "молитва", "oración", "祷告", "Gebet", "祈り", "ܨܠܘܬܐ"),
+  born: row("born", "γεννήθηκε", "נוֹלַד", "وُلد", "né", "рожден", "nacido", "生", "geboren", "生まれた", "ܝܠܝܕ"),
+  became: row("became", "έγινε", "הָיָה", "صار", "devint", "стал", "llegó a ser", "成了", "wurde", "なった", "ܗܘܐ"),
+  written: row("written", "γραμμένο", "כָּתוּב", "مكتوب", "écrit", "написано", "escrito", "所写", "geschrieben", "書かれた", "ܟܬܝܒ"),
+  able: row("able", "ικανός", "יָכוֹל", "قادر", "capable", "способен", "capaz", "能", "fähig", "できる", "ܡܫܟܚ"),
+  near: row("near", "κοντά", "קָרוֹב", "قريب", "près", "близко", "cerca", "近", "nahe", "近く", "ܩܪܝܒ"),
+  dead: row("dead", "νεκρός", "מֵת", "ميت", "mort", "мёртвый", "muerto", "死的", "tot", "死んだ", "ܡܝܬ"),
+  fathers: row("fathers", "πατέρες", "אָבוֹת", "آباء", "pères", "отцы", "padres", "列祖", "Väter", "父たち", "ܐܒܗܬܐ"),
+  gentiles: row("Gentiles", "έθνη", "הַגּוֹיִם", "الأمم", "les nations", "язычники", "los gentiles", "外邦人", "die Völker", "異邦人", "ܥܡܡܐ"),
+  high: row("high", "υψηλός", "עֶלְיוֹן", "علي", "haut", "высокий", "alto", "高", "hoch", "高い", "ܥܠܝܐ"),
   the: row("", "", "", "", "", "", "", "", "", "", ""),
   a: row("", "", "", "", "", "", "", "", "", "", ""),
   an: row("", "", "", "", "", "", "", "", "", "", ""),
+  ones: row("", "", "", "", "", "", "", "", "", "", ""),
 };
 
-const SKIP = new Set(["the", "a", "an"]);
+const SKIP = new Set(["the", "a", "an", "ones"]);
 
-export type Cognate = { he: string; ar: string; gloss: string };
+const NAMES: Record<string, Say> = {
+  avraham: row("Avraham", "Αβραάμ", "אַבְרָהָם", "إبراهيم", "Abraham", "Авраам", "Abraham", "亚伯拉罕", "Abraham", "アブラハム", "ܐܒܪܗܡ"),
+  isaac: row("Isaac", "Ισαάκ", "יִצְחָק", "إسحاق", "Isaac", "Исаак", "Isaac", "以撒", "Isaak", "イサク", "ܐܝܣܚܩ"),
+  yisrael: row("Yisrael", "Ισραήλ", "יִשְׂרָאֵל", "إسرائيل", "Israël", "Израиль", "Israel", "以色列", "Israel", "イスラエル", "ܐܝܣܪܝܠ"),
+  yaakov: row("Ya'akov", "Γιακόβ", "יַעֲקֹב", "يعقوب", "Jacques", "Иаков", "Jacobo", "雅各", "Jakob", "ヤコブ", "ܝܥܩܘܒ"),
+  "ya'akov": row("Ya'akov", "Γιακόβ", "יַעֲקֹב", "يعقوب", "Jacques", "Иаков", "Jacobo", "雅各", "Jakob", "ヤコブ", "ܝܥܩܘܒ"),
+  moshe: row("Moshe", "Μωσής", "מֹשֶׁה", "موسى", "Moïse", "Моисей", "Moisés", "摩西", "Mose", "モーセ", "ܡܘܫܐ"),
+  dawid: row("Dawid", "Δαυίδ", "דָּוִד", "داود", "David", "Давид", "David", "大卫", "David", "ダビデ", "ܕܘܝܕ"),
+  shimon: row("Shimon", "Σίμων", "שִׁמְעוֹן", "شمعون", "Simon", "Симон", "Simón", "西门", "Simon", "シモン", "ܫܡܥܘܢ"),
+  yochanan: row("Yochanan", "Γιοχανάν", "יוֹחָנָן", "يوحنا", "Jean", "Иоанн", "Juan", "约翰", "Johannes", "ヨハナン", "ܝܘܚܢܢ"),
+  paulos: row("Paulos", "Παύλος", "פַּוְלוֹס", "بولس", "Paul", "Павел", "Pablo", "保罗", "Paulus", "パウロ", "ܦܘܠܘܣ"),
+  philipos: row("Philipos", "Φίλιππος", "פִילִיפּוֹס", "فيلبس", "Philippe", "Филипп", "Felipe", "腓力", "Philippus", "ピリポ", "ܦܝܠܝܦܘܣ"),
+  andrawos: row("Andrawos", "Ανδρέας", "אַנְדְּרֵי", "أندراوس", "André", "Андрей", "Andrés", "安得烈", "Andreas", "アンデレ", "ܐܢܕܪܐܘܣ"),
+  toma: row("Toma", "Θωμάς", "תּוֹמָא", "توما", "Thomas", "Фома", "Tomás", "多马", "Thomas", "トマス", "ܬܐܘܡܐ"),
+  luqa: row("Luqa", "Λουκάς", "לוּקָא", "لوقا", "Luc", "Лука", "Lucas", "路加", "Lukas", "ルカ", "ܠܘܩܐ"),
+  mattai: row("Mattai", "Ματθαίος", "מַתַּי", "متى", "Matthieu", "Матфей", "Mateo", "马太", "Matthäus", "マタイ", "ܡܬܝ"),
+  urishlim: row("Urishlim", "Ιερουσαλήμ", "יְרוּשָׁלַיִם", "أورشليم", "Jérusalem", "Иерусалим", "Jerusalén", "耶路撒冷", "Jerusalem", "エルサレム", "ܐܘܪܫܠܡ"),
+  galila: row("Galila", "Γαλιλαία", "הַגָּלִיל", "الجليل", "Galilée", "Галилея", "Galilea", "加利利", "Galiläa", "ガリラヤ", "ܓܠܝܠܐ"),
+  yordanan: row("Yordanan", "Ιορδάνης", "הַיַּרְדֵּן", "الأردن", "Jourdain", "Иордан", "Jordán", "约旦", "Jordan", "ヨルダン", "ܝܘܪܕܢܢ"),
+  natsrath: row("Natsrath", "Ναζαρέτ", "נָצְרַת", "الناصرة", "Nazareth", "Назарет", "Nazaret", "拿撒勒", "Nazaret", "ナザレ", "ܢܨܪܬ"),
+  mitsrayin: row("Mitsrayin", "Αίγυπτος", "מִצְרַיִם", "مصر", "Égypte", "Египет", "Egipto", "埃及", "Ägypten", "エジプト", "ܡܨܪܝܢ"),
+  sheol: row("Sheol", "Σιόλ", "שְׁאוֹל", "شيول", "Shéol", "Шеол", "Seol", "示阿勒", "Scheol", "シェオル", "ܫܝܘܠ"),
+  satana: row("Satana", "Σατανάς", "שָׂטָן", "الشيطان", "Satan", "Сатана", "Satanás", "撒但", "Satan", "サタン", "ܣܛܢܐ"),
+  eliyahu: row("Eliyahu", "Ηλίας", "אֵלִיָּהוּ", "إيليا", "Élie", "Илия", "Elías", "以利亚", "Elia", "エリヤ", "ܐܠܝܐ"),
+  yhwh: row("YHWH", "Γιαχβε", "יהוה", "يهوه", "YHWH", "ЙХВХ", "YHWH", "雅威", "JHWH", "ヤハウェ", "ܡܪܝܐ"),
+  adam: row("Adam", "Αδάμ", "אָדָם", "آدم", "Adam", "Адам", "Adán", "亚当", "Adam", "アダム", "ܐܕܡ"),
+  noah: row("Noah", "Νώε", "נֹחַ", "نوح", "Noé", "Ной", "Noé", "挪亚", "Noah", "ノア", "ܢܘܚ"),
+  sarah: row("Sarah", "Σάρρα", "שָׂרָה", "سارة", "Sara", "Сарра", "Sara", "撒拉", "Sara", "サラ", "ܣܪܐ"),
+  solomon: row("Solomon", "Σολομών", "שְׁלֹמֹה", "سليمان", "Salomon", "Соломон", "Salomón", "所罗门", "Salomo", "ソロモン", "ܫܠܝܡܘܢ"),
+  aaron: row("Aaron", "Ααρών", "אַהֲרֹן", "هارون", "Aaron", "Аарон", "Aarón", "亚伦", "Aaron", "アロン", "ܐܗܪܘܢ"),
+  herodes: row("Herodes", "Ηρώδης", "הוֹרְדוֹס", "هيرودس", "Hérode", "Ирод", "Herodes", "希律", "Herodes", "ヘロデ", "ܗܪܘܕܣ"),
+  pilatos: row("Pilatos", "Πιλάτος", "פִּילָטוֹס", "بيلاطس", "Pilate", "Пилат", "Pilato", "彼拉多", "Pilatus", "ピラト", "ܦܝܠܛܘܣ"),
+  yehuda: row("Yehuda", "Ιούδας", "יְהוּדָה", "يهوذا", "Juda", "Иуда", "Judas", "犹大", "Juda", "ユダ", "ܝܗܘܕܐ"),
+  babylon: row("Babylon", "Βαβυλώνα", "בָּבֶל", "بابل", "Babylone", "Вавилон", "Babilonia", "巴比伦", "Babel", "バビロン", "ܒܒܠ"),
+  damascus: row("Damascus", "Δαμασκός", "דַּמֶּשֶׂק", "دمشق", "Damas", "Дамаск", "Damasco", "大马士革", "Damaskus", "ダマスコ", "ܕܪܡܣܘܩ"),
+  ephesus: row("Ephesus", "Έφεσος", "אֶפְסוֹס", "أفسس", "Éphèse", "Ефес", "Éfeso", "以弗所", "Ephesus", "エペソ", "ܐܦܣܘܣ"),
+  antioch: row("Antioch", "Αντιόχεια", "אַנְטִיוֹכְיָה", "أنطاكية", "Antioche", "Антиохия", "Antioquía", "安提阿", "Antiochien", "アンテオケ", "ܐܢܛܝܘܟܝܐ"),
+  rhoma: row("Rhoma", "Ρώμη", "רוֹמִי", "رومية", "Rome", "Рим", "Roma", "罗马", "Rom", "ローマ", "ܪܗܘܡܐ"),
+  timothy: row("Timothy", "Τιμόθεος", "טִימוֹתֵאוֹס", "تيموثاوس", "Timothée", "Тимофей", "Timoteo", "提摩太", "Timotheus", "テモテ", "ܛܡܬܐܘܣ"),
+  titus: row("Titus", "Τίτος", "טִיטוֹס", "تيطس", "Tite", "Тит", "Tito", "提多", "Titus", "テトス", "ܛܝܛܘܣ"),
+  silas: row("Silas", "Σίλας", "סִילָא", "سيلا", "Silas", "Сила", "Silas", "西拉", "Silas", "シラス", "ܫܝܠܐ"),
+};
+
+function bareToken(token: string) {
+  return token.toLowerCase().replace(/^[“"']|[”"'.:,;]+$/g, "").replace(/’/g, "'");
+}
+
+function lookup(token: string): Say | undefined {
+  const key = bareToken(token);
+  if (!key || SKIP.has(key)) return SKIP.has(key) ? SAY.the : undefined;
+  return SAY[key] ?? NAMES[key];
+}
+
+/** How to say a gloss in one open language. English is the gloss itself. A name or a rare word is kept, never dropped. */
+export function sayGloss(gloss: string, lang: LangId): string {
+  const clean = gloss.trim();
+  if (!clean) return "";
+  if (lang === "en") return clean;
+  const whole = lookup(clean);
+  if (whole?.[lang]) return whole[lang];
+  const said: string[] = [];
+  for (const token of clean.split(/\s+/)) {
+    const bare = token.replace(/^[“"']|[”"'.:,;]+$/g, "");
+    if (!bare || SKIP.has(bareToken(bare))) continue;
+    const hit = lookup(bare)?.[lang];
+    said.push(hit || bare);
+  }
+  if (!said.length) return clean;
+  return lang === "zh" || lang === "ja" ? said.join("") : said.join(" ");
+}
 
 /** Real Semitic kin of a triliteral, spoken in Hebrew and Arabic when the root is known. */
+export type Cognate = { he: string; ar: string; gloss: string };
+
 export const COGNATES: Record<string, Cognate> = {
   "ܐܡܪ": { he: "אָמַר", ar: "أَمَرَ", gloss: "say / command" },
   "ܟܬܒ": { he: "כָּתַב", ar: "كَتَبَ", gloss: "write" },
@@ -188,33 +350,3 @@ export const COGNATES: Record<string, Cognate> = {
   "ܕܡܐ": { he: "דָּם", ar: "دَم", gloss: "blood" },
   "ܐܢܫ": { he: "אֱנוֹשׁ", ar: "إِنْسَان", gloss: "man" },
 };
-
-function lookup(token: string): Say | undefined {
-  const key = token.toLowerCase().replace(/^[“"']|[”"'.:,;]+$/g, "");
-  if (!key || SKIP.has(key)) return SKIP.has(key) ? SAY.the : undefined;
-  return SAY[key];
-}
-
-/** How to say a gloss in one of the open languages. Empty when the gloss is not settled. */
-export function sayGloss(gloss: string, lang: LangId): string {
-  const whole = lookup(gloss.trim());
-  if (whole && whole[lang]) return whole[lang];
-  const tokens = gloss.trim().split(/\s+/).filter(Boolean);
-  if (!tokens.length) return "";
-  const said: string[] = [];
-  let known = 0;
-  let needed = 0;
-  for (const token of tokens) {
-    const bare = token.replace(/^[“"']|[”"'.:,;]+$/g, "");
-    if (!bare) continue;
-    if (SKIP.has(bare.toLowerCase())) continue;
-    needed += 1;
-    const hit = lookup(bare);
-    const word = hit?.[lang];
-    if (!word) continue;
-    known += 1;
-    said.push(word);
-  }
-  if (!needed || known < needed) return "";
-  return lang === "zh" || lang === "ja" ? said.join("") : said.join(" ");
-}
