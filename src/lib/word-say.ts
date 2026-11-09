@@ -153,11 +153,11 @@ const SAY: Record<string, Say> = {
   thou: row("you", "εσύ", "אַתָּה", "أنت", "tu", "ты", "tú", "你", "du", "あなた", "ܐܢܬ"),
   thee: row("you", "εσένα", "אוֹתְךָ", "إياك", "toi", "тебя", "ti", "你", "dich", "あなたを", "ܠܟ"),
   thy: row("your", "σου", "שֶׁלְּךָ", "ـك", "ton", "твой", "tu", "你的", "dein", "あなたの", "ܟ"),
-  shall: row("shall", "θα", "יִ", "سوف", "va", "будет", "ha de", "必", "soll", "であろう", "ܢ"),
-  shalt: row("shall", "θα", "תִּ", "سوف", "vas", "будешь", "has de", "必", "sollst", "であろう", "ܬ"),
-  will: row("will", "θα", "יִ", "سوف", "va", "будет", "va a", "将", "wird", "であろう", "ܢ"),
+  shall: row("shall", "θα", "עָתִיד", "سوف", "va", "будет", "ha de", "必", "soll", "であろう", "ܢ"),
+  shalt: row("shall", "θα", "עָתִיד", "سوف", "vas", "будешь", "has de", "必", "sollst", "であろう", "ܬ"),
+  will: row("will", "θα", "עָתִיד", "سوف", "va", "будет", "va a", "将", "wird", "であろう", "ܢ"),
   would: row("would", "θα", "הָיָה", "كان", "aurait", "бы", "habría", "会", "würde", "だろう", "ܗܘܐ"),
-  may: row("may", "ας", "יִ", "لي", "puisse", "да", "pueda", "愿", "möge", "ように", "ܢ"),
+  may: row("may", "ας", "אוּלַי", "لي", "puisse", "да", "pueda", "愿", "möge", "ように", "ܢ"),
   might: row("might", "μπορεί", "יָכוֹל", "قد", "pourrait", "мог", "podría", "也许", "könnte", "かもしれない", "ܡܫܟܚ"),
   should: row("should", "πρέπει", "צָרִיךְ", "ينبغي", "devrait", "должен", "debe", "应当", "sollte", "べき", "ܘܠܐ"),
   be: row("be", "να είναι", "הֱיֵה", "كن", "être", "быть", "ser", "成为", "sein", "である", "ܗܘܝ"),
@@ -239,6 +239,30 @@ const SAY: Record<string, Say> = {
   fathers: row("fathers", "πατέρες", "אָבוֹת", "آباء", "pères", "отцы", "padres", "列祖", "Väter", "父たち", "ܐܒܗܬܐ"),
   gentiles: row("Gentiles", "έθνη", "הַגּוֹיִם", "الأمم", "les nations", "язычники", "los gentiles", "外邦人", "die Völker", "異邦人", "ܥܡܡܐ"),
   high: row("high", "υψηλός", "עֶלְיוֹן", "علي", "haut", "высокий", "alto", "高", "hoch", "高い", "ܥܠܝܐ"),
+  "will be": row("will be", "θα είναι", "יִהְיֶה", "سيكون", "sera", "будет", "será", "将是", "wird sein", "となる", "ܢܗܘܐ"),
+  "shall be": row("shall be", "θα είναι", "יִהְיֶה", "سيكون", "sera", "будет", "será", "必是", "soll sein", "となる", "ܢܗܘܐ"),
+  these: row("these", "αυτά", "אֵלֶּה", "هؤلاء", "ceux-ci", "эти", "estos", "这些", "diese", "これら", "ܗܠܝܢ"),
+  what: row("what", "τι", "מָה", "ماذا", "quoi", "что", "qué", "什么", "was", "何", "ܡܢܐ"),
+  how: row("how", "πώς", "אֵיךְ", "كيف", "comment", "как", "cómo", "如何", "wie", "どのように", "ܐܝܟܢ"),
+  until: row("until", "έως", "עַד", "حتى", "jusqu'à", "до", "hasta", "直到", "bis", "まで", "ܥܕܡܐ"),
+  without: row("without", "χωρίς", "בְּלִי", "بدون", "sans", "без", "sin", "没有", "ohne", "なしに", "ܕܠܐ"),
+  behold: row("behold", "ιδού", "הִנֵּה", "هوذا", "voici", "вот", "he aquí", "看哪", "siehe", "見よ", "ܗܐ"),
+  anything: row("anything", "τίποτα", "מְאוּמָה", "شيء", "quoi que ce soit", "что-либо", "algo", "任何事", "etwas", "何でも", "ܡܕܡ"),
+  someone: row("someone", "κάποιος", "מִישֶׁהוּ", "أحد", "quelqu'un", "кто-то", "alguien", "有人", "jemand", "だれか", "ܐܢܫ"),
+  thus: row("thus", "ούτως", "כָּכָה", "هكذا", "ainsi", "так", "así", "如此", "so", "このように", "ܗܟܢܐ"),
+  except: row("except", "εκτός", "זוּלָתִי", "إلا", "sauf", "кроме", "excepto", "除了", "außer", "以外", "ܐܠܐ"),
+  toward: row("toward", "προς", "אֶל", "نحو", "vers", "к", "hacia", "向", "zu", "へ", "ܠܘܬ"),
+  lest: row("lest", "μήπως", "פֶּן", "لئلا", "de peur que", "чтобы не", "no sea que", "免得", "damit nicht", "ないように", "ܕܠܐ"),
+  amen: row("amen", "αμήν", "אָמֵן", "آمين", "amen", "аминь", "amén", "阿们", "Amen", "アーメン", "ܐܡܝܢ"),
+  healed: row("healed", "θεραπεύτηκε", "נִרְפָּא", "شُفي", "guéri", "исцелен", "sanado", "治好", "geheilt", "癒された", "ܐܬܐܣܝ"),
+  blessed: row("blessed", "ευλογημένος", "בָּרוּךְ", "مبارك", "béni", "благословен", "bendito", "有福", "gesegnet", "祝福された", "ܒܪܝܟ"),
+  revealed: row("revealed", "αποκαλύφθηκε", "נִגְלָה", "أُعلن", "révélé", "открыт", "revelado", "显明", "offenbart", "現された", "ܓܠܝ"),
+  hidden: row("hidden", "κρυμμένος", "נִסְתָּר", "مخفي", "caché", "сокрыт", "escondido", "隐藏", "verborgen", "隠された", "ܟܣܐ"),
+  commanded: row("commanded", "πρόσταξε", "צִוָּה", "أمر", "ordonna", "повелел", "mandó", "吩咐", "befahl", "命じられた", "ܦܩܕ"),
+  died: row("died", "πέθανε", "מֵת", "مات", "mourut", "умер", "murió", "死了", "starb", "死んだ", "ܡܝܬ"),
+  die: row("die", "πέθανε", "מוּת", "مت", "meurs", "умри", "muere", "死", "stirb", "死ね", "ܡܐܬ"),
+  fear: row("fear", "φόβος", "יִרְאָה", "خوف", "crainte", "страх", "temor", "惧怕", "Furcht", "恐れ", "ܕܚܠܬܐ"),
+  dwell: row("dwell", "κατοίκησε", "שְׁכֹן", "اسكن", "demeure", "обитай", "habita", "住", "wohne", "住め", "ܥܡܪ"),
   the: row("", "", "", "", "", "", "", "", "", "", ""),
   a: row("", "", "", "", "", "", "", "", "", "", ""),
   an: row("", "", "", "", "", "", "", "", "", "", ""),
@@ -300,22 +324,50 @@ function lookup(token: string): Say | undefined {
   return SAY[key] ?? NAMES[key];
 }
 
-/** How to say a gloss in one open language. English is the gloss itself. A name or a rare word is kept, never dropped. */
+const LATIN_TONGUE = new Set<LangId>(["en", "fr", "es", "de"]);
+
+function joinSaid(parts: string[], lang: LangId) {
+  return lang === "zh" || lang === "ja" ? parts.join("") : parts.join(" ");
+}
+
+function renderTokens(gloss: string, lang: LangId) {
+  const tokens = gloss.trim().split(/\s+/).filter(Boolean);
+  const said: string[] = [];
+  let missed = false;
+  for (let i = 0; i < tokens.length; i += 1) {
+    const bare = tokens[i].replace(/^[“"']|[”"'.:,;]+$/g, "");
+    if (!bare || SKIP.has(bareToken(bare))) continue;
+    const next = tokens[i + 1]?.replace(/^[“"']|[”"'.:,;]+$/g, "");
+    const pair = next ? lookup(`${bare} ${next}`)?.[lang] : "";
+    if (pair) {
+      said.push(pair);
+      i += 1;
+      continue;
+    }
+    const hit = lookup(bare)?.[lang];
+    if (hit) {
+      said.push(hit);
+      continue;
+    }
+    missed = true;
+    if (LATIN_TONGUE.has(lang)) said.push(bare);
+  }
+  return { said, missed };
+}
+
+/** How to say a gloss in one open language. English is the gloss itself. A rare word is kept in a Latin tongue, and never dropped so the line goes blank. */
 export function sayGloss(gloss: string, lang: LangId): string {
   const clean = gloss.trim();
   if (!clean) return "";
   if (lang === "en") return clean;
-  const whole = lookup(clean);
-  if (whole?.[lang]) return whole[lang];
-  const said: string[] = [];
-  for (const token of clean.split(/\s+/)) {
-    const bare = token.replace(/^[“"']|[”"'.:,;]+$/g, "");
-    if (!bare || SKIP.has(bareToken(bare))) continue;
-    const hit = lookup(bare)?.[lang];
-    said.push(hit || bare);
-  }
-  if (!said.length) return clean;
-  return lang === "zh" || lang === "ja" ? said.join("") : said.join(" ");
+  const whole = lookup(clean)?.[lang];
+  if (whole) return whole;
+  const senses = clean.split(/\s*[,;]\s*/).map((part) => part.trim()).filter(Boolean);
+  const first = senses.length > 1 ? renderTokens(senses[0], lang) : null;
+  if (first && first.said.length && !first.missed) return joinSaid(first.said, lang);
+  const rendered = renderTokens(clean, lang);
+  if (rendered.said.length) return joinSaid(rendered.said, lang);
+  return clean;
 }
 
 /** Real Semitic kin of a triliteral, spoken in Hebrew and Arabic when the root is known. */

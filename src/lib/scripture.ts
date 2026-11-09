@@ -320,22 +320,37 @@ function bestParse(word: string): Parse | null {
   return best;
 }
 
+function normGloss(text: string) {
+  return text.toLowerCase().replace(/[“”"',.;:]/g, " ").replace(/\s+/g, " ").trim();
+}
+
+/** A peeled analysis is used only when it says the same thing as the lexicon, or when the lexicon has no whole form. */
+function trustedParse(word: string, direct: LexEntry | undefined) {
+  const parsed = bestParse(word);
+  if (!parsed || (!parsed.prefixes.length && !parsed.suffixes.length)) return null;
+  if (direct && normGloss(direct.g) !== normGloss(parsed.gloss)) return null;
+  return parsed;
+}
+
+function trustedStem(key: string) {
+  const parsed = trustedParse(key, lex[key]);
+  return parsed?.stem || key;
+}
+
 let rootIndex: Map<string, string[]> | null = null;
 
-function kinOf(letters: string[], surface: string) {
+function kinOf(letters: string, surface: string) {
   if (!rootIndex) {
     rootIndex = new Map();
     for (const key of Object.keys(lex)) {
-      const parsed = bestParse(key);
-      const stem = parsed?.stem || key;
-      const root = proposeRoot(stem).letters.join("");
-      if (root.length < 2) continue;
-      const list = rootIndex.get(root) ?? [];
+      const skeleton = consonantsOf(trustedStem(key)).join("");
+      if (skeleton.length < 2) continue;
+      const list = rootIndex.get(skeleton) ?? [];
       if (list.length < 40) list.push(key);
-      rootIndex.set(root, list);
+      rootIndex.set(skeleton, list);
     }
   }
-  const keys = rootIndex.get(letters.join("")) ?? [];
+  const keys = rootIndex.get(letters) ?? [];
   return keys
     .filter((key) => key !== surface)
     .sort((a, b) => a.length - b.length || a.localeCompare(b))
@@ -343,11 +358,17 @@ function kinOf(letters: string[], surface: string) {
     .map((key) => ({ word: key, gloss: lex[key]?.g ?? "", roman: lex[key]?.r ?? "" }));
 }
 
+function nameCore(gloss: string) {
+  return gloss.replace(/^(and|of|in|to|that|his|her|their|your|my|our)\s+/i, "").split(/[,;]/)[0].trim();
+}
+
 export function studyWord(word: string): WordStudy {
   const direct = lex[word];
-  const parsed = bestParse(word);
+  const parsed = trustedParse(word, direct);
   const stem = parsed?.stem || word;
   const root = proposeRoot(stem);
+  const core = nameCore(direct?.g || parsed?.gloss || "");
+  const named = /^[A-Z][A-Za-z'’\-]+$/.test(core);
   return {
     word,
     gloss: direct?.g || parsed?.gloss || "",
@@ -358,9 +379,11 @@ export function studyWord(word: string): WordStudy {
     stem,
     suffixes: parsed?.suffixes ?? [],
     root: root.letters,
-    rootKind: root.kind,
-    rootNote: root.note,
-    kin: kinOf(root.letters, word),
+    rootKind: named ? "skeleton" : root.kind,
+    rootNote: named
+      ? `“${core}” is a name. The letters below are how the name is spelled, not a verb root.`
+      : root.note,
+    kin: kinOf(consonantsOf(stem).join(""), word),
   };
 }
 

@@ -13,6 +13,7 @@ function syriacSay(study: WordStudy) {
   let stem = (study.roman || study.gloss || "").trim().replace(/^(and|of|in|to|that)\s+/i, "");
   if (!stem) stem = study.gloss;
   if (!sounds) return stem;
+  if (stem.toLowerCase().startsWith(sounds)) return stem;
   if (new RegExp(`^${sounds}[\\s\\-']`, "i").test(stem)) return stem;
   return `${sounds}-${stem}`;
 }
@@ -47,30 +48,6 @@ function linesFor(study: WordStudy, langs: LangId[]): Line[] {
       });
       continue;
     }
-    if (lang === "he" && cognate) {
-      lines.push({
-        id: lang,
-        label: language.label,
-        text: cognate.he,
-        speak: cognate.he,
-        tts: "he-IL",
-        face: "font-hebrew text-xl",
-        dir: "rtl",
-      });
-      continue;
-    }
-    if (lang === "ar" && cognate) {
-      lines.push({
-        id: lang,
-        label: language.label,
-        text: cognate.ar,
-        speak: cognate.ar,
-        tts: "ar-SA",
-        face: "font-arab text-xl",
-        dir: "rtl",
-      });
-      continue;
-    }
     const said = study.gloss ? sayGloss(study.gloss, lang) : "";
     const rtl = /[\u0590-\u05FF\u0600-\u06FF\u0700-\u074F]/.test(said);
     lines.push({
@@ -97,7 +74,7 @@ function linesFor(study: WordStudy, langs: LangId[]): Line[] {
       dir: rtl ? "rtl" : "ltr",
     });
   }
-  if (cognate && !langs.includes("he")) {
+  if (cognate && !lines.some((line) => line.text === cognate.he)) {
     lines.push({
       id: "cognate-he",
       label: "Hebrew cognate",
@@ -108,7 +85,7 @@ function linesFor(study: WordStudy, langs: LangId[]): Line[] {
       dir: "rtl",
     });
   }
-  if (cognate && !langs.includes("ar")) {
+  if (cognate && !lines.some((line) => line.text === cognate.ar)) {
     lines.push({
       id: "cognate-ar",
       label: "Arabic cognate",
@@ -205,7 +182,7 @@ export function WordStudySheet({
               {part.sy}
             </span>
             <span dir="ltr" className="block text-xs text-muted">
-              {part.role === "stem" ? "stem" : part.role}
+              {part.role === "stem" ? (study.prefixes.length || study.suffixes.length ? "stem" : "form") : part.role}
               {part.role !== "stem" && part.gloss ? ` · ${part.gloss}` : ""}
             </span>
           </div>
@@ -278,7 +255,7 @@ export function WordStudySheet({
             </button>
             <div className="min-w-0">
               <p className="text-xs text-gold">{line.label}</p>
-              <p dir={line.dir} className={`truncate ${line.face}`}>
+              <p dir={line.dir} className={line.face}>
                 {line.text || "No settled word in this tongue yet."}
               </p>
             </div>
