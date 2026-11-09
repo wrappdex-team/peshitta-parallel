@@ -3,7 +3,7 @@ import { cpSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:f
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { test } from "node:test";
-import { auditScripture, classifyIssues } from "./check-scripture-data.mjs";
+import { auditScripture, classifyIssues, evaluateCli } from "./check-scripture-data.mjs";
 
 const root = new URL("../", import.meta.url);
 const known = JSON.parse(
@@ -14,8 +14,9 @@ test("all actual data is audited; known blanks are reported, not silently excuse
   const report = auditScripture();
   assert.equal(report.books, 27);
   assert.equal(report.verses, 7957);
+  assert.deepEqual(report.locales, ["aii", "ar", "de", "el", "es", "fr", "he", "ja", "ru", "zh"]);
   assert.deepEqual(report.issues, [...known].sort());
-  assert.equal(report.issues.length, 78);
+  assert.equal(report.issues.length, 0);
 });
 
 test("only exact known references are accepted; new gaps fail even at the same count", () => {
@@ -45,8 +46,21 @@ test("mutated data detects blanks, malformed values, misalignment, missing files
     grid[0][1] = null;
     grid[1].pop();
   });
+  mutate("src/data/tr/el/mark.json", (grid) => {
+    grid[7][18] = "";
+  });
+  mutate("src/data/tr/he/john.json", (grid) => {
+    grid[1].pop();
+  });
   rmSync(join(temp, "src/data/tr/ru/mark.json"));
+  rmSync(join(temp, "src/data/tr/el/jude.json"));
   const { unexpected } = classifyIssues(auditScripture(temp).issues, known);
+  for (const exact of [
+    "src/data/tr/el/mark.json:text-blank:8:19",
+    "src/data/tr/he/john.json:verse-count:2",
+    "src/data/tr/el/jude.json:missing-file",
+  ])
+    assert.ok(unexpected.includes(exact), exact);
   for (const suffix of [
     "verse-number:1:1",
     "sy-blank:1:2",
@@ -62,18 +76,35 @@ test("mutated data detects blanks, malformed values, misalignment, missing files
   }
 });
 
-test("CLI distinguishes a regression pass from strict incompleteness and rejects unknown flags", async () => {
+test("CLI distinguishes a regression pass from strict incompleteness and rejects unknown flags", async (t) => {
   const { spawnSync } = await import("node:child_process");
   const script = new URL("./check-scripture-data.mjs", import.meta.url);
   const run = (args) =>
     spawnSync(process.execPath, [script.pathname, ...args], { encoding: "utf8" });
+  // Real repository: no unexpected and (now) no known gaps, so both modes pass.
   const regression = run([]);
   assert.equal(regression.status, 0, regression.stderr);
   const strict = run(["--strict"]);
-  assert.equal(strict.status, 1, strict.stderr);
+  assert.equal(strict.status, known.length ? 1 : 0, strict.stderr);
   const report = JSON.parse(strict.stdout);
   assert.equal(report.mode, "strict");
   assert.equal(report.known.length, known.length);
   assert.equal(report.unexpected.length, 0);
   assert.notEqual(run(["--ignore-all"]).status, 0);
+  assert.throws(() => evaluateCli(["--ignore-all"]), /Usage/);
+
+  // Incomplete fixture: strict must still fail on accepted known gaps, regression on new ones.
+  const temp = mkdtempSync(join(tmpdir(), "injeel-cli-test-"));
+  t.after(() => rmSync(temp, { recursive: true, force: true }));
+  cpSync(new URL("src/data", root), join(temp, "src/data"), { recursive: true });
+  const path = join(temp, "src/data/tr/he/mark.json");
+  const grid = JSON.parse(readFileSync(path));
+  grid[0][0] = "";
+  writeFileSync(path, JSON.stringify(grid));
+  const gap = "src/data/tr/he/mark.json:text-blank:1:1";
+  assert.equal(evaluateCli([], temp, []).exitCode, 1, "new gap fails regression");
+  assert.equal(evaluateCli([], temp, [gap]).exitCode, 0, "known gap passes regression");
+  const incomplete = evaluateCli(["--strict"], temp, [gap]);
+  assert.equal(incomplete.exitCode, 1, "known gap still fails strict");
+  assert.deepEqual(incomplete.report.known, [gap]);
 });
