@@ -8,7 +8,8 @@ export type Prefs = {
   theme: "day" | "night";
   words: boolean;
   face: Face;
-  size: 0 | 1 | 2;
+  size: 0 | 1 | 2 | 3 | 4;
+  line: 0 | 1 | 2;
   notes: boolean;
   voice: VoiceId;
   deviceVoice: string;
@@ -24,7 +25,8 @@ const DEFAULTS: Prefs = {
   theme: "day",
   words: true,
   face: "both",
-  size: 1,
+  size: 2,
+  line: 1,
   notes: true,
   voice: "ara",
   deviceVoice: "",
@@ -45,6 +47,8 @@ function read(): Prefs {
     if (!raw) return DEFAULTS;
     const parsed = JSON.parse(raw) as Partial<Prefs>;
     const face = parsed.face === "sy" || parsed.face === "tr" || parsed.face === "both" ? parsed.face : DEFAULTS.face;
+    const size = [0, 1, 2, 3, 4].includes(Number(parsed.size)) ? (Number(parsed.size) as 0 | 1 | 2 | 3 | 4) : DEFAULTS.size;
+    const line = [0, 1, 2].includes(Number(parsed.line)) ? (Number(parsed.line) as 0 | 1 | 2) : DEFAULTS.line;
     const voice = parsed.voice === "rex" ? "rex" : "ara";
     const deviceVoice = typeof parsed.deviceVoice === "string" ? parsed.deviceVoice.slice(0, 300) : "";
     const speed = clampSpeed(parsed.speed);
@@ -54,7 +58,7 @@ function read(): Prefs {
       saved && typeof saved.book === "string"
         ? { book: saved.book, chapter: Number(saved.chapter) || 1, verse: Number(saved.verse) || 1 }
         : undefined;
-    return { ...DEFAULTS, ...parsed, face, voice, deviceVoice, speed, lang: languageById(parsed.lang ?? "en").id, lang2, last };
+    return { ...DEFAULTS, ...parsed, face, size, line, voice, deviceVoice, speed, lang: languageById(parsed.lang ?? "en").id, lang2, last };
   } catch {
     return DEFAULTS;
   }
