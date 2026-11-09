@@ -1,10 +1,20 @@
 import { languageById, type LangId } from "@/lib/languages";
 import { rootRoman, type WordStudy } from "@/lib/scripture";
+import { hebrewConsonants, hebrewReading, rootSpeech } from "@/lib/hebrew-root";
 import { COGNATES, sayGloss } from "@/lib/word-say";
 import { Play } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
-type Line = { id: string; label: string; text: string; speak: string; tts: string; face: string; dir: "ltr" | "rtl" };
+type Line = {
+  id: string;
+  label: string;
+  text: string;
+  speak: string;
+  tts: string;
+  face: string;
+  dir: "ltr" | "rtl";
+  hint?: string;
+};
 
 const PREFIX_SOUND: Record<string, string> = { "ܘ": "w", "ܕ": "d", "ܒ": "b", "ܠ": "l" };
 
@@ -48,6 +58,23 @@ function linesFor(study: WordStudy, langs: LangId[]): Line[] {
       });
       continue;
     }
+    if (lang === "he") {
+      const reading = hebrewReading(study);
+      const letters = hebrewConsonants(study.root);
+      lines.push({
+        id: lang,
+        label: language.label,
+        text: reading?.text || (letters.length ? letters.join(" · ") : ""),
+        speak: reading?.speak || "",
+        hint: reading
+          ? `${reading.speak.replace(/ /g, "-")}${reading.note.startsWith("A name") ? "" : ` · ${reading.note}`}`
+          : "The vowels of this root are not settled, so it is not spoken.",
+        tts: "en-US",
+        face: "font-hebrew text-xl",
+        dir: "rtl",
+      });
+      continue;
+    }
     const said = study.gloss ? sayGloss(study.gloss, lang) : "";
     const rtl = /[\u0590-\u05FF\u0600-\u06FF\u0700-\u074F]/.test(said);
     lines.push({
@@ -57,11 +84,9 @@ function linesFor(study: WordStudy, langs: LangId[]): Line[] {
       speak: said,
       tts: language.tts === "en" ? "en-US" : language.tts,
       face: rtl
-        ? lang === "he"
-          ? "font-hebrew text-xl"
-          : lang === "ar"
-            ? "font-arab text-xl"
-            : "font-serif"
+        ? lang === "ar"
+          ? "font-arab text-xl"
+          : "font-serif"
         : lang === "el"
           ? "font-greek"
           : lang === "ru"
@@ -74,13 +99,15 @@ function linesFor(study: WordStudy, langs: LangId[]): Line[] {
       dir: rtl ? "rtl" : "ltr",
     });
   }
-  if (cognate && !lines.some((line) => line.text === cognate.he)) {
+  const spokenRoot = rootSpeech(rootKey);
+  if (cognate && !lines.some((line) => line.text === cognate.he || line.text.endsWith(cognate.he))) {
     lines.push({
       id: "cognate-he",
       label: "Hebrew cognate",
       text: cognate.he,
-      speak: cognate.he,
-      tts: "he-IL",
+      speak: spokenRoot || "",
+      hint: spokenRoot ? spokenRoot.replace(/ /g, "-") : undefined,
+      tts: "en-US",
       face: "font-hebrew text-xl",
       dir: "rtl",
     });
@@ -133,6 +160,7 @@ export function WordStudySheet({
   onPick: (surface: string) => void;
 }) {
   const pronounced = syriacSay(study);
+  const reading = hebrewReading(study);
   const lines = linesFor(study, langs);
   const [busy, setBusy] = useState("");
   const run = useRef(0);
@@ -153,7 +181,7 @@ export function WordStudySheet({
     setBusy(line === "all" ? "all" : line.id);
     for (const item of queue) {
       if (run.current !== token) return;
-      await speakLine(item, item.id === "syr" ? 0.72 : 0.9);
+      await speakLine(item, item.hint ? 0.68 : item.id === "syr" ? 0.72 : 0.9);
     }
     if (run.current === token) setBusy("");
   }
@@ -200,6 +228,19 @@ export function WordStudySheet({
           <p dir="ltr" className="mt-1 font-serif text-gold">
             {rootRoman(study.root)}
           </p>
+          {hebrewConsonants(study.root).length > 0 && (
+            <p className="mt-3 font-hebrew text-2xl text-syriac" dir="rtl" lang="he">
+              {hebrewConsonants(study.root).join(" · ")}
+            </p>
+          )}
+          {reading && (
+            <p className="mt-1 text-sm text-gold">
+              <span className="font-hebrew text-xl" dir="rtl" lang="he">
+                {reading.text}
+              </span>
+              <span dir="ltr"> · {reading.speak.replace(/ /g, "-")}</span>
+            </p>
+          )}
         </div>
       ) : (
         <p className="mt-2 text-sm text-muted">No root consonants to show.</p>
@@ -258,12 +299,13 @@ export function WordStudySheet({
               <p dir={line.dir} className={line.face}>
                 {line.text || "No settled word in this tongue yet."}
               </p>
+              {line.hint && <p dir="ltr" className="text-xs text-gold">{line.hint}</p>}
             </div>
           </li>
         ))}
       </ul>
       <p className="mt-3 text-xs leading-relaxed text-muted">
-        Syriac is spoken from the romanization, slowly, because most devices have no Syriac voice. The other lines are the open reading languages. A cognate is how the same root is said in Hebrew or Arabic, not a second translation of the verse.
+        Syriac is spoken from its romanization. Hebrew is spoken from the pronunciation written under the word, slowly, one syllable at a time, so the vowels are the ones settled here and not a guess by the phone. A cognate is the same root in Hebrew or Arabic, not a second translation of the verse.
       </p>
     </div>
   );
