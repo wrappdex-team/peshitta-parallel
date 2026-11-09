@@ -15,7 +15,6 @@ import {
   loadBook,
   loadParallel,
   studyWord,
-  type BookFile,
   type WordGloss,
   type WordStudy,
 } from "@/lib/scripture";
@@ -25,10 +24,12 @@ import { noteChapter } from "@/lib/readings";
 import { parseReaderChapter } from "@/lib/reader-reference";
 
 export const Route = createFileRoute("/read/$book/$chapter")({
-  loader: ({ params }) => {
+  loader: async ({ params }) => {
     if (parseReaderChapter(params.chapter, chapterCount(params.book)) === null) {
       throw notFound();
     }
+    const doc = await loadBook(params.book);
+    return { verses: doc.chapters[Number(params.chapter) - 1] };
   },
   notFoundComponent: ReaderNotFound,
   head: ({ params }) => {
@@ -73,10 +74,9 @@ function Reader() {
   const navigate = useNavigate();
   const { prefs, patch } = usePrefs();
   const meta = bookMeta(book);
-  const [doc, setDoc] = useState<BookFile | null>(null);
+  const { verses } = Route.useLoaderData();
   const [parallel, setParallel] = useState<string[][] | null>(null);
   const [parallel2, setParallel2] = useState<string[][] | null>(null);
-  const [err, setErr] = useState("");
   const [search, setSearch] = useState(false);
   const [menu, setMenu] = useState(false);
   const [sheet, setSheet] = useState<{ title: string; roman: string; body: string } | { study: WordStudy } | null>(null);
@@ -85,22 +85,6 @@ function Reader() {
   const [picked, setPicked] = useState("");
   const [focus, setFocus] = useState(1);
   const [reading, setReading] = useState(false);
-
-  useEffect(() => {
-    let live = true;
-    setErr("");
-    setDoc(null);
-    loadBook(book)
-      .then((next) => {
-        if (live) setDoc(next);
-      })
-      .catch((error: unknown) => {
-        if (live) setErr(error instanceof Error ? error.message : "This book did not open.");
-      });
-    return () => {
-      live = false;
-    };
-  }, [book]);
 
   useEffect(() => {
     let live = true;
@@ -160,7 +144,6 @@ function Reader() {
   }, [heard]);
 
   const total = chapterCount(book);
-  const verses = doc?.chapters[chapterNo - 1];
 
   useEffect(() => {
     const last = verses?.[verses.length - 1];
@@ -311,9 +294,6 @@ function Reader() {
           onChapter={(place) => noteChapter(place.book, place.chapter)}
         />
 
-        {err && <p className="mt-6 text-garnet">{err}</p>}
-        {!doc && !err && <p className="mt-6 text-muted">Opening the chapter…</p>}
-        {doc && !verses && <p className="mt-6 text-muted">That chapter is not in this book.</p>}
         {verses?.map((verse, verseIndex) => (
           <VerseView
             key={verse.v}
