@@ -14,8 +14,9 @@ test("all actual data is audited; known blanks are reported, not silently excuse
   const report = auditScripture();
   assert.equal(report.books, 27);
   assert.equal(report.verses, 7957);
+  assert.deepEqual(report.locales, ["aii", "ar", "de", "el", "es", "fr", "he", "ja", "ru", "zh"]);
   assert.deepEqual(report.issues, [...known].sort());
-  assert.equal(report.issues.length, 78);
+  assert.equal(report.issues.length, 71);
 });
 
 test("only exact known references are accepted; new gaps fail even at the same count", () => {
@@ -45,8 +46,29 @@ test("mutated data detects blanks, malformed values, misalignment, missing files
     grid[0][1] = null;
     grid[1].pop();
   });
+  mutate("src/data/nt/mark.json", (book) => {
+    book.chapters[7][18].en = "";
+  });
+  mutate("src/data/tr/el/mark.json", (grid) => {
+    grid[7][18] = "";
+  });
+  mutate("src/data/tr/he/acts.json", (grid) => {
+    grid[19][16] = null;
+  });
+  mutate("src/data/tr/he/john.json", (grid) => {
+    grid[1].pop();
+  });
   rmSync(join(temp, "src/data/tr/ru/mark.json"));
+  rmSync(join(temp, "src/data/tr/el/jude.json"));
   const { unexpected } = classifyIssues(auditScripture(temp).issues, known);
+  for (const exact of [
+    "src/data/nt/mark.json:en-blank:8:19",
+    "src/data/tr/el/mark.json:text-blank:8:19",
+    "src/data/tr/he/acts.json:text-type:20:17",
+    "src/data/tr/he/john.json:verse-count:2",
+    "src/data/tr/el/jude.json:missing-file",
+  ])
+    assert.ok(unexpected.includes(exact), exact);
   for (const suffix of [
     "verse-number:1:1",
     "sy-blank:1:2",

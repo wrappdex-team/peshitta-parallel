@@ -6,7 +6,8 @@ import { fileURLToPath } from "node:url";
 import { isMainModule } from "./with-app-env.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-export const PARALLEL_LANGUAGES = ["aii", "ar", "de", "es", "fr", "ja", "ru", "zh"];
+// Structural coverage declaration only, NOT a linguistic-review or rights certification.
+export const PARALLEL_LANGUAGES = ["aii", "ar", "de", "el", "es", "fr", "he", "ja", "ru", "zh"];
 
 export function auditScripture(root = ROOT) {
   const issues = [];

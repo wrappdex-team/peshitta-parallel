@@ -1,14 +1,7 @@
 {
-  "baselineCommit": "859c62babd24f424c6b77d86833332452178399f",
-  "reason": "Existing blank fields retained for source and qualified linguistic review. This is not approval of the text or permission to add gaps.",
+  "baselineCommit": "30ff2b3e06e977068106927d08c2168c4c3f9cab",
+  "reason": "Exactly 71 remaining pre-existing non-English/el/he blank fields. Seven en and fourteen el/he gaps were filled with documented AI-assisted additions; see scripture-gap-sources.json. Structural inclusion does not certify language accuracy or rights. No new gaps are permitted.",
   "issues": [
-    "src/data/nt/acts.json:en-blank:19:41",
-    "src/data/nt/acts.json:en-blank:20:17",
-    "src/data/nt/luke.json:en-blank:18:35",
-    "src/data/nt/mark.json:en-blank:11:19",
-    "src/data/nt/mark.json:en-blank:8:19",
-    "src/data/nt/mark.json:en-blank:9:31",
-    "src/data/nt/matthew.json:en-blank:26:30",
     "src/data/tr/aii/2corinthians.json:text-blank:13:14",
     "src/data/tr/aii/acts.json:text-blank:19:41",
     "src/data/tr/aii/acts.json:text-blank:20:17",
