@@ -5,6 +5,7 @@ import {
   TERM_NOTES,
   englishRuns,
   glossWord,
+  syriacPieces,
   syriacWords,
   type Verse,
   type WordGloss,
@@ -120,7 +121,20 @@ export function VerseView({
               <p className="text-sm text-muted">This verse number is not in the Syriac text.</p>
             ) : (
               <p dir="rtl" lang="syr" className={`glow font-syriac ${syColor} ${SY[size]}`}>
-                {verse.sy}
+                {syriacPieces(verse.sy).map((piece, i) =>
+                  piece.kind === "space" ? (
+                    <span key={i}>{piece.text}</span>
+                  ) : (
+                    <button
+                      key={i}
+                      type="button"
+                      onClick={() => onWord(glossWord(piece.word), piece.word)}
+                      className="rounded-sm border-0 bg-transparent px-0.5 font-syriac text-inherit hover:bg-gold-soft"
+                    >
+                      {piece.text}
+                    </button>
+                  ),
+                )}
               </p>
             )
           )}

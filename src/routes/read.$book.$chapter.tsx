@@ -1,3 +1,4 @@
+import { WordStudySheet } from "@/components/word-study";
 import { Modal } from "@/components/modal";
 import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight, Menu, Moon, Search, Sun } from "lucide-react";
@@ -13,8 +14,9 @@ import {
   chapterCount,
   loadBook,
   loadParallel,
-  type BookFile,
+  studyWord,
   type WordGloss,
+  type WordStudy,
 } from "@/lib/scripture";
 import { usePrefs } from "@/lib/use-prefs";
 import { SITE_ORIGIN } from "@/lib/site";
@@ -22,10 +24,12 @@ import { noteChapter } from "@/lib/readings";
 import { parseReaderChapter } from "@/lib/reader-reference";
 
 export const Route = createFileRoute("/read/$book/$chapter")({
-  loader: ({ params }) => {
+  loader: async ({ params }) => {
     if (parseReaderChapter(params.chapter, chapterCount(params.book)) === null) {
       throw notFound();
     }
+    const doc = await loadBook(params.book);
+    return { verses: doc.chapters[Number(params.chapter) - 1] };
   },
   notFoundComponent: ReaderNotFound,
   head: ({ params }) => {
@@ -70,34 +74,17 @@ function Reader() {
   const navigate = useNavigate();
   const { prefs, patch } = usePrefs();
   const meta = bookMeta(book);
-  const [doc, setDoc] = useState<BookFile | null>(null);
+  const { verses } = Route.useLoaderData();
   const [parallel, setParallel] = useState<string[][] | null>(null);
   const [parallel2, setParallel2] = useState<string[][] | null>(null);
-  const [err, setErr] = useState("");
   const [search, setSearch] = useState(false);
   const [menu, setMenu] = useState(false);
-  const [sheet, setSheet] = useState<{ title: string; roman: string; body: string } | null>(null);
+  const [sheet, setSheet] = useState<{ title: string; roman: string; body: string } | { study: WordStudy } | null>(null);
   const [heard, setHeard] = useState<number | null>(null);
   const [studio, setStudio] = useState(false);
   const [picked, setPicked] = useState("");
   const [focus, setFocus] = useState(1);
   const [reading, setReading] = useState(false);
-
-  useEffect(() => {
-    let live = true;
-    setErr("");
-    setDoc(null);
-    loadBook(book)
-      .then((next) => {
-        if (live) setDoc(next);
-      })
-      .catch((error: unknown) => {
-        if (live) setErr(error instanceof Error ? error.message : "This book did not open.");
-      });
-    return () => {
-      live = false;
-    };
-  }, [book]);
 
   useEffect(() => {
     let live = true;
@@ -157,7 +144,6 @@ function Reader() {
   }, [heard]);
 
   const total = chapterCount(book);
-  const verses = doc?.chapters[chapterNo - 1];
 
   useEffect(() => {
     const last = verses?.[verses.length - 1];
@@ -224,20 +210,8 @@ function Reader() {
     window.scrollTo(0, 0);
   }
 
-  function onWord(info: WordGloss | null, surface: string) {
-    if (!info) {
-      setSheet({
-        title: surface,
-        roman: "",
-        body: "This form is not in the study lexicon. The English sentence above is the reading of the whole verse.",
-      });
-      return;
-    }
-    setSheet({
-      title: surface,
-      roman: info.roman,
-      body: [info.gloss, info.via, info.note].filter(Boolean).join(" "),
-    });
+  function onWord(_info: WordGloss | null, surface: string) {
+    setSheet({ study: studyWord(surface) });
   }
 
   function onTerm(key: string) {
@@ -320,9 +294,6 @@ function Reader() {
           onChapter={(place) => noteChapter(place.book, place.chapter)}
         />
 
-        {err && <p className="mt-6 text-garnet">{err}</p>}
-        {!doc && !err && <p className="mt-6 text-muted">Opening the chapter…</p>}
-        {doc && !verses && <p className="mt-6 text-muted">That chapter is not in this book.</p>}
         {verses?.map((verse, verseIndex) => (
           <VerseView
             key={verse.v}
@@ -425,23 +396,33 @@ function Reader() {
       )}
 
       {sheet && (
-        <Modal label={sheet.title} className="fixed inset-0 z-30 flex items-end bg-scrim" onClose={() => setSheet(null)}>
+        <Modal label={"study" in sheet ? "Word" : sheet.title} className="fixed inset-0 z-30 flex items-end bg-scrim" onClose={() => setSheet(null)}>
           <div
-            className="w-full border-t border-line bg-paper px-5 py-5 pb-safe"
+            className="max-h-sheet w-full overflow-y-auto border-t border-line bg-paper px-5 py-5 pb-safe"
             onClick={(event) => event.stopPropagation()}
           >
             <div className="mx-auto max-w-3xl">
-              <p
-                tabIndex={-1}
-                data-modal-initial
-                className={/[\u0700-\u074F]/.test(sheet.title) ? "font-syriac text-3xl text-syriac" : "font-serif text-2xl"}
-                lang={/[\u0700-\u074F]/.test(sheet.title) ? "syr" : "en"}
-                dir={/[\u0700-\u074F]/.test(sheet.title) ? "rtl" : "ltr"}
-              >
-                {sheet.title}
-              </p>
-              {sheet.roman && <p className="mt-1 text-sm text-gold">{sheet.roman}</p>}
-              <p className="mt-3 leading-relaxed">{sheet.body}</p>
+              {"study" in sheet ? (
+                <WordStudySheet
+                  study={sheet.study}
+                  langs={[languageById(prefs.lang).id, ...(prefs.lang2 !== "none" ? [languageById(prefs.lang2).id] : [])]}
+                  onPick={(surface) => setSheet({ study: studyWord(surface) })}
+                />
+              ) : (
+                <>
+                  <p
+                    tabIndex={-1}
+                    data-modal-initial
+                    className={/[\u0700-\u074F]/.test(sheet.title) ? "font-syriac text-3xl text-syriac" : "font-serif text-2xl"}
+                    lang={/[\u0700-\u074F]/.test(sheet.title) ? "syr" : "en"}
+                    dir={/[\u0700-\u074F]/.test(sheet.title) ? "rtl" : "ltr"}
+                  >
+                    {sheet.title}
+                  </p>
+                  {sheet.roman && <p className="mt-1 text-sm text-gold">{sheet.roman}</p>}
+                  <p className="mt-3 leading-relaxed">{sheet.body}</p>
+                </>
+              )}
               <button type="button" className="mt-4 min-h-11 text-garnet" onClick={() => setSheet(null)}>
                 Close
               </button>

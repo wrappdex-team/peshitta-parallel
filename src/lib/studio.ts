@@ -235,7 +235,8 @@ export const makeAudio = createServerFn({ method: "POST" })
       let spoken = data.text;
       if (data.language && data.language.toLowerCase() !== "english") {
         const tr = await ask(agent, "Translate the passage. Return only the translation, no notes.", `Translate into ${data.language}:\n${data.text}`, signal);
-        if (tr.ok) spoken = clip(tr.text, 700);
+        if (!tr.ok) return { ok: false as const, error: "The translation could not be prepared. No audio was requested. Check your provider before trying again." };
+        spoken = clip(tr.text, 700);
       }
 
       signal.throwIfAborted();

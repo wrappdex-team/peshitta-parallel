@@ -86,22 +86,29 @@ function listVoices() {
   });
 }
 
+// Some Android/Chrome engines still report Hebrew with the legacy ISO 639 code "iw".
+const VOICE_ALIASES: Record<string, string[]> = { he: ["he", "iw"] };
+
+function voiceMatches(voice: SpeechSynthesisVoice, lang: LangId) {
+  const prefix = languageById(lang).tts.toLowerCase().split("-")[0];
+  if (prefix === "syr") return false;
+  const code = voice.lang.toLowerCase().replace("_", "-").split("-")[0];
+  return (VOICE_ALIASES[prefix] ?? [prefix]).includes(code);
+}
+
 function findVoice(key: string, lang: LangId) {
   const all = listVoices();
   if (key) {
     const exact = all.find((voice) => voiceKey(voice) === key);
     if (exact) return exact;
   }
-  const prefix = languageById(lang).tts.toLowerCase().split("-")[0];
-  if (prefix === "syr") return all[0];
-  return all.find((voice) => voice.lang.toLowerCase().replace("_", "-").startsWith(prefix)) ?? all[0];
+  return all.find((voice) => voiceMatches(voice, lang));
 }
 
 function orderedVoices(lang: LangId) {
-  const prefix = languageById(lang).tts.toLowerCase().split("-")[0];
   return [...listVoices()].sort((a, b) => {
-    const aMatch = prefix !== "syr" && a.lang.toLowerCase().replace("_", "-").startsWith(prefix) ? 0 : 1;
-    const bMatch = prefix !== "syr" && b.lang.toLowerCase().replace("_", "-").startsWith(prefix) ? 0 : 1;
+    const aMatch = voiceMatches(a, lang) ? 0 : 1;
+    const bMatch = voiceMatches(b, lang) ? 0 : 1;
     if (aMatch !== bMatch) return aMatch - bMatch;
     if (a.localService !== b.localService) return a.localService ? -1 : 1;
     return a.name.localeCompare(b.name);
@@ -287,6 +294,8 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
           utter.lang = picked.lang;
         }
       }
+      const chosen = findVoice(deviceVoiceRef.current, langRef.current);
+      if (!utter.lang && chosen) utter.lang = chosen.lang;
       if (!utter.lang && tongue !== "syr") utter.lang = tongue === "en" ? "en-US" : tongue;
       utter.rate = plain ? 1 : speedRef.current / 100;
       utter.pitch = 1;
@@ -383,6 +392,10 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
   async function start(from: number) {
     if (typeof window.speechSynthesis === "undefined") {
       setError("This device has no speaking voice.");
+      return;
+    }
+    if (!findVoice(deviceVoiceRef.current, langRef.current)) {
+      setError("No matching voice is available. Open Voice setup help, then choose an available voice explicitly or download a compatible system voice.");
       return;
     }
     setError("");
@@ -584,7 +597,7 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
             className="max-w-[11rem] min-h-11 bg-paper text-sm text-ink"
             aria-label="Voice on this device"
           >
-            <option value="">This device</option>
+            <option value="">Automatic language match</option>
             {voices.map((item) => (
               <option key={voiceKey(item)} value={voiceKey(item)}>
                 {item.name} · {item.lang}
@@ -614,6 +627,16 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
           {status === "idle" && fromLabel ? fromLabel : status === "idle" && fromVerse > 1 ? `From ${fromVerse}` : status === "idle" ? languageById(lang).label : ""}
         </span>
       </div>
+      <details className="mx-auto max-w-5xl px-3 text-sm text-muted">
+        <summary className="min-h-11 cursor-pointer py-3 text-garnet">Voice setup help</summary>
+        <div className="max-h-[50vh] space-y-3 overflow-y-auto pb-4">
+          <p>Read uses your browser’s device speech, without a provider key. Studio creates media through a paid provider using your own key. INjeel cannot install voices or guarantee any accent, language, or Syriac voice. System settings and voices exposed to a browser can differ.</p>
+          <p><strong>iPhone and iPad:</strong> In Settings → Accessibility, look for Read &amp; Speak → Voices (called Spoken Content on older versions). Choose a language and dialect. For downloadable enhanced voices, Apple also documents VoiceOver → Speech → Add New Language; choose a voice/quality and allow the download to finish on Wi-Fi. You do not need to enable VoiceOver to use INjeel. <a className="underline" href="https://support.apple.com/guide/iphone/hear-whats-on-the-screen-or-typed-iph96b214f0/ios">Apple’s current guide</a> · <a className="underline" href="https://support.apple.com/en-us/111798">iOS/iPadOS voice downloads</a></p>
+          <p><strong>Android:</strong> Open Settings → Accessibility → Text-to-speech output. Choose the preferred engine and language; use its voice-data/download options where available. Names and paths vary by manufacturer/engine; search Settings for “text-to-speech” if needed. <a className="underline" href="https://support.google.com/accessibility/android/answer/6006983?hl=en">Google’s settings and voice-data guide</a></p>
+          <p><strong>macOS:</strong> Apple menu → System Settings → Accessibility → Read &amp; Speak. Choose System voice; open its additional voice controls to browse languages, country/region variants and downloadable voices. Wait until downloads finish, then choose the voice. Older versions may use Spoken Content. <a className="underline" href="https://support.apple.com/guide/mac-help/mchlp2290/mac">Apple’s Mac voice guide</a></p>
+          <p>Return here and reopen the voice selector. If new voices do not appear, refresh or reopen the app/browser. Select the voice and adjust Speed here; a system default need not override an explicit app selection. Android browsers may use their speech engine rather than a forced voice. Some voices use network services; availability and pronunciation depend on your device/browser, not the scripture’s historical pronunciation.</p>
+        </div>
+      </details>
       {error && <p className="px-3 pb-2 text-sm text-garnet">{error}</p>}
     </div>
   );

@@ -21,7 +21,7 @@ const stopButton = (tree) => find(tree, (node) => node.type === "button" && Arra
 
 // Real component handlers/effects; fake synthesis, DOM events and synthetic lines.
 // No browser, storage, real voices, scripture loads, providers or network access.
-function fixture({ rows = [{ v: 1, text: "Synthetic fixture words." }], synthBusy = false } = {}) {
+function fixture({ rows = [{ v: 1, text: "Synthetic fixture words." }], synthBusy = false, voices = [{ name: "Synthetic English", lang: "en-US", voiceURI: "fixture-en", localService: true }] } = {}) {
   const states = [], refs = [], deps = [], cleanups = [];
   const utterances = [], spoken = [], timers = [], heard = [], chapters = [];
   let stateAt = 0, refAt = 0, effectAt = 0, effects = [], dirty = false, unmounted = false, writes = 0, unmountedWrites = 0;
@@ -34,7 +34,7 @@ function fixture({ rows = [{ v: 1, text: "Synthetic fixture words." }], synthBus
     };
   }
   const synth = { ...events(), speaking: synthBusy, pending: false,
-    cancel() {}, resume() {}, getVoices: () => [], speak(utterance) { spoken.push(utterance); } };
+    cancel() {}, resume() {}, getVoices: () => voices, speak(utterance) { spoken.push(utterance); } };
   const document = { ...events(), visibilityState: "visible" };
   const window = { ...events(), speechSynthesis: synth, setTimeout(fn, ms) { timers.push({ fn, ms }); } };
   const props = {
@@ -205,4 +205,39 @@ test("a finished phrase cannot report a late error over the next phrase in the s
   first.onerror({ error: "network" }); await flushWork();
   assert.doesNotMatch(page.html(), /This phone did not speak/);
   assert.equal(page.spoken.length, 2);
+});
+
+test("missing language match does not silently speak with another language", async () => {
+  const page = fixture();
+  page.render({ lang: "es" }); await flushWork();
+  button(page.render(), "Read this chapter aloud").props.onClick(); await flushWork();
+  assert.equal(page.spoken.length, 0);
+  assert.match(page.html(), /No matching voice/);
+});
+
+test("new Greek and Hebrew readings match their own voices and fail closed otherwise", async () => {
+  const greekOnlyEnglish = fixture();
+  greekOnlyEnglish.render({ lang: "el" }); await flushWork();
+  button(greekOnlyEnglish.render(), "Read this chapter aloud").props.onClick(); await flushWork();
+  assert.equal(greekOnlyEnglish.spoken.length, 0);
+  assert.match(greekOnlyEnglish.html(), /No matching voice/);
+  for (const [lang, voiceLang] of [["el", "el-GR"], ["he", "he-IL"], ["he", "iw_IL"]]) {
+    const page = fixture({ voices: [
+      { name: "Synthetic English", lang: "en-US", voiceURI: "fixture-en", localService: true },
+      { name: `Synthetic ${voiceLang}`, lang: voiceLang, voiceURI: `fixture-${voiceLang}`, localService: false },
+    ] });
+    page.render({ lang }); await flushWork();
+    button(page.render(), "Read this chapter aloud").props.onClick(); await flushWork();
+    assert.equal(page.spoken.length, 1, voiceLang);
+    assert.equal(page.spoken[0].lang, voiceLang, voiceLang);
+  }
+});
+
+test("explicitly chosen fallback is allowed and setup help covers all requested platforms", async () => {
+  const page = fixture();
+  page.render({ lang: "es", deviceVoice: "fixture-en" }); await flushWork();
+  button(page.render(), "Read this chapter aloud").props.onClick(); await flushWork();
+  assert.equal(page.spoken.length, 1);
+  const html = page.html();
+  for (const copy of ["Voice setup help", "iPhone and iPad", "Android", "macOS", "cannot install voices", "Syriac"]) assert.ok(html.includes(copy), copy);
 });

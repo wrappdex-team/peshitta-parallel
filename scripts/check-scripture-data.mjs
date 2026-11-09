@@ -104,26 +104,30 @@ export function classifyIssues(issues, knownIssues) {
   };
 }
 
-if (isMainModule(import.meta.url)) {
-  const args = process.argv.slice(2);
+/** CLI decision logic, exported so strict/regression exit semantics stay testable. */
+export function evaluateCli(args, root = ROOT, baselineIssues = null) {
   if (args.some((arg) => arg !== "--strict"))
     throw new Error("Usage: node scripts/check-scripture-data.mjs [--strict]");
-  const result = auditScripture();
-  const baseline = JSON.parse(readFileSync(join(ROOT, "docs/data-known-gaps.json"), "utf8"));
-  const classified = classifyIssues(result.issues, baseline.issues);
-  console.log(
-    JSON.stringify(
-      {
-        ...result,
-        ...classified,
-        mode: args.includes("--strict") ? "strict" : "regression",
-        notice:
-          "Known gaps remain unresolved. Passing regression checks is not a translation-quality or release certification.",
-      },
-      null,
-      2,
-    ),
-  );
-  if (classified.unexpected.length || (args.includes("--strict") && result.issues.length))
-    process.exitCode = 1;
+  const result = auditScripture(root);
+  const known =
+    baselineIssues ??
+    JSON.parse(readFileSync(join(root, "docs/data-known-gaps.json"), "utf8")).issues;
+  const classified = classifyIssues(result.issues, known);
+  const strict = args.includes("--strict");
+  return {
+    report: {
+      ...result,
+      ...classified,
+      mode: strict ? "strict" : "regression",
+      notice:
+        "Known gaps remain unresolved. Passing regression checks is not a translation-quality or release certification.",
+    },
+    exitCode: classified.unexpected.length || (strict && result.issues.length) ? 1 : 0,
+  };
+}
+
+if (isMainModule(import.meta.url)) {
+  const { report, exitCode } = evaluateCli(process.argv.slice(2));
+  console.log(JSON.stringify(report, null, 2));
+  if (exitCode) process.exitCode = 1;
 }

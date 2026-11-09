@@ -149,15 +149,14 @@ configure a production database just to run the reader.
 The catalogue contains **27 books, 260 chapters and 7,957 verse slots**. Syriac is
 the base text. The reader offers these parallel IDs:
 
-| ID                            | Reading                                                               | Coverage caveat                                      |
-| ----------------------------- | --------------------------------------------------------------------- | ---------------------------------------------------- |
-| `en`                          | Murdock-labelled English study reading                                | 7 sourced gap adaptations; no blank fields.          |
-| `el`, `he`                    | Modern Greek, modern Hebrew                                           | 27 book grids each; no blank fields; review pending. |
-| `ar`, `fr`, `ru`              | Arabic, French, Russian                                               | Each has 27 book grids and 7 known blank fields.     |
-| `es`, `zh`, `aii`, `de`, `ja` | Spanish, Simplified Chinese, Sureth (modern Syriac), German, Japanese | Each has 27 book grids and 10 known blank fields.    |
+| ID                            | Reading                                                               | Coverage caveat                                   |
+| ----------------------------- | --------------------------------------------------------------------- | ------------------------------------------------- |
+| `en`                          | James Murdock’s English                                               | Stored beside Syriac; 7 known blank fields.       |
+| `ar`, `fr`, `ru`              | Arabic, French, Russian                                               | Each has 27 book grids and 7 known blank fields.  |
+| `es`, `zh`, `aii`, `de`, `ja` | Spanish, Simplified Chinese, Sureth (modern Syriac), German, Japanese | Each has 27 book grids and 10 known blank fields. |
 
 These are structural counts, **not a completeness or translation-quality
-certification**. There are **71 remaining known blank fields**, not 71 distinct verses;
+certification**. There are **78 known blank fields**, not 78 distinct verses;
 none of the base Syriac fields are blank in the current audit. Exact references
 are recorded in [`data-known-gaps.json`](docs/data-known-gaps.json).
 
@@ -179,17 +178,14 @@ that conflict with the desired source-grounded naming policy. **Do not run it as
 an approved language pipeline.** Text, names and pronunciation need qualified
 review under [the source policy](docs/SOURCE_REVIEW.md).
 
-Modern Greek and modern Hebrew parallels are now present. Their existing
-[`translate_el_he.py`](scripts/translate_el_he.py) workflow uses English input;
-this is not evidence of an independently reviewed direct-Syriac edition or ancient
-Greek/Hebrew originals. The [seven-verse gap repair](docs/SCRIPTURE_GAP_ADDITIONS.md)
-adds only previously empty English/Greek/Hebrew positions, with per-verse source
-quotations, versions, comparison differences and explicit AI-assisted review
-status. It resolves 21 of the observed 92 blank fields, not the whole corpus;
-the seven repaired English verses are also added to the derived search index.
-Before broader language work, establish source/rights evidence, verse mapping,
-Syriac personal/place/object-name handling and qualified linguistic review.
-Do not generate scripture or silently substitute names to make counters pass.
+Greek and Hebrew scripture parallels are **not currently present**. The current
+direction is future **Peshitta-source, modern-language translations**, clearly
+labeled by method/version—not importing an unrelated edition and calling it a
+restoration, or calling a Hebrew NT translation an original Hebrew NT. This is a
+plan, not implemented coverage. Before any language work: establish source and
+rights evidence, verse mapping, Syriac personal/place/object-name handling and
+qualified linguistic review. Do not generate scripture or silently substitute
+names to make coverage counters pass.
 
 ## Security and privacy boundaries
 
@@ -249,7 +245,7 @@ npm run check:seo:built
 | --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `npm test`                  | Unit/repository regressions, including mocked media, storage, speech and modal behavior. Four upstream prose-contract tests skip when their untracked source documents are absent. |
 | `npm run check:data`        | Structural regression gate; prints known gaps and rejects unexpected ones. Passing does not mean complete or accurate scripture.                                                   |
-| `npm run check:data:strict` | Full structural completeness check; **currently fails** on the documented 71 blank fields.                                                                                         |
+| `npm run check:data:strict` | Full structural completeness check; **currently fails** on the documented 78 blank fields.                                                                                         |
 | `npm run typecheck`         | TypeScript, without emitting output.                                                                                                                                               |
 | `npm run build:check`       | Production compilation only; no `db:migrate` invocation.                                                                                                                           |
 | `npm run check:seo:built`   | After compilation, invokes the compiled SSR handler in-process to check valid/invalid routes and SEO. Not browser hydration testing.                                               |
@@ -286,7 +282,6 @@ baseline and should not be read as timeless coverage claims.
 
 ## Further reading
 
-- [Seven-verse sourced gap additions and remaining coverage](docs/SCRIPTURE_GAP_ADDITIONS.md)
 - [Readiness and known data gaps](docs/READINESS.md)
 - [Source, names, pronunciation and rights policy](docs/SOURCE_REVIEW.md)
 - [Media security review](docs/MEDIA_SECURITY_REVIEW.md)

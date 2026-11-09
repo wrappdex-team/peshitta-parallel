@@ -747,3 +747,17 @@ test("scoped legacy cache keeps the existing ten-entry bound and reference dimen
   );
   assert.equal(f.calls.length, before);
 });
+
+// A failed translation must never fall through into potentially billed speech.
+test("failed or empty Studio translation starts no audio request for either provider", async () => {
+  for (const prefix of ["xai-", "sk-"]) {
+    for (const response of [() => new Response(null, { status: 503 }), () => Response.json({ choices: [] })]) {
+      const f = fixture({ provider: response });
+      const result = await f.studio.makeAudio({ ...requests.makeAudio, language: "Spanish", agentKey: `${prefix}${"synthetic-reader-".repeat(3)}` });
+      assert.equal(result.ok, false);
+      assert.equal(f.calls.length, 1, "only the translation request may run");
+      assert.match(result.error, /translation.*no audio/i);
+      assert.equal(f.siteReads(), 0);
+    }
+  }
+});
