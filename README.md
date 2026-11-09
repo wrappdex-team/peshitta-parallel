@@ -185,7 +185,8 @@ this is not evidence of an independently reviewed direct-Syriac edition or ancie
 Greek/Hebrew originals. The [seven-verse gap repair](docs/SCRIPTURE_GAP_ADDITIONS.md)
 adds only previously empty English/Greek/Hebrew positions, with per-verse source
 quotations, versions, comparison differences and explicit AI-assisted review
-status. It resolves 21 of the observed 92 blank fields, not the whole corpus.
+status. It resolves 21 of the observed 92 blank fields, not the whole corpus;
+the seven repaired English verses are also added to the derived search index.
 Before broader language work, establish source/rights evidence, verse mapping,
 Syriac personal/place/object-name handling and qualified linguistic review.
 Do not generate scripture or silently substitute names to make counters pass.

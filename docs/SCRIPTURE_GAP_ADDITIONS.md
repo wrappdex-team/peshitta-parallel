@@ -8,7 +8,9 @@ not a whole-edition direct-Syriac claim, and not a publication approval.**
 
 Starting main: `30ff2b3e06e977068106927d08c2168c4c3f9cab`.
 Matthew 26:30; Mark 8:19, 9:31, 11:19; Luke 18:35; Acts 19:41, 20:17.
-Only the 21 empty `en`/`el`/`he` positions are filled. All existing nonempty text,
+Only the 21 empty `en`/`el`/`he` scripture positions are filled. Seven derived
+English search rows are inserted for those same references: the old index omitted
+them entirely. All 7,950 pre-existing search rows remain unchanged and in order. All existing nonempty text,
 verse IDs, Syriac strings, other languages and runtime behavior are preserved.
 Each of `en`/`el`/`he` now has 7,957 nonblank slots across 27 books/260 chapters; this is
 positional coverage, not a claim of semantic completeness or perfect alignment.

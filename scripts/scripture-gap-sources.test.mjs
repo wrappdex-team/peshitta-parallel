@@ -8,6 +8,7 @@ const packet = read("docs/scripture-gap-sources.json");
 test("seven sourced gap additions populate exactly 21 fields without claiming linguistic certification", () => {
   assert.equal(packet.entries.length, 7);
   assert.equal(new Set(packet.entries.map((r) => `${r.book}.${r.chapter}.${r.verse}`)).size, 7);
+  const search = read("src/data/search.json");
   for (const entry of packet.entries) {
     const verse = read(`src/data/nt/${entry.book}.json`).chapters[entry.chapter - 1].find(
       (v) => v.v === entry.verse,
@@ -18,6 +19,12 @@ test("seven sourced gap additions populate exactly 21 fields without claiming li
     assert.equal(entry.murdockQuote.length > 20, true);
     assert.match(entry.printUrl, new RegExp(`/page/n${entry.printLeaf}/`));
     assert.equal(verse.en, entry.renderings.en);
+    const indexed = search.filter(
+      ([book, chapter, number]) =>
+        book === entry.book && chapter === entry.chapter && number === entry.verse,
+    );
+    assert.equal(indexed.length, 1, "each repaired English verse is searchable exactly once");
+    assert.equal(indexed[0][3], verse.en);
     for (const lang of ["el", "he"]) {
       const value = read(`src/data/tr/${lang}/${entry.book}.json`)[entry.chapter - 1][
         entry.verse - 1
