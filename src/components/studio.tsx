@@ -2,7 +2,7 @@ import { Modal } from "@/components/modal";
 import { useEffect, useRef, useState } from "react";
 import { cloudflareHint, detectAgent, normalizeProviderKey, providerName, type AgentKind } from "@/lib/agent";
 import { clearSessionProviderKey, restoreSessionProviderKey, saveSessionProviderKey } from "@/lib/provider-key-storage";
-import { modelsFor, supportsTask } from "@/lib/studio-models";
+import { availableModels, blockLine, modelsFor, shapedLine, supportsTask } from "@/lib/studio-models";
 import { checkProvider, checkVideo, makeAudio, makeImage, shapePrompt, startVideo, type StudioKind } from "@/lib/studio";
 
 const STUDIO_KEY = "injeel-studio";
@@ -32,7 +32,7 @@ function limitLine(kind: AgentKind) {
     case "groq":
       return "Free shaping only. Groq’s free plan is limited per model, often about 30 a minute and 1,000 a day.";
     case "gemini":
-      return "Free shaping only. The free tier is rate-limited, and Google may use those prompts to improve its products.";
+      return "Free shaping only. Gemini's free tier has no image model. The free tier is rate-limited, and Google may use those prompts to improve its products.";
     case "cloudflare":
       return "Free stills and shaping. Workers AI includes about 10,000 neurons a day, reset at 00:00 UTC. This app allows 4 stills each 10 minutes.";
     case "anthropic":
@@ -42,13 +42,6 @@ function limitLine(kind: AgentKind) {
     case "xai":
       return "xAI can shape, make stills, films, and voices. Imagine 2.0 and Video 1.5 are the highest options. Charges apply.";
   }
-}
-
-function blockLine(kind: AgentKind, task: StudioKind) {
-  if (supportsTask(kind, task)) return "";
-  if (task === "video") return "Film needs an xAI key. This key can still shape the prompt.";
-  if (task === "audio") return "A generated voice needs your own xAI or OpenAI key. Device Read needs no key. This key can still shape the words.";
-  return "A still needs your own xAI key, OpenAI key, or Cloudflare token. This key can still shape the prompt.";
 }
 
 function FreePaths() {
@@ -100,6 +93,8 @@ export function Studio({ open, passage, onClose }: Props) {
   const [customVoice, setCustomVoice] = useState("");
   const [shapeModel, setShapeModel] = useState("");
   const [makeModel, setMakeModel] = useState("");
+  // Model ids this key's own provider list confirmed. Not persisted; not secret.
+  const [listed, setListed] = useState<string[] | null>(null);
   const passageActivity = useRef({ active: false });
 
   useEffect(() => {
@@ -161,7 +156,7 @@ export function Studio({ open, passage, onClose }: Props) {
   const language = customTongue.trim() || tongue;
   const voiceId = customVoice.trim() || voice;
   const connected = detectAgent(agent);
-  const shapeChoices = connected ? modelsFor(connected.kind, "shape") : [];
+  const shapeChoices = connected ? availableModels(connected.kind, "shape", listed) : [];
   const makeChoices = connected ? modelsFor(connected.kind, taskOf(kind)) : [];
   const shapeId = shapeChoices.some((model) => model.id === shapeModel) ? shapeModel : shapeChoices[0]?.id ?? "";
   const makeId = makeChoices.some((model) => model.id === makeModel) ? makeModel : makeChoices[0]?.id ?? "";
@@ -195,9 +190,11 @@ export function Studio({ open, passage, onClose }: Props) {
     }
     setDraft("");
     setAccountDraft("");
+    setListed(null);
     setStatus("Checking that key with the provider…");
     try {
       const checked = await checkProvider({ data: { agentKey: next } });
+      if (checked.ok && "models" in checked && Array.isArray(checked.models)) setListed(checked.models);
       setStatus(checked.ok ? `${checked.detail} Saved for this tab.` : checked.error);
     } catch {
       setStatus("Provider key saved for this tab. Studio requests use your key.");
@@ -221,7 +218,7 @@ export function Studio({ open, passage, onClose }: Props) {
       publish(() => {
         if (!result.ok) return setStatus(result.error);
         setPrompt(result.prompt);
-        setStatus("You can change the prompt before making it.");
+        setStatus(shapedLine(connected.kind, kind));
       });
     } catch {
       publish(() => setStatus("The prompt could not be shaped."));
@@ -336,6 +333,7 @@ export function Studio({ open, passage, onClose }: Props) {
                 onClick={() => {
                   const cleared = clearSessionProviderKey();
                   setAgent("");
+                  setListed(null);
                   setDraft("");
                   setAccountDraft("");
                   setKeyNotice(cleared.notice);

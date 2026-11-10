@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { resolveAgent, type Agent } from "@/lib/agent";
 import { createLocalRateLimiter } from "@/lib/local-rate-limit";
 import { withProviderDeadline } from "@/lib/provider-deadline";
-import { isFreeKind, resolveModel, supportsTask, type StudioTask } from "@/lib/studio-models";
+import { isFreeKind, modelsFor, resolveModel, stillBlock, supportsTask, type StudioTask } from "@/lib/studio-models";
 
 export type StudioKind = "image" | "video" | "audio";
 
@@ -70,8 +70,6 @@ function chatUrl(agent: Agent) {
       return "https://openrouter.ai/api/v1/chat/completions";
     case "groq":
       return "https://api.groq.com/openai/v1/chat/completions";
-    case "cloudflare":
-      return `https://api.cloudflare.com/client/v4/accounts/${agent.accountId}/ai/v1/chat/completions`;
     default:
       return "";
   }
@@ -96,6 +94,88 @@ function rejected(agent: Agent) {
   }
 }
 
+const NAMES: Record<Agent["kind"], string> = {
+  xai: "xAI",
+  openai: "OpenAI",
+  anthropic: "Claude",
+  openrouter: "OpenRouter",
+  groq: "Groq",
+  gemini: "Gemini",
+  cloudflare: "Cloudflare",
+};
+
+const SECRETISH = /(?<![A-Za-z0-9])(?:xai-|sk-ant-|sk-or-|sk-|gsk_|AIza|AQ\.|cfut_|cfat_|cfk_)[^\s"',;)]*/g;
+
+/** Strip anything that could be the visitor's key, account id, or an auth header. */
+export function redact(text: string, agent?: Pick<Agent, "key" | "accountId">) {
+  let out = String(text ?? "");
+  if (agent?.key) out = out.split(agent.key).join("[key]");
+  if (agent?.accountId) out = out.split(agent.accountId).join("[account]");
+  return out
+    .replace(/bearer\s+\S+/gi, "Bearer [key]")
+    .replace(/authorization[^,;]*/gi, "authorization [hidden]")
+    .replace(SECRETISH, "[key]")
+    .replace(/\b[0-9a-f]{32}\b/gi, "[account]")
+    .replace(/[?&](?:key|token)=[^\s&]+/gi, "?[key]");
+}
+
+function messageOf(body: unknown): string {
+  if (!body || typeof body !== "object") return typeof body === "string" ? body : "";
+  const value = body as Record<string, unknown>;
+  const error = value.error;
+  if (typeof error === "string") return error;
+  if (error && typeof error === "object") {
+    const inner = error as Record<string, unknown>;
+    if (typeof inner.message === "string") return inner.message;
+  }
+  if (Array.isArray(value.errors) && value.errors.length) {
+    const first = value.errors[0] as Record<string, unknown> | string;
+    if (typeof first === "string") return first;
+    if (first && typeof first.message === "string") return first.message;
+  }
+  if (Array.isArray(error) && error.length) return messageOf({ error: error[0] });
+  if (typeof value.message === "string") return value.message;
+  return "";
+}
+
+/** A short, key-free provider reason. Only the provider's message field is kept, never the raw body. */
+async function reasonOf(res: Response, agent: Agent) {
+  try {
+    const raw = (await res.text()).slice(0, 4000);
+    let message = "";
+    try {
+      message = messageOf(JSON.parse(raw));
+    } catch {
+      message = "";
+    }
+    return clip(redact(message, agent), 140);
+  } catch {
+    return "";
+  }
+}
+
+function hint(agent: Agent, status: number, task: "shape" | "image") {
+  if (status === 401 || status === 403) return `${NAMES[agent.kind]} did not accept this key for that request.`;
+  if (status === 404) return task === "image" ? "That still model is not available for this key." : "That model is not available for this key. Pick another model for shaping.";
+  if (status === 429) return agent.kind === "cloudflare" ? "The free daily allocation is used up or rate limited. It resets at 00:00 UTC." : "The free limit was reached. Wait before trying again.";
+  if (status === 402) return "This model needs credits on your account.";
+  if (status >= 500) return "The provider is busy or down. Try again shortly, or pick another model for shaping.";
+  return rejected(agent);
+}
+
+/** Visitor-safe failure: provider, HTTP status, short redacted reason, then what to do. */
+export async function providerFailure(agent: Agent, res: Response, task: "shape" | "image" = "shape") {
+  const why = await reasonOf(res, agent);
+  const reason = why.replace(/[.\s…]+$/, "");
+  return `${NAMES[agent.kind]} returned HTTP ${res.status}${reason ? `: ${reason}` : ""}. ${hint(agent, res.status, task)}`;
+}
+
+function textOf(value: unknown): string {
+  if (typeof value === "string") return value;
+  if (Array.isArray(value)) return value.map((part) => (typeof part === "string" ? part : (part as { text?: string })?.text || "")).join("");
+  return "";
+}
+
 async function ask(
   agent: Agent,
   system: string,
@@ -111,7 +191,7 @@ async function ask(
       headers: { "content-type": "application/json", "x-api-key": agent.key, "anthropic-version": "2023-06-01" },
       body: JSON.stringify({ model, max_tokens: 500, system, messages: [{ role: "user", content: user }] }),
     });
-    if (!res.ok) return { ok: false, error: rejected(agent) };
+    if (!res.ok) return { ok: false, error: await providerFailure(agent, res) };
     const body = (await res.json()) as { content?: { text?: string }[] };
     const text = body.content?.map((part) => part.text || "").join("").trim() ?? "";
     return text ? { ok: true, text } : { ok: false, error: "The prompt came back empty." };
@@ -124,13 +204,52 @@ async function ask(
       body: JSON.stringify({
         systemInstruction: { parts: [{ text: system }] },
         contents: [{ role: "user", parts: [{ text: user }] }],
-        generationConfig: { temperature: 0.4, maxOutputTokens: 500 },
+        // Flash models think first; thinking tokens count against this cap, so keep thinking light.
+        generationConfig: {
+          temperature: 0.4,
+          maxOutputTokens: 2048,
+          thinkingConfig: model.startsWith("gemini-2.") ? { thinkingBudget: 0 } : { thinkingLevel: "low" },
+        },
       }),
     });
-    if (!res.ok) return { ok: false, error: rejected(agent) };
-    const body = (await res.json()) as { candidates?: { content?: { parts?: { text?: string }[] } }[] };
-    const text = body.candidates?.[0]?.content?.parts?.map((part) => part.text || "").join("").trim() ?? "";
+    if (!res.ok) return { ok: false, error: await providerFailure(agent, res) };
+    const body = (await res.json()) as { candidates?: { content?: { parts?: { text?: string; thought?: boolean }[] } }[] };
+    const text =
+      body.candidates?.[0]?.content?.parts
+        ?.filter((part) => !part.thought)
+        .map((part) => part.text || "")
+        .join("")
+        .trim() ?? "";
     return text ? { ok: true, text } : { ok: false, error: "The prompt came back empty." };
+  }
+  if (agent.kind === "cloudflare") {
+    // Native Workers AI route: the model page documents { messages } here, and it
+    // accepts every @cf text model, not only the ones mapped to /ai/v1.
+    const res = await fetch(`https://api.cloudflare.com/client/v4/accounts/${agent.accountId}/ai/run/${model}`, {
+      signal,
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${agent.key}` },
+      body: JSON.stringify({
+        max_tokens: 500,
+        temperature: 0.4,
+        messages: [
+          { role: "system", content: system },
+          { role: "user", content: user },
+        ],
+      }),
+    });
+    if (!res.ok) return { ok: false, error: await providerFailure(agent, res) };
+    const body = (await res.json()) as {
+      result?: { response?: unknown; choices?: { message?: { content?: unknown } }[] } | string;
+      choices?: { message?: { content?: unknown } }[];
+    };
+    const result = body.result;
+    const text = (
+      typeof result === "string"
+        ? result
+        : textOf(result?.response) || textOf(result?.choices?.[0]?.message?.content) || textOf(body.choices?.[0]?.message?.content)
+    ).trim();
+    return text ? { ok: true, text } : { ok: false, error: "Cloudflare returned HTTP 200 with no prompt text." };
   }
   const url = chatUrl(agent);
   if (!url) return { ok: false, error: "This key cannot shape a prompt." };
@@ -146,17 +265,18 @@ async function ask(
     body: JSON.stringify({
       model,
       temperature: 0.4,
-      max_tokens: 500,
+      // Free gpt-oss and router models reason first; leave room for the answer.
+      max_tokens: isFreeKind(agent.kind) ? 1500 : 500,
       messages: [
         { role: "system", content: system },
         { role: "user", content: user },
       ],
     }),
   });
-  if (!res.ok) return { ok: false, error: rejected(agent) };
-  const body = (await res.json()) as { choices?: { message?: { content?: string } }[] };
-  const text = body.choices?.[0]?.message?.content?.trim() ?? "";
-  return text ? { ok: true, text } : { ok: false, error: "The prompt came back empty." };
+  if (!res.ok) return { ok: false, error: await providerFailure(agent, res) };
+  const body = (await res.json()) as { choices?: { message?: { content?: unknown } }[] };
+  const text = textOf(body.choices?.[0]?.message?.content).trim();
+  return text ? { ok: true, text } : { ok: false, error: `${NAMES[agent.kind]} returned HTTP 200 with an empty prompt. Try another model for shaping.` };
 }
 
 function chosen(agent: Agent, task: StudioTask, requested: string) {
@@ -204,6 +324,51 @@ export const shapePrompt = createServerFn({ method: "POST" })
     }, requestSignal);
   });
 
+/** PNG, JPEG or WebP by magic bytes; anything else is not an image. */
+export function imageType(bytes: Uint8Array) {
+  if (bytes.length > 8 && bytes[0] === 0x89 && bytes[1] === 0x50 && bytes[2] === 0x4e && bytes[3] === 0x47) return "image/png";
+  if (bytes.length > 3 && bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff) return "image/jpeg";
+  if (bytes.length > 12 && String.fromCharCode(...bytes.slice(0, 4)) === "RIFF" && String.fromCharCode(...bytes.slice(8, 12)) === "WEBP") return "image/webp";
+  return "";
+}
+
+function dataUrl(bytes: Uint8Array) {
+  const type = imageType(bytes);
+  return type ? `data:${type};base64,${Buffer.from(bytes).toString("base64")}` : "";
+}
+
+function fromBase64(value: string) {
+  const data = value.trim().replace(/^data:[^,]*,/, "");
+  if (!data || /[^A-Za-z0-9+/=_\-\s]/.test(data)) return "";
+  return dataUrl(new Uint8Array(Buffer.from(data, "base64")));
+}
+
+/**
+ * Workers AI stills arrive as raw image bytes, or JSON with result as a base64
+ * string, result.image, image, or a data URL. Every shape is decoded and checked.
+ */
+export async function stillFrom(res: Response) {
+  const bytes = new Uint8Array(await res.arrayBuffer());
+  const direct = dataUrl(bytes);
+  if (direct) return direct;
+  let body: unknown;
+  try {
+    body = JSON.parse(Buffer.from(bytes).toString("utf8"));
+  } catch {
+    return "";
+  }
+  const value = body as { result?: unknown; image?: unknown };
+  const result = value.result as { image?: unknown } | string | undefined;
+  const candidates = [typeof result === "string" ? result : result?.image, value.image];
+  for (const candidate of candidates) {
+    if (typeof candidate === "string" && candidate) {
+      const src = fromBase64(candidate);
+      if (src) return src;
+    }
+  }
+  return "";
+}
+
 export const makeImage = createServerFn({ method: "POST" })
   .validator((input: { prompt: string; agentKey?: string; model?: string }) => {
     const prompt = clip(String(input?.prompt ?? ""), 800);
@@ -213,10 +378,7 @@ export const makeImage = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const agent = agentOf(data.agentKey);
     if (!agent) return { ok: false as const, error: "Add your own xAI, OpenAI, or Cloudflare key to make an image." };
-    if (agent.kind === "anthropic") return { ok: false as const, error: "Claude can shape the prompt. A still needs an xAI or OpenAI key." };
-    if (!supportsTask(agent.kind, "image")) {
-      return { ok: false as const, error: "This key can shape the prompt. A still needs your own xAI key, OpenAI key, or Cloudflare Workers AI token." };
-    }
+    if (!supportsTask(agent.kind, "image")) return { ok: false as const, error: stillBlock(agent.kind) };
     const model = chosen(agent, "image", data.model);
     if (!model) return { ok: false as const, error: "That still model is not available for this key." };
     const { ip, signal: requestSignal } = await caller();
@@ -233,18 +395,10 @@ export const makeImage = createServerFn({ method: "POST" })
           headers: { "Content-Type": "application/json", Authorization: `Bearer ${agent.key}` },
           body: JSON.stringify({ prompt: data.prompt, steps: 4 }),
         });
-        if (res.status === 429) return { ok: false as const, error: "The free daily still limit was reached. It resets at 00:00 UTC." };
-        if (!res.ok) return { ok: false as const, error: rejected(agent) };
-        const ctype = res.headers.get("content-type") || "";
-        if (ctype.includes("image/")) {
-          const bytes = Buffer.from(await res.arrayBuffer()).toString("base64");
-          return bytes ? { ok: true as const, src: `data:${ctype.split(";")[0]};base64,${bytes}` } : { ok: false as const, error: "No image came back." };
-        }
-        const body = (await res.json()) as { result?: { image?: string } | string; image?: string };
-        const image = typeof body.result === "string" ? body.result : body.result?.image || body.image || "";
-        if (!image) return { ok: false as const, error: "No image came back." };
-        if (image.startsWith("data:") || image.startsWith("http")) return { ok: true as const, src: image };
-        return { ok: true as const, src: `data:image/png;base64,${image}` };
+        if (!res.ok) return { ok: false as const, error: await providerFailure(agent, res, "image") };
+        const still = await stillFrom(res);
+        if (!still) return { ok: false as const, error: "Cloudflare returned HTTP 200, but no PNG or JPEG image was in the reply." };
+        return { ok: true as const, src: still };
       }
 
       const res = await fetch(agent.kind === "openai" ? "https://api.openai.com/v1/images/generations" : "https://api.x.ai/v1/images/generations", {
@@ -413,6 +567,31 @@ async function discard(res: Response) {
   }
 }
 
+/** Catalog shaping ids that the provider's own list returned for this key. */
+function confirmedShapeIds(agent: Agent, listed: string[]) {
+  return modelsFor(agent.kind, "shape")
+    .map((model) => model.id)
+    .filter((id) => listed.includes(id));
+}
+
+async function listedIds(res: Response, kind: Agent["kind"]) {
+  try {
+    const body = (await res.json()) as {
+      data?: { id?: string; pricing?: { prompt?: string; completion?: string } }[];
+      models?: { name?: string }[];
+    };
+    if (kind === "gemini") return (body.models ?? []).map((model) => String(model.name ?? "").replace(/^models\//, ""));
+    if (kind === "openrouter") {
+      return (body.data ?? [])
+        .filter((model) => Number(model.pricing?.prompt) === 0 && Number(model.pricing?.completion) === 0)
+        .map((model) => String(model.id ?? ""));
+    }
+    return (body.data ?? []).map((model) => String(model.id ?? ""));
+  } catch {
+    return [];
+  }
+}
+
 function probed(res: Response, accepted: string, rejected: string) {
   if (res.ok) return { ok: true as const, detail: accepted };
   if (res.status === 400 || res.status === 401 || res.status === 403) return { ok: false as const, error: rejected };
@@ -441,7 +620,16 @@ export const checkProvider = createServerFn({ method: "POST" })
         });
         const result = probed(res, "OpenRouter accepted this key.", "OpenRouter did not accept that key.");
         await discard(res);
-        return result;
+        if (!result.ok) return result;
+        // The public catalog carries prices; keep only rows whose prompt and completion are both $0.
+        try {
+          const list = await fetch("https://openrouter.ai/api/v1/models", { signal, headers: { Accept: "application/json" } });
+          const models = list.ok ? confirmedShapeIds(agent, await listedIds(list, "openrouter")) : [];
+          if (!list.ok) await discard(list);
+          return { ...result, models };
+        } catch {
+          return result;
+        }
       }
       if (agent.kind === "groq") {
         const res = await fetch("https://api.groq.com/openai/v1/models", {
@@ -449,30 +637,47 @@ export const checkProvider = createServerFn({ method: "POST" })
           headers: { Authorization: `Bearer ${agent.key}` },
         });
         const result = probed(res, "Groq accepted this key.", "Groq did not accept that key.");
-        await discard(res);
-        return result;
+        if (!result.ok) {
+          await discard(res);
+          return result;
+        }
+        return { ...result, models: confirmedShapeIds(agent, await listedIds(res, "groq")) };
       }
       if (agent.kind === "gemini") {
-        const res = await fetch("https://generativelanguage.googleapis.com/v1beta/models", {
+        const res = await fetch("https://generativelanguage.googleapis.com/v1beta/models?pageSize=1000", {
           signal,
           headers: { "x-goog-api-key": agent.key },
         });
         const result = probed(res, "Gemini accepted this key.", "Gemini did not accept that key.");
-        await discard(res);
-        return result;
+        if (!result.ok) {
+          await discard(res);
+          return result;
+        }
+        return { ...result, models: confirmedShapeIds(agent, await listedIds(res, "gemini")) };
       }
       if (agent.kind === "cloudflare") {
         const headers = { Authorization: `Bearer ${agent.key}` };
         const verify = await fetch("https://api.cloudflare.com/client/v4/user/tokens/verify", { signal, headers });
-        const account = await fetch(`https://api.cloudflare.com/client/v4/accounts/${agent.accountId}`, { signal, headers });
+        // A Workers AI token usually cannot read /accounts/{id} itself, so check the account
+        // through a Workers AI read instead: the model list the still and shaping routes use.
+        const account = await fetch(`https://api.cloudflare.com/client/v4/accounts/${agent.accountId}/ai/models/search?per_page=1`, {
+          signal,
+          headers,
+        });
         const tokenOk = verify.ok;
         const accountOk = account.ok;
         await discard(verify);
-        await discard(account);
-        if (tokenOk && accountOk) return { ok: true as const, detail: "Cloudflare accepted the token and the account id." };
-        if (tokenOk && !accountOk) return { ok: false as const, error: "Cloudflare accepted the token, but not that account id." };
-        if (!tokenOk && accountOk) return { ok: true as const, detail: "Cloudflare accepted this token for that account." };
-        return probed(verify.ok ? account : verify, "", "Cloudflare did not accept that token.");
+        if (accountOk) {
+          await discard(account);
+          return { ok: true as const, detail: "Cloudflare accepted the token for Workers AI on that account." };
+        }
+        if (account.status === 429) {
+          await discard(account);
+          return { ok: false as const, error: "That key was recognized, but Cloudflare is rate limiting it." };
+        }
+        const failure = await providerFailure(agent, account);
+        if (tokenOk) return { ok: false as const, error: `${failure} The token is valid; check the account id and that the token has Workers AI permission.` };
+        return { ok: false as const, error: failure };
       }
       if (agent.kind === "anthropic") {
         const res = await fetch("https://api.anthropic.com/v1/models", {

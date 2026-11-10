@@ -390,7 +390,7 @@ test("returning to the same passage does not revive an invalidated shaping resul
   page.render(true, "passage A");
   result.resolve({ ok: true, prompt: "obsolete fixture prompt" });
   await work;
-  assert.doesNotMatch(markup(page), /obsolete fixture prompt|You can change the prompt/);
+  assert.doesNotMatch(markup(page), /obsolete fixture prompt|The prompt is ready|You can change/);
 });
 
 for (const kind of ["image", "audio"]) {
@@ -555,4 +555,50 @@ test("Studio exposes a named modal dialog rather than a nonmodal sheet section",
   const page = fixture();
   const html = renderToStaticMarkup(page.render());
   assert.match(html, /<dialog[^>]*aria-label="Studio"/);
+});
+
+const synthetic = {
+  groq: `gsk_${"a".repeat(52)}`,
+  openrouter: `sk-or-v1-${"ab".repeat(32)}`,
+  gemini: `AQ.Ab${"c".repeat(48)}`,
+  anthropic: `sk-ant-${"synthetic-reader-".repeat(2)}`,
+  cloudflare: `cf-${"a".repeat(32)}-cfut_${"d".repeat(48)}`,
+  openai: `sk-${"synthetic-reader-".repeat(2)}`,
+  xai: dummy,
+};
+
+test("Make the still is disabled for shape-only keys and enabled for Cloudflare, OpenAI and xAI", () => {
+  for (const [kind, key] of Object.entries(synthetic)) {
+    const page = fixture({
+      local: new Map([["injeel-studio", JSON.stringify({ kind: "image" })]]),
+      session: new Map([[agent.AGENT_STORE, key]]),
+    });
+    const tree = page.render(true, "passage A");
+    const shapeOnly = ["groq", "openrouter", "gemini", "anthropic"].includes(kind);
+    assert.equal(makeButton(tree).props.disabled, shapeOnly, kind);
+    assert.equal(button(tree, "Shape the prompt").props.disabled, false, kind);
+    const html = renderToStaticMarkup(tree);
+    if (shapeOnly) assert.match(html, /cannot make the still\. For a free still, save a Cloudflare Workers AI token/, kind);
+    assert.ok(!html.includes(key), "never render the key");
+    page.assertPolicy();
+  }
+});
+
+test("after shaping, a text-only key says the prompt is ready and names the key that can make the still", async () => {
+  for (const kind of ["groq", "openrouter", "gemini", "anthropic", "cloudflare", "xai"]) {
+    const page = fixture({
+      local: new Map([["injeel-studio", JSON.stringify({ kind: "image" })]]),
+      session: new Map([[agent.AGENT_STORE, synthetic[kind]]]),
+      server: { shapePrompt: async () => ({ ok: true, prompt: "fixture prompt" }) },
+    });
+    await button(page.render(true, "passage A"), "Shape the prompt").props.onClick();
+    const html = markup(page);
+    assert.match(html, /The prompt is ready\./, kind);
+    if (["cloudflare", "xai"].includes(kind)) {
+      assert.match(html, /You can change it before making the still\./, kind);
+    } else {
+      assert.doesNotMatch(html, /You can change|before making the still/, kind);
+      assert.match(html, /shapes prompts only and cannot make the still\. For a free still, save a Cloudflare Workers AI token \(cfut_ or cfat_\) with its account id\./, kind);
+    }
+  }
 });

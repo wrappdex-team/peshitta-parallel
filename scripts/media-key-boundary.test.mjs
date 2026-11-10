@@ -114,6 +114,7 @@ function fixture({ provider, signal, cacheCrypto = syntheticCacheCrypto } = {}) 
   const globals = {
     Buffer,
     AbortController,
+    AbortSignal,
     setTimeout: setTimer,
     clearTimeout: (id) => timers.delete(id),
     Map: TrackedMap,
@@ -183,7 +184,8 @@ function fixture({ provider, signal, cacheCrypto = syntheticCacheCrypto } = {}) 
           audio_timestamps: { graph_chars: [], graph_times: [[0, 1]] },
         });
       if (url.endsWith("/audio/speech")) return new Response(new Uint8Array([1, 2, 3]));
-      if (String(url).includes("/ai/run/")) return Response.json({ result: { image: "Zml4dHVyZQ==" } });
+      if (String(url).includes("/ai/run/@cf/black-forest-labs/")) return Response.json({ result: { image: FIXTURE_PNG }, success: true });
+      if (String(url).includes("/ai/run/")) return Response.json({ result: { response: "fixture prompt" }, success: true });
       throw new Error(`Unexpected mocked provider URL: ${url}`);
     },
   };
@@ -226,6 +228,9 @@ function fixture({ provider, signal, cacheCrypto = syntheticCacheCrypto } = {}) 
     },
   };
 }
+
+// A real 64x64 PNG, so still parsing is checked against image bytes, not any string.
+const FIXTURE_PNG = "iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAIAAAAlC+aJAAAAT0lEQVR42u3PQQkAAAgEsItmVOMYywi+hcEKLNP1WgQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQELgsoooGHxYPzxQAAAABJRU5ErkJggg==";
 
 const requests = {
   shapePrompt: { text: "fixture passage", style: "", kind: "image" },
@@ -813,3 +818,146 @@ test("free providers stay on their own hosts, ignore foreign model ids, and keep
   assert.equal(f.calls.length, 13);
 });
 
+
+test("Cloudflare still parsing accepts every documented success shape and rejects a 200 with no image", async () => {
+  const account = "d".repeat(32);
+  const key = `cf-${account}-cfut_${"e".repeat(40)}`;
+  const png = Buffer.from(FIXTURE_PNG, "base64");
+  const jpeg = new Uint8Array([0xff, 0xd8, 0xff, 0xe0, 0, 16, 74, 70, 73, 70, 0, 1]);
+  const shapes = [
+    [() => new Response(png, { headers: { "content-type": "image/png" } }), "image/png"],
+    [() => new Response(jpeg, { headers: { "content-type": "application/octet-stream" } }), "image/jpeg"],
+    [() => Response.json({ result: { image: FIXTURE_PNG }, success: true }), "image/png"],
+    [() => Response.json({ result: FIXTURE_PNG, success: true }), "image/png"],
+    [() => Response.json({ image: Buffer.from(jpeg).toString("base64") }), "image/jpeg"],
+    [() => Response.json({ result: { image: `data:image/png;base64,${FIXTURE_PNG}` } }), "image/png"],
+  ];
+  for (const [reply, type] of shapes) {
+    const f = fixture({ provider: reply });
+    const made = await f.studio.makeImage({ ...requests.makeImage, agentKey: key });
+    assert.equal(made.ok, true, type);
+    assert.ok(made.src.startsWith(`data:${type};base64,`), made.src.slice(0, 40));
+  }
+  for (const reply of [
+    () => Response.json({ result: { image: "Zml4dHVyZQ==" }, success: true }),
+    () => Response.json({ result: {}, success: true }),
+    () => new Response("not an image", { headers: { "content-type": "image/png" } }),
+  ]) {
+    const f = fixture({ provider: reply });
+    const made = await f.studio.makeImage({ ...requests.makeImage, agentKey: key });
+    assert.equal(made.ok, false);
+    assert.match(made.error, /HTTP 200.*no PNG or JPEG/);
+  }
+});
+
+test("Cloudflare shaping uses the native Workers AI route with messages and reads result.response", async () => {
+  const account = "d".repeat(32);
+  const token = `cfut_${"e".repeat(40)}`;
+  const f = fixture();
+  const shaped = await f.studio.shapePrompt({ ...requests.shapePrompt, agentKey: `cf-${account}-${token}`, model: "gpt-4o" });
+  assert.equal(shaped.ok, true);
+  assert.equal(shaped.prompt, "fixture prompt");
+  assert.match(f.calls[0].url, new RegExp(`/accounts/${account}/ai/run/@cf/meta/llama-3.3-70b-instruct-fp8-fast$`));
+  assert.equal(f.calls[0].authorization, `Bearer ${token}`);
+});
+
+test("provider failures show HTTP status and a short reason with the key and account id stripped", async () => {
+  const account = "d".repeat(32);
+  const token = `cfut_${"e".repeat(40)}`;
+  const groq = `gsk_${"g".repeat(52)}`;
+  const gemini = `AQ.Ab${"q".repeat(48)}`;
+  const openrouter = `sk-or-v1-${"ab".repeat(32)}`;
+  const cases = [
+    [groq, 404, { error: { message: `The model does not exist. Key ${groq}` } }, /^Groq returned HTTP 404: The model does not exist\. Key \[key\]\. That model is not available/],
+    [gemini, 400, { error: { message: `API key not valid: ${gemini}` } }, /^Gemini returned HTTP 400: API key not valid: \[key\]\./],
+    [openrouter, 429, { error: { message: "Rate limit exceeded: free-models-per-day" } }, /^OpenRouter returned HTTP 429: Rate limit exceeded: free-models-per-day\. The free limit was reached/],
+    [`cf-${account}-${token}`, 401, { errors: [{ message: `Authentication error for account ${account} Bearer ${token}` }] }, /^Cloudflare returned HTTP 401: Authentication error for account \[account\] Bearer \[key\]\. Cloudflare did not accept/],
+  ];
+  for (const [key, status, body, expected] of cases) {
+    const f = fixture({ provider: () => Response.json(body, { status }) });
+    const shaped = await f.studio.shapePrompt({ ...requests.shapePrompt, agentKey: key });
+    assert.equal(shaped.ok, false);
+    assert.match(shaped.error, expected);
+    assert.ok(!shaped.error.includes(key.slice(-20)), "no key material");
+    assert.ok(!shaped.error.includes(account), "no account id");
+    assert.equal(f.calls.length, 1, "one live call per attempt");
+  }
+  const raw = fixture({ provider: () => new Response(`<html>${groq}</html>`, { status: 500 }) });
+  const failed = await raw.studio.shapePrompt({ ...requests.shapePrompt, agentKey: groq });
+  assert.equal(failed.error.includes("html"), false, "never the raw body");
+  assert.match(failed.error, /^Groq returned HTTP 500\./);
+});
+
+test("Gemini shaping ignores thought parts and allows room for thinking tokens", async () => {
+  let sent;
+  const f = fixture({
+    provider: (url, init) => {
+      sent = { url, body: JSON.parse(init.body) };
+      return Response.json({ candidates: [{ content: { parts: [{ text: "hidden reasoning", thought: true }, { text: "A lamp over the page." }] } }] });
+    },
+  });
+  const shaped = await f.studio.shapePrompt({ ...requests.shapePrompt, agentKey: `AQ.Ab${"q".repeat(48)}`, model: "gemini-9-unknown" });
+  assert.equal(shaped.ok, true);
+  assert.equal(shaped.prompt, "A lamp over the page.");
+  assert.match(sent.url, /\/models\/gemini-3\.5-flash-lite:generateContent$/, "unknown ids fall back to the first confirmed row");
+  assert.ok(sent.body.generationConfig.maxOutputTokens >= 1024);
+});
+
+test("text-only free keys cannot reach an image endpoint and are told Cloudflare is the free still", async () => {
+  for (const key of [`gsk_${"g".repeat(52)}`, `sk-or-v1-${"ab".repeat(32)}`, `AQ.Ab${"q".repeat(48)}`, `sk-ant-${"reader-fixture-".repeat(3)}`]) {
+    const f = fixture();
+    const made = await f.studio.makeImage({ ...requests.makeImage, agentKey: key });
+    assert.equal(made.ok, false);
+    assert.match(made.error, /cannot make the still.*Cloudflare/);
+    assert.equal(f.calls.length, 0);
+  }
+});
+
+test("checkProvider returns only catalog shaping ids that the key's own list confirms", async () => {
+  const groq = fixture({ provider: () => Response.json({ data: [{ id: "openai/gpt-oss-120b" }, { id: "whisper-large-v3" }] }) });
+  const checked = await groq.studio.checkProvider({ agentKey: `gsk_${"g".repeat(52)}` });
+  assert.equal(checked.ok, true);
+  assert.equal(JSON.stringify(checked.models), JSON.stringify(["openai/gpt-oss-120b"]));
+
+  const gemini = fixture({ provider: () => Response.json({ models: [{ name: "models/gemini-3.5-flash-lite" }, { name: "models/gemini-3.1-flash-image" }] }) });
+  const listed = await gemini.studio.checkProvider({ agentKey: `AQ.Ab${"q".repeat(48)}` });
+  assert.equal(JSON.stringify(listed.models), JSON.stringify(["gemini-3.5-flash-lite"]));
+
+  const openrouter = fixture({
+    provider: (url) =>
+      String(url).endsWith("/key")
+        ? Response.json({ data: {} })
+        : Response.json({
+            data: [
+              { id: "openrouter/free", pricing: { prompt: "0", completion: "0" } },
+              { id: "google/gemma-4-31b-it:free", pricing: { prompt: "0", completion: "0.0000001" } },
+            ],
+          }),
+  });
+  const priced = await openrouter.studio.checkProvider({ agentKey: `sk-or-v1-${"ab".repeat(32)}` });
+  assert.equal(JSON.stringify(priced.models), JSON.stringify(["openrouter/free"]), "only prompt and completion both $0");
+  assert.equal(openrouter.calls[1].authorization, undefined, "the public price list gets no key");
+});
+
+test("Cloudflare key check uses a Workers AI read, so a Workers-AI-only token is not reported as a bad account", async () => {
+  const account = "d".repeat(32);
+  const key = `cf-${account}-cfut_${"e".repeat(40)}`;
+  const ok = fixture({
+    provider: (url) => (String(url).includes("/ai/models/search") ? Response.json({ result: [], success: true }) : Response.json({ success: true })),
+  });
+  const checked = await ok.studio.checkProvider({ agentKey: key });
+  assert.equal(checked.ok, true);
+  assert.match(checked.detail, /Workers AI/);
+  assert.ok(!ok.calls.some((call) => String(call.url).endsWith(`/accounts/${account}`)), "no account-settings read");
+
+  const wrong = fixture({
+    provider: (url) =>
+      String(url).includes("/ai/models/search")
+        ? Response.json({ errors: [{ message: `Authentication error ${account}` }], success: false }, { status: 403 })
+        : Response.json({ success: true }),
+  });
+  const failed = await wrong.studio.checkProvider({ agentKey: key });
+  assert.equal(failed.ok, false);
+  assert.match(failed.error, /^Cloudflare returned HTTP 403: Authentication error \[account\]\..*Workers AI permission/);
+  assert.ok(!failed.error.includes(account));
+});
