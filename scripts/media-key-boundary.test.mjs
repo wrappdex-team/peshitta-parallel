@@ -17,6 +17,7 @@ const sources = {
   cacheScope: "src/lib/credential-cache-scope.ts",
   studio: "src/lib/studio.ts",
   speak: "src/lib/speak.ts",
+  studioModels: "src/lib/studio-models.ts",
   studioUI: "src/components/studio.tsx",
   keyStorage: "src/lib/provider-key-storage.ts",
 };
@@ -119,6 +120,7 @@ function fixture({ provider, signal, cacheCrypto = syntheticCacheCrypto } = {}) 
     Date: { now: () => time },
     require(name) {
       if (name === "@/lib/agent") return agent;
+      if (name === "@/lib/studio-models") return load("studioModels", {});
       if (name === "@/lib/local-rate-limit") return rateLimit;
       if (name === "@/lib/provider-deadline") return deadline;
       if (name === "@/lib/credential-cache-scope") return cacheScope;
@@ -152,10 +154,17 @@ function fixture({ provider, signal, cacheCrypto = syntheticCacheCrypto } = {}) 
       throw new Error(`Unexpected test import: ${name}`);
     },
     async fetch(url, init) {
+      let model = "";
+      try {
+        model = JSON.parse(init?.body || "{}").model || "";
+      } catch {
+        model = "";
+      }
       calls.push({
         url,
         authorization: init.headers.Authorization ?? init.headers["x-api-key"],
         signal: init.signal,
+        model,
       });
       if (provider) return provider(url, init);
       if (url.endsWith("/chat/completions"))
@@ -174,6 +183,7 @@ function fixture({ provider, signal, cacheCrypto = syntheticCacheCrypto } = {}) 
           audio_timestamps: { graph_chars: [], graph_times: [[0, 1]] },
         });
       if (url.endsWith("/audio/speech")) return new Response(new Uint8Array([1, 2, 3]));
+      if (String(url).includes("/ai/run/")) return Response.json({ result: { image: "Zml4dHVyZQ==" } });
       throw new Error(`Unexpected mocked provider URL: ${url}`);
     },
   };
@@ -191,6 +201,7 @@ function fixture({ provider, signal, cacheCrypto = syntheticCacheCrypto } = {}) 
       if (name === "@/components/modal") return { Modal: ({ label, children }) => React.createElement("dialog", { "aria-label": label }, children) };
       if (name === "react/jsx-runtime") return jsxRuntime;
       if (name === "@/lib/agent") return agent;
+      if (name === "@/lib/studio-models") return load("studioModels", {});
       if (name === "@/lib/local-rate-limit") return rateLimit;
       if (name === "@/lib/provider-deadline") return deadline;
       if (name === "@/lib/credential-cache-scope") return cacheScope;
@@ -761,3 +772,44 @@ test("failed or empty Studio translation starts no audio request for either prov
     }
   }
 });
+
+test("free providers stay on their own hosts, ignore foreign model ids, and keep the free shaping cap", async () => {
+  const f = fixture();
+  const openrouter = `sk-or-v1-${"c".repeat(24)}`;
+  const shaped = await f.studio.shapePrompt({
+    ...requests.shapePrompt,
+    agentKey: openrouter,
+    model: "openai/gpt-4o",
+  });
+  assert.equal(shaped.ok, true);
+  assert.match(f.calls[0].url, /^https:\/\/openrouter\.ai\/api\/v1\/chat\/completions$/);
+  assert.equal(f.calls[0].model, "openrouter/free");
+  assert.equal(f.calls[0].authorization, `Bearer ${openrouter}`);
+
+  const account = "d".repeat(32);
+  const token = "e".repeat(40);
+  const image = await f.studio.makeImage({
+    ...requests.makeImage,
+    agentKey: `cf-${account}-${token}`,
+    model: "dall-e-3",
+  });
+  assert.equal(image.ok, true);
+  assert.match(image.src, /^data:image\/png;base64,/);
+  assert.match(f.calls[1].url, new RegExp(`/accounts/${account}/ai/run/@cf/black-forest-labs/flux-1-schnell$`));
+  assert.equal(f.calls[1].authorization, `Bearer ${token}`);
+
+  const film = await f.studio.startVideo({ ...requests.startVideo, agentKey: openrouter });
+  assert.equal(film.ok, false);
+  assert.match(film.error, /xAI/);
+  assert.equal(f.calls.length, 2);
+  assert.equal(f.siteReads(), 0);
+
+  for (let i = 0; i < 11; i++) {
+    assert.equal((await f.studio.shapePrompt({ ...requests.shapePrompt, agentKey: openrouter })).ok, true);
+  }
+  const rested = await f.studio.shapePrompt({ ...requests.shapePrompt, agentKey: openrouter });
+  assert.equal(rested.ok, false);
+  assert.match(rested.error, /Free shaping/);
+  assert.equal(f.calls.length, 13);
+});
+

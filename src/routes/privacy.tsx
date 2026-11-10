@@ -30,7 +30,7 @@ function Privacy() {
           Read uses your browser’s speech service without a provider key. Voices, languages and accents depend on the browser and operating system; some voices use network services. Installing a system voice does not guarantee the browser can use it. Open Voice setup help beside the player for device instructions.
         </p>
         <p className="mt-4 text-base leading-relaxed">
-          Studio is optional. Requested passages, prompts and your supplied provider key pass through this server to the selected provider. Providers may charge for prompt shaping, translation and media. A timeout, closing Studio or disconnecting a key does not guarantee cancellation or prevent provider charges; check your provider before submitting again.
+          Studio is optional. Requested passages, prompts and your supplied provider key pass through this server to the selected provider. Paid keys may be charged. Free-tier keys still have the provider’s own limits, and that provider may keep the prompt. A timeout, closing Studio or disconnecting a key does not guarantee cancellation or prevent provider charges; check your provider before submitting again.
         </p>
         <p className="mt-4 text-base leading-relaxed">
           Studio Save uses tab-session storage, not persistent key storage. Refresh normally retains the key; browser restore or duplicate-tab behavior may preserve or copy it. Scripts running on this origin can access session data: it is not an encrypted vault or XSS protection. Clear disconnects the active key and attempts removal; blocked storage can prevent deletion. Old device-saved keys are removed without being read or copied, so you may need to re-enter yours. Reading settings and progress remain in local storage.

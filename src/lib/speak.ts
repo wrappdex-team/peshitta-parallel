@@ -299,6 +299,9 @@ export const speakPart = createServerFn({ method: "POST" })
     const agent = resolveAgent(data.agentKey);
     if (!agent) return { ok: false, error: "Generated audio requires your own xAI or OpenAI key. Device Read does not need a key." };
     if (agent.kind === "anthropic") return { ok: false, error: "Claude can shape prompts, but generated audio needs your own xAI or OpenAI key." };
+    if (agent.kind !== "xai" && agent.kind !== "openai") {
+      return { ok: false, error: "Generated audio requires your own xAI or OpenAI key. Device Read does not need a key." };
+    }
 
     let owner: string;
     try {

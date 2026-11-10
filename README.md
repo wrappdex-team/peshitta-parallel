@@ -105,7 +105,7 @@ src/
     readings.ts           Device-local completion counts and milestones
     use-prefs.ts          Reader preferences and last position
     speak.ts              Speech text helpers + registered legacy speech handler
-    studio.ts             Prompt/image/video/audio server functions
+    studio.ts             Visitor-key prompt, image, video and audio, including limited free tiers
     provider-key-storage.ts  Session-only Studio credential lifecycle
     provider-deadline.ts   Bounded provider I/O and sanitized failure results
     local-rate-limit.ts    Bounded, process-local admission state

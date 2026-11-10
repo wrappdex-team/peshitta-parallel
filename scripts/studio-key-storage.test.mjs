@@ -18,6 +18,8 @@ function compile(path) {
 }
 const agent = {};
 runInNewContext(compile("src/lib/agent.ts"), { exports: agent });
+const models = {};
+runInNewContext(compile("src/lib/studio-models.ts"), { exports: models });
 const studio = compile("src/components/studio.tsx");
 const dummy = `xai-${"synthetic-storage-fixture-".repeat(2)}`;
 
@@ -123,6 +125,7 @@ function fixture({ local = new Map(), session = new Map(), deny = {}, server = {
       if (name === "react/jsx-runtime") return jsxRuntime;
       if (name === "@/components/modal") return { Modal: ({ label, children }) => jsxRuntime.jsx("dialog", { "aria-label": label, children }) };
       if (name === "@/lib/agent") return agent;
+      if (name === "@/lib/studio-models") return models;
       if (name === "@/lib/provider-key-storage") return keyStorage;
       if (name === "@/lib/studio")
         return new Proxy(
