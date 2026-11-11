@@ -94,15 +94,15 @@ export function Guide() {
           <Scroll
             leafKey="welcome"
             dir="down"
-            bottom={{ label: "Unroll the guide", onClick: begin, initial: true }}
+            bottom={{ label: "Show me how", onClick: begin, initial: true }}
           >
             <p className="text-center font-syriac text-2xl text-syriac" lang="syr" dir="rtl">
               ܐܘܢܓܠܝܘܢ
             </p>
             <p className="mt-3 text-center text-xs tracking-widest text-gold">DAILY BREAD</p>
-            <h2 className="mt-2 text-center font-serif text-3xl font-semibold tracking-tight">Come and see.</h2>
+            <h2 className="mt-2 text-center font-serif text-3xl font-semibold tracking-tight">Come and see</h2>
             <p className="mt-3 text-center text-base leading-relaxed">
-              The words of Y'shua, kept in the Syriac of the Peshitta. This is a desk. Open a book, hear a line, touch a word.
+              This is the New Testament in Syriac, the Peshitta, with English beside it. Open a book and start.
             </p>
             <blockquote className="mt-5 border-s-2 border-garnet ps-4 text-start">
               <p className="font-serif text-lg leading-snug">{bread.line}</p>
@@ -187,7 +187,7 @@ export function Guide() {
                 }}
               >
                 <span className="block font-serif text-lg text-ink">Walk the guide again</span>
-                <span className="block text-sm text-muted">Seven short steps. Unroll each one.</span>
+                <span className="block text-sm text-muted">Four short steps.</span>
               </button>
             </div>
           </Scroll>
@@ -207,7 +207,7 @@ export function Guide() {
             </div>
             <h2 className="font-serif text-2xl font-semibold">What you are opening</h2>
             <p className="mt-2 text-sm leading-relaxed text-muted">
-              A teacher’s map, not a syllabus. Read the family that matches the book in your hand.
+              Open the group that matches the book you are reading.
             </p>
             <div className="mt-4 flex flex-col gap-2">
               {FAMILIES.map((item) => {

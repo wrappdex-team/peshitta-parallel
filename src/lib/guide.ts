@@ -59,39 +59,24 @@ export function writeFlag(key: string) {
 
 export const STEPS: { kicker: string; title: string; body: string }[] = [
   {
-    kicker: "The book",
-    title: "This is the Injeel",
-    body: "You are opening the New Testament the Syriac churches read, the Peshitta. A living tongue sits beside it — English, and whichever other tongue you choose. The names stay as they were carried: Y'shua, Maryam, Keefa, Elohim, Mashiyach. This is a desk, not a museum.",
+    kicker: "What this is",
+    title: "Injeel is the New Testament in Syriac",
+    body: "The Peshitta is the text the Syriac churches have kept for centuries. English and other languages sit next to it. Names stay close to the original: Y'shua, Maryam, Keefa, Mashiyach.",
   },
   {
-    kicker: "The page",
-    title: "Two tongues, one line",
-    body: "The Syriac is the text. Choose English alone, or open a second tongue beside it: contemporary Greek, contemporary Hebrew, Arabic, and the others. Where a later Greek copy and the Peshitta part company, these lines stay with the Syriac. Five books came into Syriac later. The reader marks them. Do not let that appendix distract you from the gospel.",
+    kicker: "How to read",
+    title: "Tap a book, then a chapter",
+    body: "Open any book. Switch languages if you want. Red text is where Y'shua is speaking. The chevron in the corner opens this help again.",
   },
   {
-    kicker: "A word",
-    title: "Touch the Syriac",
-    body: "A Syriac word is a quiet button. It looks like the text. Open it and you see how the word is built: what was added in front, the stem, and the consonants of the root. You can hear that word in the tongues you have open. Play one, or play them in order. This is how a student learns a line, not only a chapter.",
+    kicker: "A closer look",
+    title: "Touch a word, or hear the chapter",
+    body: "Tap a Syriac word to see its root and hear it. At the bottom of a chapter you can play the whole reading in the language you chose.",
   },
   {
-    kicker: "His voice",
-    title: "The lines in red",
-    body: "Where Y'shua speaks, the words are marked. They are not a decoration. The page called Words of Y'shua gathers those lines in the order this book keeps them, so you can hear him without hunting. He does not talk like a mascot. He says he is the way, the truth, and the life.",
-  },
-  {
-    kicker: "The shelf",
-    title: "What you are opening",
-    body: "Four gospels are four portraits of one Mashiyach, not four arguments. Acts is what happened after the tomb was empty. The letters of Paulos are pastoral care sent to real assemblies. Timothy and Titus are charges to shepherds. The other letters are further voices to the same churches. Revelation is an unveiling for a church under pressure, not a puzzle meant to frighten you. The helper in the corner will open each of these more slowly.",
-  },
-  {
-    kicker: "The voice",
-    title: "Let it be read",
-    body: "At the foot of a chapter there is a bar that reads aloud, in the tongue you chose, with the voice on this device. You may pause, continue, or stop. It will follow the line. Hearing a chapter is a fair way to begin, especially if the Syriac is new to your eye.",
-  },
-  {
-    kicker: "Begin",
-    title: "The mark stays",
-    body: "This walk will not follow you. The small chevron in the corner will. Open it when you want today’s bread, the map of the books, or this guide again. Come and see.",
+    kicker: "Why it is here",
+    title: "Come and see for yourself",
+    body: "These are the words about Y'shua the Mashiyach, who taught, died, and rose. Start with John 1 or Matthew 5.",
   },
 ];
 
@@ -100,7 +85,7 @@ export const FAMILIES: { id: string; title: string; books: string; body: string 
     id: "gospels",
     title: "The four Gospels",
     books: "Matthew, Mark, Luke, John",
-    body: "These are four witnesses, not four lawsuits. Each was written for people who needed to see the Mashiyach from where they stood. Matthew sets him in the line of the promises, and the subscription says he published it in the land. Mark moves like a proclamation, and this edition keeps the longer ending. Luke writes an ordered account, from the hymns of the infancy to the road and the table. John stays with the Word who was with Elohim, and who was Elohim, and who became flesh. Hang the four portraits in one room. A change of angle is not a contradiction.",
+    body: "These are four witnesses. Each was written for people who needed to see the Mashiyach from where they stood. Matthew sets him in the line of the promises, and the subscription says he published it in the land. Mark moves like a proclamation, and this edition keeps the longer ending. Luke writes an ordered account, from the hymns of the infancy to the road and the table. John stays with the Word who was with Elohim, and who was Elohim, and who became flesh.",
   },
   {
     id: "acts",
