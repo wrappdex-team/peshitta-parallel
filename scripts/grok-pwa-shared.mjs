@@ -135,9 +135,10 @@ export function resolvePublicHost(hostHeader, site = {}) {
   return publicAppHost(process.env?.VITE_PUBLIC_HOSTNAME) || publicAppHost(hostHeader) || declaredOriginHost(site);
 }
 
-/** Absolute share URL. A baked site origin wins so both hosts advertise injeel.news. */
+/** Absolute share URL. The host that served the page wins when it is the www twin, so Facebook is not sent to a redirect. */
 export function canonicalShareUrl(site = {}, publicHost = "", path = "") {
   let base = "";
+  let originHost = "";
   const raw = String(site.origin ?? "").trim();
   if (raw) {
     try {
@@ -146,10 +147,17 @@ export function canonicalShareUrl(site = {}, publicHost = "", path = "") {
       const allowed =
         (url.protocol === "https:" || url.protocol === "http:") &&
         (publicAppHost(host) || declaredOriginHost({ origin: `${url.protocol}//${url.host}` }));
-      if (allowed) base = `${url.protocol}//${url.host}`;
+      if (allowed) {
+        base = `${url.protocol}//${url.host}`;
+        originHost = host;
+      }
     } catch {
       base = "";
     }
+  }
+  const served = publicAppHost(publicHost);
+  if (served && originHost && (served === `www.${originHost}` || originHost === `www.${served}`)) {
+    base = `https://${served}`;
   }
   if (!base && publicHost) base = `https://${publicHost}`;
   if (!base) return "";
@@ -382,10 +390,10 @@ export function resolveOgTitle(
   host = "",
   documentTitle = "",
 ) {
-  const fromSite = String(site.title ?? "").trim();
-  if (fromSite) return fromSite;
   const fromDoc = String(documentTitle ?? "").trim();
   if (fromDoc) return fromDoc;
+  const fromSite = String(site.title ?? "").trim();
+  if (fromSite) return fromSite;
   const fromHost = appNameFromHost(host);
   if (fromHost && fromHost !== DEFAULT_APP_NAME) return fromHost;
   const fromArg = String(appName ?? "").trim();
@@ -421,7 +429,11 @@ export function grokOgHeadTags({
   path = "",
 } = {}) {
   const title = resolveOgTitle(site, appName, host, documentTitle);
-  const publicHost = resolvePublicHost(host, site);
+  const requestHost = publicAppHost(host);
+  let publicHost = resolvePublicHost(host, site);
+  const originHost = declaredOriginHost(site);
+  // injeel.news answers with a redirect to www. Facebook drops a card whose address redirects.
+  if (requestHost && originHost && requestHost === `www.${originHost}`) publicHost = requestHost;
   const description = String(site.description ?? "").trim();
   const tags = [
     `<meta name="twitter:card" content="summary_large_image">`,
@@ -440,6 +452,8 @@ export function grokOgHeadTags({
   }
   if (String(site.type ?? "").toLowerCase() === "x:game") {
     tags.push(`<meta property="og:type" content="x:game">`);
+  } else if (pageUrl) {
+    tags.push(`<meta property="og:type" content="website">`);
   }
   if (publicHost) {
     const asset = resolveOgCardAsset(site, cwd);

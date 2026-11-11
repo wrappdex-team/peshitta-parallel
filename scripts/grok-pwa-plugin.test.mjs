@@ -53,7 +53,28 @@ test("vercel alias still advertises the injeel.news share card", () => {
     assert.match(out, /property="og:image:width" content="1200"/);
     assert.match(out, /property="og:image:height" content="630"/);
     assert.match(out, /name="twitter:card" content="summary_large_image"/);
+    assert.match(out, /property="og:type" content="website"/);
     assert.doesNotMatch(out, /peshitta-parallel\.vercel\.app/);
+  } finally {
+    if (prev === undefined) delete process.env.VITE_PUBLIC_HOSTNAME;
+    else process.env.VITE_PUBLIC_HOSTNAME = prev;
+  }
+});
+
+test("www share URL matches the host Facebook actually fetched", () => {
+  const prev = process.env.VITE_PUBLIC_HOSTNAME;
+  delete process.env.VITE_PUBLIC_HOSTNAME;
+  try {
+    const out = rawInjectGrokPwaHead("<html><head><title>John 1 — Injeel</title></head></html>", {
+      cwd: TEMPLATE_ROOT,
+      host: "www.injeel.news",
+      path: "/read/john/1",
+    });
+    assert.match(out, /property="og:url" content="https:\/\/www\.injeel\.news\/read\/john\/1"/);
+    assert.match(out, /property="og:image" content="https:\/\/www\.injeel\.news\/og\.jpg"/);
+    assert.match(out, /property="og:title" content="John 1 — Injeel"/);
+    assert.match(out, /property="og:type" content="website"/);
+    assert.doesNotMatch(out, /property="og:url" content="https:\/\/injeel\.news\//);
   } finally {
     if (prev === undefined) delete process.env.VITE_PUBLIC_HOSTNAME;
     else process.env.VITE_PUBLIC_HOSTNAME = prev;
