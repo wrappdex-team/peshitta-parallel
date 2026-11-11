@@ -180,6 +180,7 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
   const fromRef = useRef(fromVerse);
   const startKeyRef = useRef(startKey);
   const hold = useRef<ReadingHold | null>(null);
+  const lockKick = useRef(false);
   const stopping = useRef<"none" | "pause" | "halt">("none");
   const loop = useRef(0);
   const runner = useRef<(token: number, at: number) => Promise<void>>(async () => {});
@@ -242,6 +243,23 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
     hold.current = holdReading({
       onPause: () => pauseReading(),
       onPlay: () => resumeReading(),
+      onLockTick: () => {
+        if (lockKick.current || statusRef.current !== "playing" || stopping.current !== "none") return;
+        if (document.visibilityState !== "hidden" || !lines.current.length) return;
+        const synth = window.speechSynthesis;
+        if (!synth || synth.speaking) return;
+        lockKick.current = true;
+        window.setTimeout(() => {
+          lockKick.current = false;
+        }, 4000);
+        try {
+          synth.cancel();
+        } catch {
+          // Already silent.
+        }
+        loop.current += 1;
+        void runner.current(run.current, index.current);
+      },
     });
   }
 
@@ -367,14 +385,15 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
           return;
         }
         if (reason !== "interrupted" && reason !== "canceled") setError(`This phone did not speak (${reason}).`);
-        if ((reason === "interrupted" || reason === "canceled") && document.visibilityState === "visible") {
+        if ((reason === "interrupted" || reason === "canceled") && stopping.current === "none") {
+          const wait = document.visibilityState === "visible" ? 350 : 800;
           window.setTimeout(() => {
             if (settled || stopping.current !== "none" || run.current !== token || loop.current !== phrase) {
               finish("stopped");
               return;
             }
             void speakPhrase(text, token, true).then(finish);
-          }, 350);
+          }, wait);
           return;
         }
         finish("stopped");

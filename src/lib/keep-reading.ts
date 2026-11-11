@@ -16,6 +16,8 @@ export type ReadingHold = {
 type Controls = {
   onPause: () => void;
   onPlay: () => void;
+  /** The screen is locked and the voice has dropped. Say the current line again. */
+  onLockTick: () => void;
 };
 
 type CornerVideo = HTMLVideoElement & { autoPictureInPicture?: boolean };
@@ -26,8 +28,11 @@ export function holdReading(controls: Controls): ReadingHold {
   let done = false;
   let sentinel: WakeLockSentinel | null = null;
   let video: CornerVideo | null = null;
+  let bed: HTMLAudioElement | null = null;
+  let bedUrl = "";
   let audio: AudioContext | null = null;
   let ctx: CanvasRenderingContext2D | null = null;
+  let pulse: number | null = null;
   let caption = "Reading";
   let place = "";
   let red = false;
@@ -87,6 +92,61 @@ export function holdReading(controls: Controls): ReadingHold {
     } catch {
       // The lock screen can keep the previous title.
     }
+  }
+
+  function quietWav() {
+    const rate = 8000;
+    const n = rate;
+    const bytes = new Uint8Array(44 + n * 2);
+    const view = new DataView(bytes.buffer);
+    const mark = (at: number, text: string) => {
+      for (let i = 0; i < text.length; i += 1) bytes[at + i] = text.charCodeAt(i);
+    };
+    mark(0, "RIFF");
+    view.setUint32(4, bytes.length - 8, true);
+    mark(8, "WAVE");
+    mark(12, "fmt ");
+    view.setUint32(16, 16, true);
+    view.setUint16(20, 1, true);
+    view.setUint16(22, 1, true);
+    view.setUint32(24, rate, true);
+    view.setUint32(28, rate * 2, true);
+    view.setUint16(32, 2, true);
+    view.setUint16(34, 16, true);
+    mark(36, "data");
+    view.setUint32(40, n * 2, true);
+    // A low tone, not a silent file. Android drops silent audio when the screen locks.
+    for (let i = 0; i < n; i += 1) {
+      const sample = Math.sin((2 * Math.PI * 35 * i) / rate);
+      view.setInt16(44 + i * 2, Math.round(sample * 900), true);
+    }
+    return URL.createObjectURL(new Blob([bytes], { type: "audio/wav" }));
+  }
+
+  function ensureBed() {
+    if (bed || done || typeof document?.createElement !== "function") return;
+    try {
+      bedUrl = quietWav();
+      const element = document.createElement("audio");
+      element.src = bedUrl;
+      element.loop = true;
+      element.preload = "auto";
+      element.setAttribute("playsinline", "");
+      // Quiet while the page is open. Louder only after the screen locks, so the phone keeps the session.
+      element.volume = 0.02;
+      element.style.cssText = "position:fixed;width:0;height:0;opacity:0;pointer-events:none";
+      document.body.appendChild(element);
+      bed = element;
+      void element.play().catch(() => {});
+    } catch {
+      bed = null;
+    }
+  }
+
+  function holdSession() {
+    if (!bed || done) return;
+    bed.volume = document.visibilityState === "hidden" ? 0.35 : 0.02;
+    void bed.play().catch(() => {});
   }
 
   function ensureCorner() {
@@ -169,16 +229,32 @@ export function holdReading(controls: Controls): ReadingHold {
     }
   }
 
+  function lockPulse() {
+    if (done || document.visibilityState !== "hidden") return;
+    holdSession();
+    const synth = window.speechSynthesis;
+    if (!synth) return;
+    try {
+      synth.resume();
+    } catch {
+      // The engine had already stopped.
+    }
+    if (synth.speaking) return;
+    controls.onLockTick();
+  }
+
   function onVisibility() {
     if (done) return;
-    if (document.visibilityState === "hidden") void corner();
+    holdSession();
+    if (document.visibilityState === "hidden") lockPulse();
     else void screen();
   }
 
   void screen();
   media();
-  ensureCorner();
+  ensureBed();
   document.addEventListener("visibilitychange", onVisibility);
+  if (typeof window.setInterval === "function") pulse = window.setInterval(lockPulse, 2000);
 
   return {
     caption(card: ReadingCard) {
@@ -193,6 +269,8 @@ export function holdReading(controls: Controls): ReadingHold {
       if (done) return;
       done = true;
       document.removeEventListener("visibilitychange", onVisibility);
+      if (pulse !== null) window.clearInterval(pulse);
+      pulse = null;
       void sentinel?.release().catch(() => {});
       sentinel = null;
       try {
@@ -209,6 +287,11 @@ export function holdReading(controls: Controls): ReadingHold {
       video?.pause();
       video?.remove();
       video = null;
+      bed?.pause();
+      bed?.remove();
+      bed = null;
+      if (bedUrl) URL.revokeObjectURL(bedUrl);
+      bedUrl = "";
       ctx = null;
       void audio?.close().catch(() => {});
       audio = null;
