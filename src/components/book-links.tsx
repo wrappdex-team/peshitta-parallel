@@ -26,6 +26,9 @@ export function BookLinks({ onDone }: { onDone?: () => void }) {
       <button type="button" className="flex min-h-11 items-center text-left text-garnet" onClick={() => void share()}>
         Share this Injeel
       </button>
+      <Link to="/" onClick={onDone} className="flex min-h-11 items-center">
+        Home
+      </Link>
       {note ? <p className="pb-2 text-sm text-muted">{note}</p> : null}
     </div>
   );
