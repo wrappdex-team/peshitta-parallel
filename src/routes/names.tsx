@@ -16,7 +16,7 @@ export const Route = createFileRoute("/names")({
       { title: "Names — Injeel" },
       {
         name: "description",
-        content: "Every person and place in this Peshitta, in the Syriac spelling, the English of this book, and a reading of the letters.",
+        content: "Persons and places in this New Testament, in the Syriac spelling, the English of this book, and a reading of the letters.",
       },
     ],
     links: [{ rel: "canonical", href: `${SITE_ORIGIN}/names` }],
@@ -55,7 +55,7 @@ function Names() {
         </Link>
         <h1 className="mt-6 font-serif text-4xl">Names</h1>
         <p className="mt-4 text-base leading-relaxed">
-          Every person and place kept in this Peshitta. The Syriac is the spelling in the text. Beside it is the English this book prints. The reading is the letters, not another translation. A name in the reading opens its place here.
+          Persons and places in this New Testament. The Syriac is the spelling in the text. The reading beside it is those letters, not a vocalized pronunciation and not another translation. Where one spelling covers more than one person, the note says who this book itself distinguishes. Revelation, 2 Peter, 2 John, 3 John, and Jude are later Syriac, not the old twenty-two-book Peshitta.
         </p>
         <label className="mt-5 block">
           <span className="text-xs tracking-widest text-gold">FIND A NAME</span>
@@ -83,7 +83,7 @@ function Names() {
 }
 
 function NameStudy({ row, active }: { row: NameEntry; active: boolean }) {
-  const place = firstPlace(row.ref);
+  const listed = row.refs?.length ? row.refs : [row.ref];
   return (
     <li id={row.id} className={`border-b border-line py-4 ${active ? "bg-gold-soft -mx-3 px-3" : ""}`}>
       <div className="flex items-start justify-between gap-4">
@@ -118,21 +118,24 @@ function NameStudy({ row, active }: { row: NameEntry; active: boolean }) {
         {row.kind}
         {" · "}
         {row.count} {row.count === 1 ? "verse" : "verses"}
-        {place ? (
-          <>
-            {" · "}
+      </p>
+      <p className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-sm">
+        {listed.map((ref) => {
+          const place = firstPlace(ref);
+          return place ? (
             <Link
+              key={ref}
               to="/read/$book/$chapter"
               params={{ book: place.book, chapter: place.chapter }}
               hash={`v-${place.verse}`}
               className="text-garnet"
             >
-              {row.ref}
+              {ref}
             </Link>
-          </>
-        ) : (
-          ` · ${row.ref}`
-        )}
+          ) : (
+            <span key={ref}>{ref}</span>
+          );
+        })}
       </p>
     </li>
   );

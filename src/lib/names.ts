@@ -20,6 +20,8 @@ export type NameEntry = {
   note: string;
   sources?: NameSource[];
   spellings?: string[];
+  /** Other verses, when there are only a few. */
+  refs?: string[];
 };
 
 export const NAME_CLASS =
