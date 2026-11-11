@@ -3,7 +3,7 @@ import { NOTES } from "@/data/edition";
 import { isJesus } from "@/lib/jesus";
 import { languageById, type LangId } from "@/lib/languages";
 import { SITE_ORIGIN } from "@/lib/site";
-import { nameOfSyriac, nameRuns } from "@/lib/names";
+import { NAME_CLASS, nameOfSyriac, nameRuns } from "@/lib/names";
 import { shareCard, verseShare } from "@/lib/share";
 import {
   TERM_NOTES,
@@ -197,7 +197,7 @@ export function VerseView({
                         key={i}
                         to="/names"
                         hash={named.id}
-                        className="font-syriac font-semibold text-inherit underline decoration-gold/50"
+                        className={`${NAME_CLASS} font-syriac`}
                       >
                         {piece.text}
                       </Link>
@@ -350,7 +350,7 @@ function Parallel({
         ) : lang === "en" ? (
           nameRuns(run.text).map((part, j) =>
             part.kind === "name" ? (
-              <Link key={`${i}-${j}`} to="/names" hash={part.id} className="font-semibold underline decoration-gold/50">
+              <Link key={`${i}-${j}`} to="/names" hash={part.id} className={NAME_CLASS}>
                 {part.text}
               </Link>
             ) : (

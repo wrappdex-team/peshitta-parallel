@@ -10,6 +10,7 @@ import { LANGS, languageById, type LangId } from "@/lib/languages";
 import { loadBook, loadParallel, type BookFile, type Verse } from "@/lib/scripture";
 import { cleanEnglish, sayingLines } from "@/lib/speak";
 import { SITE_ORIGIN } from "@/lib/site";
+import { NameText, SyriacNames } from "@/components/name-text";
 import { shareCard, verseShare } from "@/lib/share";
 import { usePrefs } from "@/lib/use-prefs";
 
@@ -310,7 +311,7 @@ function Words() {
                 </div>
                 {verse.sy && (
                   <p dir="rtl" lang="syr" className="mt-2 font-syriac text-2xl leading-normal text-jesus">
-                    {verse.sy}
+                    <SyriacNames text={verse.sy} />
                   </p>
                 )}
                 {pending && position === 0 && <p className="mt-2 text-muted">Opening this language…</p>}
@@ -318,12 +319,12 @@ function Words() {
                   <div className={sideFace ? "mt-2 grid gap-4 md:grid-cols-2" : ""}>
                     {primary && (
                       <p dir={mainFace.dir} lang={mainFace.code} className={`mt-2 leading-relaxed text-jesus ${mainFace.face}`}>
-                        {primary}
+                        {tongue.id === "en" ? <NameText text={primary} /> : primary}
                       </p>
                     )}
                     {sideFace && (extra || (pending2 && position === 0)) && (
                       <p dir={sideFace.dir} lang={sideFace.code} className={`mt-2 leading-relaxed ${pending2 ? "text-muted" : `text-jesus ${sideFace.face}`}`}>
-                        {pending2 ? "Opening this language…" : extra}
+                        {pending2 ? "Opening this language…" : second?.id === "en" ? <NameText text={extra} /> : extra}
                       </p>
                     )}
                   </div>

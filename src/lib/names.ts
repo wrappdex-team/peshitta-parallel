@@ -1,5 +1,12 @@
 import registry from "@/data/names.json";
 
+export type NameSource = {
+  script: string;
+  text: string;
+  say?: string;
+  note?: string;
+};
+
 export type NameEntry = {
   id: string;
   sy: string;
@@ -11,7 +18,11 @@ export type NameEntry = {
   count: number;
   ref: string;
   note: string;
+  sources?: NameSource[];
 };
+
+export const NAME_CLASS =
+  "rounded-sm bg-gold-soft px-0.5 font-semibold text-inherit underline decoration-gold/70 underline-offset-2";
 
 export const NAMES = (registry.names as NameEntry[]).slice().sort((a, b) => a.en.localeCompare(b.en, "en"));
 

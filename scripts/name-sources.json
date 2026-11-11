@@ -1,0 +1,864 @@
+{
+  "Y'shua": [
+    {
+      "script": "Hebrew",
+      "text": "יֵשׁוּעַ",
+      "say": "Yeshua",
+      "note": "The Hebrew writing of this name in the later books. The older form is יְהוֹשֻׁעַ, Yehoshua. Matthew ties the name to salvation, not to a pronunciation of the Syriac."
+    },
+    {
+      "script": "Greek",
+      "text": "Ἰησοῦς",
+      "say": "Iēsous",
+      "note": "The Greek New Testament writes the name this way. It is a Greek spelling of the Hebrew, not a different person."
+    }
+  ],
+  "Keefa": [
+    {
+      "script": "Aramaic",
+      "text": "כֵּיפָא",
+      "say": "Kepha",
+      "note": "The name is Aramaic, a rock. These are Hebrew letters writing that Aramaic word. The Greek Πέτρος is the translation, kept in this book as Petros."
+    }
+  ],
+  "Petros": [
+    {
+      "script": "Greek",
+      "text": "Πέτρος",
+      "say": "Petros",
+      "note": "The Greek name, meaning a rock. In this Peshitta the man’s own name is Keefa. Petros is the Greek form where the text uses it."
+    }
+  ],
+  "Maryam": [
+    {
+      "script": "Hebrew",
+      "text": "מִרְיָם",
+      "say": "Miryam",
+      "note": "The Hebrew writing of Miriam. The Greek scriptures use Μαρία and Μαριάμ."
+    }
+  ],
+  "Moshe": [
+    {
+      "script": "Hebrew",
+      "text": "מֹשֶׁה",
+      "say": "Moshe",
+      "note": "The Hebrew writing. The Greek is Μωϋσῆς."
+    }
+  ],
+  "Dawid": [
+    {
+      "script": "Hebrew",
+      "text": "דָּוִד",
+      "say": "Dawid",
+      "note": "The Hebrew writing. The Greek is Δαυίδ."
+    }
+  ],
+  "Avraham": [
+    {
+      "script": "Hebrew",
+      "text": "אַבְרָהָם",
+      "say": "Avraham",
+      "note": "The Hebrew writing. The older form of the name is אַבְרָם, Avram. The Greek is Ἀβραάμ."
+    }
+  ],
+  "Ya'akov": [
+    {
+      "script": "Hebrew",
+      "text": "יַעֲקֹב",
+      "say": "Yaakov",
+      "note": "One Hebrew name. This Peshitta uses it for the patriarch and for James. The Greek is Ἰάκωβος."
+    }
+  ],
+  "Yosip": [
+    {
+      "script": "Hebrew",
+      "text": "יוֹסֵף",
+      "say": "Yosef",
+      "note": "The Hebrew writing. The Greek is Ἰωσήφ."
+    }
+  ],
+  "Yochanan": [
+    {
+      "script": "Hebrew",
+      "text": "יוֹחָנָן",
+      "say": "Yochanan",
+      "note": "The Hebrew writing, “YHWH is gracious.” The Greek is Ἰωάννης."
+    }
+  ],
+  "Shimon": [
+    {
+      "script": "Hebrew",
+      "text": "שִׁמְעוֹן",
+      "say": "Shimon",
+      "note": "The Hebrew writing. A few verses in this Peshitta use the Greek-shaped spelling ܣܝܡܘܢ instead."
+    }
+  ],
+  "Shaul": [
+    {
+      "script": "Hebrew",
+      "text": "שָׁאוּל",
+      "say": "Shaul",
+      "note": "The Hebrew writing. The Greek form of this man’s Hebrew name is Σαῦλος. Paulos is the other name."
+    }
+  ],
+  "Paulos": [
+    {
+      "script": "Greek",
+      "text": "Παῦλος",
+      "say": "Paulos",
+      "note": "A Greek name from the Latin Paulus. It is not a Hebrew name. The Hebrew name of this man is Shaul."
+    }
+  ],
+  "Andrawos": [
+    {
+      "script": "Greek",
+      "text": "Ἀνδρέας",
+      "say": "Andreas",
+      "note": "A Greek name. The Syriac writes the Greek, it does not translate it."
+    }
+  ],
+  "Philipos": [
+    {
+      "script": "Greek",
+      "text": "Φίλιππος",
+      "say": "Philippos",
+      "note": "A Greek name, “lover of horses.”"
+    }
+  ],
+  "Toma": [
+    {
+      "script": "Aramaic",
+      "text": "תָּאוֹמָא",
+      "say": "Toma",
+      "note": "Aramaic for twin. The Greek Θωμᾶς is the same word written in Greek letters."
+    }
+  ],
+  "Bar-Tulmay": [
+    {
+      "script": "Greek",
+      "text": "Βαρθολομαῖος",
+      "say": "Bartholomaios",
+      "note": "Aramaic bar, “son of,” with the name Talmai. The Greek writes the whole name as one word."
+    }
+  ],
+  "Matai": [
+    {
+      "script": "Hebrew",
+      "text": "מַתַּי",
+      "say": "Mattai",
+      "note": "A short Hebrew form of Mattityahu. The Greek is Μαθθαῖος."
+    }
+  ],
+  "Bar-Naba": [
+    {
+      "script": "Greek",
+      "text": "Βαρναβᾶς",
+      "say": "Barnabas",
+      "note": "Aramaic bar with a second word. The book itself says the name is read as “son of consolation.”"
+    }
+  ],
+  "Timotheos": [
+    {
+      "script": "Greek",
+      "text": "Τιμόθεος",
+      "say": "Timotheos",
+      "note": "A Greek name, “one who honors God.”"
+    }
+  ],
+  "Titus": [
+    {
+      "script": "Greek",
+      "text": "Τίτος",
+      "say": "Titos",
+      "note": "A Greek name from the Latin Titus."
+    }
+  ],
+  "Luqa": [
+    {
+      "script": "Greek",
+      "text": "Λουκᾶς",
+      "say": "Loukas",
+      "note": "A Greek name from the Latin Lucas."
+    }
+  ],
+  "Marqos": [
+    {
+      "script": "Greek",
+      "text": "Μᾶρκος",
+      "say": "Markos",
+      "note": "A Greek name from the Latin Marcus."
+    }
+  ],
+  "Pilatos": [
+    {
+      "script": "Latin",
+      "text": "Pilatus",
+      "say": "Pilatus",
+      "note": "A Latin name. The Greek writes Πιλᾶτος. There is no Hebrew form of this name."
+    }
+  ],
+  "Herodes": [
+    {
+      "script": "Greek",
+      "text": "Ἡρῴδης",
+      "say": "Hērōdēs",
+      "note": "A Greek name. The men called Herodes in this book are not one person."
+    }
+  ],
+  "Caesar": [
+    {
+      "script": "Latin",
+      "text": "Caesar",
+      "say": "Kaesar",
+      "note": "A Latin title and name. The Greek is Καῖσαρ. The Syriac Qesar is that word, not a Hebrew name."
+    }
+  ],
+  "Urishlim": [
+    {
+      "script": "Hebrew",
+      "text": "יְרוּשָׁלִַם",
+      "say": "Yerushalaim",
+      "note": "The Hebrew writing of Jerusalem. The Greek uses Ἱεροσόλυμα and Ἰερουσαλήμ."
+    }
+  ],
+  "Galila": [
+    {
+      "script": "Hebrew",
+      "text": "גָּלִיל",
+      "say": "Galil",
+      "note": "The Hebrew writing. The Greek is Γαλιλαία."
+    }
+  ],
+  "Yehud": [
+    {
+      "script": "Hebrew",
+      "text": "יְהוּדָה",
+      "say": "Yehuda",
+      "note": "The Hebrew name of the land of Judah. The Greek for the land is Ἰουδαία."
+    }
+  ],
+  "Yehuda": [
+    {
+      "script": "Hebrew",
+      "text": "יְהוּדָה",
+      "say": "Yehuda",
+      "note": "One Hebrew name. This book uses it for the patriarch Judah, for Judas, and for Jude."
+    }
+  ],
+  "Natsrath": [
+    {
+      "script": "Hebrew",
+      "text": "נָצְרַת",
+      "say": "Natsrat",
+      "note": "The Hebrew writing of Nazareth. The Greek is Ναζαρέτ."
+    }
+  ],
+  "Yordanan": [
+    {
+      "script": "Hebrew",
+      "text": "יַרְדֵּן",
+      "say": "Yarden",
+      "note": "The Hebrew writing of the Jordan. The Greek is Ἰορδάνης."
+    }
+  ],
+  "Mitsrayin": [
+    {
+      "script": "Hebrew",
+      "text": "מִצְרַיִם",
+      "say": "Mitsrayim",
+      "note": "The Hebrew writing of Egypt. The Greek is Αἴγυπτος."
+    }
+  ],
+  "Bavel": [
+    {
+      "script": "Hebrew",
+      "text": "בָּבֶל",
+      "say": "Bavel",
+      "note": "The Hebrew writing of Babylon. The Greek is Βαβυλών."
+    }
+  ],
+  "Darmasuq": [
+    {
+      "script": "Hebrew",
+      "text": "דַּמֶּשֶׂק",
+      "say": "Dammeseq",
+      "note": "The Hebrew writing of Damascus. The Greek is Δαμασκός."
+    }
+  ],
+  "Tsidon": [
+    {
+      "script": "Hebrew",
+      "text": "צִידוֹן",
+      "say": "Tsidon",
+      "note": "The Hebrew writing of Sidon. The Greek is Σιδών."
+    }
+  ],
+  "Tsur": [
+    {
+      "script": "Hebrew",
+      "text": "צֹר",
+      "say": "Tsor",
+      "note": "The Hebrew writing of Tyre. The Greek is Τύρος."
+    }
+  ],
+  "Tsehyon": [
+    {
+      "script": "Hebrew",
+      "text": "צִיּוֹן",
+      "say": "Tsiyon",
+      "note": "The Hebrew writing of Zion. The Greek is Σιών."
+    }
+  ],
+  "Sinai": [
+    {
+      "script": "Hebrew",
+      "text": "סִינַי",
+      "say": "Sinai",
+      "note": "The Hebrew writing. The Greek is Σινᾶ."
+    }
+  ],
+  "Sdom": [
+    {
+      "script": "Hebrew",
+      "text": "סְדֹם",
+      "say": "Sdom",
+      "note": "The Hebrew writing of Sodom. The Greek is Σόδομα."
+    }
+  ],
+  "Beth-Lekhem": [
+    {
+      "script": "Hebrew",
+      "text": "בֵּית לֶחֶם",
+      "say": "Beth Lekhem",
+      "note": "Hebrew for “house of bread.” The Greek is Βηθλέεμ."
+    }
+  ],
+  "Kfar-Nachum": [
+    {
+      "script": "Hebrew",
+      "text": "כְּפַר נַחוּם",
+      "say": "Kfar Nachum",
+      "note": "Hebrew for “village of Nachum.” The Greek is Καφαρναούμ."
+    }
+  ],
+  "Qesarya": [
+    {
+      "script": "Greek",
+      "text": "Καισάρεια",
+      "say": "Kaisareia",
+      "note": "A Greek place-name formed from Caesar. The Syriac follows the Greek."
+    }
+  ],
+  "Rhoma": [
+    {
+      "script": "Greek",
+      "text": "Ῥώμη",
+      "say": "Rhōmē",
+      "note": "The Greek writing of Rome. The Latin is Roma."
+    }
+  ],
+  "Athens": [
+    {
+      "script": "Greek",
+      "text": "Ἀθῆναι",
+      "say": "Athēnai",
+      "note": "The Greek name of the city. The Syriac writes that name."
+    }
+  ],
+  "Ephesos": [
+    {
+      "script": "Greek",
+      "text": "Ἔφεσος",
+      "say": "Ephesos",
+      "note": "The Greek name of the city."
+    }
+  ],
+  "Antiokia": [
+    {
+      "script": "Greek",
+      "text": "Ἀντιόχεια",
+      "say": "Antiocheia",
+      "note": "The Greek name. This book also prints Antiokia for the same Syriac."
+    }
+  ],
+  "Tesaloniqa": [
+    {
+      "script": "Greek",
+      "text": "Θεσσαλονίκη",
+      "say": "Thessalonikē",
+      "note": "The Greek name of the city."
+    }
+  ],
+  "Qupros": [
+    {
+      "script": "Greek",
+      "text": "Κύπρος",
+      "say": "Kypros",
+      "note": "The Greek name of Cyprus."
+    }
+  ],
+  "Surya": [
+    {
+      "script": "Greek",
+      "text": "Συρία",
+      "say": "Syria",
+      "note": "The Greek name of the land. This book also prints Syria."
+    }
+  ],
+  "Noach": [
+    {
+      "script": "Hebrew",
+      "text": "נֹחַ",
+      "say": "Noach",
+      "note": "The Hebrew writing. One genealogy verse in this book prints Nuch for the same Syriac. The Greek is Νῶε."
+    }
+  ],
+  "Nuch": [
+    {
+      "script": "Hebrew",
+      "text": "נֹחַ",
+      "say": "Noach",
+      "note": "The Hebrew writing of Noah. The Greek is Νῶε."
+    }
+  ],
+  "Adam": [
+    {
+      "script": "Hebrew",
+      "text": "אָדָם",
+      "say": "Adam",
+      "note": "The Hebrew writing. The Greek is Ἀδάμ."
+    }
+  ],
+  "Shith": [
+    {
+      "script": "Hebrew",
+      "text": "שֵׁת",
+      "say": "Shet",
+      "note": "The Hebrew writing of Seth."
+    }
+  ],
+  "Qayin": [
+    {
+      "script": "Hebrew",
+      "text": "קַיִן",
+      "say": "Qayin",
+      "note": "The Hebrew writing of Cain."
+    }
+  ],
+  "Habel": [
+    {
+      "script": "Hebrew",
+      "text": "הֶבֶל",
+      "say": "Hevel",
+      "note": "The Hebrew writing of Abel. This book also prints Habeel."
+    }
+  ],
+  "Hawwa": [
+    {
+      "script": "Hebrew",
+      "text": "חַוָּה",
+      "say": "Chawwa",
+      "note": "The Hebrew writing of Eve."
+    }
+  ],
+  "Chanok": [
+    {
+      "script": "Hebrew",
+      "text": "חֲנוֹךְ",
+      "say": "Chanokh",
+      "note": "The Hebrew writing of Enoch."
+    }
+  ],
+  "Yitz'chak": [
+    {
+      "script": "Hebrew",
+      "text": "יִצְחָק",
+      "say": "Yitzchak",
+      "note": "The Hebrew writing of Isaac. The Greek is Ἰσαάκ."
+    }
+  ],
+  "Sara": [
+    {
+      "script": "Hebrew",
+      "text": "שָׂרָה",
+      "say": "Sara",
+      "note": "The Hebrew writing. The older form is שָׂרַי, Sarai."
+    }
+  ],
+  "Eliyahu": [
+    {
+      "script": "Hebrew",
+      "text": "אֵלִיָּהוּ",
+      "say": "Eliyahu",
+      "note": "The Hebrew writing of Elijah. The Greek is Ἠλίας."
+    }
+  ],
+  "Eshaya": [
+    {
+      "script": "Hebrew",
+      "text": "יְשַׁעְיָהוּ",
+      "say": "Yeshayahu",
+      "note": "The Hebrew writing of Isaiah. The Greek is Ἠσαΐας."
+    }
+  ],
+  "Shlemun": [
+    {
+      "script": "Hebrew",
+      "text": "שְׁלֹמֹה",
+      "say": "Shlomo",
+      "note": "The Hebrew writing of Solomon. The Greek is Σολομών."
+    }
+  ],
+  "Aharon": [
+    {
+      "script": "Hebrew",
+      "text": "אַהֲרֹן",
+      "say": "Aharon",
+      "note": "The Hebrew writing of Aaron. The Greek is Ἀαρών."
+    }
+  ],
+  "Levi": [
+    {
+      "script": "Hebrew",
+      "text": "לֵוִי",
+      "say": "Levi",
+      "note": "The Hebrew writing of the patriarch and of the priestly tribe."
+    }
+  ],
+  "Elishaba": [
+    {
+      "script": "Hebrew",
+      "text": "אֱלִישֶׁבַע",
+      "say": "Elisheva",
+      "note": "The Hebrew writing. The Greek form of this name is Ἐλισάβετ."
+    }
+  ],
+  "Lazar": [
+    {
+      "script": "Hebrew",
+      "text": "אֶלְעָזָר",
+      "say": "Elazar",
+      "note": "The Hebrew name behind Lazar. The Greek short form is Λάζαρος."
+    }
+  ],
+  "Martha": [
+    {
+      "script": "Aramaic",
+      "text": "מָרְתָא",
+      "say": "Marta",
+      "note": "An Aramaic name, “lady.” The Greek is Μάρθα."
+    }
+  ],
+  "Magdalitha": [
+    {
+      "script": "Greek",
+      "text": "Μαγδαληνή",
+      "say": "Magdalēnē",
+      "note": "A woman from Magdala. The Greek is an adjective of that place, not a second personal name."
+    }
+  ],
+  "Satana": [
+    {
+      "script": "Hebrew",
+      "text": "שָׂטָן",
+      "say": "Satan",
+      "note": "The Hebrew word for an adversary. The Greek is Σατανᾶς. The lexicon note on this stem is the study of the word in this book."
+    }
+  ],
+  "Sheol": [
+    {
+      "script": "Hebrew",
+      "text": "שְׁאוֹל",
+      "say": "Sheol",
+      "note": "The Hebrew name of the place of the dead. The Greek often writes ᾅδης for the same place."
+    }
+  ],
+  "Gehenna": [
+    {
+      "script": "Hebrew",
+      "text": "גֵּי הִנֹּם",
+      "say": "Ge Hinnom",
+      "note": "Hebrew for the valley of Hinnom. The Greek is Γέεννα. The Syriac writes that name as one word."
+    }
+  ],
+  "Gabri'el": [
+    {
+      "script": "Hebrew",
+      "text": "גַּבְרִיאֵל",
+      "say": "Gavriel",
+      "note": "The Hebrew writing. The Greek is Γαβριήλ."
+    }
+  ],
+  "Gabriel": [
+    {
+      "script": "Hebrew",
+      "text": "גַּבְרִיאֵל",
+      "say": "Gavriel",
+      "note": "The Hebrew writing. The Greek is Γαβριήλ."
+    }
+  ],
+  "Mikael": [
+    {
+      "script": "Hebrew",
+      "text": "מִיכָאֵל",
+      "say": "Mikhael",
+      "note": "The Hebrew writing. The Greek is Μιχαήλ."
+    }
+  ],
+  "Abba": [
+    {
+      "script": "Aramaic",
+      "text": "אַבָּא",
+      "say": "Abba",
+      "note": "Aramaic for father, written here in Hebrew letters. It is the word itself, not a Greek translation. The Greek keeps Ἀββᾶ."
+    }
+  ],
+  "Yisrael": [
+    {
+      "script": "Hebrew",
+      "text": "יִשְׂרָאֵל",
+      "say": "Yisrael",
+      "note": "The Hebrew writing of the man and of the people. The Greek is Ἰσραήλ."
+    }
+  ],
+  "Ammanu'el": [
+    {
+      "script": "Hebrew",
+      "text": "עִמָּנוּ אֵל",
+      "say": "Immanu El",
+      "note": "Hebrew for “God is with us.” The verse itself gives that reading."
+    }
+  ],
+  "Malkizedeq": [
+    {
+      "script": "Hebrew",
+      "text": "מַלְכִּי־צֶדֶק",
+      "say": "Malki-Tsedeq",
+      "note": "Hebrew for “my king is righteousness.” The Greek is Μελχισέδεκ."
+    }
+  ],
+  "Achaia": [
+    {
+      "script": "Greek",
+      "text": "Ἀχαΐα",
+      "say": "Achaia",
+      "note": "The Greek name of the Roman province. The Syriac writes that name."
+    }
+  ],
+  "Asia": [
+    {
+      "script": "Greek",
+      "text": "Ἀσία",
+      "say": "Asia",
+      "note": "The Greek name of the Roman province. The same Syriac letters are also the ordinary word for a physician."
+    }
+  ],
+  "Felix": [
+    {
+      "script": "Latin",
+      "text": "Felix",
+      "say": "Felix",
+      "note": "A Latin name. The Greek is Φῆλιξ. This book also prints Pilkas for the same Syriac."
+    }
+  ],
+  "Pilkas": [
+    {
+      "script": "Latin",
+      "text": "Felix",
+      "say": "Felix",
+      "note": "The Latin name. The Greek is Φῆλιξ."
+    }
+  ],
+  "ܝܗܘܕܝܐ": [
+    {
+      "script": "Hebrew",
+      "text": "יְהוּדִי",
+      "say": "Yehudi",
+      "note": "A person of Judah. The Greek New Testament writes Ἰουδαῖος."
+    }
+  ],
+  "ܢܨܪܝܐ": [
+    {
+      "script": "Greek",
+      "text": "Ναζωραῖος",
+      "say": "Nazōraios",
+      "note": "A person of Nazareth. The Syriac town-name is Natsrath."
+    }
+  ],
+  "ܝܘܢܐ": [
+    {
+      "script": "Hebrew",
+      "text": "יוֹנָה",
+      "say": "Yonah",
+      "note": "The Hebrew name, and the ordinary word for a dove. The Greek writes Ἰωνᾶς."
+    }
+  ],
+  "ܚܢܢ": [
+    {
+      "script": "Hebrew",
+      "text": "חָנָן",
+      "say": "Hanan",
+      "note": "Gracious. The Greek writes the high priest Ἅννας, Annas."
+    }
+  ],
+  "ܡܠܟܝܙܕܩ": [
+    {
+      "script": "Hebrew",
+      "text": "מַלְכִּי־צֶדֶק",
+      "say": "Malki-tsedeq",
+      "note": "My king is righteousness. The Greek writes Μελχισέδεκ."
+    }
+  ],
+  "ܐܣܛܦܢܐ": [
+    {
+      "script": "Greek",
+      "text": "Στεφανᾶς",
+      "say": "Stephanas",
+      "note": "A Greek name, from stephanos, a wreath."
+    }
+  ],
+  "ܒܪܢܝܩܐ": [
+    {
+      "script": "Greek",
+      "text": "Βερνίκη",
+      "say": "Bernikē",
+      "note": "A Macedonian Greek name, bearer of victory."
+    }
+  ],
+  "ܣܘܣܬܢܣ": [
+    {
+      "script": "Greek",
+      "text": "Σωσθένης",
+      "say": "Sōsthenēs",
+      "note": "A Greek name. The Syriac writes those sounds."
+    }
+  ],
+  "ܐܠܟܣܢܕܪܣ": [
+    {
+      "script": "Greek",
+      "text": "Ἀλέξανδρος",
+      "say": "Alexandros",
+      "note": "Defender of men. A Greek name."
+    }
+  ],
+  "ܕܡܝܛܪܝܘܣ": [
+    {
+      "script": "Greek",
+      "text": "Δημήτριος",
+      "say": "Dēmētrios",
+      "note": "Belonging to Demeter. A Greek name."
+    }
+  ],
+  "ܐܪܣܛܪܟܘܣ": [
+    {
+      "script": "Greek",
+      "text": "Ἀρίσταρχος",
+      "say": "Aristarchos",
+      "note": "Best ruler. A Greek name."
+    }
+  ],
+  "ܪܘܦܘܣ": [
+    {
+      "script": "Greek",
+      "text": "Ῥοῦφος",
+      "say": "Rhouphos",
+      "note": "The Greek writing of the Latin Rufus, red."
+    }
+  ],
+  "ܦܘܢܝܩܐ": [
+    {
+      "script": "Greek",
+      "text": "Φοινίκη",
+      "say": "Phoinikē",
+      "note": "The Greek name of the coast. The Syriac writes that name."
+    }
+  ],
+  "ܛܒܪܝܘܣ": [
+    {
+      "script": "Greek",
+      "text": "Τιβεριάς",
+      "say": "Tiberias",
+      "note": "The city named for the emperor Tiberius. The Greek writes it this way."
+    }
+  ],
+  "ܓܕܪܝܐ": [
+    {
+      "script": "Greek",
+      "text": "Γαδαρηνός",
+      "say": "Gadarēnos",
+      "note": "A person of Gadara, the city east of the sea."
+    }
+  ],
+  "ܙܕܘܩܝܐ": [
+    {
+      "script": "Hebrew",
+      "text": "צָדוֹק",
+      "say": "Tsadoq",
+      "note": "The party takes its name from Zadok. The Greek writes Σαδδουκαῖος."
+    }
+  ],
+  "ܫܡܪܝܐ": [
+    {
+      "script": "Hebrew",
+      "text": "שֹׁמְרוֹנִי",
+      "say": "Shomroni",
+      "note": "A person of Samaria. The Greek writes Σαμαρίτης."
+    }
+  ],
+  "ܓܠܝܠܝܐ": [
+    {
+      "script": "Hebrew",
+      "text": "גָּלִיל",
+      "say": "Galil",
+      "note": "The district. A Galilean is a person of it. The Greek writes Γαλιλαῖος."
+    }
+  ],
+  "ܐܪܡܝܐ": [
+    {
+      "script": "Hebrew",
+      "text": "אֲרַמִּי",
+      "say": "Arammi",
+      "note": "An Aramean. Where the Greek New Testament writes Ἕλλην, a Greek, this Peshitta often writes ܐܪܡܝܐ."
+    }
+  ],
+  "ܝܘܢܝܐ": [
+    {
+      "script": "Greek",
+      "text": "Ἰουνία",
+      "say": "Iounia",
+      "note": "Junia, greeted in Romans 16:7. The same Syriac letters also name the Greeks."
+    }
+  ],
+  "ܒܢܝܡܝܢ": [
+    {
+      "script": "Hebrew",
+      "text": "בִּנְיָמִין",
+      "say": "Binyamin",
+      "note": "Son of the right hand. The Greek writes Βενιαμίν."
+    }
+  ],
+  "ܫܠܬܐܝܠ": [
+    {
+      "script": "Hebrew",
+      "text": "שְׁאַלְתִּיאֵל",
+      "say": "Shealtiel",
+      "note": "I asked of God. The Greek writes Σαλαθιήλ."
+    }
+  ],
+  "ܬܘ": [
+    {
+      "script": "Hebrew",
+      "text": "תָּו",
+      "say": "Taw",
+      "note": "The last letter. The Greek pair is Alpha and Omega."
+    }
+  ],
+  "ܐܠܦ": [
+    {
+      "script": "Hebrew",
+      "text": "אָלֶף",
+      "say": "Alef",
+      "note": "The first letter. The Greek pair is Alpha and Omega."
+    }
+  ]
+}

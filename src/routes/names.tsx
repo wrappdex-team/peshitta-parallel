@@ -68,6 +68,9 @@ function Names() {
         </label>
         <p className="mt-3 text-sm text-muted">
           {rows.length} {rows.length === 1 ? "name" : "names"}
+          {query.trim()
+            ? ""
+            : ` · ${NAMES.filter((row) => row.kind === "person").length} persons · ${NAMES.filter((row) => row.kind === "place").length} places · ${NAMES.filter((row) => row.kind === "people").length} peoples`}
         </p>
         <ul className="mt-2 border-t border-line">
           {rows.map((row) => (
@@ -96,6 +99,16 @@ function NameStudy({ row, active }: { row: NameEntry; active: boolean }) {
         <span className="text-gold">Read</span> {row.say}
       </p>
       <p className="mt-2 text-sm leading-relaxed">{row.note}</p>
+      {row.sources?.map((source) => (
+        <p key={`${source.script}-${source.text}`} className="mt-2 text-sm leading-relaxed">
+          <span className="text-gold">{source.script}</span>{" "}
+          <span className={`font-semibold ${source.script === "Greek" ? "font-greek" : source.script === "Hebrew" || source.script === "Aramaic" ? "font-hebrew text-lg" : ""}`}>
+            {source.text}
+          </span>
+          {source.say ? <span className="text-muted"> · {source.say}</span> : null}
+          {source.note ? <span> {source.note}</span> : null}
+        </p>
+      ))}
       <p className="mt-2 text-sm text-muted">
         {row.kind}
         {" · "}
