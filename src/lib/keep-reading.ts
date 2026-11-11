@@ -16,8 +16,6 @@ export type ReadingHold = {
 type Controls = {
   onPause: () => void;
   onPlay: () => void;
-  /** The screen is locked and the voice has dropped. Say the current line again. */
-  onLockTick: () => void;
 };
 
 type CornerVideo = HTMLVideoElement & { autoPictureInPicture?: boolean };
@@ -32,7 +30,7 @@ export function holdReading(controls: Controls): ReadingHold {
   let bedUrl = "";
   let audio: AudioContext | null = null;
   let ctx: CanvasRenderingContext2D | null = null;
-  let pulse: number | null = null;
+  let pauseWait: number | null = null;
   let caption = "Reading";
   let place = "";
   let red = false;
@@ -135,6 +133,15 @@ export function holdReading(controls: Controls): ReadingHold {
       // Quiet while the page is open. Louder only after the screen locks, so the phone keeps the session.
       element.volume = 0.02;
       element.style.cssText = "position:fixed;width:0;height:0;opacity:0;pointer-events:none";
+      let lastBed = 0;
+      element.addEventListener("pause", () => {
+        // Opening the phone pauses this session by itself. Put it back unless the reader was released.
+        if (done || !bed) return;
+        const now = Date.now();
+        if (now - lastBed < 1000) return;
+        lastBed = now;
+        void bed.play().catch(() => {});
+      });
       document.body.appendChild(element);
       bed = element;
       void element.play().catch(() => {});
@@ -222,39 +229,41 @@ export function holdReading(controls: Controls): ReadingHold {
     try {
       label();
       session.playbackState = "playing";
-      session.setActionHandler("pause", () => controls.onPause());
-      session.setActionHandler("play", () => controls.onPlay());
+      // The phone sends a pause action when the screen opens. Wait, and drop it if the page is back.
+      session.setActionHandler("pause", () => {
+        if (pauseWait !== null) return;
+        pauseWait = window.setTimeout(() => {
+          pauseWait = null;
+          if (done || document.visibilityState === "visible") return;
+          controls.onPause();
+        }, 500);
+      });
+      session.setActionHandler("play", () => {
+        if (pauseWait !== null) {
+          window.clearTimeout(pauseWait);
+          pauseWait = null;
+        }
+        controls.onPlay();
+      });
     } catch {
       // The lock-screen controls are optional.
     }
   }
 
-  function lockPulse() {
-    if (done || document.visibilityState !== "hidden") return;
-    holdSession();
-    const synth = window.speechSynthesis;
-    if (!synth) return;
-    try {
-      synth.resume();
-    } catch {
-      // The engine had already stopped.
-    }
-    if (synth.speaking) return;
-    controls.onLockTick();
-  }
-
   function onVisibility() {
     if (done) return;
+    if (document.visibilityState === "visible" && pauseWait !== null) {
+      window.clearTimeout(pauseWait);
+      pauseWait = null;
+    }
     holdSession();
-    if (document.visibilityState === "hidden") lockPulse();
-    else void screen();
+    if (document.visibilityState === "visible") void screen();
   }
 
   void screen();
   media();
   ensureBed();
   document.addEventListener("visibilitychange", onVisibility);
-  if (typeof window.setInterval === "function") pulse = window.setInterval(lockPulse, 2000);
 
   return {
     caption(card: ReadingCard) {
@@ -269,8 +278,8 @@ export function holdReading(controls: Controls): ReadingHold {
       if (done) return;
       done = true;
       document.removeEventListener("visibilitychange", onVisibility);
-      if (pulse !== null) window.clearInterval(pulse);
-      pulse = null;
+      if (pauseWait !== null) window.clearTimeout(pauseWait);
+      pauseWait = null;
       void sentinel?.release().catch(() => {});
       sentinel = null;
       try {
