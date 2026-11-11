@@ -3,6 +3,8 @@
 export type ReadingCard = {
   text: string;
   place: string;
+  /** A line spoken by Y'shua. Drawn in red and marked. */
+  red?: boolean;
 };
 
 export type ReadingHold = {
@@ -14,7 +16,6 @@ export type ReadingHold = {
 type Controls = {
   onPause: () => void;
   onPlay: () => void;
-  onBack: () => void;
 };
 
 type CornerVideo = HTMLVideoElement & { autoPictureInPicture?: boolean };
@@ -29,6 +30,7 @@ export function holdReading(controls: Controls): ReadingHold {
   let ctx: CanvasRenderingContext2D | null = null;
   let caption = "Reading";
   let place = "";
+  let red = false;
 
   function paint() {
     if (!ctx) return;
@@ -39,11 +41,21 @@ export function holdReading(controls: Controls): ReadingHold {
     ctx.textBaseline = "alphabetic";
     ctx.fillStyle = "#7a2e38";
     ctx.font = "600 26px Palatino, serif";
-    ctx.fillText(TITLE, 240, 46);
-    ctx.fillStyle = "#8d6b32";
-    ctx.font = "600 20px Palatino, serif";
-    if (place) ctx.fillText(place, 240, 80);
-    ctx.fillStyle = "#1c1612";
+    ctx.fillText(TITLE, 240, 42);
+    let y = 74;
+    if (red) {
+      ctx.fillStyle = "#9b2335";
+      ctx.font = "600 18px Palatino, serif";
+      ctx.fillText("Words of Y'shua", 240, y);
+      y = 102;
+    }
+    if (place) {
+      ctx.fillStyle = "#8d6b32";
+      ctx.font = "600 20px Palatino, serif";
+      ctx.fillText(place, 240, y);
+      y += 36;
+    }
+    ctx.fillStyle = red ? "#9b2335" : "#1c1612";
     ctx.font = "22px Palatino, serif";
     const words = caption.split(/\s+/).filter(Boolean);
     const lines: string[] = [];
@@ -56,7 +68,6 @@ export function holdReading(controls: Controls): ReadingHold {
       } else line = next;
     }
     if (line) lines.push(line);
-    let y = place ? 122 : 108;
     for (const row of lines) {
       if (y > 250) break;
       ctx.fillText(row, 240, y);
@@ -69,7 +80,10 @@ export function holdReading(controls: Controls): ReadingHold {
     const session = navigator.mediaSession;
     if (!session || typeof MediaMetadata !== "function") return;
     try {
-      session.metadata = new MediaMetadata({ title: TITLE, artist: place || "Reading" });
+      session.metadata = new MediaMetadata({
+        title: TITLE,
+        artist: red ? `Words of Y'shua · ${place || "Reading"}` : place || "Reading",
+      });
     } catch {
       // The lock screen can keep the previous title.
     }
@@ -150,7 +164,6 @@ export function holdReading(controls: Controls): ReadingHold {
       session.playbackState = "playing";
       session.setActionHandler("pause", () => controls.onPause());
       session.setActionHandler("play", () => controls.onPlay());
-      session.setActionHandler("seekbackward", () => controls.onBack());
     } catch {
       // The lock-screen controls are optional.
     }
@@ -171,6 +184,7 @@ export function holdReading(controls: Controls): ReadingHold {
     caption(card: ReadingCard) {
       caption = card.text.trim() || "Reading";
       place = card.place.trim();
+      red = card.red === true;
       paint();
       label();
     },
@@ -186,7 +200,6 @@ export function holdReading(controls: Controls): ReadingHold {
           navigator.mediaSession.playbackState = "none";
           navigator.mediaSession.setActionHandler("play", null);
           navigator.mediaSession.setActionHandler("pause", null);
-          navigator.mediaSession.setActionHandler("seekbackward", null);
         }
       } catch {
         // Already cleared.
