@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { Menu, Moon, Search, Sun } from "lucide-react";
 import { BOOKS, SECTIONS } from "@/data/edition";
+import { BookLinks } from "@/components/book-links";
 import { SearchPanel } from "@/components/search-panel";
 import { chapterCount } from "@/lib/scripture";
 import { bookProgress, testamentProgress, useReadings } from "@/lib/readings";
@@ -217,12 +218,7 @@ function BookDrawer({ onClose, place }: { onClose: () => void; place?: { book: s
             ))}
           </div>
         ))}
-        <Link to="/words" onClick={onClose} className="mt-2 inline-flex min-h-11 items-center text-garnet">
-          Words of Y'shua
-        </Link>
-        <Link to="/study" onClick={onClose} className="inline-flex min-h-11 items-center text-garnet">
-          About this Injeel
-        </Link>
+        <BookLinks onDone={onClose} />
       </nav>
     </div>
   );

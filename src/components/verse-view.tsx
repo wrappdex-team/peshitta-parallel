@@ -2,6 +2,7 @@ import { NOTES } from "@/data/edition";
 import { isJesus } from "@/lib/jesus";
 import { languageById, type LangId } from "@/lib/languages";
 import { SITE_ORIGIN } from "@/lib/site";
+import { shareCard, verseShare } from "@/lib/share";
 import {
   TERM_NOTES,
   englishRuns,
@@ -90,6 +91,16 @@ export function VerseView({
   const jesus = isJesus(book, chapter, verse.v);
   const ink = jesus ? "text-jesus" : "text-ink";
   const syColor = jesus ? "text-jesus" : "text-syriac";
+
+  async function shareVerse() {
+    const lines: string[] = [];
+    if (showSy && verse.sy) lines.push(verse.sy);
+    if (showTr && parallel) lines.push(parallel);
+    if (showTr && second && parallel2) lines.push(parallel2);
+    const result = await shareCard(verseShare({ bookName, book, chapter, verse: verse.v, lines }));
+    setCopied(result === "copied" ? "share" : result === "shared" ? "sent" : "");
+    if (result === "copied" || result === "shared") window.setTimeout(() => setCopied(""), 1200);
+  }
 
   async function copy(kind: "link" | "text") {
     const ref = `${bookName} ${chapter}:${verse.v}`;
@@ -250,6 +261,9 @@ export function VerseView({
           )}
           <div className="mt-2 flex flex-wrap items-center gap-1 text-sm">
             {jesus && <span className="mr-2 text-jesus">Words of Y'shua</span>}
+            <button type="button" className="min-h-11 px-2 text-garnet" onClick={() => void shareVerse()}>
+              {copied === "sent" ? "Sent" : copied === "share" ? "Copied" : "Share"}
+            </button>
             <button type="button" className="min-h-11 px-2 text-garnet" onClick={() => copy("text")}>
               {copied === "text" ? "Copied" : "Copy"}
             </button>

@@ -10,6 +10,7 @@ import { LANGS, languageById, type LangId } from "@/lib/languages";
 import { loadBook, loadParallel, type BookFile, type Verse } from "@/lib/scripture";
 import { cleanEnglish, sayingLines } from "@/lib/speak";
 import { SITE_ORIGIN } from "@/lib/site";
+import { shareCard, verseShare } from "@/lib/share";
 import { usePrefs } from "@/lib/use-prefs";
 
 export const Route = createFileRoute("/words")({
@@ -62,6 +63,7 @@ function Words() {
   const [parallel, setParallel] = useState<string[][] | null>(null);
   const [parallel2, setParallel2] = useState<string[][] | null>(null);
   const [err, setErr] = useState("");
+  const [shared, setShared] = useState("");
   const [heard, setHeard] = useState<Heard | null>(null);
   const [focusKey, setFocusKey] = useState("");
   const [reading, setReading] = useState(false);
@@ -275,17 +277,36 @@ function Words() {
                   >
                     {meta?.name} {chapter}:{verse.v}
                   </Link>
-                  <button
-                    type="button"
-                    className="flex size-11 shrink-0 items-center justify-center text-garnet"
-                    aria-label={`Read ${meta?.name ?? "this book"} ${chapter}:${verse.v}`}
-                    onClick={() => {
-                      setFocusKey(key);
-                      reader.current?.readFrom(key);
-                    }}
-                  >
-                    <Play className="size-4" />
-                  </button>
+                  <div className="flex shrink-0 items-center">
+                    <button
+                      type="button"
+                      className="min-h-11 px-2 text-sm text-garnet"
+                      onClick={() => {
+                        const lines = [verse.sy, primary, extra].filter((line) => Boolean(line && line.trim()));
+                        void shareCard(
+                          verseShare({ bookName: meta?.name ?? "Reading", book, chapter, verse: verse.v, lines }),
+                        ).then((result) => {
+                          if (result === "copied" || result === "shared") {
+                            setShared(key);
+                            window.setTimeout(() => setShared(""), 1200);
+                          }
+                        });
+                      }}
+                    >
+                      {shared === key ? "Sent" : "Share"}
+                    </button>
+                    <button
+                      type="button"
+                      className="flex size-11 items-center justify-center text-garnet"
+                      aria-label={`Read ${meta?.name ?? "this book"} ${chapter}:${verse.v}`}
+                      onClick={() => {
+                        setFocusKey(key);
+                        reader.current?.readFrom(key);
+                      }}
+                    >
+                      <Play className="size-4" />
+                    </button>
+                  </div>
                 </div>
                 {verse.sy && (
                   <p dir="rtl" lang="syr" className="mt-2 font-syriac text-2xl leading-normal text-jesus">

@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { ReadAloud } from "@/components/read-aloud";
 import { SearchPanel } from "@/components/search-panel";
 import { Studio } from "@/components/studio";
+import { BookLinks } from "@/components/book-links";
 import { VerseView } from "@/components/verse-view";
 import { BOOKS, SECTIONS, bookMeta } from "@/data/edition";
 import { LANGS, languageById } from "@/lib/languages";
@@ -393,12 +394,7 @@ function Reader() {
                 })}
               </div>
             ))}
-            <Link to="/words" className="mt-3 inline-flex min-h-11 items-center text-garnet" onClick={() => setMenu(false)}>
-              Words of Y'shua
-            </Link>
-            <Link to="/study" className="inline-flex min-h-11 items-center text-garnet" onClick={() => setMenu(false)}>
-              About this Injeel
-            </Link>
+            <BookLinks onDone={() => setMenu(false)} />
             <button
               type="button"
               className="mt-2 block min-h-11 text-left text-sm text-muted"
