@@ -8,7 +8,7 @@ const origin = "https://injeel.news";
 
 test("sitemap covers every catalog chapter exactly once, using only the current demo origin", () => {
   const catalog = JSON.parse(read("src/data/catalog.json"));
-  const expected = ["/", "/words", "/study", "/privacy"];
+  const expected = ["/", "/words", "/study", "/names", "/privacy"];
   for (const book of catalog)
     for (let chapter = 1; chapter <= book.chapters; chapter++)
       expected.push(`/read/${book.id}/${chapter}`);

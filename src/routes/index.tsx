@@ -86,6 +86,9 @@ function Home() {
           <Link to="/words" className="inline-flex min-h-11 items-center text-garnet">
             Words of Y'shua
           </Link>
+          <Link to="/names" className="inline-flex min-h-11 items-center text-garnet">
+            Names
+          </Link>
           <Link to="/study" className="inline-flex min-h-11 items-center text-garnet">
             About this Injeel
           </Link>
