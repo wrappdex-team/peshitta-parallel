@@ -77,6 +77,7 @@ function fixture({ rows = [{ v: 1, text: "Synthetic fixture words." }], synthBus
       if (name === "@/lib/speak") return { readingLines: unavailable };
       if (name === "@/lib/keep-reading") return { holdReading: () => ({ release() {}, async corner() {}, caption() {} }) };
       if (name === "@/lib/jesus") return { isJesus: () => false };
+      if (name === "@/lib/speech-lock") return { setReadingLive() {}, readingSessionLive: () => false };
       throw new Error(`Unexpected speech-fixture import: ${name}`);
     },
   });
@@ -108,13 +109,13 @@ function fixture({ rows = [{ v: 1, text: "Synthetic fixture words." }], synthBus
 }
 
 for (const change of [{ chapter: 2 }, { lang: "es" }]) {
-  test(`late utterance errors cannot overwrite a changed ${Object.keys(change)[0]}`, async () => {
-    const page = fixture(); const old = await page.read();
+  test(`a ${Object.keys(change)[0]} change keeps the reading going`, async () => {
+    const page = fixture();
+    await page.read();
     page.render(change);
-    const baseline = page.writes();
-    old.onerror({ error: "network" }); await flushWork();
-    assert.equal(page.writes(), baseline, "invalidated utterance must not publish an error");
-    assert.doesNotMatch(page.html(), /This phone did not speak/);
+    assert.equal(page.spoken.length, 1, "navigation must not start or drop a phrase");
+    assert.ok(button(page.render(), "Pause the reading"));
+    assert.ok(stopButton(page.render()));
   });
 }
 

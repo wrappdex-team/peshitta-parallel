@@ -4,6 +4,7 @@ import { hebrewConsonants, hebrewReading, rootSpeech } from "@/lib/hebrew-root";
 import { COGNATES, sayGloss } from "@/lib/word-say";
 import { Play } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { readingSessionLive } from "@/lib/speech-lock";
 
 type Line = {
   id: string;
@@ -165,15 +166,17 @@ export function WordStudySheet({
   const [busy, setBusy] = useState("");
   const run = useRef(0);
   const cognate = COGNATES[study.root.join("")];
+  const chapterReading = readingSessionLive();
 
   useEffect(() => {
     return () => {
       run.current += 1;
-      window.speechSynthesis?.cancel();
+      if (!readingSessionLive()) window.speechSynthesis?.cancel();
     };
   }, [study.word]);
 
   async function play(line: Line | "all") {
+    if (readingSessionLive()) return;
     const token = run.current + 1;
     run.current = token;
     window.speechSynthesis?.cancel();
@@ -277,10 +280,14 @@ export function WordStudySheet({
 
       <div className="mt-5 flex items-center justify-between">
         <p className="text-xs tracking-widest text-gold">HEAR IT</p>
-        <button type="button" className="inline-flex min-h-11 items-center gap-2 text-garnet" onClick={() => play("all")}>
-          <Play className="size-4" />
-          {busy === "all" ? "Speaking" : "All open tongues"}
-        </button>
+        {chapterReading ? (
+          <p className="text-sm text-muted">The reading is still going.</p>
+        ) : (
+          <button type="button" className="inline-flex min-h-11 items-center gap-2 text-garnet" onClick={() => play("all")}>
+            <Play className="size-4" />
+            {busy === "all" ? "Speaking" : "All open tongues"}
+          </button>
+        )}
       </div>
       <ul className="mt-1">
         {lines.map((line) => (
@@ -289,7 +296,7 @@ export function WordStudySheet({
               type="button"
               className="flex size-11 shrink-0 items-center justify-center text-garnet disabled:opacity-40"
               aria-label={`Say ${line.label}`}
-              disabled={!line.speak}
+              disabled={!line.speak || chapterReading}
               onClick={() => play(line)}
             >
               <Play className="size-4" />

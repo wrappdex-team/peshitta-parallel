@@ -3,7 +3,6 @@ import { Modal } from "@/components/modal";
 import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight, Menu, Moon, Search, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
-import { ReadAloud } from "@/components/read-aloud";
 import { SearchPanel } from "@/components/search-panel";
 import { Studio } from "@/components/studio";
 import { BookLinks } from "@/components/book-links";
@@ -24,6 +23,7 @@ import { useAnnotations } from "@/lib/annotations";
 import { SITE_ORIGIN } from "@/lib/site";
 import { noteChapter } from "@/lib/readings";
 import { parseReaderChapter } from "@/lib/reader-reference";
+import { useBindReadingSurface } from "@/lib/reading-surface";
 
 export const Route = createFileRoute("/read/$book/$chapter")({
   loader: async ({ params }) => {
@@ -129,7 +129,6 @@ function Reader() {
   }, [book, chapterNo, focus]);
 
   useEffect(() => {
-    setHeard(null);
     const marked = window.location.hash.match(/^#v-(\d+)$/);
     setFocus(marked ? Number(marked[1]) : 1);
   }, [book, chapterNo]);
@@ -236,6 +235,22 @@ function Reader() {
     setSheet({ title: note.title, roman: "", body: note.body });
   }
 
+  useBindReadingSurface({
+    book,
+    chapter: chapterNo,
+    voice: prefs.voice === "rex" ? "rex" : "ara",
+    deviceVoice: prefs.deviceVoice,
+    speed: prefs.speed,
+    lang: languageById(prefs.lang).id,
+    fromVerse: focus,
+    onVoice: (voice) => patch({ voice }),
+    onDeviceVoice: (deviceVoice) => patch({ deviceVoice }),
+    onSpeed: (speed) => patch({ speed }),
+    onVerse: setHeard,
+    onAdvance: (place) => go(place),
+    onChapter: (place) => noteChapter(place.book, place.chapter),
+  });
+
   return (
     <div className="min-h-app bg-paper text-ink">
       <header className="sticky top-0 z-20 border-b border-line bg-paper pt-safe">
@@ -279,7 +294,7 @@ function Reader() {
         </div>
       </header>
 
-      <main className={`mx-auto px-4 pb-dock md:pb-24 ${prefs.lang2 === "none" ? "max-w-3xl" : "max-w-5xl"}`}>
+      <main className={`mx-auto px-4 pb-player ${prefs.lang2 === "none" ? "max-w-3xl" : "max-w-5xl"}`}>
         <button
           type="button"
           onClick={() => setReading(true)}
@@ -293,22 +308,6 @@ function Reader() {
             prefs.words ? "Words" : "",
           ].filter(Boolean).join(" · ")}
         </button>
-
-        <ReadAloud
-          book={book}
-          chapter={chapterNo}
-          voice={prefs.voice === "rex" ? "rex" : "ara"}
-          deviceVoice={prefs.deviceVoice}
-          speed={prefs.speed}
-          lang={languageById(prefs.lang).id}
-          fromVerse={focus}
-          onVoice={(voice) => patch({ voice })}
-          onDeviceVoice={(deviceVoice) => patch({ deviceVoice })}
-          onSpeed={(speed) => patch({ speed })}
-          onVerse={setHeard}
-          onAdvance={(place) => go(place)}
-          onChapter={(place) => noteChapter(place.book, place.chapter)}
-        />
 
         {verses?.map((verse, verseIndex) => (
           <VerseView

@@ -1,8 +1,7 @@
 import { Modal } from "@/components/modal";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Play } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
-import { ReadAloud, type ReadAloudHandle } from "@/components/read-aloud";
+import { useEffect, useState } from "react";
 import { Studio } from "@/components/studio";
 import { BOOKS } from "@/data/edition";
 import { RED_BOOKS, isJesus, nextRedBook, type RedBook } from "@/lib/jesus";
@@ -13,6 +12,7 @@ import { SITE_ORIGIN } from "@/lib/site";
 import { NameText, SyriacNames } from "@/components/name-text";
 import { shareCard, verseShare } from "@/lib/share";
 import { usePrefs } from "@/lib/use-prefs";
+import { readingReadFrom, useBindReadingSurface } from "@/lib/reading-surface";
 
 export const Route = createFileRoute("/words")({
   loader: () => loadBook("matthew"),
@@ -56,7 +56,6 @@ function lineText(lang: LangId, verse: Verse, grid: string[][] | null, chapter: 
 
 function Words() {
   const { prefs, patch } = usePrefs();
-  const reader = useRef<ReadAloudHandle>(null);
   const [book, setBook] = useState<RedBook>("matthew");
   const initialBook = Route.useLoaderData();
   const [otherBook, setDoc] = useState<BookFile | null>(null);
@@ -164,6 +163,35 @@ function Words() {
     return () => observer.disconnect();
   }, [doc, book, prefs.lang, prefs.lang2]);
 
+  useBindReadingSurface({
+    book,
+    chapter: 1,
+    voice: prefs.voice === "rex" ? "rex" : "ara",
+    deviceVoice: prefs.deviceVoice,
+    speed: prefs.speed,
+    lang: tongue.id,
+    startKey: focusKey,
+    fromLabel: focusKey ? `From ${focusKey}` : "",
+    kind: "words",
+    loadLines: (place, lang) => sayingLines(place.book, lang),
+    nextPlaceOf: (place) => {
+      const next = nextRedBook(place.book);
+      return next ? { book: next, chapter: 1 } : null;
+    },
+    onVoice: (voice) => patch({ voice }),
+    onDeviceVoice: (deviceVoice) => patch({ deviceVoice }),
+    onSpeed: (speed) => patch({ speed }),
+    onVerse: () => {},
+    onHeard: (line) => {
+      setHeard((prev) => {
+        if (!line) return null;
+        if (prev && prev.book === line.book && prev.chapter === line.chapter && prev.verse === line.verse) return prev;
+        return line;
+      });
+    },
+    onAdvance: (place) => setBook(place.book as RedBook),
+  });
+
   function passageFor(key: string) {
     const saying = sayings.find((item) => `${item.chapter}:${item.verse.v}` === key) ?? sayings[0];
     if (!saying) return "";
@@ -219,36 +247,6 @@ function Words() {
         >
           {["Reading", tongue.label, second ? second.label : ""].filter(Boolean).join(" · ")}
         </button>
-        <ReadAloud
-          ref={reader}
-          book={book}
-          chapter={1}
-          voice={prefs.voice === "rex" ? "rex" : "ara"}
-          deviceVoice={prefs.deviceVoice}
-          speed={prefs.speed}
-          lang={tongue.id}
-          startKey={focusKey}
-          fromLabel={focusKey ? `From ${focusKey}` : ""}
-          pin
-          kind="words"
-          loadLines={(place, lang) => sayingLines(place.book, lang)}
-          nextPlaceOf={(place) => {
-            const next = nextRedBook(place.book);
-            return next ? { book: next, chapter: 1 } : null;
-          }}
-          onVoice={(voice) => patch({ voice })}
-          onDeviceVoice={(deviceVoice) => patch({ deviceVoice })}
-          onSpeed={(speed) => patch({ speed })}
-          onVerse={() => {}}
-          onHeard={(line) => {
-            setHeard((prev) => {
-              if (!line) return null;
-              if (prev && prev.book === line.book && prev.chapter === line.chapter && prev.verse === line.verse) return prev;
-              return line;
-            });
-          }}
-          onAdvance={(place) => setBook(place.book as RedBook)}
-        />
         {err && <p className="mt-6 text-garnet">{err}</p>}
         {!doc && !err && <p className="mt-6 text-muted">Opening the words…</p>}
         <div className="mt-2">
@@ -302,7 +300,7 @@ function Words() {
                       aria-label={`Read ${meta?.name ?? "this book"} ${chapter}:${verse.v}`}
                       onClick={() => {
                         setFocusKey(key);
-                        reader.current?.readFrom(key);
+                        readingReadFrom(key);
                       }}
                     >
                       <Play className="size-4" />

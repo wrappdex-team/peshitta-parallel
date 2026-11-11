@@ -6,6 +6,7 @@ import { chapterCount, loadBook, loadParallel } from "@/lib/scripture";
 import { readingLines, type VoiceId } from "@/lib/speak";
 import { isJesus } from "@/lib/jesus";
 import { holdReading, type ReadingHold } from "@/lib/keep-reading";
+import { setReadingLive } from "@/lib/speech-lock";
 
 type Line = { v: number; text: string; chapter?: number; key?: string };
 
@@ -34,6 +35,9 @@ type Props = {
   onHeard?: (line: { book: string; chapter: number; verse: number } | null) => void;
   /** Keep the bar on the bottom of wide screens too. */
   pin?: boolean;
+  /** Bar on a reading page, or a small corner once that page is left. */
+  dock?: "bar" | "corner";
+  onStatus?: (status: "idle" | "playing" | "paused") => void;
   kind?: "chapter" | "words";
 };
 
@@ -152,14 +156,16 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
   startKey = "",
   fromLabel = "",
   onHeard,
-  pin = false,
   kind = "chapter",
+  dock = "bar",
+  onStatus,
 }: Props, ref) {
   const [status, setStatus] = useState<"idle" | "playing" | "paused">("idle");
   const [carry, setCarry] = useState(false);
   const [cornerReady, setCornerReady] = useState(false);
   const [error, setError] = useState("");
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+  const [spot, setSpot] = useState("");
   const run = useRef(0);
   const lines = useRef<Line[]>([]);
   const index = useRef(0);
@@ -184,6 +190,9 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
   const loop = useRef(0);
   const runner = useRef<(token: number, at: number) => Promise<void>>(async () => {});
   const startRef = useRef<(from: number) => Promise<void>>(async () => {});
+  const followRef = useRef(true);
+  const expecting = useRef<Place | null>(null);
+  const rowRef = useRef<Line | null>(null);
   statusRef.current = status;
   carryRef.current = carry;
   onVerseRef.current = onVerse;
@@ -194,11 +203,25 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
   nextPlaceOfRef.current = nextPlaceOf;
   deviceVoiceRef.current = deviceVoice;
   speedRef.current = speed;
-  langRef.current = lang;
+  // A language change while a reading is going applies on the next Read, not mid-verse.
+  if (status === "idle") langRef.current = lang;
   fromRef.current = fromVerse;
   startKeyRef.current = startKey;
 
   function heard(row: Line | null) {
+    rowRef.current = row;
+    if (row) {
+      const chapterNo = row.chapter ?? place.current.chapter;
+      const bookId = place.current.book;
+      const label = placeLabel(bookId, chapterNo, row.v);
+      setSpot(label);
+      hold.current?.caption({
+        text: row.text,
+        place: label,
+        red: kind === "words" || isJesus(bookId, chapterNo, row.v),
+      });
+    }
+    if (!followRef.current) return;
     if (!row) {
       onVerseRef.current(null);
       onHeardRef.current?.(null);
@@ -209,13 +232,6 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
       book: place.current.book,
       chapter: row.chapter ?? place.current.chapter,
       verse: row.v,
-    });
-    const chapter = row.chapter ?? place.current.chapter;
-    const bookId = place.current.book;
-    hold.current?.caption({
-      text: row.text,
-      place: placeLabel(bookId, chapter, row.v),
-      red: kind === "words" || isJesus(bookId, chapter, row.v),
     });
   }
 
@@ -248,6 +264,7 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
   function pauseReading() {
     if (statusRef.current !== "playing") return;
     stopping.current = "pause";
+    statusRef.current = "paused";
     loop.current += 1;
     silence();
     releaseHold();
@@ -257,6 +274,8 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
   function resumeReading() {
     if (statusRef.current !== "paused" || !lines.current.length) return;
     stopping.current = "none";
+    statusRef.current = "playing";
+    setReadingLive(true);
     takeHold();
     setStatus("playing");
     void speakFrom(run.current, index.current);
@@ -264,26 +283,67 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
 
   function halt() {
     stopping.current = "halt";
+    statusRef.current = "idle";
+    setReadingLive(false);
     loop.current += 1;
     run.current += 1;
     lines.current = [];
     index.current = 0;
     spoken.current = null;
+    expecting.current = null;
+    followRef.current = true;
     silence();
     releaseHold();
     setStatus("idle");
+    setSpot("");
     setError("");
     heard(null);
   }
 
+  function markIdle() {
+    statusRef.current = "idle";
+    setReadingLive(false);
+    spoken.current = null;
+    releaseHold();
+    setStatus("idle");
+  }
+
   useEffect(() => {
-    const here = spoken.current;
-    if (here && here.book === book && here.chapter === chapter && here.lang === lang) return;
-    halt();
-    // A new chapter, voice, or language must not keep speaking the previous one.
-    // An automatic advance sets `spoken` first, so the reading continues.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [book, chapter, lang]);
+    if (statusRef.current === "idle") {
+      followRef.current = true;
+      setError("");
+      return;
+    }
+    const want = expecting.current;
+    if (want && want.book === book && want.chapter === chapter) {
+      expecting.current = null;
+      followRef.current = true;
+      const row = rowRef.current;
+      if (row) {
+        onVerseRef.current(row.v);
+        onHeardRef.current?.({ book, chapter: row.chapter ?? chapter, verse: row.v });
+      }
+      return;
+    }
+    if (place.current.book === book && place.current.chapter === chapter) {
+      followRef.current = true;
+      const row = rowRef.current;
+      if (row) {
+        onVerseRef.current(row.v);
+        onHeardRef.current?.({ book, chapter: row.chapter ?? chapter, verse: row.v });
+      }
+      return;
+    }
+    // The open page moved. Keep speaking the place already underway.
+    followRef.current = false;
+    onVerseRef.current(null);
+    onHeardRef.current?.(null);
+  }, [book, chapter, dock]);
+
+  useEffect(() => {
+    onStatus?.(status);
+    setReadingLive(status !== "idle");
+  }, [onStatus, status]);
 
   useEffect(() => {
     let live = true;
@@ -311,6 +371,8 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
     return () => {
       window.speechSynthesis?.removeEventListener("voiceschanged", refresh);
       stopping.current = "halt";
+      statusRef.current = "idle";
+      setReadingLive(false);
       loop.current += 1;
       run.current += 1;
       silence();
@@ -404,28 +466,24 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
         onChapterRef.current?.(done);
         heard(null);
         if (!carryRef.current) {
-          spoken.current = null;
-          releaseHold();
-          setStatus("idle");
+          markIdle();
           return;
         }
         const nxt = nextPlaceOfRef.current ? nextPlaceOfRef.current(done) : nextPlace(done.book, done.chapter);
         if (!nxt) {
-          spoken.current = null;
-          releaseHold();
-          setStatus("idle");
+          markIdle();
           return;
         }
         spoken.current = { ...nxt, lang: langRef.current };
+        expecting.current = nxt;
+        followRef.current = true;
         onAdvanceRef.current(nxt);
         place.current = nxt;
         try {
           lines.current = await loadRows(nxt, langRef.current);
         } catch (err) {
           if (run.current !== token) return;
-          spoken.current = null;
-          releaseHold();
-          setStatus("idle");
+          markIdle();
           setError(err instanceof Error ? err.message : "The voice could not continue.");
           heard(null);
           return;
@@ -450,6 +508,9 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
   runner.current = speakFrom;
 
   async function start(from: number) {
+    langRef.current = lang;
+    followRef.current = true;
+    expecting.current = null;
     takeHold();
     if (typeof window.speechSynthesis === "undefined") {
       releaseHold();
@@ -463,6 +524,8 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
     }
     setError("");
     stopping.current = "none";
+    statusRef.current = "playing";
+    setReadingLive(true);
     const token = ++run.current;
     loop.current += 1;
     const here = { book, chapter };
@@ -476,9 +539,7 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
         readyLines.current = rows;
       } catch (err) {
         if (run.current !== token) return;
-        spoken.current = null;
-        releaseHold();
-        setStatus("idle");
+        markIdle();
         setError(err instanceof Error ? err.message : "The voice could not read this chapter.");
         return;
       }
@@ -563,7 +624,58 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
       }, 450);
     }
     document.addEventListener("visibilitychange", onVisibility);
-    return () => document.removeEventListener("visibilitychange", onVisibility);
+    function onGesture() {
+      if (statusRef.current !== "playing" || stopping.current !== "none") return;
+      const synth = window.speechSynthesis;
+      if (!synth?.paused) return;
+      try {
+        synth.resume();
+      } catch {
+        // The engine had already stopped.
+      }
+    }
+    document.addEventListener("pointerdown", onGesture);
+    let silent = 0;
+    let watch = 0;
+    if (typeof window.setInterval === "function") {
+      watch = window.setInterval(() => {
+        if (statusRef.current !== "playing" || stopping.current !== "none") {
+          silent = 0;
+          return;
+        }
+        const synth = window.speechSynthesis;
+        if (!synth || !lines.current.length) return;
+        if (synth.paused) {
+          try {
+            synth.resume();
+          } catch {
+            // The engine had already stopped.
+          }
+          silent = 0;
+          return;
+        }
+        if (synth.speaking || synth.pending) {
+          silent = 0;
+          return;
+        }
+        silent += 1;
+        if (silent < 2) return;
+        silent = 0;
+        // The queue died without Stop. Say the same line again.
+        loop.current += 1;
+        try {
+          synth.cancel();
+        } catch {
+          // Nothing was queued.
+        }
+        void runner.current(run.current, index.current);
+      }, 1000);
+    }
+    return () => {
+      document.removeEventListener("visibilitychange", onVisibility);
+      document.removeEventListener("pointerdown", onGesture);
+      if (watch) window.clearInterval(watch);
+    };
   }, []);
 
   function chooseDeviceVoice(next: string) {
@@ -574,6 +686,8 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
     synth.cancel();
     if (statusRef.current === "playing" || statusRef.current === "paused") {
       stopping.current = "none";
+      statusRef.current = "playing";
+      setReadingLive(true);
       setStatus("playing");
       void speakFrom(run.current, index.current);
       return;
@@ -604,9 +718,33 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
   const throughLabel = wordsMode ? "Through the books" : "Through the book";
   const continueOn = wordsMode ? "Stop after this book" : "Stop after this chapter";
   const continueOff = wordsMode ? "Keep reading the words of Y'shua into the next book" : "Keep reading through this book and into the next";
+  const placeText = status === "paused" ? (spot ? `Paused · ${spot}` : "Paused") : spot || (carry ? throughLabel : hereLabel);
+
+  if (dock === "corner") {
+    if (!active) return null;
+    return (
+      <div className="pointer-events-none fixed inset-x-0 bottom-0 z-40 flex justify-end px-3 pb-safe">
+        <div className="pointer-events-auto mb-3 flex max-w-[min(100vw-1.5rem,22rem)] items-center border border-line bg-paper">
+          <span className="min-w-0 truncate px-3 text-sm text-gold">{playing ? spot || "Reading" : spot ? `Paused · ${spot}` : "Paused"}</span>
+          <button
+            type="button"
+            onClick={toggle}
+            className="flex min-h-11 shrink-0 items-center px-2 text-garnet"
+            aria-label={playing ? "Pause the reading" : "Resume the reading"}
+          >
+            {playing ? <Pause className="size-4" /> : <Play className="size-4" />}
+          </button>
+          <button type="button" onClick={halt} className="flex min-h-11 shrink-0 items-center gap-1 px-3 text-muted">
+            <Square className="size-3.5" />
+            Stop
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className={`fixed inset-x-0 bottom-0 z-30 border-t border-line bg-paper pb-safe ${pin ? "" : "md:static md:z-auto md:border-t-0 md:border-b md:pb-0"}`}>
+    <div className="fixed inset-x-0 bottom-0 z-20 border-t border-line bg-paper pb-safe">
       {active && (
         <div className="mx-auto flex max-w-5xl items-center border-b border-line">
           <button
@@ -642,7 +780,7 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
             </button>
           ) : null}
           <span className="ml-auto flex min-h-11 shrink-0 items-center px-3 text-sm text-gold">
-            {status === "paused" ? "Paused" : carry ? throughLabel : hereLabel}
+            {placeText}
           </span>
         </div>
       )}
