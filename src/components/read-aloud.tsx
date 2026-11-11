@@ -456,7 +456,6 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
     const here = { book, chapter };
     place.current = here;
     spoken.current = { ...here, lang };
-    const synth = window.speechSynthesis;
     setStatus("playing");
     let rows = readyLines.current;
     if (!rows) {
