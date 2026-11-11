@@ -18,18 +18,27 @@ export function verseShare(input: { bookName: string; book: string; chapter: num
   };
 }
 
+export function shareData(card: { title: string; text: string; url: string }) {
+  // Facebook drops a separate caption and keeps only a link card. The words have to travel in the same block as the address.
+  return {
+    title: card.title,
+    text: `${card.text.trim()}\n${card.url}`,
+  };
+}
+
 export async function shareCard(card: { title: string; text: string; url: string }) {
   const nav = typeof navigator === "undefined" ? null : navigator;
+  const data = shareData(card);
   if (nav && typeof nav.share === "function") {
     try {
-      await nav.share({ title: card.title, text: card.text, url: card.url });
+      await nav.share(data);
       return "shared" as const;
     } catch (error) {
       if (error instanceof DOMException && error.name === "AbortError") return "closed" as const;
     }
   }
   try {
-    await nav?.clipboard.writeText(`${card.text}\n${card.url}`);
+    await nav?.clipboard.writeText(data.text);
     return "copied" as const;
   } catch {
     return "failed" as const;

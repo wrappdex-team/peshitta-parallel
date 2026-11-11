@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { APP_SHARE, verseShare } from "./share.ts";
+import { APP_SHARE, shareData, verseShare } from "./share.ts";
 
 test("a verse share keeps every language that is on the page, and no more", () => {
   const one = verseShare({ bookName: "John", book: "john", chapter: 1, verse: 1, lines: ["In the beginning"] });
@@ -21,8 +21,10 @@ test("a verse share keeps every language that is on the page, and no more", () =
   assert.doesNotMatch(three.text, /Opening/);
 });
 
-test("the app share carries a short blessing and the card address", () => {
-  assert.match(APP_SHARE.text, /Syriac/);
-  assert.match(APP_SHARE.text, /pass them on/);
-  assert.equal(APP_SHARE.url, "https://www.injeel.news/");
+test("the share block keeps the blessing and the link together", () => {
+  const data = shareData(APP_SHARE);
+  assert.equal(data.title, APP_SHARE.title);
+  assert.match(data.text, /pass them on/);
+  assert.match(data.text, /https:\/\/www\.injeel\.news\/$/);
+  assert.equal("url" in data, false);
 });
