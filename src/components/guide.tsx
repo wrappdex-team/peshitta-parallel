@@ -1,4 +1,5 @@
 import { useEffect, useState, type ReactNode } from "react";
+import { Link } from "@tanstack/react-router";
 import { Modal } from "@/components/modal";
 import {
   FAMILIES,
@@ -104,7 +105,7 @@ export function Guide() {
             <p className="mt-3 text-center text-base leading-relaxed">
               This is the New Testament in Syriac, the Peshitta, with English beside it. Open a book and start.
             </p>
-            <blockquote className="mt-5 border-s-2 border-garnet ps-4 text-start">
+            <blockquote className="mt-5 text-center">
               <p className="font-serif text-lg leading-snug">{bread.line}</p>
               <p className="mt-2 text-sm text-gold">{bread.from}</p>
             </blockquote>
@@ -129,23 +130,39 @@ export function Guide() {
               initial: true,
             }}
           >
-            <div className="flex items-center justify-between gap-3">
-              <p className="text-xs tracking-widest text-gold">
-                {current.kicker.toUpperCase()} · {step + 1} OF {STEPS.length}
+            <div dir="ltr" className="text-center">
+              <div className="flex items-center justify-between gap-3">
+                <p className="text-xs tracking-widest text-gold">
+                  {current.kicker.toUpperCase()} · {step + 1} OF {STEPS.length}
+                </p>
+                <button type="button" className="min-h-11 px-2 text-sm text-muted" onClick={finishSteps}>
+                  Hide
+                </button>
+              </div>
+              <h2 className="mt-2 font-serif text-3xl font-semibold tracking-tight">{current.title}</h2>
+              <div className="mx-auto mt-3 h-px w-16 bg-gold" />
+              <p className="mt-3 text-base leading-relaxed" aria-live="polite">
+                {current.body}
               </p>
-              <button type="button" className="min-h-11 px-2 text-sm text-muted" onClick={finishSteps}>
-                Hide
-              </button>
-            </div>
-            <h2 className="mt-2 font-serif text-3xl font-semibold tracking-tight">{current.title}</h2>
-            <div className="mt-3 h-px w-16 bg-gold" />
-            <p className="mt-3 text-base leading-relaxed" aria-live="polite">
-              {current.body}
-            </p>
-            <div className="mt-6 flex justify-center gap-1.5" aria-hidden="true">
-              {STEPS.map((_, index) => (
-                <span key={index} className={`h-px w-5 ${index <= step ? "bg-gold" : "bg-[#c9b48a]"}`} />
-              ))}
+              <StepPlay key={step} step={step} onLeave={finishSteps} />
+              <div className="mt-5 border-t border-[#c9b48a] pt-4">
+                <p className="text-xs tracking-widest text-jesus">HIS WORDS</p>
+                <p className="mt-2 font-serif text-lg leading-snug text-jesus">{current.say.line}</p>
+                <p className="mt-2 text-sm text-gold">{current.say.from}</p>
+                <Link
+                  to="/read/$book/$chapter"
+                  params={{ book: current.say.book, chapter: current.say.chapter }}
+                  className="mt-1 inline-flex min-h-11 items-center text-garnet"
+                  onClick={finishSteps}
+                >
+                  Read this line
+                </Link>
+              </div>
+              <div className="mt-4 flex justify-center gap-1.5" aria-hidden="true">
+                {STEPS.map((_, index) => (
+                  <span key={index} className={`h-px w-5 ${index <= step ? "bg-gold" : "bg-[#c9b48a]"}`} />
+                ))}
+              </div>
             </div>
           </Scroll>
         </Modal>
@@ -288,6 +305,92 @@ function Scroll({
           <span className="scroll-roller" />
         </div>
       )}
+    </div>
+  );
+}
+
+function StepPlay({ step, onLeave }: { step: number; onLeave: () => void }) {
+  const [open, setOpen] = useState<"old" | "later" | null>(null);
+  const [red, setRed] = useState(false);
+  const [word, setWord] = useState(false);
+
+  if (step === 0) {
+    return (
+      <div className="mt-4">
+        <div className="flex flex-wrap justify-center gap-2">
+          <button
+            type="button"
+            aria-pressed={open === "old"}
+            className={`min-h-11 border px-3 text-sm ${open === "old" ? "border-garnet bg-garnet text-paper" : "border-[#c9b48a]"}`}
+            onClick={() => setOpen(open === "old" ? null : "old")}
+          >
+            The twenty-two
+          </button>
+          <button
+            type="button"
+            aria-pressed={open === "later"}
+            className={`min-h-11 border px-3 text-sm ${open === "later" ? "border-garnet bg-garnet text-paper" : "border-[#c9b48a]"}`}
+            onClick={() => setOpen(open === "later" ? null : "later")}
+          >
+            The five later
+          </button>
+        </div>
+        {open === "old" && (
+          <p className="mt-3 text-sm leading-relaxed text-muted">
+            Matthew, Mark, Luke, John, Acts, Romans through Philemon, Hebrews, James, 1 Peter, 1 John.
+          </p>
+        )}
+        {open === "later" && (
+          <p className="mt-3 text-sm leading-relaxed text-muted">
+            2 Peter, 2 John, 3 John, Jude, and Revelation. The reader marks these.
+          </p>
+        )}
+      </div>
+    );
+  }
+
+  if (step === 1) {
+    return (
+      <div className="mt-4">
+        <p className="text-base leading-relaxed">
+          He said,{" "}
+          <span className={red ? "text-jesus" : ""}>
+            Come to me, all you who are weary and carrying heavy loads, and I will give you rest.
+          </span>
+        </p>
+        <button type="button" className="mt-2 min-h-11 px-3 text-sm text-garnet" onClick={() => setRed((on) => !on)}>
+          {red ? "That red is his voice" : "Mark his words"}
+        </button>
+      </div>
+    );
+  }
+
+  if (step === 2) {
+    return (
+      <div className="mt-4">
+        <button
+          type="button"
+          className="min-h-11 font-syriac text-3xl text-syriac"
+          lang="syr"
+          dir="rtl"
+          aria-pressed={word}
+          onClick={() => setWord((on) => !on)}
+        >
+          ܡܠܬܐ
+        </button>
+        <p className="mt-1 text-sm text-muted">{word ? "Word. meltha. The same word as “the Word” in John 1." : "Tap the word."}</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-4 flex flex-wrap justify-center gap-2">
+      <Link to="/read/$book/$chapter" params={{ book: "john", chapter: "1" }} className="inline-flex min-h-11 items-center border border-[#c9b48a] px-3 text-sm" onClick={onLeave}>
+        Open John 1
+      </Link>
+      <Link to="/read/$book/$chapter" params={{ book: "matthew", chapter: "5" }} className="inline-flex min-h-11 items-center border border-[#c9b48a] px-3 text-sm" onClick={onLeave}>
+        Open Matthew 5
+      </Link>
     </div>
   );
 }
