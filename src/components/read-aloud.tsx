@@ -56,6 +56,11 @@ function nextPlace(book: string, chapter: number): Place | null {
   return null;
 }
 
+function placeLabel(book: string, chapter: number, verse: number) {
+  const name = BOOKS.find((item) => item.id === book)?.name || book;
+  return `${name} ${chapter}:${verse}`;
+}
+
 function phrases(text: string) {
   if (text.length <= 220) return [text];
   const bits = text.split(/(?<=[.!?;:؟。！？])\s+/).filter(Boolean);
@@ -174,6 +179,8 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
   const fromRef = useRef(fromVerse);
   const startKeyRef = useRef(startKey);
   const hold = useRef<ReadingHold | null>(null);
+  const marks = useRef<{ t: number; cursor: number; phrase: number; book: string; chapter: number; verse: number }[]>([]);
+  const phraseFrom = useRef(0);
   const stopping = useRef<"none" | "pause" | "halt">("none");
   const loop = useRef(0);
   const runner = useRef<(token: number, at: number) => Promise<void>>(async () => {});
@@ -204,7 +211,11 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
       chapter: row.chapter ?? place.current.chapter,
       verse: row.v,
     });
-    hold.current?.caption(row.text);
+    const chapter = row.chapter ?? place.current.chapter;
+    hold.current?.caption({
+      text: row.text,
+      place: placeLabel(place.current.book, chapter, row.v),
+    });
   }
 
   async function loadRows(at: Place, tongue: LangId) {
@@ -230,6 +241,7 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
     hold.current = holdReading({
       onPause: () => pauseReading(),
       onPlay: () => resumeReading(),
+      onBack: () => void back15(),
     });
   }
 
@@ -257,6 +269,7 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
     lines.current = [];
     index.current = 0;
     spoken.current = null;
+    marks.current = [];
     silence();
     releaseHold();
     setStatus("idle");
@@ -382,9 +395,57 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
     });
   }
 
+  function note(row: Line, phrase: number, cursor: number) {
+    marks.current.push({
+      t: Date.now(),
+      cursor,
+      phrase,
+      book: place.current.book,
+      chapter: row.chapter ?? place.current.chapter,
+      verse: row.v,
+    });
+    if (marks.current.length > 120) marks.current.splice(0, marks.current.length - 120);
+  }
+
+  async function back15() {
+    if (statusRef.current === "idle" || !marks.current.length) return;
+    const aim = Date.now() - 15000;
+    let hit = marks.current[0];
+    for (const mark of marks.current) {
+      if (mark.t <= aim) hit = mark;
+    }
+    const token = run.current;
+    stopping.current = "none";
+    loop.current += 1;
+    silence();
+    if (statusRef.current !== "playing") {
+      takeHold();
+      setStatus("playing");
+    }
+    if (hit.book !== place.current.book || hit.chapter !== place.current.chapter) {
+      const there = { book: hit.book, chapter: hit.chapter };
+      place.current = there;
+      spoken.current = { ...there, lang: langRef.current };
+      onAdvanceRef.current(there);
+      try {
+        lines.current = await loadRows(there, langRef.current);
+      } catch {
+        return;
+      }
+    }
+    if (run.current !== token || stopping.current !== "none") return;
+    const cursor = lines.current.findIndex((row) => (row.chapter ?? hit.chapter) === hit.chapter && row.v === hit.verse);
+    const at = cursor >= 0 ? cursor : Math.min(hit.cursor, Math.max(0, lines.current.length - 1));
+    phraseFrom.current = hit.phrase;
+    index.current = at;
+    void speakFrom(token, at);
+  }
+
   async function speakFrom(token: number, startAt: number) {
     const mine = ++loop.current;
     let cursor = startAt;
+    let skip = phraseFrom.current;
+    phraseFrom.current = 0;
     while (run.current === token && loop.current === mine && stopping.current === "none") {
       const row = lines.current[cursor];
       if (!row) {
@@ -426,11 +487,18 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
       index.current = cursor;
       heard(row);
       if (statusRef.current !== "playing") setStatus("playing");
-      for (const phrase of phrases(row.text)) {
+      const parts = phrases(row.text);
+      for (let phraseAt = 0; phraseAt < parts.length; phraseAt += 1) {
+        if (skip > 0) {
+          skip -= 1;
+          continue;
+        }
         if (run.current !== token || loop.current !== mine || stopping.current !== "none") return;
-        const result = await speakPhrase(phrase, token);
+        note(row, phraseAt, cursor);
+        const result = await speakPhrase(parts[phraseAt], token);
         if (result !== "done" || run.current !== token || loop.current !== mine || stopping.current !== "none") return;
       }
+      skip = 0;
       cursor += 1;
     }
   }
@@ -475,19 +543,22 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
     lines.current = rows;
     const startAt = locate(rows, from, startKeyRef.current);
     index.current = startAt;
+    marks.current = [];
+    phraseFrom.current = 0;
     // Speak the first words in this tap, before any later wait, or a phone will stay silent.
     const first = rows[index.current];
     if (first) {
       heard(first);
-      const piece = phrases(first.text)[0] ?? first.text;
-      const opened = speakPhrase(piece, token);
-      const rest = phrases(first.text).slice(1);
+      const parts = phrases(first.text);
+      note(first, 0, index.current);
+      const opened = speakPhrase(parts[0] ?? first.text, token);
       const head = await opened;
-      if (head !== "done" || run.current !== token) return;
-      for (const phrase of rest) {
+      if (head !== "done" || run.current !== token || stopping.current !== "none") return;
+      for (let phraseAt = 1; phraseAt < parts.length; phraseAt += 1) {
         if (run.current !== token || stopping.current !== "none") return;
-        const result = await speakPhrase(phrase, token);
-        if (result !== "done" || run.current !== token) return;
+        note(first, phraseAt, index.current);
+        const result = await speakPhrase(parts[phraseAt], token);
+        if (result !== "done" || run.current !== token || stopping.current !== "none") return;
       }
       index.current += 1;
     }
@@ -581,6 +652,14 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
     <div className={`fixed inset-x-0 bottom-0 z-30 border-t border-line bg-paper pb-safe ${pin ? "" : "md:static md:z-auto md:border-t-0 md:border-b md:pb-0"}`}>
       {active && (
         <div className="mx-auto flex max-w-5xl items-center border-b border-line">
+          <button
+            type="button"
+            onClick={() => void back15()}
+            className="min-h-11 shrink-0 px-3 text-garnet"
+            aria-label="Hear the last 15 seconds again"
+          >
+            15s
+          </button>
           <button
             type="button"
             onClick={toggle}

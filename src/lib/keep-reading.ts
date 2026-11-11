@@ -1,17 +1,25 @@
 /** Keeps a reading session awake, and offers a corner card over other apps. */
 
+export type ReadingCard = {
+  text: string;
+  place: string;
+};
+
 export type ReadingHold = {
   release: () => void;
   corner: () => Promise<void>;
-  caption: (text: string) => void;
+  caption: (card: ReadingCard) => void;
 };
 
 type Controls = {
   onPause: () => void;
   onPlay: () => void;
+  onBack: () => void;
 };
 
 type CornerVideo = HTMLVideoElement & { autoPictureInPicture?: boolean };
+
+const TITLE = "Injeel-Goodnews";
 
 export function holdReading(controls: Controls): ReadingHold {
   let done = false;
@@ -20,32 +28,51 @@ export function holdReading(controls: Controls): ReadingHold {
   let audio: AudioContext | null = null;
   let ctx: CanvasRenderingContext2D | null = null;
   let caption = "Reading";
+  let place = "";
 
   function paint() {
     if (!ctx) return;
+    ctx.clearRect(0, 0, 480, 270);
     ctx.fillStyle = "#f3efe4";
     ctx.fillRect(0, 0, 480, 270);
+    ctx.textAlign = "center";
+    ctx.textBaseline = "alphabetic";
     ctx.fillStyle = "#7a2e38";
     ctx.font = "600 26px Palatino, serif";
-    ctx.fillText("Injeel", 24, 56);
+    ctx.fillText(TITLE, 240, 46);
+    ctx.fillStyle = "#8d6b32";
+    ctx.font = "600 20px Palatino, serif";
+    if (place) ctx.fillText(place, 240, 80);
     ctx.fillStyle = "#1c1612";
     ctx.font = "22px Palatino, serif";
     const words = caption.split(/\s+/).filter(Boolean);
+    const lines: string[] = [];
     let line = "";
-    let y = 108;
     for (const word of words) {
       const next = line ? `${line} ${word}` : word;
-      if (ctx.measureText(next).width > 430 && line) {
-        ctx.fillText(line, 24, y);
+      if (ctx.measureText(next).width > 420 && line) {
+        lines.push(line);
         line = word;
-        y += 32;
-        if (y > 240) {
-          line = "";
-          break;
-        }
       } else line = next;
     }
-    if (line && y <= 240) ctx.fillText(line, 24, y);
+    if (line) lines.push(line);
+    let y = place ? 122 : 108;
+    for (const row of lines) {
+      if (y > 250) break;
+      ctx.fillText(row, 240, y);
+      y += 30;
+    }
+    ctx.textAlign = "left";
+  }
+
+  function label() {
+    const session = navigator.mediaSession;
+    if (!session || typeof MediaMetadata !== "function") return;
+    try {
+      session.metadata = new MediaMetadata({ title: TITLE, artist: place || "Reading" });
+    } catch {
+      // The lock screen can keep the previous title.
+    }
   }
 
   function ensureCorner() {
@@ -119,12 +146,11 @@ export function holdReading(controls: Controls): ReadingHold {
     const session = navigator.mediaSession;
     if (!session) return;
     try {
-      if (typeof MediaMetadata === "function") {
-        session.metadata = new MediaMetadata({ title: "Injeel", artist: "Reading" });
-      }
+      label();
       session.playbackState = "playing";
       session.setActionHandler("pause", () => controls.onPause());
       session.setActionHandler("play", () => controls.onPlay());
+      session.setActionHandler("seekbackward", () => controls.onBack());
     } catch {
       // The lock-screen controls are optional.
     }
@@ -142,9 +168,11 @@ export function holdReading(controls: Controls): ReadingHold {
   document.addEventListener("visibilitychange", onVisibility);
 
   return {
-    caption(text: string) {
-      caption = text.trim() || "Reading";
+    caption(card: ReadingCard) {
+      caption = card.text.trim() || "Reading";
+      place = card.place.trim();
       paint();
+      label();
     },
     corner,
     release() {
@@ -158,6 +186,7 @@ export function holdReading(controls: Controls): ReadingHold {
           navigator.mediaSession.playbackState = "none";
           navigator.mediaSession.setActionHandler("play", null);
           navigator.mediaSession.setActionHandler("pause", null);
+          navigator.mediaSession.setActionHandler("seekbackward", null);
         }
       } catch {
         // Already cleared.
