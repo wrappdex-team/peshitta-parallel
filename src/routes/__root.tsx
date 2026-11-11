@@ -61,6 +61,15 @@ export const Route = createRootRoute({
                   offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
                   description: SITE_DESCRIPTION,
                 },
+                {
+                  "@type": "Book",
+                  name: "Peshitta New Testament",
+                  alternateName: "Injeel",
+                  url: `${SITE_ORIGIN}/`,
+                  inLanguage: "syr",
+                  isAccessibleForFree: true,
+                  description: SITE_DESCRIPTION,
+                },
               ],
             }),
           }}

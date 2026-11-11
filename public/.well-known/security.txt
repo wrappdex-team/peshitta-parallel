@@ -1,4 +1,5 @@
 Contact: https://github.com/wrappdex-team/peshitta-parallel/security/advisories/new
-Expires: 2027-11-05T00:00:00.000Z
+Expires: 2027-11-11T00:00:00.000Z
 Preferred-Languages: en
-Canonical: https://peshitta-parallel.vercel.app/.well-known/security.txt
+Canonical: https://injeel.news/.well-known/security.txt
+Policy: https://injeel.news/privacy

@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import registry from "@/data/names.json";
+import { bookMeta } from "@/data/edition";
 import { SITE_ORIGIN } from "@/lib/site";
 
 type NameRow = {
@@ -13,6 +14,12 @@ type NameRow = {
 };
 
 const NAMES = registry.names as NameRow[];
+
+function firstPlace(ref: string) {
+  const match = /^([a-z0-9]+)\s+(\d+):(\d+)$/.exec(ref);
+  if (!match || !bookMeta(match[1])) return null;
+  return { book: match[1], chapter: match[2], verse: match[3] };
+}
 
 export const Route = createFileRoute("/names")({
   head: () => ({
@@ -59,7 +66,9 @@ function Names() {
         </label>
         <p className="mt-3 text-sm text-muted">{rows.length} names</p>
         <ul className="mt-2 border-t border-line">
-          {rows.map((row) => (
+          {rows.map((row) => {
+            const place = firstPlace(row.ref);
+            return (
             <li key={`${row.en}-${row.sy}`} className="border-b border-line py-3">
               <div className="flex items-baseline justify-between gap-3">
                 <span className="font-serif text-xl">{row.en}</span>
@@ -71,9 +80,25 @@ function Names() {
                 {row.known === row.en ? row.kind : `${row.known} · ${row.kind}`}
                 {" · "}
                 {row.count} {row.count === 1 ? "verse" : "verses"}
+                {place ? (
+                  <>
+                    {" · "}
+                    <Link
+                      to="/read/$book/$chapter"
+                      params={{ book: place.book, chapter: place.chapter }}
+                      hash={`v-${place.verse}`}
+                      className="text-garnet"
+                    >
+                      {row.ref}
+                    </Link>
+                  </>
+                ) : (
+                  ` · ${row.ref}`
+                )}
               </p>
             </li>
-          ))}
+            );
+          })}
         </ul>
       </div>
     </main>

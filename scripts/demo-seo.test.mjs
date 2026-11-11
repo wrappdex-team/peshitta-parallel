@@ -29,7 +29,7 @@ test("personal reading utility is noindex but crawlable; public study routes ret
   // No Disallow: /seal: crawlers must be able to see the noindex directive.
   assert.doesNotMatch(read("public/robots.txt"), /Disallow:\s*\/seal/);
   assert.doesNotMatch(read("public/sitemap.xml"), /\/seal<\/loc>/);
-  for (const path of ["index.tsx", "words.tsx", "study.tsx", "read.$book.$chapter.tsx"]) {
+  for (const path of ["index.tsx", "words.tsx", "study.tsx", "names.tsx", "privacy.tsx", "read.$book.$chapter.tsx"]) {
     const source = read(`src/routes/${path}`);
     assert.match(source, /rel: "canonical"/);
     assert.match(source, /SITE_ORIGIN/);
@@ -47,7 +47,17 @@ test("demo retains real share assets and free educational structured data withou
   assert.match(root, /"@type": "WebApplication"/);
   assert.match(root, /applicationCategory: "EducationalApplication"/);
   assert.match(root, /price: "0"/);
+  assert.match(root, /"@type": "Book"/);
+  assert.match(root, /isAccessibleForFree: true/);
+  assert.match(root, /Peshitta New Testament/);
   assert.doesNotMatch(root, /aggregateRating|ratingValue/);
+  const headers = read("vercel.json");
+  assert.match(headers, /screen-wake-lock=\(self\)/);
+  assert.match(headers, /X-Permitted-Cross-Domain-Policies/);
+  const contact = read("public/.well-known/security.txt");
+  assert.match(contact, /^Contact: https:\/\/github\.com\/wrappdex-team\/peshitta-parallel\/security\/advisories\/new$/m);
+  assert.match(contact, /^Expires: 2027-11-11T00:00:00\.000Z$/m);
+  assert.match(contact, /^Canonical: https:\/\/injeel\.news\/\.well-known\/security\.txt$/m);
 });
 
 test("verification build cannot invoke migration; CI requests no production secrets", () => {

@@ -38,6 +38,9 @@ function Privacy() {
         <p className="mt-4 text-base leading-relaxed">
           The page also loads a Grok platform extension script. Session-only storage reduces retention but does not isolate an in-use key from page scripts. Use provider account limits and only a key you are comfortable supplying to this service.
         </p>
+        <p className="mt-4 text-base leading-relaxed">
+          Corner asks this device to keep the screen awake and can show a player card. That stays on the phone. It is not sent to Injeel.
+        </p>
         <p className="mt-4 text-base leading-relaxed text-muted">
           The site and the installed app are the same reader. Putting Injeel on a home screen does not collect anything more.
         </p>
