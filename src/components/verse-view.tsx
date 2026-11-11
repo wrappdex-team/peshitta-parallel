@@ -188,32 +188,36 @@ export function VerseView({
               <p className="text-sm text-muted">This verse number is not in the Syriac text.</p>
             ) : (
               <p dir="rtl" lang="syr" className={`glow font-syriac ${syColor} ${SY[size]} ${LEADING[line]}`}>
-                {syriacPieces(verse.sy).map((piece, i) => {
-                  if (piece.kind === "space") return <span key={i}>{piece.text}</span>;
-                  const named = nameOfSyriac(piece.word);
-                  if (named) {
+                {(() => {
+                  let prev = "";
+                  return syriacPieces(verse.sy).map((piece, i) => {
+                    if (piece.kind === "space") return <span key={i}>{piece.text}</span>;
+                    const named = nameOfSyriac(piece.word, verse.en, prev);
+                    prev = piece.word;
+                    if (named) {
+                      return (
+                        <Link
+                          key={i}
+                          to="/names"
+                          hash={named.id}
+                          className={`${NAME_CLASS} font-syriac`}
+                        >
+                          {piece.text}
+                        </Link>
+                      );
+                    }
                     return (
-                      <Link
+                      <button
                         key={i}
-                        to="/names"
-                        hash={named.id}
-                        className={`${NAME_CLASS} font-syriac`}
+                        type="button"
+                        onClick={() => onWord(glossWord(piece.word), piece.word)}
+                        className="rounded-sm border-0 bg-transparent px-0.5 font-syriac text-inherit hover:bg-gold-soft"
                       >
                         {piece.text}
-                      </Link>
+                      </button>
                     );
-                  }
-                  return (
-                    <button
-                      key={i}
-                      type="button"
-                      onClick={() => onWord(glossWord(piece.word), piece.word)}
-                      className="rounded-sm border-0 bg-transparent px-0.5 font-syriac text-inherit hover:bg-gold-soft"
-                    >
-                      {piece.text}
-                    </button>
-                  );
-                })}
+                  });
+                })()}
               </p>
             )
           )}

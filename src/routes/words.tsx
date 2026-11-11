@@ -311,7 +311,7 @@ function Words() {
                 </div>
                 {verse.sy && (
                   <p dir="rtl" lang="syr" className="mt-2 font-syriac text-2xl leading-normal text-jesus">
-                    <SyriacNames text={verse.sy} />
+                    <SyriacNames text={verse.sy} english={verse.en} />
                   </p>
                 )}
                 {pending && position === 0 && <p className="mt-2 text-muted">Opening this language…</p>}

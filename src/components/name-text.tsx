@@ -14,10 +14,12 @@ export function NameText({ text }: { text: string }) {
   );
 }
 
-export function SyriacNames({ text }: { text: string }) {
+export function SyriacNames({ text, english }: { text: string; english?: string }) {
+  let prev = "";
   return syriacPieces(text).map((piece, index) => {
     if (piece.kind === "space") return <span key={index}>{piece.text}</span>;
-    const named = nameOfSyriac(piece.word);
+    const named = nameOfSyriac(piece.word, english, prev);
+    prev = piece.word;
     if (!named) return <span key={index}>{piece.text}</span>;
     return (
       <Link key={index} to="/names" hash={named.id} className={`${NAME_CLASS} font-syriac`}>

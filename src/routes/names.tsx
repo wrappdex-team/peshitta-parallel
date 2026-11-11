@@ -31,7 +31,7 @@ function Names() {
     const q = query.trim().toLowerCase();
     if (!q) return NAMES;
     return NAMES.filter((row) =>
-      [row.en, row.known, row.say, row.sy, row.kind, row.note, ...(row.forms ?? [])].join(" ").toLowerCase().includes(q),
+      [row.en, row.known, row.say, row.sy, row.kind, row.note, ...(row.forms ?? []), ...(row.spellings ?? [])].join(" ").toLowerCase().includes(q),
     );
   }, [query]);
 
@@ -95,6 +95,11 @@ function NameStudy({ row, active }: { row: NameEntry; active: boolean }) {
           {row.sy}
         </p>
       </div>
+      {row.spellings && row.spellings.filter((spelling) => spelling !== row.sy).length > 0 ? (
+        <p className="mt-2 font-syriac text-2xl leading-none text-syriac" lang="syr" dir="rtl">
+          {row.spellings.filter((spelling) => spelling !== row.sy).join("  ")}
+        </p>
+      ) : null}
       <p className="mt-2 text-sm">
         <span className="text-gold">Read</span> {row.say}
       </p>

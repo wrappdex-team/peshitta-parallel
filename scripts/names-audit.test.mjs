@@ -54,3 +54,49 @@ test("the name index records every studied person and place with the Syriac, the
     assert.ok(row.forms.includes(row.en));
   }
 });
+
+test("a name's first verse is a verse that actually prints it", () => {
+  const registry = JSON.parse(read("src/data/names.json"));
+  const owners = new Map();
+  for (const row of registry.names) {
+    assert.notEqual(row.en, "Amen");
+    assert.equal(row.kind === "person" || row.kind === "place" || row.kind === "people" || row.kind === "letter" || row.kind === "title", true, row.en);
+    for (const form of row.forms) {
+      assert.equal(owners.has(form), false, form);
+      owners.set(form, row.id);
+    }
+    const ref = /^([a-z0-9]+) (\d+):(\d+)$/.exec(row.ref);
+    assert.ok(ref, row.en);
+    const book = JSON.parse(read(`src/data/nt/${ref[1]}.json`));
+    const verse = book.chapters[Number(ref[2]) - 1].find((item) => item.v === Number(ref[3]));
+    assert.ok(verse, row.ref);
+    const printed = row.forms.some((form) => new RegExp(`(?<![A-Za-z'’\\-])${form.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?![A-Za-z'’\\-])`).test(verse.en || ""));
+    assert.equal(printed, true, `${row.en} ${row.ref}`);
+  }
+  const yisrael = registry.names.find((row) => row.en === "Yisrael");
+  assert.equal(yisrael.kind, "people");
+  assert.ok(yisrael.spellings.length >= 2);
+  const sara = registry.names.find((row) => row.en === "Sara");
+  assert.ok(sara.count < 10, sara.count);
+  assert.equal(registry.names.find((row) => row.en === "Hawwa").count, 1);
+  assert.equal(registry.names.find((row) => row.en === "Korazin").kind, "place");
+  assert.equal(registry.names.some((row) => row.en === "Kurazin"), false);
+  assert.equal(registry.names.find((row) => row.en === "Shalem").known, "Salem");
+  assert.equal(registry.names.find((row) => row.en === "Shalim").known, "Salim");
+});
+
+test("Hebrews keeps the Syriac letter mem where a Latin V had been written", () => {
+  const files = readdirSync(new URL("src/data/nt", root)).filter((file) => file.endsWith(".json"));
+  for (const file of files) {
+    const book = JSON.parse(read(`src/data/nt/${file}`));
+    for (const chapter of book.chapters) {
+      for (const verse of chapter) {
+        assert.equal(/[A-Za-z]/.test(verse.sy || ""), false, `${file}`);
+      }
+    }
+  }
+  const hebrews = JSON.parse(read("src/data/nt/hebrews.json"));
+  const salem = hebrews.chapters[6].find((verse) => verse.v === 1);
+  assert.match(salem.sy, /ܐܒܪܗܡ/);
+  assert.match(salem.sy, /ܫܠܝܡ/);
+});

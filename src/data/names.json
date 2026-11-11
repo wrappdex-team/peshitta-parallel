@@ -1,5 +1,5 @@
 {
-  "note": "Persons and places in this Peshitta. sy is the spelling in the text. en is the form printed in this book. known is the familiar English finder. say is a reading of the Syriac letters, not a second translation. sources, when present, are the Hebrew or Greek writing of that name, not a pronunciation of the Syriac.",
+  "note": "Persons and places in this Peshitta. sy is the spelling in the text. en is the form printed most often in this book. known is the familiar English finder. say is a reading of the Syriac letters, not a second translation. count is the verses where this book prints the name and that Syriac spelling is in the same verse. sources, when present, are the Hebrew, Aramaic, or Greek writing of that name, not a pronunciation of the Syriac.",
   "names": [
     {
       "sy": "ܥܒܕܘ",
@@ -25,7 +25,7 @@
       "say": "aba",
       "kind": "person",
       "count": 9,
-      "ref": "galatians 4:6",
+      "ref": "matthew 27:16",
       "note": "The Peshitta writes this person ܐܒܐ. This book prints Abba. Read from the Syriac letters: aba. The same letters are also the ordinary word “father.”",
       "sources": [
         {
@@ -84,13 +84,14 @@
       "en": "Achaia",
       "forms": [
         "Achaia",
-        "Akaya"
+        "Akaya",
+        "Akaia"
       ],
       "known": "Achaia",
       "say": "Achaia",
       "kind": "place",
-      "count": 8,
-      "ref": "1corinthians 16:15",
+      "count": 11,
+      "ref": "acts 18:12",
       "note": "The Peshitta writes this place ܐܟܐܝܐ. This book prints Achaia. Read from the Syriac letters: Achaia.",
       "sources": [
         {
@@ -155,7 +156,7 @@
       "say": "Ādām",
       "kind": "person",
       "count": 7,
-      "ref": "1corinthians 15:22",
+      "ref": "luke 3:38",
       "note": "The Peshitta writes this person ܐܕܡ. This book prints Adam. Read from the Syriac letters: Ādām.",
       "sources": [
         {
@@ -210,20 +211,6 @@
       "id": "agabus"
     },
     {
-      "sy": "ܐܓܪܦܐ",
-      "en": "Agrippa",
-      "forms": [
-        "Agrippa"
-      ],
-      "known": "Agrippa",
-      "say": "agrepa",
-      "kind": "person",
-      "count": 5,
-      "ref": "acts 25:26",
-      "note": "The Peshitta writes this person ܐܓܪܦܐ. This book prints Agrippa. Read from the Syriac letters: agrepa. The Peshitta also spells this name ܐܓܪܦܘܣ.",
-      "id": "agrippa"
-    },
-    {
       "sy": "ܐܓܪܦܘܣ",
       "en": "Agrippa",
       "forms": [
@@ -232,10 +219,14 @@
       "known": "Agrippa",
       "say": "agrappos",
       "kind": "person",
-      "count": 9,
+      "count": 14,
       "ref": "acts 12:1",
       "note": "The Peshitta writes this person ܐܓܪܦܘܣ. This book prints Agrippa. Read from the Syriac letters: agrappos. The Peshitta also spells this name ܐܓܪܦܐ.",
-      "id": "agrippa-agrappos"
+      "id": "agrippa-agrappos",
+      "spellings": [
+        "ܐܓܪܦܘܣ",
+        "ܐܓܪܦܐ"
+      ]
     },
     {
       "sy": "ܐܗܪܘܢ",
@@ -247,7 +238,7 @@
       "say": "Aharon",
       "kind": "person",
       "count": 5,
-      "ref": "acts 7:40",
+      "ref": "luke 1:5",
       "note": "The Peshitta writes this person ܐܗܪܘܢ. This book prints Aharon. The familiar English is Aaron. Read from the Syriac letters: Aharon.",
       "sources": [
         {
@@ -285,28 +276,21 @@
       "sy": "ܐܠܟܣܢܕܪܘܣ",
       "en": "Aleksandros",
       "forms": [
-        "Aleksandros"
+        "Aleksandros",
+        "Alexander",
+        "Alexandros"
       ],
       "known": "Alexander",
       "say": "aleksandros",
       "kind": "person",
-      "count": 4,
-      "ref": "1timothy 1:20",
-      "note": "The Peshitta writes this person ܐܠܟܣܢܕܪܘܣ. This book prints Aleksandros. The familiar English is Alexander. Read from the Syriac letters: aleksandros.",
-      "id": "aleksandros"
-    },
-    {
-      "sy": "ܐܠܟܣܢܕܪܣ",
-      "en": "Alexander",
-      "forms": [
-        "Alexander"
+      "count": 5,
+      "ref": "mark 15:21",
+      "note": "The Peshitta writes this person ܐܠܟܣܢܕܪܘܣ. This book prints Aleksandros. The familiar English is Alexander. Read from the Syriac letters: aleksandros. The Peshitta also spells this name ܐܠܟܣܢܕܪܣ.",
+      "id": "aleksandros",
+      "spellings": [
+        "ܐܠܟܣܢܕܪܘܣ",
+        "ܐܠܟܣܢܕܪܣ"
       ],
-      "known": "Alexander",
-      "say": "Alexander",
-      "kind": "person",
-      "count": 1,
-      "ref": "2timothy 4:14",
-      "note": "The Peshitta writes this person ܐܠܟܣܢܕܪܣ. This book prints Alexander. Read from the Syriac letters: Alexander.",
       "sources": [
         {
           "script": "Greek",
@@ -314,8 +298,7 @@
           "say": "Alexandros",
           "note": "Defender of men. A Greek name."
         }
-      ],
-      "id": "alexander"
+      ]
     },
     {
       "sy": "ܐܠܟܣܢܕܪܝܐ",
@@ -333,20 +316,6 @@
       "id": "alexandria"
     },
     {
-      "sy": "ܐܡܝܢ",
-      "en": "Amen",
-      "forms": [
-        "Amen"
-      ],
-      "known": "Amen",
-      "say": "amen",
-      "kind": "person",
-      "count": 95,
-      "ref": "1corinthians 14:16",
-      "note": "Truly, firmly.",
-      "id": "amen"
-    },
-    {
       "sy": "ܥܡܝܢܕܒ",
       "en": "Aminadab",
       "forms": [
@@ -356,7 +325,7 @@
       "say": "aminadab",
       "kind": "person",
       "count": 2,
-      "ref": "luke 3:33",
+      "ref": "matthew 1:4",
       "note": "The Peshitta writes this person ܥܡܝܢܕܒ. This book prints Aminadab. The familiar English is Amminadab. Read from the Syriac letters: aminadab.",
       "id": "aminadab"
     },
@@ -391,7 +360,7 @@
       "known": "Amon",
       "say": "amon",
       "kind": "person",
-      "count": 3,
+      "count": 1,
       "ref": "matthew 1:10",
       "note": "The Peshitta writes this person ܐܡܘܢ. This book prints Amon. Read from the Syriac letters: amon.",
       "id": "amon"
@@ -400,14 +369,15 @@
       "sy": "ܥܡܘܪܐ",
       "en": "Amora",
       "forms": [
-        "Amora"
+        "Amora",
+        "Amorah"
       ],
-      "known": "Amora",
+      "known": "Gomorrah",
       "say": "ʿamurā",
-      "kind": "person",
-      "count": 4,
-      "ref": "jude 1:7",
-      "note": "The Peshitta writes this person ܥܡܘܪܐ. This book prints Amora. Read from the Syriac letters: ʿamurā. The same letters are also the ordinary word “dwellers.”",
+      "kind": "place",
+      "count": 5,
+      "ref": "matthew 10:15",
+      "note": "The Peshitta writes this place ܥܡܘܪܐ. This book prints Amora. Read from the Syriac letters: ʿamurā. The same letters are also the ordinary word “dwellers.”",
       "id": "amora"
     },
     {
@@ -463,7 +433,7 @@
       "say": "Andrawos",
       "kind": "person",
       "count": 12,
-      "ref": "acts 1:13",
+      "ref": "matthew 4:18",
       "note": "The Peshitta writes this person ܐܢܕܪܐܘܣ. This book prints Andrawos. The familiar English is Andrew. Read from the Syriac letters: Andrawos.",
       "sources": [
         {
@@ -529,7 +499,7 @@
       "say": "anṭyukyā",
       "kind": "place",
       "count": 9,
-      "ref": "2timothy 3:11",
+      "ref": "acts 11:19",
       "note": "The Peshitta writes this place ܐܢܛܝܟܝܐ. This book prints Antiokia. The familiar English is Antioch. Read from the Syriac letters: anṭyukyā.",
       "sources": [
         {
@@ -579,7 +549,7 @@
       "say": "ʾaplo",
       "kind": "person",
       "count": 10,
-      "ref": "1corinthians 1:12",
+      "ref": "acts 18:24",
       "note": "The Peshitta writes this person ܐܦܠܘ. This book prints Apolos. The familiar English is Apollos. Read from the Syriac letters: ʾaplo.",
       "id": "apolos"
     },
@@ -603,13 +573,14 @@
       "forms": [
         "Aqilos",
         "Aqulos",
-        "Aqelos"
+        "Aqelos",
+        "Aqlus"
       ],
       "known": "Aquila",
       "say": "aqilos",
       "kind": "person",
       "count": 6,
-      "ref": "1corinthians 16:19",
+      "ref": "acts 18:2",
       "note": "The Peshitta writes this person ܐܩܠܘܣ. This book prints Aqilos. The familiar English is Aquila. Read from the Syriac letters: aqilos.",
       "id": "aqilos"
     },
@@ -665,7 +636,7 @@
       "say": "aram",
       "kind": "person",
       "count": 3,
-      "ref": "luke 3:33",
+      "ref": "matthew 1:3",
       "note": "The Peshitta writes this person ܐܪܡ. This book prints Aram. The familiar English is Ram. Read from the Syriac letters: aram.",
       "id": "aram"
     },
@@ -674,13 +645,14 @@
       "en": "Aramean",
       "forms": [
         "Aramean",
-        "Aramaye"
+        "Aramaye",
+        "Arameans"
       ],
       "known": "Aramean",
       "say": "aramaya",
       "kind": "people",
-      "count": 9,
-      "ref": "acts 16:1",
+      "count": 18,
+      "ref": "luke 4:27",
       "note": "The Peshitta writes this people ܐܪܡܝܐ. This book prints Aramean. Read from the Syriac letters: aramaya.",
       "sources": [
         {
@@ -715,7 +687,7 @@
       "known": "Ares",
       "say": "aryos",
       "kind": "person",
-      "count": 3,
+      "count": 2,
       "ref": "acts 17:19",
       "note": "The Peshitta writes this person ܐܪܝܘܣ. This book prints Arios. The familiar English is Ares. Read from the Syriac letters: aryos.",
       "id": "arios"
@@ -846,13 +818,14 @@
       "sy": "ܐܣܝܐ",
       "en": "Asia",
       "forms": [
-        "Asia"
+        "Asia",
+        "Asiya"
       ],
       "known": "Asia",
       "say": "asya",
       "kind": "place",
-      "count": 17,
-      "ref": "1corinthians 16:19",
+      "count": 18,
+      "ref": "acts 2:9",
       "note": "The Peshitta writes this place ܐܣܝܐ. This book prints Asia. Read from the Syriac letters: asya. The same letters are also the ordinary word “physician.”",
       "sources": [
         {
@@ -874,7 +847,7 @@
       "say": "atenus",
       "kind": "place",
       "count": 4,
-      "ref": "1thessalonians 3:1",
+      "ref": "acts 17:15",
       "note": "The Peshitta writes this place ܐܬܢܘܣ. This book prints Athens. Read from the Syriac letters: atenus.",
       "sources": [
         {
@@ -911,7 +884,7 @@
       "say": "Abiya",
       "kind": "person",
       "count": 2,
-      "ref": "luke 1:5",
+      "ref": "matthew 1:7",
       "note": "The Peshitta writes this person ܐܒܝܐ. This book prints Aviya. The familiar English is Abijah. Read from the Syriac letters: Abiya.",
       "id": "aviya"
     },
@@ -926,7 +899,7 @@
       "say": "Avraham",
       "kind": "person",
       "count": 71,
-      "ref": "1peter 3:6",
+      "ref": "matthew 1:1",
       "note": "The Peshitta writes this person ܐܒܪܗܡ. This book prints Avraham. The familiar English is Abraham. Read from the Syriac letters: Avraham.",
       "sources": [
         {
@@ -991,7 +964,7 @@
       "say": "beʿelzebub",
       "kind": "person",
       "count": 7,
-      "ref": "luke 11:15",
+      "ref": "matthew 10:25",
       "note": "The Peshitta writes this person ܒܥܠܙܒܘܒ. This book prints Baalzebub. Read from the Syriac letters: beʿelzebub.",
       "id": "baalzebub"
     },
@@ -1033,7 +1006,7 @@
       "say": "Bar-Abba",
       "kind": "person",
       "count": 4,
-      "ref": "luke 23:18",
+      "ref": "matthew 27:20",
       "note": "The Peshitta writes this person ܒܪ ܐܒܐ. This book prints Bar-Abba. The familiar English is Barabbas. Read from the Syriac letters: Bar-Abba.",
       "id": "barabba"
     },
@@ -1047,7 +1020,7 @@
       "say": "barnaba",
       "kind": "person",
       "count": 27,
-      "ref": "1corinthians 9:6",
+      "ref": "acts 4:36",
       "note": "The Peshitta writes this person ܒܪܢܒܐ. This book prints Bar-Naba. The familiar English is Barnabas. Read from the Syriac letters: barnaba.",
       "sources": [
         {
@@ -1074,31 +1047,18 @@
       "id": "barshuma"
     },
     {
-      "sy": "ܒܪ ܬܘܠܡܝ",
-      "en": "Bar-Tulmai",
-      "forms": [
-        "Bar-Tulmai"
-      ],
-      "known": "Bar-Tulmai",
-      "say": "Bar-Tulmai",
-      "kind": "person",
-      "count": 2,
-      "ref": "mark 3:18",
-      "note": "The Peshitta writes this person ܒܪ ܬܘܠܡܝ. This book prints Bar-Tulmai. Read from the Syriac letters: Bar-Tulmai.",
-      "id": "bartulmai"
-    },
-    {
       "sy": "ܬܘܠܡܝ",
       "en": "Bar-Tulmay",
       "forms": [
-        "Bar-Tulmay"
+        "Bar-Tulmay",
+        "Bar-Tulmai"
       ],
       "known": "Bartholomew",
       "say": "Tūlmay",
       "kind": "person",
       "count": 4,
-      "ref": "acts 1:13",
-      "note": "The Peshitta writes this person ܬܘܠܡܝ. This book prints Bar-Tulmay. The familiar English is Tolmai. Read from the Syriac letters: Tūlmay.",
+      "ref": "matthew 10:3",
+      "note": "The Peshitta writes this person ܬܘܠܡܝ. This book prints Bar-Tulmay. The familiar English is Tolmai. Read from the Syriac letters: Tūlmay. The Peshitta also spells this name ܒܪ ܬܘܠܡܝ.",
       "sources": [
         {
           "script": "Greek",
@@ -1107,7 +1067,11 @@
           "note": "Aramaic bar, “son of,” with the name Talmai. The Greek writes the whole name as one word."
         }
       ],
-      "id": "bartulmay"
+      "id": "bartulmay",
+      "spellings": [
+        "ܬܘܠܡܝ",
+        "ܒܪ ܬܘܠܡܝ"
+      ]
     },
     {
       "sy": "ܒܪܟܝܐ",
@@ -1132,7 +1096,7 @@
       "known": "Barak",
       "say": "baraq",
       "kind": "person",
-      "count": 2,
+      "count": 1,
       "ref": "hebrews 11:32",
       "note": "The Peshitta writes this person ܒܪܩ. This book prints Baraq. The familiar English is Barak. Read from the Syriac letters: baraq.",
       "id": "baraq"
@@ -1161,8 +1125,8 @@
       "known": "Babylon",
       "say": "bābel",
       "kind": "place",
-      "count": 6,
-      "ref": "revelation 14:8",
+      "count": 11,
+      "ref": "matthew 1:11",
       "note": "The Peshitta writes this place ܒܒܝܠ. This book prints Bavel. The familiar English is Babylon. Read from the Syriac letters: bābel. The Peshitta also spells this name ܒܒܠ.",
       "sources": [
         {
@@ -1172,29 +1136,11 @@
           "note": "The Hebrew writing of Babylon. The Greek is Βαβυλών."
         }
       ],
-      "id": "bavel"
-    },
-    {
-      "sy": "ܒܒܠ",
-      "en": "Bavel",
-      "forms": [
-        "Bavel"
-      ],
-      "known": "Babylon",
-      "say": "babel",
-      "kind": "place",
-      "count": 5,
-      "ref": "1peter 5:13",
-      "note": "The Peshitta writes this place ܒܒܠ. This book prints Bavel. The familiar English is Babylon. Read from the Syriac letters: babel. The Peshitta also spells this name ܒܒܝܠ.",
-      "sources": [
-        {
-          "script": "Hebrew",
-          "text": "בָּבֶל",
-          "say": "Bavel",
-          "note": "The Hebrew writing of Babylon. The Greek is Βαβυλών."
-        }
-      ],
-      "id": "bavel-babel"
+      "id": "bavel",
+      "spellings": [
+        "ܒܒܝܠ",
+        "ܒܒܠ"
+      ]
     },
     {
       "sy": "ܒܢܝܡܝܢ",
@@ -1278,8 +1224,8 @@
       "known": "Bethany",
       "say": "anya",
       "kind": "place",
-      "count": 14,
-      "ref": "john 1:28",
+      "count": 13,
+      "ref": "matthew 21:17",
       "note": "The Peshitta writes this place ܥܢܝܐ. This book prints Beth-Anya. The familiar English is Bethany. Read from the Syriac letters: anya.",
       "id": "bethanya"
     },
@@ -1293,7 +1239,7 @@
       "say": "Beth-Lekhem",
       "kind": "place",
       "count": 8,
-      "ref": "john 7:42",
+      "ref": "matthew 2:1",
       "note": "The Peshitta writes this place ܒܝܬ ܠܚܡ. This book prints Beth-Lekhem. The familiar English is Bethlehem. Read from the Syriac letters: Beth-Lekhem.",
       "sources": [
         {
@@ -1329,7 +1275,7 @@
       "say": "Beth-Paga",
       "kind": "place",
       "count": 3,
-      "ref": "luke 19:29",
+      "ref": "matthew 21:1",
       "note": "The Peshitta writes this place ܒܝܬ ܦܓܐ. This book prints Beth-Paga. The familiar English is Bethphage. Read from the Syriac letters: Beth-Paga.",
       "id": "bethpaga"
     },
@@ -1337,13 +1283,14 @@
       "sy": "ܒܝܬ ܨܝܕܐ",
       "en": "Beth-Tsayda",
       "forms": [
-        "Beth-Tsayda"
+        "Beth-Tsayda",
+        "Beth-Tsaida"
       ],
       "known": "Bethsaida",
       "say": "Beth-Tsayda",
       "kind": "place",
-      "count": 6,
-      "ref": "john 1:44",
+      "count": 7,
+      "ref": "matthew 11:21",
       "note": "The Peshitta writes this place ܒܝܬ ܨܝܕܐ. This book prints Beth-Tsayda. The familiar English is Bethsaida. Read from the Syriac letters: Beth-Tsayda.",
       "id": "bethtsayda"
     },
@@ -1357,7 +1304,7 @@
       "say": "Bithynia",
       "kind": "place",
       "count": 2,
-      "ref": "1peter 1:1",
+      "ref": "acts 16:7",
       "note": "The Peshitta writes this place ܒܝܬܘܢܝܐ. This book prints Bithynia. Read from the Syriac letters: Bithynia.",
       "id": "bithynia"
     },
@@ -1385,7 +1332,7 @@
       "say": "baaz",
       "kind": "person",
       "count": 2,
-      "ref": "luke 3:32",
+      "ref": "matthew 1:5",
       "note": "The Peshitta writes this person ܒܥܙ. This book prints Boaz. Read from the Syriac letters: baaz.",
       "id": "boaz"
     },
@@ -1400,7 +1347,7 @@
       "say": "Qesar",
       "kind": "person",
       "count": 28,
-      "ref": "acts 11:28",
+      "ref": "matthew 22:17",
       "note": "The Peshitta writes this person ܩܣܪ. This book prints Caesar. Read from the Syriac letters: Qesar.",
       "sources": [
         {
@@ -1450,7 +1397,7 @@
       "say": "Chalpai",
       "kind": "person",
       "count": 5,
-      "ref": "acts 1:13",
+      "ref": "matthew 10:3",
       "note": "The Peshitta writes this person ܚܠܦܝ. This book prints Chalpai. The familiar English is Alphaeus. Read from the Syriac letters: Chalpai.",
       "id": "chalpai"
     },
@@ -1464,7 +1411,7 @@
       "say": "hnan",
       "kind": "person",
       "count": 3,
-      "ref": "acts 4:6",
+      "ref": "luke 3:2",
       "note": "The Peshitta writes this person ܚܢܢ. This book prints Chanan. The familiar English is Annas, the high priest in Acts 4:6. Read the letters hnan. The Hebrew name is חָנָן, Hanan, gracious. The Greek writes Ἅννας.",
       "sources": [
         {
@@ -1502,7 +1449,7 @@
       "say": "ḥanok",
       "kind": "person",
       "count": 3,
-      "ref": "hebrews 11:5",
+      "ref": "luke 3:37",
       "note": "The Peshitta writes this person ܚܢܘܟ. This book prints Chanok. The familiar English is Enoch. Read from the Syriac letters: ḥanok.",
       "sources": [
         {
@@ -1552,7 +1499,7 @@
       "say": "hesron",
       "kind": "person",
       "count": 2,
-      "ref": "luke 3:33",
+      "ref": "matthew 1:3",
       "note": "The Peshitta writes this person ܚܨܪܘܢ. This book prints Chetsron. The familiar English is Hezron. Read from the Syriac letters: hesron.",
       "id": "chetsron"
     },
@@ -1622,8 +1569,8 @@
       "known": "Corinth",
       "say": "Corinth",
       "kind": "place",
-      "count": 4,
-      "ref": "1corinthians 1:2",
+      "count": 7,
+      "ref": "acts 18:1",
       "note": "The Peshitta writes this place ܩܘܪܢܬܘܣ. This book prints Corinth. Read from the Syriac letters: Corinth.",
       "id": "corinth"
     },
@@ -1717,7 +1664,7 @@
       "say": "Daniyel",
       "kind": "person",
       "count": 2,
-      "ref": "mark 13:14",
+      "ref": "matthew 24:15",
       "note": "The Peshitta writes this person ܕܢܝܐܝܠ. This book prints Daniyel. The familiar English is Daniel. Read from the Syriac letters: Daniyel.",
       "id": "daniyel"
     },
@@ -1731,7 +1678,7 @@
       "say": "Darmasuq",
       "kind": "place",
       "count": 15,
-      "ref": "2corinthians 11:32",
+      "ref": "acts 9:2",
       "note": "The Peshitta writes this place ܕܪܡܣܘܩ. This book prints Darmasuq. The familiar English is Damascus. Read from the Syriac letters: Darmasuq.",
       "sources": [
         {
@@ -1753,7 +1700,7 @@
       "say": "Dawid",
       "kind": "person",
       "count": 55,
-      "ref": "2timothy 2:8",
+      "ref": "matthew 1:1",
       "note": "The Peshitta writes this person ܕܘܝܕ. This book prints Dawid. The familiar English is David. Read from the Syriac letters: Dawid.",
       "sources": [
         {
@@ -1769,42 +1716,35 @@
       "sy": "ܕܡܐ",
       "en": "Dema",
       "forms": [
-        "Dema"
+        "Dema",
+        "Demas"
       ],
       "known": "Demas",
       "say": "dma",
       "kind": "person",
-      "count": 3,
+      "count": 4,
       "ref": "acts 1:19",
       "note": "The Peshitta writes this person ܕܡܐ. This book prints Dema. The familiar English is Demas. Read from the Syriac letters: dma. The same letters are also the ordinary word “blood.”",
       "id": "dema"
     },
     {
       "sy": "ܕܡܛܪܝܘܣ",
-      "en": "Demetrios",
+      "en": "Demetrius",
       "forms": [
-        "Demetrios"
+        "Demetrios",
+        "Demetrius"
       ],
       "known": "Demetrius",
       "say": "demetriyos",
       "kind": "person",
-      "count": 2,
+      "count": 3,
       "ref": "acts 19:24",
-      "note": "The Peshitta writes this person ܕܡܛܪܝܘܣ. This book prints Demetrios. The familiar English is Demetrius. Read from the Syriac letters: demetriyos.",
-      "id": "demetrios"
-    },
-    {
-      "sy": "ܕܡܝܛܪܝܘܣ",
-      "en": "Demetrius",
-      "forms": [
-        "Demetrius"
+      "note": "The Peshitta writes this person ܕܡܛܪܝܘܣ. This book prints Demetrius. The familiar English is Demetrius. Read from the Syriac letters: demetriyos. The Peshitta also spells this name ܕܡܝܛܪܝܘܣ.",
+      "id": "demetrios",
+      "spellings": [
+        "ܕܡܛܪܝܘܣ",
+        "ܕܡܝܛܪܝܘܣ"
       ],
-      "known": "Demetrius",
-      "say": "dmitriyos",
-      "kind": "person",
-      "count": 1,
-      "ref": "3john 1:12",
-      "note": "The Peshitta writes this person ܕܡܝܛܪܝܘܣ. This book prints Demetrius. Read from the Syriac letters: dmitriyos. The same letters are also the ordinary word “of Demetrius.”",
       "sources": [
         {
           "script": "Greek",
@@ -1812,19 +1752,19 @@
           "say": "Dēmētrios",
           "note": "Belonging to Demeter. A Greek name."
         }
-      ],
-      "id": "demetrius"
+      ]
     },
     {
       "sy": "ܕܪܒܐ",
       "en": "Derbe",
       "forms": [
-        "Derbe"
+        "Derbe",
+        "Darba"
       ],
       "known": "Derbe",
       "say": "Derbe",
       "kind": "place",
-      "count": 3,
+      "count": 4,
       "ref": "acts 14:6",
       "note": "The Peshitta writes this place ܕܪܒܐ. This book prints Derbe. Read from the Syriac letters: Derbe.",
       "id": "derbe"
@@ -1895,8 +1835,8 @@
       "known": "Eil",
       "say": "Eli",
       "kind": "person",
-      "count": 1,
-      "ref": "mark 15:34",
+      "count": 2,
+      "ref": "matthew 27:46",
       "note": "Eli, my Elohim. Matthew 27:46.",
       "id": "eil"
     },
@@ -1904,13 +1844,14 @@
       "sy": "ܐܠܝܥܙܪ",
       "en": "Eleazar",
       "forms": [
-        "Eleazar"
+        "Eleazar",
+        "Eliezer"
       ],
       "known": "Eliezer",
       "say": "eliʿazar",
       "kind": "person",
       "count": 2,
-      "ref": "luke 3:29",
+      "ref": "matthew 1:15",
       "note": "The Peshitta writes this person ܐܠܝܥܙܪ. This book prints Eleazar. The familiar English is Eliezer. Read from the Syriac letters: eliʿazar.",
       "id": "eleazar"
     },
@@ -1925,7 +1866,7 @@
       "say": "eliqim",
       "kind": "person",
       "count": 2,
-      "ref": "luke 3:30",
+      "ref": "matthew 1:13",
       "note": "The Peshitta writes this person ܐܠܝܩܝܡ. This book prints Eliakim. The familiar English is Eliakim. Read from the Syriac letters: eliqim.",
       "id": "eliakim"
     },
@@ -1988,8 +1929,8 @@
       "known": "Elijah",
       "say": "Eliyahu",
       "kind": "person",
-      "count": 32,
-      "ref": "james 5:17",
+      "count": 31,
+      "ref": "matthew 11:14",
       "note": "The Peshitta writes this person ܐܠܝܐ. This book prints Eliyahu. The familiar English is Elijah. Read from the Syriac letters: Eliyahu.",
       "sources": [
         {
@@ -2082,7 +2023,7 @@
       "say": "epesos",
       "kind": "place",
       "count": 16,
-      "ref": "1corinthians 15:32",
+      "ref": "acts 18:19",
       "note": "The Peshitta writes this place ܐܦܣܘܣ. This book prints Ephesos. The familiar English is Ephesus. Read from the Syriac letters: epesos.",
       "sources": [
         {
@@ -2119,7 +2060,7 @@
       "say": "Erastos",
       "kind": "person",
       "count": 3,
-      "ref": "2timothy 4:20",
+      "ref": "acts 19:22",
       "note": "The Peshitta writes this person ܐܪܣܛܘܣ. This book prints Erastos. The familiar English is Erastus. Read from the Syriac letters: Erastos.",
       "id": "erastos"
     },
@@ -2132,8 +2073,8 @@
       "known": "Esau",
       "say": "esaw",
       "kind": "person",
-      "count": 4,
-      "ref": "hebrews 11:20",
+      "count": 3,
+      "ref": "romans 9:13",
       "note": "The Peshitta writes this person ܥܣܘ. This book prints Esau. Read from the Syriac letters: esaw.",
       "id": "esau"
     },
@@ -2150,7 +2091,7 @@
       "say": "eshaya",
       "kind": "person",
       "count": 22,
-      "ref": "acts 8:28",
+      "ref": "matthew 3:3",
       "note": "The Peshitta writes this person ܐܫܥܝܐ. This book prints Eshaya. The familiar English is Isaiah. Read from the Syriac letters: eshaya.",
       "sources": [
         {
@@ -2167,7 +2108,8 @@
       "en": "Estepanos",
       "forms": [
         "Estepanos",
-        "Estephanos"
+        "Estephanos",
+        "Stephen"
       ],
       "known": "Stephen",
       "say": "ʾesṭep̄anōs",
@@ -2279,24 +2221,14 @@
       "known": "Festus",
       "say": "phestos",
       "kind": "person",
-      "count": 13,
+      "count": 14,
       "ref": "acts 24:27",
       "note": "The Peshitta writes this person ܦܗܣܛܘܣ. This book prints Festus. Read from the Syriac letters: phestos. The Peshitta also spells this name ܦܗܣܛܣ.",
-      "id": "festus"
-    },
-    {
-      "sy": "ܦܗܣܛܣ",
-      "en": "Festus",
-      "forms": [
-        "Festus"
-      ],
-      "known": "Festus",
-      "say": "festos",
-      "kind": "person",
-      "count": 1,
-      "ref": "acts 27:1",
-      "note": "The Peshitta writes this person ܦܗܣܛܣ. This book prints Festus. Read from the Syriac letters: festos. The Peshitta also spells this name ܦܗܣܛܘܣ.",
-      "id": "festus-festos"
+      "id": "festus",
+      "spellings": [
+        "ܦܗܣܛܘܣ",
+        "ܦܗܣܛܣ"
+      ]
     },
     {
       "sy": "ܦܪܛܘܢܛܘܣ",
@@ -2373,7 +2305,7 @@
       "say": "Gadarenes",
       "kind": "place",
       "count": 4,
-      "ref": "luke 8:26",
+      "ref": "matthew 8:28",
       "note": "The Peshitta writes this place ܓܕܪܝܐ. This book prints Gadarenes. Read from the Syriac letters: Gadarenes.",
       "sources": [
         {
@@ -2396,7 +2328,7 @@
       "say": "gadseman",
       "kind": "place",
       "count": 2,
-      "ref": "mark 14:32",
+      "ref": "matthew 26:36",
       "note": "The Peshitta writes this place ܓܕܣܡܢ. This book prints Gadsaman. The familiar English is Gethsemane. Read from the Syriac letters: gadseman.",
       "id": "gadsaman"
     },
@@ -2411,7 +2343,7 @@
       "say": "gaggulta",
       "kind": "place",
       "count": 3,
-      "ref": "john 19:17",
+      "ref": "matthew 27:33",
       "note": "The Peshitta writes this place ܓܓܘܠܬܐ. This book prints Gagulta. The familiar English is Golgotha. Read from the Syriac letters: gaggulta.",
       "id": "gagulta"
     },
@@ -2426,7 +2358,7 @@
       "say": "gayos",
       "kind": "person",
       "count": 5,
-      "ref": "1corinthians 1:14",
+      "ref": "acts 19:29",
       "note": "The Peshitta writes this person ܓܐܝܘܣ. This book prints Gaius. The familiar English is Gaius. Read from the Syriac letters: gayos.",
       "id": "gaius"
     },
@@ -2440,8 +2372,8 @@
       "known": "Galatia",
       "say": "galāṭāyā",
       "kind": "place",
-      "count": 5,
-      "ref": "1corinthians 16:1",
+      "count": 6,
+      "ref": "acts 16:6",
       "note": "The Peshitta writes this place ܓܠܛܝܐ. This book prints Galatia. Read from the Syriac letters: galāṭāyā.",
       "id": "galatia"
     },
@@ -2455,7 +2387,7 @@
       "say": "Galila",
       "kind": "place",
       "count": 62,
-      "ref": "acts 9:31",
+      "ref": "matthew 2:22",
       "note": "The Peshitta writes this place ܓܠܝܠܐ. This book prints Galila. The familiar English is Galilee. Read from the Syriac letters: Galila.",
       "sources": [
         {
@@ -2471,13 +2403,15 @@
       "sy": "ܓܠܝܠܝܐ",
       "en": "Galileans",
       "forms": [
-        "Galileans"
+        "Galileans",
+        "Galilayans",
+        "Galilean"
       ],
       "known": "Galileans",
       "say": "Galileans",
       "kind": "people",
-      "count": 3,
-      "ref": "acts 2:7",
+      "count": 5,
+      "ref": "luke 13:1",
       "note": "The Peshitta writes this people ܓܠܝܠܝܐ. This book prints Galileans. Read from the Syriac letters: Galileans.",
       "sources": [
         {
@@ -2542,7 +2476,7 @@
       "say": "Gehenna",
       "kind": "place",
       "count": 10,
-      "ref": "luke 12:5",
+      "ref": "matthew 5:22",
       "note": "The Peshitta writes this place ܓܗܢܐ. This book prints Gehenna. Read from the Syriac letters: Gehenna.",
       "sources": [
         {
@@ -2558,13 +2492,14 @@
       "sy": "ܓܢܣܪ",
       "en": "Gennesar",
       "forms": [
-        "Gennesar"
+        "Gennesar",
+        "Gennesaret"
       ],
       "known": "Gennesaret",
       "say": "Gennesar",
       "kind": "place",
-      "count": 2,
-      "ref": "mark 6:53",
+      "count": 3,
+      "ref": "matthew 14:34",
       "note": "The Peshitta writes this place ܓܢܣܪ. This book prints Gennesar. The familiar English is Gennesaret. Read from the Syriac letters: Gennesar.",
       "id": "gennesar"
     },
@@ -2607,7 +2542,7 @@
       "say": "habil",
       "kind": "person",
       "count": 4,
-      "ref": "hebrews 11:4",
+      "ref": "matthew 23:35",
       "note": "The Peshitta writes this person ܗܒܝܠ. This book prints Habeel. The familiar English is Abel. Read from the Syriac letters: habil.",
       "sources": [
         {
@@ -2670,9 +2605,9 @@
       "known": "Eve",
       "say": "ḥawa",
       "kind": "person",
-      "count": 8,
+      "count": 1,
       "ref": "1timothy 2:13",
-      "note": "The Peshitta writes this person ܚܘܐ. This book prints Hawwa. The familiar English is Eve. Read from the Syriac letters: ḥawa.",
+      "note": "The Peshitta writes this person ܚܘܐ. This book prints Hawwa. The familiar English is Eve. Read from the Syriac letters: ḥawa. Where this book does not print Hawwa, the same letters are the verb for showing, not the woman.",
       "sources": [
         {
           "script": "Hebrew",
@@ -2722,7 +2657,7 @@
       "say": "Herodes",
       "kind": "person",
       "count": 43,
-      "ref": "acts 4:27",
+      "ref": "matthew 2:1",
       "note": "The Peshitta writes this person ܗܪܘܕܣ. This book prints Herodes. The familiar English is Herod. Read from the Syriac letters: Herodes.",
       "sources": [
         {
@@ -2745,7 +2680,7 @@
       "say": "Herodiya",
       "kind": "person",
       "count": 6,
-      "ref": "luke 3:19",
+      "ref": "matthew 14:3",
       "note": "The Peshitta writes this person ܗܪܘܕܝܐ. This book prints Herodias. The familiar English is Herodiya. Read from the Syriac letters: Herodiya.",
       "id": "herodias"
     },
@@ -2767,7 +2702,8 @@
       "sy": "ܗܘܡܢܐܘܣ",
       "en": "Humenayos",
       "forms": [
-        "Humenayos"
+        "Humenayos",
+        "Hymeneus"
       ],
       "known": "Hymenaeus",
       "say": "hūmenāʾōs",
@@ -2788,7 +2724,7 @@
       "say": "īqānōn",
       "kind": "place",
       "count": 5,
-      "ref": "2timothy 3:11",
+      "ref": "acts 13:51",
       "note": "The Peshitta writes this place ܐܝܩܢܘܢ. This book prints Iqnon. The familiar English is Iconium. Read from the Syriac letters: īqānōn.",
       "id": "iqnon"
     },
@@ -2812,13 +2748,14 @@
       "forms": [
         "Irikho",
         "Yericho",
-        "Iriycho"
+        "Iriycho",
+        "Airikhu"
       ],
       "known": "Jericho",
       "say": "irikho",
       "kind": "place",
       "count": 6,
-      "ref": "hebrews 11:30",
+      "ref": "matthew 20:29",
       "note": "The Peshitta writes this place ܐܝܪܝܚܘ. This book prints Irikho. The familiar English is Jericho. Read from the Syriac letters: irikho.",
       "id": "irikho"
     },
@@ -2834,7 +2771,7 @@
       "say": "ishi",
       "kind": "person",
       "count": 5,
-      "ref": "acts 13:22",
+      "ref": "matthew 1:5",
       "note": "The Peshitta writes this person ܐܝܫܝ. This book prints Ishai. The familiar English is Jesse. Read from the Syriac letters: ishi.",
       "id": "ishai"
     },
@@ -2862,8 +2799,8 @@
       "known": "Italy",
       "say": "iṭaliyā",
       "kind": "place",
-      "count": 6,
-      "ref": "acts 14:25",
+      "count": 5,
+      "ref": "acts 18:2",
       "note": "The Peshitta writes this place ܐܝܛܠܝܐ. This book prints Italy. The familiar English is Italy. Read from the Syriac letters: iṭaliyā.",
       "id": "italy"
     },
@@ -2953,29 +2890,6 @@
       "id": "julius"
     },
     {
-      "sy": "ܝܘܢܝܐ",
-      "en": "Junia",
-      "forms": [
-        "Junia",
-        "Yawnaye"
-      ],
-      "known": "Junia",
-      "say": "Yunia",
-      "kind": "person",
-      "count": 1,
-      "ref": "romans 16:7",
-      "note": "The Peshitta writes ܝܘܢܝܐ. In Romans 16:7 this book prints Junia, greeted with Andronicus. Read that name Yunia. The same letters, where the book prints Yawnaye, name the Greeks. The Greek writes Ἰουνία for the person and Ἕλλην where this Peshitta says an Aramean or a Greek.",
-      "sources": [
-        {
-          "script": "Greek",
-          "text": "Ἰουνία",
-          "say": "Iounia",
-          "note": "Junia, greeted in Romans 16:7. The same Syriac letters also name the Greeks."
-        }
-      ],
-      "id": "junia"
-    },
-    {
       "sy": "ܟܐܦܐ",
       "en": "Keefa",
       "forms": [
@@ -2985,8 +2899,8 @@
       "known": "Peter",
       "say": "Keefa",
       "kind": "person",
-      "count": 145,
-      "ref": "1corinthians 1:12",
+      "count": 89,
+      "ref": "matthew 4:18",
       "note": "Keefa, a rock. The same word is Shimon’s name and the thing he is named for.",
       "sources": [
         {
@@ -3022,7 +2936,7 @@
       "say": "Kfar-Nachum",
       "kind": "place",
       "count": 16,
-      "ref": "john 2:12",
+      "ref": "matthew 4:13",
       "note": "The Peshitta writes this place ܟܦܪܢܚܘܡ. This book prints Kfar-Nachum. The familiar English is Capernaum. Read from the Syriac letters: Kfar-Nachum.",
       "sources": [
         {
@@ -3038,12 +2952,13 @@
       "sy": "ܟܘܪܙܝܢ",
       "en": "Korazin",
       "forms": [
-        "Korazin"
+        "Korazin",
+        "Kurazin"
       ],
       "known": "Chorazin",
       "say": "kurzin",
       "kind": "place",
-      "count": 1,
+      "count": 2,
       "ref": "matthew 11:21",
       "note": "The Peshitta writes this place ܟܘܪܙܝܢ. This book prints Korazin. The familiar English is Chorazin. Read from the Syriac letters: kurzin.",
       "id": "korazin"
@@ -3057,24 +2972,10 @@
       "known": "Crispus",
       "say": "lkrispus",
       "kind": "person",
-      "count": 1,
-      "ref": "1corinthians 1:14",
+      "count": 2,
+      "ref": "acts 18:8",
       "note": "The Peshitta writes this person ܠܟܪܝܣܦܘܣ. This book prints Krispos. The familiar English is Crispus. Read from the Syriac letters: lkrispus.",
       "id": "krispos"
-    },
-    {
-      "sy": "ܟܘܪܙܝܢ",
-      "en": "Kurazin",
-      "forms": [
-        "Kurazin"
-      ],
-      "known": "Chorazin",
-      "say": "kurzin",
-      "kind": "person",
-      "count": 2,
-      "ref": "luke 10:13",
-      "note": "The Peshitta writes this person ܟܘܪܙܝܢ. This book prints Kurazin. The familiar English is Chorazin. Read from the Syriac letters: kurzin.",
-      "id": "kurazin"
     },
     {
       "sy": "ܩܘܪܝܐ",
@@ -3085,9 +2986,9 @@
       "known": "Kuria",
       "say": "qūryā",
       "kind": "person",
-      "count": 27,
+      "count": 2,
       "ref": "2john 1:1",
-      "note": "The Peshitta writes this person ܩܘܪܝܐ. This book prints Kuria. Read from the Syriac letters: qūryā.",
+      "note": "The Peshitta writes this person ܩܘܪܝܐ. This book prints Kuria. Read from the Syriac letters: qūryā. Where this book does not print Kuria, the same letters are the word for villages.",
       "id": "kuria"
     },
     {
@@ -3123,7 +3024,8 @@
       "en": "Ladiqiya",
       "forms": [
         "Ladiqiya",
-        "Laodicea"
+        "Laodicea",
+        "Laodikeia"
       ],
       "known": "Laodicea",
       "say": "ladīqīyā",
@@ -3154,7 +3056,7 @@
         "Lasa"
       ],
       "known": "Lasa",
-      "say": "l-asa'a",
+      "say": "Lasa",
       "kind": "person",
       "count": 1,
       "ref": "acts 27:8",
@@ -3172,7 +3074,7 @@
       "say": "El'azar",
       "kind": "person",
       "count": 15,
-      "ref": "john 11:1",
+      "ref": "luke 16:20",
       "note": "The Peshitta writes this person ܠܥܙܪ. This book prints Lazar. The familiar English is Lazarus. Read from the Syriac letters: El'azar.",
       "sources": [
         {
@@ -3194,7 +3096,7 @@
       "say": "legyōn",
       "kind": "person",
       "count": 2,
-      "ref": "luke 8:30",
+      "ref": "mark 5:9",
       "note": "The Peshitta writes this person ܠܓܝܘܢ. This book prints Legion. Read from the Syriac letters: legyōn.",
       "id": "legion"
     },
@@ -3207,8 +3109,8 @@
       "known": "Levi",
       "say": "Levi",
       "kind": "person",
-      "count": 9,
-      "ref": "hebrews 7:5",
+      "count": 8,
+      "ref": "mark 2:14",
       "note": "The Peshitta writes this person ܠܘܝ. This book prints Levi. Read from the Syriac letters: Levi.",
       "sources": [
         {
@@ -3286,7 +3188,7 @@
       "say": "Luqa",
       "kind": "person",
       "count": 3,
-      "ref": "2timothy 4:11",
+      "ref": "colossians 4:14",
       "note": "The Peshitta writes this person ܠܘܩܐ. This book prints Luqa. The familiar English is Luke. Read from the Syriac letters: Luqa.",
       "sources": [
         {
@@ -3323,7 +3225,7 @@
       "say": "lustara",
       "kind": "place",
       "count": 7,
-      "ref": "2timothy 3:11",
+      "ref": "acts 14:6",
       "note": "The Peshitta writes this place ܠܘܣܛܪܐ. This book prints Lustra. The familiar English is Lystra. Read from the Syriac letters: lustara.",
       "id": "lustra"
     },
@@ -3332,13 +3234,14 @@
       "en": "Lut",
       "forms": [
         "Lut",
-        "Lot"
+        "Lot",
+        "Lot's"
       ],
       "known": "Lot",
       "say": "lut",
       "kind": "person",
       "count": 4,
-      "ref": "2peter 2:7",
+      "ref": "luke 17:28",
       "note": "The Peshitta writes this person ܠܘܛ. This book prints Lut. The familiar English is Lot. Read from the Syriac letters: lut.",
       "id": "lut"
     },
@@ -3407,8 +3310,8 @@
       "known": "Macedonia",
       "say": "maqedonya",
       "kind": "place",
-      "count": 25,
-      "ref": "1corinthians 16:5",
+      "count": 21,
+      "ref": "acts 16:9",
       "note": "The Peshitta writes this place ܡܩܕܘܢܝܐ. This book prints Macedonia. Read from the Syriac letters: maqedonya.",
       "id": "macedonia"
     },
@@ -3422,8 +3325,8 @@
       "known": "Magdalene",
       "say": "Magdalitha",
       "kind": "person",
-      "count": 12,
-      "ref": "john 19:25",
+      "count": 11,
+      "ref": "matthew 27:56",
       "note": "The Peshitta writes this person ܡܓܕܠܝܬܐ. This book prints Magdalitha. The familiar English is Magdalene. Read from the Syriac letters: Magdalitha.",
       "sources": [
         {
@@ -3460,7 +3363,7 @@
       "known": "Magi",
       "say": "Magi",
       "kind": "people",
-      "count": 2,
+      "count": 3,
       "ref": "matthew 2:1",
       "note": "The Peshitta writes this people ܡܓܘܫܐ. This book prints Magi. Read from the Syriac letters: Magi.",
       "id": "magi"
@@ -3556,7 +3459,7 @@
       "say": "Marqos",
       "kind": "person",
       "count": 8,
-      "ref": "1peter 5:13",
+      "ref": "acts 12:12",
       "note": "The Peshitta writes this person ܡܪܩܘܣ. This book prints Marqos. The familiar English is Mark. Read from the Syriac letters: Marqos.",
       "sources": [
         {
@@ -3577,8 +3480,8 @@
       "known": "Martha",
       "say": "Marta",
       "kind": "person",
-      "count": 16,
-      "ref": "1corinthians 4:14",
+      "count": 12,
+      "ref": "luke 10:38",
       "note": "The Peshitta writes this person ܡܪܬܐ. This book prints Martha. Read from the Syriac letters: Marta.",
       "sources": [
         {
@@ -3599,8 +3502,8 @@
       "known": "Mary",
       "say": "Maryam",
       "kind": "person",
-      "count": 49,
-      "ref": "acts 1:14",
+      "count": 48,
+      "ref": "matthew 1:16",
       "note": "The Peshitta writes this person ܡܪܝܡ. This book prints Maryam. The familiar English is Mary. Read from the Syriac letters: Maryam.",
       "sources": [
         {
@@ -3622,7 +3525,7 @@
       "say": "Mattai",
       "kind": "person",
       "count": 5,
-      "ref": "acts 1:13",
+      "ref": "matthew 9:9",
       "note": "The Peshitta writes this person ܡܬܝ. This book prints Matai. The familiar English is Matthew. Read from the Syriac letters: Mattai.",
       "sources": [
         {
@@ -3795,7 +3698,7 @@
       "say": "mīlīṭōs",
       "kind": "place",
       "count": 3,
-      "ref": "2timothy 4:20",
+      "ref": "acts 20:15",
       "note": "The Peshitta writes this place ܡܝܠܝܛܘܣ. This book prints Miletus. The familiar English is Miletus. Read from the Syriac letters: mīlīṭōs.",
       "id": "miletus"
     },
@@ -3809,7 +3712,7 @@
       "say": "Mitsrayin",
       "kind": "place",
       "count": 23,
-      "ref": "acts 2:10",
+      "ref": "matthew 2:13",
       "note": "The Peshitta writes this place ܡܨܪܝܢ. This book prints Mitsrayin. The familiar English is Egypt. Read from the Syriac letters: Mitsrayin.",
       "sources": [
         {
@@ -3845,7 +3748,7 @@
       "say": "Moshe",
       "kind": "person",
       "count": 79,
-      "ref": "1corinthians 9:9",
+      "ref": "matthew 8:4",
       "note": "The Peshitta writes this person ܡܘܫܐ. This book prints Moshe. The familiar English is Moses. Read from the Syriac letters: Moshe.",
       "sources": [
         {
@@ -3908,8 +3811,8 @@
       "known": "Nahor",
       "say": "nahur",
       "kind": "person",
-      "count": 4,
-      "ref": "acts 7:32",
+      "count": 1,
+      "ref": "luke 3:34",
       "note": "The Peshitta writes this person ܢܚܘܪ. This book prints Nachor. The familiar English is Nahor. Read from the Syriac letters: nahur.",
       "id": "nachor"
     },
@@ -3923,7 +3826,7 @@
       "say": "nahshon",
       "kind": "person",
       "count": 2,
-      "ref": "luke 3:32",
+      "ref": "matthew 1:4",
       "note": "The Peshitta writes this person ܢܚܫܘܢ. This book prints Nachshon. The familiar English is Nahshon. Read from the Syriac letters: nahshon.",
       "id": "nachshon"
     },
@@ -4035,7 +3938,7 @@
       "say": "Natsrath",
       "kind": "place",
       "count": 13,
-      "ref": "acts 10:38",
+      "ref": "matthew 2:23",
       "note": "The Peshitta writes this place ܢܨܪܬ. This book prints Natsrath. The familiar English is Nazareth. Read from the Syriac letters: Natsrath.",
       "sources": [
         {
@@ -4051,13 +3954,14 @@
       "sy": "ܢܨܪܝܐ",
       "en": "Natsraya",
       "forms": [
-        "Natsraya"
+        "Natsraya",
+        "Natsraye"
       ],
       "known": "Nazarene",
       "say": "Natsraya",
       "kind": "people",
-      "count": 20,
-      "ref": "acts 2:22",
+      "count": 21,
+      "ref": "matthew 2:23",
       "note": "The Peshitta writes ܢܨܪܝܐ. This book prints Natsraya. The familiar English is Nazarene, a person of Natsrath. Read the letters Natsraya. The Greek is Ναζωραῖος. It is the town-name, not a second title.",
       "sources": [
         {
@@ -4121,7 +4025,7 @@
       "say": "Nineveh",
       "kind": "place",
       "count": 2,
-      "ref": "luke 11:32",
+      "ref": "matthew 12:41",
       "note": "The Peshitta writes this place ܢܝܢܘܝܐ. This book prints Nineveh. Read from the Syriac letters: Nineveh. These letters name the people of Nineveh where the book says Ninevites.",
       "id": "nineveh"
     },
@@ -4131,7 +4035,8 @@
       "forms": [
         "Niqdemus",
         "Niqodemos",
-        "Niqodemus"
+        "Niqodemus",
+        "Nikodemos"
       ],
       "known": "Nicodemus",
       "say": "niqdemos",
@@ -4152,7 +4057,7 @@
       "say": "nuḥ",
       "kind": "person",
       "count": 8,
-      "ref": "1peter 3:20",
+      "ref": "matthew 24:37",
       "note": "The Peshitta writes this person ܢܘܚ. This book prints Noach. The familiar English is Noah. Read from the Syriac letters: nuḥ.",
       "sources": [
         {
@@ -4202,7 +4107,7 @@
       "say": "ubid",
       "kind": "person",
       "count": 2,
-      "ref": "luke 3:32",
+      "ref": "matthew 1:5",
       "note": "The Peshitta writes this person ܥܘܒܝܕ. This book prints Obed. Read from the Syriac letters: ubid.",
       "id": "obed"
     },
@@ -4230,9 +4135,9 @@
       "known": "Peleg",
       "say": "plag",
       "kind": "person",
-      "count": 7,
-      "ref": "1corinthians 7:17",
-      "note": "The Peshitta writes this person ܦܠܓ. This book prints Palag. The familiar English is Peleg. Read from the Syriac letters: plag.",
+      "count": 1,
+      "ref": "luke 3:35",
+      "note": "The Peshitta writes this person ܦܠܓ. This book prints Palag. The familiar English is Peleg. Read from the Syriac letters: plag. Luke 3:35 is this man. The same letters are also the verb for dividing.",
       "id": "palag"
     },
     {
@@ -4302,7 +4207,7 @@
       "say": "Paulos",
       "kind": "person",
       "count": 164,
-      "ref": "1corinthians 1:1",
+      "ref": "acts 13:7",
       "note": "The Peshitta writes this person ܦܘܠܘܣ. This book prints Paulos. The familiar English is Paul. Read from the Syriac letters: Paulos.",
       "sources": [
         {
@@ -4318,13 +4223,14 @@
       "sy": "ܦܪܨ",
       "en": "Perets",
       "forms": [
-        "Perets"
+        "Perets",
+        "Pharets"
       ],
       "known": "Pharez",
       "say": "pares",
       "kind": "person",
       "count": 2,
-      "ref": "luke 3:33",
+      "ref": "matthew 1:3",
       "note": "The Peshitta writes this person ܦܪܨ. This book prints Perets. The familiar English is Pharez. Read from the Syriac letters: pares.",
       "id": "perets"
     },
@@ -4380,7 +4286,7 @@
       "say": "Petros",
       "kind": "person",
       "count": 3,
-      "ref": "1peter 1:1",
+      "ref": "acts 1:13",
       "note": "Petros, the Greek form of the rock-name. The Peshitta’s own name is Keefa.",
       "sources": [
         {
@@ -4435,28 +4341,6 @@
       "id": "philimon"
     },
     {
-      "sy": "ܦܝܠܝܦܐ",
-      "en": "Philipos",
-      "forms": [
-        "Philipos"
-      ],
-      "known": "Philipos",
-      "say": "Philipos",
-      "kind": "person",
-      "count": 1,
-      "ref": "john 14:9",
-      "note": "The Peshitta writes this person ܦܝܠܝܦܐ. This book prints Philipos. Read from the Syriac letters: Philipos. The Peshitta also spells this name ܦܝܠܝܦܘܣ.",
-      "sources": [
-        {
-          "script": "Greek",
-          "text": "Φίλιππος",
-          "say": "Philippos",
-          "note": "A Greek name, “lover of horses.”"
-        }
-      ],
-      "id": "philipos"
-    },
-    {
       "sy": "ܦܝܠܝܦܘܣ",
       "en": "Philipos",
       "forms": [
@@ -4468,7 +4352,7 @@
       "say": "Philipos",
       "kind": "person",
       "count": 38,
-      "ref": "1thessalonians 2:2",
+      "ref": "matthew 10:3",
       "note": "The Peshitta writes this person ܦܝܠܝܦܘܣ. This book prints Philipos. The familiar English is Philip. Read from the Syriac letters: Philipos. The Peshitta also spells this name ܦܝܠܝܦܐ.",
       "sources": [
         {
@@ -4478,7 +4362,11 @@
           "note": "A Greek name, “lover of horses.”"
         }
       ],
-      "id": "philipos-philipos"
+      "id": "philipos",
+      "spellings": [
+        "ܦܝܠܝܦܘܣ",
+        "ܦܝܠܝܦܐ"
+      ]
     },
     {
       "sy": "ܦܝܠܝܦܘܣ",
@@ -4491,7 +4379,7 @@
       "kind": "place",
       "count": 1,
       "ref": "acts 16:12",
-      "note": "The Peshitta writes this place ܦܝܠܝܦܘܣ. This book prints Philippi. Read from the Syriac letters: Philipos.",
+      "note": "The Peshitta writes this place ܦܝܠܝܦܘܣ. This book prints Philippi. Read from the Syriac letters: Philipos. These are the same letters this Peshitta uses for Philipos. The English of the verse shows which is meant.",
       "id": "philippi"
     },
     {
@@ -4506,7 +4394,7 @@
       "say": "pūnīqā",
       "kind": "place",
       "count": 4,
-      "ref": "acts 11:19",
+      "ref": "mark 7:26",
       "note": "The Peshitta writes this place ܦܘܢܝܩܐ. This book prints Phoenicia. The familiar English is Phoenicia. Read from the Syriac letters: pūnīqā.",
       "sources": [
         {
@@ -4569,8 +4457,8 @@
       "known": "Pilate",
       "say": "Pilatos",
       "kind": "person",
-      "count": 57,
-      "ref": "1timothy 6:13",
+      "count": 56,
+      "ref": "matthew 27:2",
       "note": "The Peshitta writes this person ܦܝܠܛܘܣ. This book prints Pilatos. The familiar English is Pilate. Read from the Syriac letters: Pilatos.",
       "sources": [
         {
@@ -4592,7 +4480,7 @@
       "known": "Pisidia",
       "say": "Pisidia",
       "kind": "place",
-      "count": 1,
+      "count": 2,
       "ref": "acts 13:14",
       "note": "The Peshitta writes this place ܦܝܣܝܕܝܐ. This book prints Pisidia. Read from the Syriac letters: Pisidia.",
       "id": "pisidia"
@@ -4607,7 +4495,7 @@
       "say": "panṭiyos",
       "kind": "person",
       "count": 2,
-      "ref": "1timothy 6:13",
+      "ref": "luke 3:1",
       "note": "The Peshitta writes this person ܦܢܛܝܘܣ. This book prints Pontius. Read from the Syriac letters: panṭiyos.",
       "id": "pontius"
     },
@@ -4621,7 +4509,7 @@
       "say": "panṭus",
       "kind": "place",
       "count": 3,
-      "ref": "1peter 1:1",
+      "ref": "acts 2:9",
       "note": "The Peshitta writes this place ܦܢܛܘܣ. This book prints Pontus. Read from the Syriac letters: panṭus.",
       "id": "pontus"
     },
@@ -4657,13 +4545,14 @@
       "sy": "ܦܪܝܣܩܠܐ",
       "en": "Prisqila",
       "forms": [
-        "Prisqila"
+        "Prisqila",
+        "Prisqla"
       ],
       "known": "Priscilla",
       "say": "prīsqillā",
       "kind": "person",
       "count": 7,
-      "ref": "1corinthians 16:19",
+      "ref": "acts 18:2",
       "note": "The Peshitta writes this person ܦܪܝܣܩܠܐ. This book prints Prisqila. The familiar English is Priscilla. Read from the Syriac letters: prīsqillā.",
       "id": "prisqila"
     },
@@ -4705,7 +4594,7 @@
       "say": "qnanaya",
       "kind": "person",
       "count": 2,
-      "ref": "mark 3:18",
+      "ref": "matthew 10:4",
       "note": "The Peshitta writes this person ܩܢܢܝܐ. This book prints Qananya. The familiar English is Canaanite. Read from the Syriac letters: qnanaya. The same letters are also the ordinary word “the Canaanite.”",
       "id": "qananya"
     },
@@ -4735,7 +4624,7 @@
       "say": "qayapa",
       "kind": "person",
       "count": 10,
-      "ref": "acts 4:6",
+      "ref": "matthew 26:3",
       "note": "The Peshitta writes this person ܩܝܦܐ. This book prints Qayapa. The familiar English is Caiaphas. Read from the Syriac letters: qayapa.",
       "id": "qayapa"
     },
@@ -4749,7 +4638,7 @@
       "say": "qayin",
       "kind": "person",
       "count": 3,
-      "ref": "1john 3:12",
+      "ref": "hebrews 11:4",
       "note": "The Peshitta writes this person ܩܐܝܢ. This book prints Qayin. The familiar English is Cain. Read from the Syriac letters: qayin.",
       "sources": [
         {
@@ -4771,8 +4660,8 @@
       "known": "Cainan",
       "say": "qaynan",
       "kind": "person",
-      "count": 3,
-      "ref": "1thessalonians 2:4",
+      "count": 2,
+      "ref": "luke 3:36",
       "note": "The Peshitta writes this person ܩܝܢܢ. This book prints Qaynan. The familiar English is Cainan. Read from the Syriac letters: qaynan.",
       "id": "qaynan"
     },
@@ -4817,7 +4706,7 @@
       "say": "qesaryā",
       "kind": "place",
       "count": 17,
-      "ref": "acts 8:40",
+      "ref": "matthew 16:13",
       "note": "The Peshitta writes this place ܩܣܪܝܐ. This book prints Qesarya. The familiar English is Caesarea. Read from the Syriac letters: qesaryā.",
       "sources": [
         {
@@ -4876,13 +4765,14 @@
       "sy": "ܩܠܝܘܦܐ",
       "en": "Qliyopa",
       "forms": [
-        "Qliyopa"
+        "Qliyopa",
+        "Cleopas"
       ],
       "known": "Cleopas",
       "say": "qelyōpā",
       "kind": "person",
       "count": 2,
-      "ref": "john 19:25",
+      "ref": "luke 24:18",
       "note": "The Peshitta writes this person ܩܠܝܘܦܐ. This book prints Qliyopa. The familiar English is Cleopas. Read from the Syriac letters: qelyōpā.",
       "id": "qliyopa"
     },
@@ -4980,7 +4870,7 @@
       "say": "qurinya",
       "kind": "person",
       "count": 2,
-      "ref": "luke 23:26",
+      "ref": "matthew 27:32",
       "note": "The Peshitta writes this person ܩܘܪܝܢܝܐ. This book prints Qurinya. Read from the Syriac letters: qurinya. The same letters are also the ordinary word “the Cyrenian.”",
       "id": "qurinya"
     },
@@ -5023,7 +4913,7 @@
       "say": "raḥab",
       "kind": "person",
       "count": 3,
-      "ref": "hebrews 11:31",
+      "ref": "matthew 1:5",
       "note": "The Peshitta writes this person ܪܚܒ. This book prints Rahab. Read from the Syriac letters: raḥab.",
       "id": "rahab"
     },
@@ -5050,8 +4940,8 @@
       "known": "Ramah",
       "say": "ramtha",
       "kind": "place",
-      "count": 7,
-      "ref": "john 19:38",
+      "count": 5,
+      "ref": "matthew 2:18",
       "note": "The Peshitta writes this place ܪܡܬܐ. This book prints Ramtha. The familiar English is Ramah. Read from the Syriac letters: ramtha.",
       "id": "ramtha"
     },
@@ -5127,16 +5017,17 @@
     },
     {
       "sy": "ܪܗܘܡܐ",
-      "en": "Rhoma",
+      "en": "Rome",
       "forms": [
-        "Rhoma"
+        "Rhoma",
+        "Rome"
       ],
       "known": "Rome",
       "say": "Rhoma",
       "kind": "place",
-      "count": 5,
+      "count": 9,
       "ref": "acts 2:10",
-      "note": "The Peshitta writes this place ܪܗܘܡܐ. This book prints Rhoma. The familiar English is Rome. Read from the Syriac letters: Rhoma.",
+      "note": "The Peshitta writes this place ܪܗܘܡܐ, and also ܪܗܘܡܝ. This book prints Rome and Rhoma. The familiar English is Rome.",
       "sources": [
         {
           "script": "Greek",
@@ -5145,21 +5036,11 @@
           "note": "The Greek writing of Rome. The Latin is Roma."
         }
       ],
-      "id": "rhoma"
-    },
-    {
-      "sy": "ܪܗܘܡܝ",
-      "en": "Rome",
-      "forms": [
-        "Rome"
-      ],
-      "known": "Rhomi",
-      "say": "Rhomi",
-      "kind": "person",
-      "count": 4,
-      "ref": "2timothy 1:17",
-      "note": "The Peshitta writes this person ܪܗܘܡܝ. This book prints Rome. The familiar English is Rhomi. Read from the Syriac letters: Rhomi.",
-      "id": "rome"
+      "id": "rhoma",
+      "spellings": [
+        "ܪܗܘܡܐ",
+        "ܪܗܘܡܝ"
+      ]
     },
     {
       "sy": "ܪܘܒܝܠ",
@@ -5207,7 +5088,7 @@
       "say": "Sadducees",
       "kind": "people",
       "count": 12,
-      "ref": "acts 4:1",
+      "ref": "matthew 3:7",
       "note": "The Peshitta writes this people ܙܕܘܩܝܐ. This book prints Sadducees. Read from the Syriac letters: Sadducees.",
       "sources": [
         {
@@ -5229,7 +5110,7 @@
       "say": "salmon",
       "kind": "person",
       "count": 3,
-      "ref": "luke 3:32",
+      "ref": "matthew 1:4",
       "note": "The Peshitta writes this person ܣܠܡܘܢ. This book prints Salmon. Read from the Syriac letters: salmon.",
       "id": "salmon"
     },
@@ -5257,8 +5138,8 @@
       "known": "Samaritans",
       "say": "Samaritans",
       "kind": "people",
-      "count": 12,
-      "ref": "acts 1:8",
+      "count": 15,
+      "ref": "matthew 10:5",
       "note": "The Peshitta writes this people ܫܡܪܝܐ. This book prints Samaritans. Read from the Syriac letters: Samaritans.",
       "sources": [
         {
@@ -5280,8 +5161,8 @@
       "known": "Sarah",
       "say": "sara",
       "kind": "person",
-      "count": 51,
-      "ref": "1corinthians 8:13",
+      "count": 4,
+      "ref": "romans 4:19",
       "note": "The Peshitta writes this person ܣܪܐ. This book prints Sara. The familiar English is Sarah. Read from the Syriac letters: sara.",
       "sources": [
         {
@@ -5331,7 +5212,7 @@
       "say": "Satana",
       "kind": "person",
       "count": 45,
-      "ref": "1corinthians 5:5",
+      "ref": "matthew 4:10",
       "note": "The adversary.",
       "sources": [
         {
@@ -5422,25 +5303,38 @@
       "known": "Salah",
       "say": "shalah",
       "kind": "person",
-      "count": 5,
-      "ref": "acts 23:10",
-      "note": "The Peshitta writes this person ܫܠܚ. This book prints Shalach. The familiar English is Salah. Read from the Syriac letters: shalah.",
+      "count": 1,
+      "ref": "luke 3:35",
+      "note": "The Peshitta writes this person ܫܠܚ. This book prints Shalach. The familiar English is Salah. Read from the Syriac letters: shalah. Luke 3:35 is this man. The same letters are not always his name.",
       "id": "shalach"
     },
     {
       "sy": "ܫܠܝܡ",
       "en": "Shalem",
       "forms": [
-        "Shalim",
         "Shalem"
+      ],
+      "known": "Salem",
+      "say": "shlim",
+      "kind": "place",
+      "count": 2,
+      "ref": "hebrews 7:1",
+      "note": "The Peshitta writes this place ܫܠܝܡ. This book prints Shalem. The familiar English is Salem, the city of Melkizedeq. Hebrews 7:2 reads the name as peace. The same letters, where this book prints Shalim, are the other town.",
+      "id": "shalem"
+    },
+    {
+      "sy": "ܫܠܝܡ",
+      "en": "Shalim",
+      "forms": [
+        "Shalim"
       ],
       "known": "Salim",
       "say": "shlim",
       "kind": "place",
-      "count": 3,
-      "ref": "hebrews 7:1",
-      "note": "The Peshitta writes this place ܫܠܝܡ. This book prints Shalem. The familiar English is Salim. Read from the Syriac letters: shlim.",
-      "id": "shalem"
+      "count": 1,
+      "note": "The Peshitta writes this place ܫܠܝܡ. This book prints Shalim. The familiar English is Salim, the town near Ein-Yon where Yochanan was immersing. The same letters name Shalem, the city of Melkizedeq, in Hebrews.",
+      "id": "shalim",
+      "ref": "john 3:23"
     },
     {
       "sy": "ܫܠܘܡ",
@@ -5480,7 +5374,7 @@
       "say": "Shamrayin",
       "kind": "place",
       "count": 2,
-      "ref": "acts 9:31",
+      "ref": "john 4:7",
       "note": "The Peshitta writes this place ܫܡܪܝܢ. This book prints Shamrin. The familiar English is Shamrayin. Read from the Syriac letters: Shamrayin.",
       "id": "shamrin"
     },
@@ -5546,7 +5440,7 @@
       "say": "shaltayel",
       "kind": "person",
       "count": 2,
-      "ref": "luke 3:27",
+      "ref": "matthew 1:12",
       "note": "The Peshitta writes this person ܫܠܬܐܝܠ. This book prints Shelatiel. The familiar English is Shealtiel. Read from the Syriac letters: shaltayel.",
       "sources": [
         {
@@ -5568,7 +5462,7 @@
       "say": "Shyol",
       "kind": "place",
       "count": 14,
-      "ref": "1corinthians 15:55",
+      "ref": "matthew 11:23",
       "note": "The place of the dead. Murdock renders the gates of Sheol as “the gates of death.”",
       "sources": [
         {
@@ -5604,7 +5498,7 @@
       "say": "Shiloach",
       "kind": "place",
       "count": 3,
-      "ref": "john 9:7",
+      "ref": "luke 13:4",
       "note": "The Peshitta writes this place ܫܝܠܘܚܐ. This book prints Shiloach. The familiar English is Siloam. Read from the Syriac letters: Shiloach.",
       "id": "shiloach"
     },
@@ -5623,28 +5517,6 @@
       "id": "shim"
     },
     {
-      "sy": "ܣܝܡܘܢ",
-      "en": "Shimon",
-      "forms": [
-        "Shimon"
-      ],
-      "known": "Shimon",
-      "say": "Shimon",
-      "kind": "person",
-      "count": 4,
-      "ref": "acts 8:9",
-      "note": "The Peshitta writes this person ܣܝܡܘܢ. This book prints Shimon. Read from the Syriac letters: Shimon. The Peshitta also spells this name ܫܡܥܘܢ.",
-      "sources": [
-        {
-          "script": "Hebrew",
-          "text": "שִׁמְעוֹן",
-          "say": "Shimon",
-          "note": "The Hebrew writing. A few verses in this Peshitta use the Greek-shaped spelling ܣܝܡܘܢ instead."
-        }
-      ],
-      "id": "shimon"
-    },
-    {
       "sy": "ܫܡܥܘܢ",
       "en": "Shimon",
       "forms": [
@@ -5654,8 +5526,8 @@
       "known": "Simon",
       "say": "Shimon",
       "kind": "person",
-      "count": 157,
-      "ref": "2peter 1:1",
+      "count": 161,
+      "ref": "matthew 4:18",
       "note": "Shimon. The rock-name is Keefa. The Peshitta also spells this name ܣܝܡܘܢ.",
       "sources": [
         {
@@ -5665,7 +5537,11 @@
           "note": "The Hebrew writing. A few verses in this Peshitta use the Greek-shaped spelling ܣܝܡܘܢ instead."
         }
       ],
-      "id": "shimon-shimon"
+      "id": "shimon",
+      "spellings": [
+        "ܫܡܥܘܢ",
+        "ܣܝܡܘܢ"
+      ]
     },
     {
       "sy": "ܫܡܫܘܢ",
@@ -5727,7 +5603,7 @@
       "say": "shlimun",
       "kind": "person",
       "count": 10,
-      "ref": "acts 3:11",
+      "ref": "matthew 1:6",
       "note": "The Peshitta writes this person ܫܠܝܡܘܢ. This book prints Shlemun. The familiar English is Solomon. Read from the Syriac letters: shlimun.",
       "sources": [
         {
@@ -5778,7 +5654,7 @@
       "say": "sālōnōs",
       "kind": "person",
       "count": 4,
-      "ref": "1peter 5:12",
+      "ref": "2corinthians 1:19",
       "note": "The Peshitta writes this person ܣܠܘܢܘܣ. This book prints Silwanus. The familiar English is Silvanus. Read from the Syriac letters: sālōnōs.",
       "id": "silwanus"
     },
@@ -5809,13 +5685,14 @@
       "en": "Skaryota",
       "forms": [
         "Skaryota",
-        "Sakaryuta"
+        "Sakaryuta",
+        "Sakaryota"
       ],
       "known": "Iscariot",
       "say": "skaryuta",
       "kind": "person",
-      "count": 12,
-      "ref": "john 6:71",
+      "count": 11,
+      "ref": "matthew 10:4",
       "note": "The Peshitta writes this person ܣܟܪܝܘܛܐ. This book prints Skaryota. The familiar English is Iscariot. Read from the Syriac letters: skaryuta.",
       "id": "skaryota"
     },
@@ -5823,12 +5700,13 @@
       "sy": "ܙܡܘܪܢܐ",
       "en": "Smyrna",
       "forms": [
-        "Smyrna"
+        "Smyrna",
+        "Zmurna"
       ],
       "known": "Smyrna",
       "say": "Smyrna",
       "kind": "place",
-      "count": 1,
+      "count": 2,
       "ref": "revelation 1:11",
       "note": "The Peshitta writes this place ܙܡܘܪܢܐ. This book prints Smyrna. Read from the Syriac letters: Smyrna.",
       "id": "smyrna"
@@ -5845,7 +5723,7 @@
       "say": "sdom",
       "kind": "place",
       "count": 10,
-      "ref": "2peter 2:6",
+      "ref": "matthew 10:15",
       "note": "The Peshitta writes this place ܣܕܘܡ. This book prints Sodom. The familiar English is Sodom. Read from the Syriac letters: sdom.",
       "sources": [
         {
@@ -5968,7 +5846,7 @@
       "say": "surya",
       "kind": "place",
       "count": 9,
-      "ref": "acts 15:23",
+      "ref": "matthew 4:24",
       "note": "The Peshitta writes this place ܣܘܪܝܐ. This book prints Syria. The familiar English is Syria. Read from the Syriac letters: surya.",
       "sources": [
         {
@@ -5984,7 +5862,8 @@
       "sy": "ܛܒܝܬܐ",
       "en": "Tabitha",
       "forms": [
-        "Tabitha"
+        "Tabitha",
+        "Tavitha"
       ],
       "known": "Tabitha",
       "say": "tabita",
@@ -6004,7 +5883,7 @@
       "say": "taday",
       "kind": "person",
       "count": 2,
-      "ref": "mark 3:18",
+      "ref": "matthew 10:3",
       "note": "The Peshitta writes this person ܬܕܝ. This book prints Tadai. The familiar English is Thaddeus. Read from the Syriac letters: taday.",
       "id": "tadai"
     },
@@ -6121,13 +6000,14 @@
       "forms": [
         "Tesaloniqa",
         "Tesaloniga",
-        "Thessalonica"
+        "Thessalonica",
+        "Thessalonike"
       ],
       "known": "Thessalonica",
       "say": "tesalonīqa",
       "kind": "place",
-      "count": 7,
-      "ref": "2timothy 4:10",
+      "count": 6,
+      "ref": "acts 17:1",
       "note": "The Peshitta writes this place ܬܣܠܘܢܝܩܐ. This book prints Tesaloniqa. The familiar English is Thessalonica. Read from the Syriac letters: tesalonīqa.",
       "sources": [
         {
@@ -6149,7 +6029,7 @@
       "say": "Theophilus",
       "kind": "person",
       "count": 2,
-      "ref": "acts 1:1",
+      "ref": "luke 1:3",
       "note": "The Peshitta writes this person ܬܐܘܦܝܠܐ. This book prints Theophilus. Read from the Syriac letters: Theophilus.",
       "id": "theophilus"
     },
@@ -6241,7 +6121,7 @@
       "say": "ṭimaṯeʾos",
       "kind": "person",
       "count": 22,
-      "ref": "1corinthians 4:17",
+      "ref": "acts 16:1",
       "note": "The Peshitta writes this person ܛܝܡܬܐܘܣ. This book prints Timotheos. The familiar English is Timothy. Read from the Syriac letters: ṭimaṯeʾos.",
       "sources": [
         {
@@ -6263,7 +6143,7 @@
       "say": "ṭeṭos",
       "kind": "person",
       "count": 13,
-      "ref": "2corinthians 2:13",
+      "ref": "acts 18:7",
       "note": "The Peshitta writes this person ܛܛܘܣ. This book prints Titus. Read from the Syriac letters: ṭeṭos.",
       "sources": [
         {
@@ -6287,7 +6167,7 @@
       "say": "Toma",
       "kind": "person",
       "count": 11,
-      "ref": "acts 1:13",
+      "ref": "matthew 10:3",
       "note": "The Peshitta writes this person ܬܐܘܡܐ. This book prints Toma. The familiar English is Thomas. Read from the Syriac letters: Toma.",
       "sources": [
         {
@@ -6323,7 +6203,7 @@
       "say": "ṭrwas",
       "kind": "place",
       "count": 5,
-      "ref": "2corinthians 2:12",
+      "ref": "acts 16:8",
       "note": "The Peshitta writes this place ܛܪܘܐܣ. This book prints Troas. Read from the Syriac letters: ṭrwas.",
       "id": "troas"
     },
@@ -6337,24 +6217,14 @@
       "known": "Trophimus",
       "say": "Trophimos",
       "kind": "person",
-      "count": 2,
-      "ref": "2timothy 4:20",
+      "count": 3,
+      "ref": "acts 20:4",
       "note": "The Peshitta writes this person ܛܪܘܦܝܡܘܣ. This book prints Trophimus. The familiar English is Trophimus. Read from the Syriac letters: Trophimos. The Peshitta also spells this name ܛܪܘܦܝܡܣ.",
-      "id": "trophimus"
-    },
-    {
-      "sy": "ܛܪܘܦܝܡܣ",
-      "en": "Trophimus",
-      "forms": [
-        "Trophimus"
-      ],
-      "known": "Trophimus",
-      "say": "l-Trophimus",
-      "kind": "person",
-      "count": 1,
-      "ref": "acts 21:29",
-      "note": "The Peshitta writes this person ܠܛܪܘܦܝܡܣ. This book prints Trophimus. Read from the Syriac letters: l-Trophimus. The Peshitta also spells this name ܛܪܘܦܝܡܘܣ.",
-      "id": "trophimus-ltrophim"
+      "id": "trophimus",
+      "spellings": [
+        "ܛܪܘܦܝܡܘܣ",
+        "ܛܪܘܦܝܡܣ"
+      ]
     },
     {
       "sy": "ܨܪܦܬ",
@@ -6380,7 +6250,7 @@
       "say": "Tsidon",
       "kind": "place",
       "count": 11,
-      "ref": "acts 27:3",
+      "ref": "matthew 11:21",
       "note": "The Peshitta writes this place ܨܝܕܢ. This book prints Tsidon. The familiar English is Sidon. Read from the Syriac letters: Tsidon.",
       "sources": [
         {
@@ -6403,7 +6273,7 @@
       "say": "ṣehyon",
       "kind": "place",
       "count": 7,
-      "ref": "1peter 2:6",
+      "ref": "matthew 21:5",
       "note": "The Peshitta writes this place ܨܗܝܘܢ. This book prints Tsiyon. The familiar English is Zion. Read from the Syriac letters: ṣehyon.",
       "sources": [
         {
@@ -6425,7 +6295,7 @@
       "say": "ṣur",
       "kind": "place",
       "count": 11,
-      "ref": "acts 21:3",
+      "ref": "matthew 11:21",
       "note": "The Peshitta writes this place ܨܘܪ. This book prints Tsur. The familiar English is Tyre. Read from the Syriac letters: ṣur.",
       "sources": [
         {
@@ -6442,13 +6312,14 @@
       "en": "Tukikos",
       "forms": [
         "Tukikos",
-        "Tukiqos"
+        "Tukiqos",
+        "Tychicus"
       ],
       "known": "Tychicus",
       "say": "tukikos",
       "kind": "person",
       "count": 5,
-      "ref": "2timothy 4:12",
+      "ref": "acts 20:4",
       "note": "The Peshitta writes this person ܛܘܟܝܩܘܣ. This book prints Tukikos. The familiar English is Tychicus. Read from the Syriac letters: tukikos.",
       "id": "tukikos"
     },
@@ -6476,7 +6347,7 @@
       "say": "Urishlim",
       "kind": "place",
       "count": 139,
-      "ref": "1corinthians 16:3",
+      "ref": "matthew 2:1",
       "note": "The Peshitta writes this place ܐܘܪܫܠܡ. This book prints Urishlim. The familiar English is Jerusalem. Read from the Syriac letters: Urishlim.",
       "sources": [
         {
@@ -6527,7 +6398,7 @@
       "say": "Y'shua",
       "kind": "person",
       "count": 1070,
-      "ref": "1corinthians 1:1",
+      "ref": "matthew 1:1",
       "note": "Y'shua. Matthew 1:21 ties the name to the root “to make alive”: he will give life to his people.",
       "sources": [
         {
@@ -6556,7 +6427,7 @@
       "say": "Ya'akov",
       "kind": "person",
       "count": 63,
-      "ref": "1corinthians 15:7",
+      "ref": "matthew 1:2",
       "note": "The Peshitta writes this person ܝܥܩܘܒ. This book prints Ya'akov. The familiar English is Jacob, James. Read from the Syriac letters: Ya'akov.",
       "sources": [
         {
@@ -6600,15 +6471,39 @@
       "sy": "ܝܘܐܪܫ",
       "en": "Yawarash",
       "forms": [
-        "Yawarash"
+        "Yawarash",
+        "Yoarash"
       ],
       "known": "Jairus",
       "say": "yawarash",
       "kind": "person",
       "count": 2,
-      "ref": "luke 8:41",
+      "ref": "mark 5:22",
       "note": "The Peshitta writes this person ܝܘܐܪܫ. This book prints Yawarash. The familiar English is Jairus. Read from the Syriac letters: yawarash.",
       "id": "yawarash"
+    },
+    {
+      "sy": "ܝܘܢܝܐ",
+      "en": "Yawnaye",
+      "forms": [
+        "Junia",
+        "Yawnaye"
+      ],
+      "known": "Junia",
+      "say": "Yunia",
+      "kind": "person",
+      "count": 3,
+      "ref": "acts 17:4",
+      "note": "The Peshitta writes ܝܘܢܝܐ. In Romans 16:7 this book prints Junia, greeted with Andronicus. Read that name Yunia. The same letters, where the book prints Yawnaye, name the Greeks. The Greek writes Ἰουνία for the person and Ἕλλην where this Peshitta says an Aramean or a Greek.",
+      "sources": [
+        {
+          "script": "Greek",
+          "text": "Ἰουνία",
+          "say": "Iounia",
+          "note": "Junia, greeted in Romans 16:7. The same Syriac letters also name the Greeks."
+        }
+      ],
+      "id": "junia"
     },
     {
       "sy": "ܝܗܘܫܦܛ",
@@ -6625,39 +6520,19 @@
       "id": "yehoshaphat"
     },
     {
-      "sy": "ܝܗܘܕ",
-      "en": "Yehud",
-      "forms": [
-        "Yehud"
-      ],
-      "known": "Yehud",
-      "say": "Yehud",
-      "kind": "place",
-      "count": 44,
-      "ref": "1thessalonians 2:14",
-      "note": "The Peshitta writes this place ܝܗܘܕ. This book prints Yehud. Read from the Syriac letters: Yehud.",
-      "sources": [
-        {
-          "script": "Hebrew",
-          "text": "יְהוּדָה",
-          "say": "Yehuda",
-          "note": "The Hebrew name of the land of Judah. The Greek for the land is Ἰουδαία."
-        }
-      ],
-      "id": "yehud"
-    },
-    {
       "sy": "ܝܗܘܕܐ",
       "en": "Yehuda",
       "forms": [
-        "Yehuda"
+        "Yehuda",
+        "Yehud",
+        "Judea"
       ],
       "known": "Judah, Judas, Jude",
       "say": "Yehuda",
       "kind": "person",
-      "count": 47,
-      "ref": "acts 1:13",
-      "note": "Judah, or Judas.",
+      "count": 91,
+      "ref": "matthew 1:2",
+      "note": "Judah, or Judas. The Peshitta also spells this name ܝܗܘܕ. The land is this same name. This book prints Yehuda, and also Judea, and once Yehud.",
       "sources": [
         {
           "script": "Hebrew",
@@ -6666,7 +6541,11 @@
           "note": "One Hebrew name. This book uses it for the patriarch Judah, for Judas, and for Jude."
         }
       ],
-      "id": "yehuda"
+      "id": "yehuda",
+      "spellings": [
+        "ܝܗܘܕܐ",
+        "ܝܗܘܕ"
+      ]
     },
     {
       "sy": "ܝܗܘܕܝܐ",
@@ -6679,8 +6558,8 @@
       "known": "Jews",
       "say": "Yehudaye",
       "kind": "people",
-      "count": 167,
-      "ref": "1corinthians 1:22",
+      "count": 189,
+      "ref": "matthew 27:11",
       "note": "The Peshitta writes ܝܗܘܕܝܐ. This book prints Yehudaye, and also Yehudi and Yehudaya. The familiar English is a Jew. Read the letters Yehudaye. The Hebrew is יְהוּדִי, Yehudi, a person of Judah. The Greek is Ἰουδαῖος.",
       "sources": [
         {
@@ -6696,37 +6575,16 @@
       "sy": "ܡܪܝܐ",
       "en": "YHWH",
       "forms": [
-        "YHWH"
+        "YHWH",
+        "YHWH's"
       ],
       "known": "LORD",
       "say": "Marya",
       "kind": "title",
-      "count": 210,
-      "ref": "1corinthians 1:31",
+      "count": 204,
+      "ref": "matthew 1:20",
       "note": "Master YHWH. Marya stands where the Hebrew has the divine name.",
       "id": "yhwh"
-    },
-    {
-      "sy": "ܐܝܣܪܐܝܠ",
-      "en": "Yisrael",
-      "forms": [
-        "Yisrael"
-      ],
-      "known": "Yisrael",
-      "say": "Yisrael",
-      "kind": "person",
-      "count": 7,
-      "ref": "matthew 2:6",
-      "note": "The Peshitta writes this person ܐܝܣܪܐܝܠ. This book prints Yisrael. Read from the Syriac letters: Yisrael. The Peshitta also spells this name ܐܝܣܪܝܠ and ܝܣܪܝܠ.",
-      "sources": [
-        {
-          "script": "Hebrew",
-          "text": "יִשְׂרָאֵל",
-          "say": "Yisrael",
-          "note": "The Hebrew writing of the man and of the people. The Greek is Ἰσραήλ."
-        }
-      ],
-      "id": "yisrael"
     },
     {
       "sy": "ܐܝܣܪܝܠ",
@@ -6736,10 +6594,10 @@
       ],
       "known": "Israel",
       "say": "Yisrael",
-      "kind": "person",
-      "count": 66,
-      "ref": "1corinthians 10:18",
-      "note": "The Peshitta writes this place ܐܝܣܪܝܠ. This book prints Yisrael. The familiar English is Israel. Read from the Syriac letters: Yisrael. The Peshitta also spells this name ܐܝܣܪܐܝܠ and ܝܣܪܝܠ.",
+      "kind": "people",
+      "count": 75,
+      "ref": "matthew 2:6",
+      "note": "The Peshitta writes this people ܐܝܣܪܝܠ, and also ܐܝܣܪܐܝܠ and ܝܣܪܝܠ. This book prints Yisrael. The familiar English is Israel.",
       "sources": [
         {
           "script": "Hebrew",
@@ -6748,29 +6606,12 @@
           "note": "The Hebrew writing of the man and of the people. The Greek is Ἰσραήλ."
         }
       ],
-      "id": "yisrael-yisrael"
-    },
-    {
-      "sy": "ܝܣܪܝܠ",
-      "en": "Yisrael",
-      "forms": [
-        "Yisrael"
-      ],
-      "known": "Yisrael",
-      "say": "Yisrael",
-      "kind": "person",
-      "count": 2,
-      "ref": "matthew 10:6",
-      "note": "The Peshitta writes this person ܝܣܪܝܠ. This book prints Yisrael. Read from the Syriac letters: Yisrael. The Peshitta also spells this name ܐܝܣܪܝܠ and ܐܝܣܪܐܝܠ.",
-      "sources": [
-        {
-          "script": "Hebrew",
-          "text": "יִשְׂרָאֵל",
-          "say": "Yisrael",
-          "note": "The Hebrew writing of the man and of the people. The Greek is Ἰσραήλ."
-        }
-      ],
-      "id": "yisrael-yisrael-2"
+      "id": "yisrael",
+      "spellings": [
+        "ܐܝܣܪܝܠ",
+        "ܐܝܣܪܐܝܠ",
+        "ܝܣܪܝܠ"
+      ]
     },
     {
       "sy": "ܐܝܣܚܩ",
@@ -6782,7 +6623,7 @@
       "say": "isḥaq",
       "kind": "person",
       "count": 18,
-      "ref": "acts 3:13",
+      "ref": "matthew 1:2",
       "note": "The Peshitta writes this person ܐܝܣܚܩ. This book prints Yitz'chak. The familiar English is Isaac. Read from the Syriac letters: isḥaq.",
       "sources": [
         {
@@ -6804,7 +6645,7 @@
       "say": "Yochanan",
       "kind": "person",
       "count": 133,
-      "ref": "acts 1:5",
+      "ref": "matthew 3:1",
       "note": "The Peshitta writes this person ܝܘܚܢܢ. This book prints Yochanan. The familiar English is John. Read from the Syriac letters: Yochanan.",
       "sources": [
         {
@@ -6849,14 +6690,15 @@
       "en": "Yonah",
       "forms": [
         "Yonah",
-        "Yona"
+        "Yona",
+        "Yonan"
       ],
       "known": "Jonah",
       "say": "yona",
       "kind": "person",
-      "count": 4,
-      "ref": "john 21:15",
-      "note": "The Peshitta writes this person ܝܘܢܐ. This book prints Yonah. The familiar English is Jonah. Read from the Syriac letters: yona. The same letters are also the ordinary word “dove.”",
+      "count": 12,
+      "ref": "matthew 12:39",
+      "note": "The Peshitta writes this person ܝܘܢܐ. This book prints Yonah. The familiar English is Jonah. Read from the Syriac letters: yona. The same letters are also the ordinary word “dove.” The Peshitta also spells this name ܝܘܢܢ.",
       "sources": [
         {
           "script": "Hebrew",
@@ -6865,7 +6707,11 @@
           "note": "The Hebrew name, and the ordinary word for a dove. The Greek writes Ἰωνᾶς."
         }
       ],
-      "id": "yonah"
+      "id": "yonah",
+      "spellings": [
+        "ܝܘܢܐ",
+        "ܝܘܢܢ"
+      ]
     },
     {
       "sy": "ܝܘܢܡ",
@@ -6882,24 +6728,11 @@
       "id": "yonam"
     },
     {
-      "sy": "ܝܘܢܢ",
-      "en": "Yonan",
-      "forms": [
-        "Yonan"
-      ],
-      "known": "Jonah",
-      "say": "Yonan",
-      "kind": "person",
-      "count": 4,
-      "ref": "luke 11:32",
-      "note": "The Peshitta writes this person ܝܘܢܢ. This book prints Yonan. The familiar English is Jonah. Read from the Syriac letters: Yonan.",
-      "id": "yonan"
-    },
-    {
       "sy": "ܝܘܦܐ",
       "en": "Yopa",
       "forms": [
-        "Yopa"
+        "Yopa",
+        "Yoppa"
       ],
       "known": "Joppa",
       "say": "yawpā",
@@ -6919,7 +6752,7 @@
       "say": "yoram",
       "kind": "person",
       "count": 2,
-      "ref": "luke 3:29",
+      "ref": "matthew 1:8",
       "note": "The Peshitta writes this person ܝܘܪܡ. This book prints Yoram. The familiar English is Joram. Read from the Syriac letters: yoram.",
       "id": "yoram"
     },
@@ -6933,7 +6766,7 @@
       "say": "Yordanan",
       "kind": "place",
       "count": 15,
-      "ref": "john 1:28",
+      "ref": "matthew 3:5",
       "note": "The Peshitta writes this place ܝܘܪܕܢܢ. This book prints Yordanan. The familiar English is Jordan. Read from the Syriac letters: Yordanan.",
       "sources": [
         {
@@ -6955,7 +6788,7 @@
       "say": "yosa",
       "kind": "person",
       "count": 6,
-      "ref": "luke 3:29",
+      "ref": "matthew 13:55",
       "note": "The Peshitta writes this person ܝܘܣܐ. This book prints Yosa. The familiar English is Joses. Read from the Syriac letters: yosa.",
       "id": "yosa"
     },
@@ -6983,7 +6816,7 @@
       "say": "Yosip",
       "kind": "person",
       "count": 38,
-      "ref": "acts 1:23",
+      "ref": "matthew 1:16",
       "note": "The Peshitta writes this person ܝܘܣܦ. This book prints Yosip. The familiar English is Joseph. Read from the Syriac letters: Yosip.",
       "sources": [
         {
@@ -7029,13 +6862,14 @@
       "forms": [
         "Zabday",
         "Zabdai",
-        "Zabdi"
+        "Zabdi",
+        "Zawdi"
       ],
       "known": "Zebedee",
       "say": "zabday",
       "kind": "person",
       "count": 11,
-      "ref": "john 21:2",
+      "ref": "matthew 4:21",
       "note": "The Peshitta writes this person ܙܒܕܝ. This book prints Zabdai. The familiar English is Zebedee. Read from the Syriac letters: zabday.",
       "id": "zabdai"
     },
@@ -7064,7 +6898,7 @@
       "say": "Zakarya",
       "kind": "person",
       "count": 13,
-      "ref": "luke 1:5",
+      "ref": "matthew 23:35",
       "note": "The Peshitta writes this person ܙܟܪܝܐ. This book prints Zakharya. The familiar English is Zechariah. Read from the Syriac letters: Zakarya.",
       "id": "zakharya"
     },
@@ -7078,7 +6912,7 @@
       "known": "Zacchaeus",
       "say": "Zakkay",
       "kind": "person",
-      "count": 5,
+      "count": 4,
       "ref": "luke 19:2",
       "note": "The Peshitta writes this person ܙܟܝ. This book prints Zakki. The familiar English is Zacchaeus. Read from the Syriac letters: Zakkay.",
       "id": "zakki"
@@ -7126,20 +6960,6 @@
       "id": "zenas"
     },
     {
-      "sy": "ܙܡܘܪܢܐ",
-      "en": "Zmurna",
-      "forms": [
-        "Zmurna"
-      ],
-      "known": "Zmurna",
-      "say": "Zmurna",
-      "kind": "person",
-      "count": 1,
-      "ref": "revelation 2:8",
-      "note": "The Peshitta writes this person ܙܡܘܪܢܐ. This book prints Zmurna. Read from the Syriac letters: Zmurna.",
-      "id": "zmurna"
-    },
-    {
       "sy": "ܙܘܪܒܒܠ",
       "en": "Zurubbabel",
       "forms": [
@@ -7151,7 +6971,7 @@
       "say": "zurubbabel",
       "kind": "person",
       "count": 3,
-      "ref": "luke 3:27",
+      "ref": "matthew 1:12",
       "note": "The Peshitta writes this person ܙܘܪܒܒܠ. This book prints Zurubbabel. The familiar English is Zerubbabel. Read from the Syriac letters: zurubbabel.",
       "id": "zurubbabel"
     }
