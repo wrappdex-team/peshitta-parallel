@@ -1,7 +1,9 @@
+import { Link } from "@tanstack/react-router";
 import { NOTES } from "@/data/edition";
 import { isJesus } from "@/lib/jesus";
 import { languageById, type LangId } from "@/lib/languages";
 import { SITE_ORIGIN } from "@/lib/site";
+import { nameOfSyriac, nameRuns } from "@/lib/names";
 import { shareCard, verseShare } from "@/lib/share";
 import {
   TERM_NOTES,
@@ -186,10 +188,22 @@ export function VerseView({
               <p className="text-sm text-muted">This verse number is not in the Syriac text.</p>
             ) : (
               <p dir="rtl" lang="syr" className={`glow font-syriac ${syColor} ${SY[size]} ${LEADING[line]}`}>
-                {syriacPieces(verse.sy).map((piece, i) =>
-                  piece.kind === "space" ? (
-                    <span key={i}>{piece.text}</span>
-                  ) : (
+                {syriacPieces(verse.sy).map((piece, i) => {
+                  if (piece.kind === "space") return <span key={i}>{piece.text}</span>;
+                  const named = nameOfSyriac(piece.word);
+                  if (named) {
+                    return (
+                      <Link
+                        key={i}
+                        to="/names"
+                        hash={named.id}
+                        className="font-syriac font-semibold text-inherit underline decoration-gold/50"
+                      >
+                        {piece.text}
+                      </Link>
+                    );
+                  }
+                  return (
                     <button
                       key={i}
                       type="button"
@@ -198,8 +212,8 @@ export function VerseView({
                     >
                       {piece.text}
                     </button>
-                  ),
-                )}
+                  );
+                })}
               </p>
             )
           )}
@@ -328,9 +342,21 @@ function Parallel({
     <p className={`${EN[size]} ${LEADING[line]} ${ink} ${language.face === "syriac" ? "font-syriac" : language.face === "arab" ? "font-arab" : language.face === "hebrew" ? "font-hebrew" : language.face === "greek" ? "font-greek" : language.face === "cyrl" ? "font-cyr" : ""}`} dir={language.dir} lang={language.id === "aii" ? "syr" : language.id}>
       {runs.map((run, i) =>
         run.kind === "term" ? (
-          <button key={i} type="button" className="text-garnet underline decoration-gold/40" onClick={() => onTerm(run.key)}>
+          <button key={i} type="button" className="font-semibold text-garnet underline decoration-gold/40" onClick={() => onTerm(run.key)}>
             {run.text}
           </button>
+        ) : run.kind === "em" ? (
+          <em key={i}>{run.text}</em>
+        ) : lang === "en" ? (
+          nameRuns(run.text).map((part, j) =>
+            part.kind === "name" ? (
+              <Link key={`${i}-${j}`} to="/names" hash={part.id} className="font-semibold underline decoration-gold/50">
+                {part.text}
+              </Link>
+            ) : (
+              <span key={`${i}-${j}`}>{part.text}</span>
+            ),
+          )
         ) : (
           <span key={i}>{run.text}</span>
         ),

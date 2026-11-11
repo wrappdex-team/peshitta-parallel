@@ -1,19 +1,8 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import registry from "@/data/names.json";
 import { bookMeta } from "@/data/edition";
+import { NAMES, type NameEntry } from "@/lib/names";
 import { SITE_ORIGIN } from "@/lib/site";
-
-type NameRow = {
-  sy: string;
-  en: string;
-  known: string;
-  kind: string;
-  count: number;
-  ref: string;
-};
-
-const NAMES = registry.names as NameRow[];
 
 function firstPlace(ref: string) {
   const match = /^([a-z0-9]+)\s+(\d+):(\d+)$/.exec(ref);
@@ -27,7 +16,7 @@ export const Route = createFileRoute("/names")({
       { title: "Names — Injeel" },
       {
         name: "description",
-        content: "The names printed in the English of this Peshitta, beside the familiar English and the Syriac.",
+        content: "Every person and place in this Peshitta, in the Syriac spelling, the English of this book, and a reading of the letters.",
       },
     ],
     links: [{ rel: "canonical", href: `${SITE_ORIGIN}/names` }],
@@ -37,13 +26,26 @@ export const Route = createFileRoute("/names")({
 
 function Names() {
   const [query, setQuery] = useState("");
+  const [active, setActive] = useState("");
   const rows = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return NAMES;
     return NAMES.filter((row) =>
-      [row.en, row.known, row.sy, row.kind].join(" ").toLowerCase().includes(q),
+      [row.en, row.known, row.say, row.sy, row.kind, row.note, ...(row.forms ?? [])].join(" ").toLowerCase().includes(q),
     );
   }, [query]);
+
+  useEffect(() => {
+    const read = () => setActive(decodeURIComponent(window.location.hash.replace(/^#/, "")));
+    read();
+    window.addEventListener("hashchange", read);
+    return () => window.removeEventListener("hashchange", read);
+  }, []);
+
+  useEffect(() => {
+    if (!active) return;
+    document.getElementById(active)?.scrollIntoView({ block: "center" });
+  }, [active, rows]);
 
   return (
     <main className="mx-auto min-h-app max-w-3xl px-5 pt-safe pb-page">
@@ -53,54 +55,67 @@ function Names() {
         </Link>
         <h1 className="mt-6 font-serif text-4xl">Names</h1>
         <p className="mt-4 text-base leading-relaxed">
-          These are the names in the English beside the Peshitta. Each one follows the Syriac of that verse. The familiar English is only here so you can find a name. It is not another translation.
+          Every person and place kept in this Peshitta. The Syriac is the spelling in the text. Beside it is the English this book prints. The reading is the letters, not another translation. A name in the reading opens its place here.
         </p>
         <label className="mt-5 block">
           <span className="text-xs tracking-widest text-gold">FIND A NAME</span>
           <input
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="Peter, Mary, Jerusalem"
+            placeholder="Peter, Maryam, Jerusalem"
             className="mt-2 min-h-11 w-full border border-line bg-raised px-3 text-base"
           />
         </label>
-        <p className="mt-3 text-sm text-muted">{rows.length} names</p>
+        <p className="mt-3 text-sm text-muted">
+          {rows.length} {rows.length === 1 ? "name" : "names"}
+        </p>
         <ul className="mt-2 border-t border-line">
-          {rows.map((row) => {
-            const place = firstPlace(row.ref);
-            return (
-            <li key={`${row.en}-${row.sy}`} className="border-b border-line py-3">
-              <div className="flex items-baseline justify-between gap-3">
-                <span className="font-serif text-xl">{row.en}</span>
-                <span className="font-syriac text-2xl text-syriac" lang="syr" dir="rtl">
-                  {row.sy}
-                </span>
-              </div>
-              <p className="mt-1 text-sm text-muted">
-                {row.known === row.en ? row.kind : `${row.known} · ${row.kind}`}
-                {" · "}
-                {row.count} {row.count === 1 ? "verse" : "verses"}
-                {place ? (
-                  <>
-                    {" · "}
-                    <Link
-                      to="/read/$book/$chapter"
-                      params={{ book: place.book, chapter: place.chapter }}
-                      hash={`v-${place.verse}`}
-                      className="text-garnet"
-                    >
-                      {row.ref}
-                    </Link>
-                  </>
-                ) : (
-                  ` · ${row.ref}`
-                )}
-              </p>
-            </li>
-            );
-          })}
+          {rows.map((row) => (
+            <NameStudy key={row.id} row={row} active={active === row.id} />
+          ))}
         </ul>
       </div>
     </main>
+  );
+}
+
+function NameStudy({ row, active }: { row: NameEntry; active: boolean }) {
+  const place = firstPlace(row.ref);
+  return (
+    <li id={row.id} className={`border-b border-line py-4 ${active ? "bg-gold-soft -mx-3 px-3" : ""}`}>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <p className="font-serif text-2xl font-semibold">{row.en}</p>
+          {row.known !== row.en ? <p className="text-sm text-muted">{row.known}</p> : null}
+        </div>
+        <p className="font-syriac text-4xl leading-none text-syriac" lang="syr" dir="rtl">
+          {row.sy}
+        </p>
+      </div>
+      <p className="mt-2 text-sm">
+        <span className="text-gold">Read</span> {row.say}
+      </p>
+      <p className="mt-2 text-sm leading-relaxed">{row.note}</p>
+      <p className="mt-2 text-sm text-muted">
+        {row.kind}
+        {" · "}
+        {row.count} {row.count === 1 ? "verse" : "verses"}
+        {place ? (
+          <>
+            {" · "}
+            <Link
+              to="/read/$book/$chapter"
+              params={{ book: place.book, chapter: place.chapter }}
+              hash={`v-${place.verse}`}
+              className="text-garnet"
+            >
+              {row.ref}
+            </Link>
+          </>
+        ) : (
+          ` · ${row.ref}`
+        )}
+      </p>
+    </li>
   );
 }
