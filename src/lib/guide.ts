@@ -61,7 +61,7 @@ export const STEPS: { kicker: string; title: string; body: string }[] = [
   {
     kicker: "What this is",
     title: "Injeel is the New Testament in Syriac",
-    body: "The Peshitta is the text the Syriac churches have kept for centuries. English and other languages sit next to it. Names stay close to the original: Y'shua, Maryam, Keefa, Mashiyach.",
+    body: "The Peshitta is the Syriac New Testament, the Aramaic text these churches have kept. By the early 400s they were reading twenty-two books: the Gospels, Acts, Paul's letters, Hebrews, James, 1 Peter, and 1 John. 2 Peter, 2 John, 3 John, Jude, and Revelation were translated into Syriac later, and this reader marks them. The English beside it is James Murdock's, from the 1850s. Names stay close to the original: Y'shua, Maryam, Keefa, Mashiyach.",
   },
   {
     kicker: "How to read",
