@@ -4,6 +4,7 @@ import { BOOKS } from "@/data/edition";
 import { languageById, type LangId } from "@/lib/languages";
 import { chapterCount, loadBook, loadParallel } from "@/lib/scripture";
 import { readingLines, type VoiceId } from "@/lib/speak";
+import { holdReading, type ReadingHold } from "@/lib/keep-reading";
 
 type Line = { v: number; text: string; chapter?: number; key?: string };
 
@@ -150,6 +151,7 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
 }: Props, ref) {
   const [status, setStatus] = useState<"idle" | "playing" | "paused">("idle");
   const [carry, setCarry] = useState(false);
+  const [cornerReady, setCornerReady] = useState(false);
   const [error, setError] = useState("");
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
   const run = useRef(0);
@@ -171,7 +173,7 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
   const readyLines = useRef<Line[] | null>(null);
   const fromRef = useRef(fromVerse);
   const startKeyRef = useRef(startKey);
-  const resumeOnVisible = useRef(false);
+  const hold = useRef<ReadingHold | null>(null);
   const stopping = useRef<"none" | "pause" | "halt">("none");
   const loop = useRef(0);
   const runner = useRef<(token: number, at: number) => Promise<void>>(async () => {});
@@ -202,6 +204,7 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
       chapter: row.chapter ?? place.current.chapter,
       verse: row.v,
     });
+    hold.current?.caption(row.text);
   }
 
   async function loadRows(at: Place, tongue: LangId) {
@@ -217,15 +220,45 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
     }
   }
 
+  function releaseHold() {
+    hold.current?.release();
+    hold.current = null;
+  }
+
+  function takeHold() {
+    releaseHold();
+    hold.current = holdReading({
+      onPause: () => pauseReading(),
+      onPlay: () => resumeReading(),
+    });
+  }
+
+  function pauseReading() {
+    if (statusRef.current !== "playing") return;
+    stopping.current = "pause";
+    loop.current += 1;
+    silence();
+    releaseHold();
+    setStatus("paused");
+  }
+
+  function resumeReading() {
+    if (statusRef.current !== "paused" || !lines.current.length) return;
+    stopping.current = "none";
+    takeHold();
+    setStatus("playing");
+    void speakFrom(run.current, index.current);
+  }
+
   function halt() {
     stopping.current = "halt";
     loop.current += 1;
-    resumeOnVisible.current = false;
     run.current += 1;
     lines.current = [];
     index.current = 0;
     spoken.current = null;
     silence();
+    releaseHold();
     setStatus("idle");
     setError("");
     heard(null);
@@ -269,6 +302,8 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
       loop.current += 1;
       run.current += 1;
       silence();
+      hold.current?.release();
+      hold.current = null;
     };
   }, []);
 
@@ -320,6 +355,16 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
           return;
         }
         if (reason !== "interrupted" && reason !== "canceled") setError(`This phone did not speak (${reason}).`);
+        if ((reason === "interrupted" || reason === "canceled") && document.visibilityState === "visible") {
+          window.setTimeout(() => {
+            if (settled || stopping.current !== "none" || run.current !== token || loop.current !== phrase) {
+              finish("stopped");
+              return;
+            }
+            void speakPhrase(text, token, true).then(finish);
+          }, 350);
+          return;
+        }
         finish("stopped");
       };
       const go = () => {
@@ -348,12 +393,14 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
         heard(null);
         if (!carryRef.current) {
           spoken.current = null;
+          releaseHold();
           setStatus("idle");
           return;
         }
         const nxt = nextPlaceOfRef.current ? nextPlaceOfRef.current(done) : nextPlace(done.book, done.chapter);
         if (!nxt) {
           spoken.current = null;
+          releaseHold();
           setStatus("idle");
           return;
         }
@@ -365,6 +412,7 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
         } catch (err) {
           if (run.current !== token) return;
           spoken.current = null;
+          releaseHold();
           setStatus("idle");
           setError(err instanceof Error ? err.message : "The voice could not continue.");
           heard(null);
@@ -390,11 +438,14 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
   runner.current = speakFrom;
 
   async function start(from: number) {
+    takeHold();
     if (typeof window.speechSynthesis === "undefined") {
+      releaseHold();
       setError("This device has no speaking voice.");
       return;
     }
     if (!findVoice(deviceVoiceRef.current, langRef.current)) {
+      releaseHold();
       setError("No matching voice is available. Open Voice setup help, then choose an available voice explicitly or download a compatible system voice.");
       return;
     }
@@ -415,6 +466,7 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
       } catch (err) {
         if (run.current !== token) return;
         spoken.current = null;
+        releaseHold();
         setStatus("idle");
         setError(err instanceof Error ? err.message : "The voice could not read this chapter.");
         return;
@@ -453,19 +505,11 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
 
   function toggle() {
     if (status === "playing") {
-      stopping.current = "pause";
-      loop.current += 1;
-      resumeOnVisible.current = false;
-      silence();
-      setStatus("paused");
+      pauseReading();
       return;
     }
     if (status === "paused" && lines.current.length) {
-      stopping.current = "none";
-      resumeOnVisible.current = false;
-      setStatus("playing");
-      const token = run.current;
-      void speakFrom(token, index.current);
+      resumeReading();
       return;
     }
     void start(Math.max(1, fromRef.current || 1));
@@ -478,32 +522,21 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
   }
 
   useEffect(() => {
-    function pauseForInterruption() {
-      if (statusRef.current !== "playing") return;
-      stopping.current = "pause";
+    const host = document as Document & { pictureInPictureEnabled?: boolean };
+    if (host.pictureInPictureEnabled) setCornerReady(true);
+  }, []);
+
+  useEffect(() => {
+    function onVisibility() {
+      if (document.visibilityState !== "visible") return;
+      if (statusRef.current !== "playing" || stopping.current !== "none") return;
+      const synth = window.speechSynthesis;
+      if (!synth || synth.speaking || synth.pending || !lines.current.length) return;
       loop.current += 1;
-      resumeOnVisible.current = true;
-      silence();
-      setStatus("paused");
-    }
-    function resumeAfterInterruption() {
-      if (!resumeOnVisible.current || document.visibilityState === "hidden") return;
-      resumeOnVisible.current = false;
-      if (!lines.current.length) return;
-      stopping.current = "none";
-      setStatus("playing");
       void runner.current(run.current, index.current);
     }
-    function onVisibility() {
-      if (document.visibilityState === "hidden") pauseForInterruption();
-      else resumeAfterInterruption();
-    }
     document.addEventListener("visibilitychange", onVisibility);
-    window.addEventListener("pagehide", pauseForInterruption);
-    return () => {
-      document.removeEventListener("visibilitychange", onVisibility);
-      window.removeEventListener("pagehide", pauseForInterruption);
-    };
+    return () => document.removeEventListener("visibilitychange", onVisibility);
   }, []);
 
   function chooseDeviceVoice(next: string) {
@@ -571,6 +604,16 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
             <Square className="size-3.5" />
             Stop
           </button>
+          {cornerReady ? (
+            <button
+              type="button"
+              onClick={() => void hold.current?.corner()}
+              className="min-h-11 shrink-0 px-3 text-garnet"
+              aria-label="Keep the reading in the corner over other apps"
+            >
+              Corner
+            </button>
+          ) : null}
           <span className="ml-auto flex min-h-11 shrink-0 items-center px-3 text-sm text-gold">
             {status === "paused" ? "Paused" : carry ? throughLabel : hereLabel}
           </span>
