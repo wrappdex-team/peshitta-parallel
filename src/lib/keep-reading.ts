@@ -31,6 +31,8 @@ export function holdReading(controls: Controls): ReadingHold {
   let audio: AudioContext | null = null;
   let ctx: CanvasRenderingContext2D | null = null;
   let pauseWait: number | null = null;
+  let wakeTimer: number | null = null;
+  let pinned = false;
   let caption = "Reading";
   let place = "";
   let red = false;
@@ -187,9 +189,11 @@ export function holdReading(controls: Controls): ReadingHold {
     const element = document.createElement("video") as CornerVideo;
     element.srcObject = stream;
     element.playsInline = true;
+    element.muted = false;
     element.autoplay = true;
     element.autoPictureInPicture = true;
     element.setAttribute("playsinline", "");
+    element.setAttribute("webkit-playsinline", "");
     element.style.cssText = "position:fixed;width:2px;height:2px;opacity:0.02;pointer-events:none;left:0;bottom:0";
     document.body.appendChild(element);
     video = element;
@@ -198,6 +202,10 @@ export function holdReading(controls: Controls): ReadingHold {
 
   async function corner() {
     if (done) return;
+    // Asked from the tap, before any wait, so the phone accepts the screen lock.
+    pinned = true;
+    void screen();
+    arm();
     ensureCorner();
     if (!video) return;
     try {
@@ -214,10 +222,34 @@ export function holdReading(controls: Controls): ReadingHold {
     }
   }
 
+  function arm() {
+    if (wakeTimer !== null || typeof window.setInterval !== "function") return;
+    wakeTimer = window.setInterval(() => {
+      if (done || !pinned) return;
+      if (document.visibilityState === "visible" && !sentinel) void screen();
+      if (video?.paused) void video.play().catch(() => {});
+    }, 15000);
+  }
+
   async function screen() {
-    if (done || !navigator.wakeLock?.request) return;
+    if (done || sentinel || !navigator.wakeLock?.request) return;
+    if (document.visibilityState === "hidden") return;
     try {
-      sentinel = await navigator.wakeLock.request("screen");
+      const lock = await navigator.wakeLock.request("screen");
+      if (done) {
+        void lock.release().catch(() => {});
+        return;
+      }
+      sentinel = lock;
+      lock.addEventListener("release", () => {
+        if (sentinel === lock) sentinel = null;
+        // The phone drops the lock on its own. Take it back while Corner is on.
+        if (!done && pinned && document.visibilityState === "visible") {
+          window.setTimeout(() => {
+            if (!done && pinned && !sentinel) void screen();
+          }, 1000);
+        }
+      });
     } catch {
       sentinel = null;
     }
@@ -280,6 +312,9 @@ export function holdReading(controls: Controls): ReadingHold {
       document.removeEventListener("visibilitychange", onVisibility);
       if (pauseWait !== null) window.clearTimeout(pauseWait);
       pauseWait = null;
+      if (wakeTimer !== null) window.clearInterval(wakeTimer);
+      wakeTimer = null;
+      pinned = false;
       void sentinel?.release().catch(() => {});
       sentinel = null;
       try {
