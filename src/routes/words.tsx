@@ -4,7 +4,7 @@ import { Play } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Studio } from "@/components/studio";
 import { BOOKS } from "@/data/edition";
-import { RED_BOOKS, isJesus, nextRedBook, type RedBook } from "@/lib/jesus";
+import { RED_BOOKS, englishPhrases, foreignSpeech, nextRedBook, speechOf, speechRanges, syriacPhrases, type RedBook } from "@/lib/jesus";
 import { LANGS, languageById, type LangId } from "@/lib/languages";
 import { loadBook, loadParallel, type BookFile, type Verse } from "@/lib/scripture";
 import { cleanEnglish, sayingLines } from "@/lib/speak";
@@ -129,7 +129,8 @@ function Words() {
   const sayings: Saying[] = [];
   doc?.chapters.forEach((chapter, index) => {
     chapter.forEach((verse, verseIndex) => {
-      if ((verse.sy || verse.en) && isJesus(book, index + 1, verse.v)) {
+      const speech = speechOf(book, index + 1, verse.v);
+      if ((verse.sy || verse.en) && speech) {
         sayings.push({ chapter: index + 1, verse, index: verseIndex });
       }
     });
@@ -195,7 +196,13 @@ function Words() {
   function passageFor(key: string) {
     const saying = sayings.find((item) => `${item.chapter}:${item.verse.v}` === key) ?? sayings[0];
     if (!saying) return "";
-    const text = lineText(tongue.id, saying.verse, parallel, saying.chapter, saying.index) || saying.verse.en;
+    const speech = speechOf(book, saying.chapter, saying.verse.v);
+    const phrases = englishPhrases(book, saying.chapter, saying.verse.v, saying.verse.en);
+    const line = lineText(tongue.id, saying.verse, parallel, saying.chapter, saying.index) || saying.verse.en;
+    const text =
+      tongue.id === "en"
+        ? phrases?.join(" ") || saying.verse.en
+        : (speech?.kind === "whole" && phrases && foreignSpeech(line, tongue.id)) || line;
     return cleanEnglish(text);
   }
 
@@ -254,8 +261,23 @@ function Words() {
             const showChapter = position === 0 || sayings[position - 1].chapter !== chapter;
             const key = `${chapter}:${verse.v}`;
             const listening = heard?.book === book && heard.chapter === chapter && heard.verse === verse.v;
-            const primary = lineText(tongue.id, verse, parallel, chapter, index);
-            const extra = second ? lineText(second.id, verse, second.id === "en" ? null : parallel2, chapter, index) : "";
+            const speech = speechOf(book, chapter, verse.v);
+            const phrases = englishPhrases(book, chapter, verse.v, verse.en);
+            const ownWords = phrases?.join(" ") ?? "";
+            const solid = speech?.kind === "whole" && !phrases;
+            const mainLine = lineText(tongue.id, verse, parallel, chapter, index);
+            const mainCut = tongue.id !== "en" && speech?.kind === "whole" && phrases ? foreignSpeech(mainLine, tongue.id) : null;
+            const primary = tongue.id === "en" ? (phrases ? ownWords : mainLine) : (mainCut ?? mainLine);
+            const sideLine = second
+              ? lineText(second.id, verse, second.id === "en" ? null : parallel2, chapter, index)
+              : "";
+            const sideCut = second && second.id !== "en" && speech?.kind === "whole" && phrases ? foreignSpeech(sideLine, second.id) : null;
+            const extra = second ? (second.id === "en" ? (phrases ? ownWords : sideLine) : (sideCut ?? sideLine)) : "";
+            const mainRed = tongue.id === "en" ? solid || !!phrases : solid || !!mainCut;
+            const sideRed = !second ? false : second.id === "en" ? solid || !!phrases : solid || !!sideCut;
+            const syMark = syriacPhrases(book, chapter, verse.v, verse.sy || "", verse.en);
+            const syRanges = syMark && verse.sy ? speechRanges(verse.sy, syMark.say, syMark.which) : null;
+            const syRed = speech?.kind === "whole" && !syRanges;
             const mainFace = readingFace(tongue.id);
             const sideFace = second ? readingFace(second.id) : null;
             return (
@@ -308,20 +330,23 @@ function Words() {
                   </div>
                 </div>
                 {verse.sy && (
-                  <p dir="rtl" lang="syr" className="mt-2 font-syriac text-2xl leading-normal text-jesus">
-                    <SyriacNames text={verse.sy} english={verse.en} />
+                  <p dir="rtl" lang="syr" className={`mt-2 font-syriac text-2xl leading-normal ${syRed ? "text-jesus" : "text-syriac"}`}>
+                    <SyriacNames text={verse.sy} english={verse.en} ranges={syRanges} />
                   </p>
+                )}
+                {speech?.kind === "part" && tongue.id !== "en" && (
+                  <p className="mt-2 font-serif leading-relaxed text-jesus">{ownWords}</p>
                 )}
                 {pending && position === 0 && <p className="mt-2 text-muted">Opening this language…</p>}
                 {!pending && (primary || sideFace) && (
                   <div className={sideFace ? "mt-2 grid gap-4 md:grid-cols-2" : ""}>
                     {primary && (
-                      <p dir={mainFace.dir} lang={mainFace.code} className={`mt-2 leading-relaxed text-jesus ${mainFace.face}`}>
+                      <p dir={mainFace.dir} lang={mainFace.code} className={`mt-2 leading-relaxed ${mainRed ? "text-jesus" : "text-ink"} ${mainFace.face}`}>
                         {tongue.id === "en" ? <NameText text={primary} /> : primary}
                       </p>
                     )}
                     {sideFace && (extra || (pending2 && position === 0)) && (
-                      <p dir={sideFace.dir} lang={sideFace.code} className={`mt-2 leading-relaxed ${pending2 ? "text-muted" : `text-jesus ${sideFace.face}`}`}>
+                      <p dir={sideFace.dir} lang={sideFace.code} className={`mt-2 leading-relaxed ${pending2 ? "text-muted" : `${sideRed ? "text-jesus" : "text-ink"} ${sideFace.face}`}`}>
                         {pending2 ? "Opening this language…" : second?.id === "en" ? <NameText text={extra} /> : extra}
                       </p>
                     )}

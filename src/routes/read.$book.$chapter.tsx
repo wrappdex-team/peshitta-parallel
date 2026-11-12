@@ -16,6 +16,7 @@ import {
   loadParallel,
   studyWord,
   type WordGloss,
+  type WordPlace,
   type WordStudy,
 } from "@/lib/scripture";
 import { usePrefs } from "@/lib/use-prefs";
@@ -225,8 +226,8 @@ function Reader() {
     window.scrollTo(0, 0);
   }
 
-  function onWord(_info: WordGloss | null, surface: string) {
-    setSheet({ study: studyWord(surface) });
+  function onWord(_info: WordGloss | null, surface: string, place?: WordPlace) {
+    setSheet({ study: studyWord(surface, place) });
   }
 
   function onTerm(key: string) {
@@ -372,6 +373,16 @@ function Reader() {
                 Close
               </button>
             </div>
+            <button
+              type="button"
+              className="mb-3 flex min-h-11 w-full items-center border-b border-line text-left text-garnet"
+              onClick={() => {
+                setMenu(false);
+                window.dispatchEvent(new CustomEvent("injeel-guide", { detail: "panel" }));
+              }}
+            >
+              Guide
+            </button>
             {SECTIONS.map((section) => (
               <div key={section} className="mb-4">
                 <p className="text-xs text-gold">{section}</p>

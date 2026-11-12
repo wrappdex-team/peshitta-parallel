@@ -5,7 +5,7 @@ import { createLocalRateLimiter } from "@/lib/local-rate-limit";
 import { withProviderDeadline } from "@/lib/provider-deadline";
 import { createCredentialCacheScope } from "@/lib/credential-cache-scope";
 import { type LangId, languageById } from "@/lib/languages";
-import { isJesus } from "@/lib/jesus";
+import { englishPhrases, foreignSpeech, isJesus, speechOf } from "@/lib/jesus";
 import { loadBook, loadParallel, type Verse } from "@/lib/scripture";
 
 export type VoiceId = "ara" | "rex";
@@ -235,7 +235,13 @@ export async function sayingLines(book: string, lang: LangId): Promise<{ v: numb
     const ch = index + 1;
     chapter.forEach((verse, verseIndex) => {
       if (!isJesus(book, ch, verse.v)) return;
-      const raw = lang === "en" ? verse.en : (grid?.[index]?.[verseIndex] ?? "");
+      const speech = speechOf(book, ch, verse.v);
+      if (speech?.kind === "part" && lang !== "en") return;
+      const phrases = englishPhrases(book, ch, verse.v, verse.en);
+      const line = lang === "en" ? verse.en : (grid?.[index]?.[verseIndex] ?? "");
+      const raw = lang === "en"
+        ? (phrases ? phrases.join(" ") : verse.en)
+        : (speech?.kind === "whole" && phrases && foreignSpeech(line, lang)) || line;
       const text = cleanEnglish(raw);
       if (!text) return;
       const lead = ch === named ? "" : leadIn(lang, spokenName(book, lang), ch);

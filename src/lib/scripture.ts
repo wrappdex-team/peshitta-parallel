@@ -362,8 +362,45 @@ function nameCore(gloss: string) {
   return gloss.replace(/^(and|of|in|to|that|his|her|their|your|my|our)\s+/i, "").split(/[,;]/)[0].trim();
 }
 
-export function studyWord(word: string): WordStudy {
-  const direct = lex[word];
+export type WordPlace = { book: string; chapter: number; verse: number };
+
+/**
+ * Unvocalized homographs. The lexicon keeps the usual sense.
+ * These verses take the other one.
+ */
+const SENSE_AT: Record<string, LexEntry> = {
+  "matthew:10:31:ܨܦܪܐ": {
+    g: "sparrows",
+    r: "ṣeprē",
+    n: "The small birds. The same letters spell ṣaprā, “morning,” but the voweling here is the bird.",
+  },
+  "luke:12:7:ܕܨܦܪܐ": {
+    g: "of sparrows",
+    r: "d-ṣeprē",
+    n: "Of the small birds. Not “of the morning.” The same letters, read ṣaprā, are dawn.",
+  },
+  "revelation:22:1:ܢܗܝܪܐ": {
+    g: "bright",
+    r: "nahīrā",
+    n: "Shining, bright. The same letters are also the plural “luminaries,” which is not the sense here.",
+  },
+  "revelation:22:16:ܢܗܝܪܐ": {
+    g: "bright",
+    r: "nahīrā",
+    n: "Shining, bright: the morning star. Not the plural “luminaries.”",
+  },
+};
+
+function lexAt(word: string, place?: WordPlace): LexEntry | undefined {
+  if (place) {
+    const pinned = SENSE_AT[`${place.book}:${place.chapter}:${place.verse}:${word}`];
+    if (pinned) return pinned;
+  }
+  return lex[word];
+}
+
+export function studyWord(word: string, place?: WordPlace): WordStudy {
+  const direct = lexAt(word, place);
   const parsed = trustedParse(word, direct);
   const stem = parsed?.stem || word;
   const root = proposeRoot(stem);
@@ -387,8 +424,8 @@ export function studyWord(word: string): WordStudy {
   };
 }
 
-export function glossWord(word: string): WordGloss | null {
-  const direct = lex[word];
+export function glossWord(word: string, place?: WordPlace): WordGloss | null {
+  const direct = lexAt(word, place);
   if (direct) return { word, gloss: direct.g, roman: direct.r, note: direct.n };
   const parsed = bestParse(word);
   if (!parsed) return null;

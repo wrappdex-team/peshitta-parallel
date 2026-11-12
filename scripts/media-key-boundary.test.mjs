@@ -127,7 +127,7 @@ function fixture({ provider, signal, cacheCrypto = syntheticCacheCrypto } = {}) 
       if (name === "@/lib/credential-cache-scope") return cacheScope;
       if (name === "@/data/edition") return { BOOKS: [{ id: "fixture", name: "Fixture" }] };
       if (name === "@/lib/languages") return { languageById: () => ({ id: "en", tts: "en" }) };
-      if (name === "@/lib/jesus") return { isJesus: () => false };
+      if (name === "@/lib/jesus") return { isJesus: () => false, speechOf: () => null };
       if (name === "@/lib/scripture")
         return {
           async loadBook() {

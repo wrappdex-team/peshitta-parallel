@@ -198,6 +198,16 @@ function BookDrawer({ onClose, place }: { onClose: () => void; place?: { book: s
             Close
           </button>
         </div>
+        <button
+          type="button"
+          className="mb-3 flex min-h-11 w-full items-center border-b border-line text-left text-garnet"
+          onClick={() => {
+            onClose();
+            window.dispatchEvent(new CustomEvent("injeel-guide", { detail: "panel" }));
+          }}
+        >
+          Guide
+        </button>
         {SECTIONS.map((section) => (
           <div key={section} className="mb-4">
             <p className="text-xs text-gold">{section}</p>

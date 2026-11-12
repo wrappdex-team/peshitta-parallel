@@ -79,17 +79,6 @@ export function Guide() {
 
   return (
     <>
-      {mode == null && (
-        <button
-          type="button"
-          className="bottom-helper fixed end-4 z-30 flex size-11 items-center justify-center border border-line bg-raised text-ink"
-          aria-label="Open the guide"
-          onClick={() => setMode("panel")}
-        >
-          <ChevronMark className="size-7" />
-        </button>
-      )}
-
       {mode === "welcome" && (
         <Modal label="Daily bread" className={CENTER} onClose={dismissAll}>
           <Scroll
@@ -392,23 +381,5 @@ function StepPlay({ step, onLeave }: { step: number; onLeave: () => void }) {
         Open Matthew 5
       </Link>
     </div>
-  );
-}
-
-function ChevronMark({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 32 32" className={className} aria-hidden="true">
-      <rect width="32" height="32" className="fill-gold-soft" />
-      {[2, 6, 10, 14, 18, 22, 26].map((y) => (
-        <path
-          key={y}
-          d={`M1 ${y + 3.2} L5 ${y} L9 ${y + 3.2} L13 ${y} L17 ${y + 3.2} L21 ${y} L25 ${y + 3.2} L29 ${y} L31 ${y + 1.6}`}
-          fill="none"
-          className="text-ink"
-          stroke="currentColor"
-          strokeWidth="1.35"
-        />
-      ))}
-    </svg>
   );
 }

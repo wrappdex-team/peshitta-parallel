@@ -4,7 +4,7 @@ import { BOOKS } from "@/data/edition";
 import { languageById, type LangId } from "@/lib/languages";
 import { chapterCount, loadBook, loadParallel } from "@/lib/scripture";
 import { readingLines, type VoiceId } from "@/lib/speak";
-import { isJesus } from "@/lib/jesus";
+import { speechOf } from "@/lib/jesus";
 import { holdReading, type ReadingHold } from "@/lib/keep-reading";
 import { setReadingLive } from "@/lib/speech-lock";
 
@@ -218,7 +218,7 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
       hold.current?.caption({
         text: row.text,
         place: label,
-        red: kind === "words" || isJesus(bookId, chapterNo, row.v),
+        red: kind === "words" || speechOf(bookId, chapterNo, row.v)?.kind === "whole",
       });
     }
     if (!followRef.current) return;

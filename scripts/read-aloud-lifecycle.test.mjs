@@ -76,7 +76,7 @@ function fixture({ rows = [{ v: 1, text: "Synthetic fixture words." }], synthBus
       if (name === "@/lib/scripture") return { chapterCount: () => 1, loadBook: unavailable, loadParallel: unavailable };
       if (name === "@/lib/speak") return { readingLines: unavailable };
       if (name === "@/lib/keep-reading") return { holdReading: () => ({ release() {}, async corner() {}, caption() {} }) };
-      if (name === "@/lib/jesus") return { isJesus: () => false };
+      if (name === "@/lib/jesus") return { isJesus: () => false, speechOf: () => null };
       if (name === "@/lib/speech-lock") return { setReadingLive() {}, readingSessionLive: () => false };
       throw new Error(`Unexpected speech-fixture import: ${name}`);
     },

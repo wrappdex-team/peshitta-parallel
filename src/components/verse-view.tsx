@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { NOTES } from "@/data/edition";
-import { isJesus } from "@/lib/jesus";
+import { englishPhrases, foreignAt, rangeHits, speechOf, speechRanges, speechSpans, syriacPhrases } from "@/lib/jesus";
 import { languageById, type LangId } from "@/lib/languages";
 import { SITE_ORIGIN } from "@/lib/site";
 import { NAME_CLASS, nameOfSyriac, nameRuns } from "@/lib/names";
@@ -13,6 +13,7 @@ import {
   syriacWords,
   type Verse,
   type WordGloss,
+  type WordPlace,
 } from "@/lib/scripture";
 import { useEffect, useRef, useState } from "react";
 
@@ -38,7 +39,7 @@ type Props = {
   onHighlight: () => void;
   onNote: (note: string) => void;
   onBookmark: () => void;
-  onWord: (info: WordGloss | null, surface: string) => void;
+  onWord: (info: WordGloss | null, surface: string, place: WordPlace) => void;
   onTerm: (key: string) => void;
   listening?: boolean;
 };
@@ -79,6 +80,7 @@ export function VerseView({
   const [copied, setCopied] = useState("");
   const articleRef = useRef<HTMLElement>(null);
   const [wordsReady, setWordsReady] = useState(false);
+  const place: WordPlace = { book, chapter, verse: verse.v };
   const study = NOTES[`${book}.${chapter}.${verse.v}`];
   const marks: { kind: "Murdock" | "Study"; text: string }[] = [];
   if (showNotes) {
@@ -90,9 +92,14 @@ export function VerseView({
   const missingSy = !verse.sy;
   const language = languageById(lang);
   const second = lang2 !== "none" ? languageById(lang2) : null;
-  const jesus = isJesus(book, chapter, verse.v);
-  const ink = jesus ? "text-jesus" : "text-ink";
-  const syColor = jesus ? "text-jesus" : "text-syriac";
+  const speech = speechOf(book, chapter, verse.v);
+  const phrases = englishPhrases(book, chapter, verse.v, verse.en || "");
+  const syMark = syriacPhrases(book, chapter, verse.v, verse.sy || "", verse.en || "");
+  const syRanges = syMark && verse.sy ? speechRanges(verse.sy, syMark.say, syMark.which) : null;
+  const solid = speech?.kind === "whole" && !phrases;
+  const ink = solid ? "text-jesus" : "text-ink";
+  const sySolid = speech?.kind === "whole" && !syRanges;
+  const syColor = sySolid ? "text-jesus" : "text-syriac";
 
   async function shareVerse() {
     const lines: string[] = [];
@@ -190,8 +197,12 @@ export function VerseView({
               <p dir="rtl" lang="syr" className={`glow font-syriac ${syColor} ${SY[size]} ${LEADING[line]}`}>
                 {(() => {
                   let prev = "";
+                  let offset = 0;
                   return syriacPieces(verse.sy).map((piece, i) => {
-                    if (piece.kind === "space") return <span key={i}>{piece.text}</span>;
+                    const start = offset;
+                    offset += piece.text.length;
+                    const hot = rangeHits(syRanges, start, offset);
+                    if (piece.kind === "space") return <span key={i} className={hot ? "text-jesus" : undefined}>{piece.text}</span>;
                     const named = nameOfSyriac(piece.word, verse.en, prev);
                     prev = piece.word;
                     if (named) {
@@ -200,7 +211,7 @@ export function VerseView({
                           key={i}
                           to="/names"
                           hash={named.id}
-                          className={`${NAME_CLASS} font-syriac`}
+                          className={`${NAME_CLASS} font-syriac ${hot ? "text-jesus" : ""}`}
                         >
                           {piece.text}
                         </Link>
@@ -210,8 +221,8 @@ export function VerseView({
                       <button
                         key={i}
                         type="button"
-                        onClick={() => onWord(glossWord(piece.word), piece.word)}
-                        className="rounded-sm border-0 bg-transparent px-0.5 font-syriac text-inherit hover:bg-gold-soft"
+                        onClick={() => onWord(glossWord(piece.word, place), piece.word, place)}
+                        className={`rounded-sm border-0 bg-transparent px-0.5 font-syriac hover:bg-gold-soft ${hot ? "text-jesus" : "text-inherit"}`}
                       >
                         {piece.text}
                       </button>
@@ -223,24 +234,31 @@ export function VerseView({
           )}
           {words && verse.sy && wordsReady && (
             <div dir="rtl" className="mt-3 flex flex-wrap gap-1.5">
-              {syriacWords(verse.sy).map((word, i) => {
-                const hit = glossWord(word);
-                return (
-                  <button
-                    key={`${word}-${i}`}
-                    type="button"
-                    onClick={() => onWord(hit, word)}
-                    className="inline-flex max-w-full shrink-0 flex-col items-center gap-1 rounded-md border border-line bg-raised px-2.5 py-2 text-center"
-                  >
-                    <span lang="syr" dir="rtl" className={`block whitespace-nowrap px-1 font-syriac text-xl leading-normal sm:text-2xl ${syColor}`}>
-                      {word}
-                    </span>
-                    <span dir="ltr" className="block max-w-40 text-xs leading-snug text-ink">
-                      {hit ? hit.gloss : "·"}
-                    </span>
-                  </button>
-                );
-              })}
+              {(() => {
+                let from = 0;
+                return syriacWords(verse.sy).map((word, i) => {
+                  const hit = glossWord(word, place);
+                  const at = verse.sy.indexOf(word, from);
+                  const start = at < 0 ? from : at;
+                  from = start + word.length;
+                  const hot = syRanges ? rangeHits(syRanges, start, start + word.length) : sySolid;
+                  return (
+                    <button
+                      key={`${word}-${i}`}
+                      type="button"
+                      onClick={() => onWord(hit, word, place)}
+                      className="inline-flex max-w-full shrink-0 flex-col items-center gap-1 rounded-md border border-line bg-raised px-2.5 py-2 text-center"
+                    >
+                      <span lang="syr" dir="rtl" className={`block whitespace-nowrap px-1 font-syriac text-xl leading-normal sm:text-2xl ${hot ? "text-jesus" : "text-syriac"}`}>
+                        {word}
+                      </span>
+                      <span dir="ltr" className="block max-w-40 text-xs leading-snug text-ink">
+                        {hit ? hit.gloss : "·"}
+                      </span>
+                    </button>
+                  );
+                });
+              })()}
             </div>
           )}
           {showTr && (
@@ -254,6 +272,8 @@ export function VerseView({
                 size={size}
                 line={line}
                 ink={ink}
+                say={lang === "en" ? phrases : null}
+                cut={lang !== "en" && speech?.kind === "whole" && phrases ? foreignAt(parallel || "", lang) : null}
                 marks={marks}
                 chapter={chapter}
                 verse={verse.v}
@@ -269,6 +289,8 @@ export function VerseView({
                   size={size}
                   line={line}
                   ink={ink}
+                  say={lang2 === "en" ? phrases : null}
+                  cut={lang2 !== "en" && speech?.kind === "whole" && phrases ? foreignAt(parallel2 || "", lang2) : null}
                   marks={[]}
                   chapter={chapter}
                   verse={verse.v}
@@ -278,7 +300,7 @@ export function VerseView({
             </div>
           )}
           <div className="mt-2 flex flex-wrap items-center gap-1 text-sm">
-            {jesus && <span className="mr-2 text-jesus">Words of Y'shua</span>}
+            {speech && <span className="mr-2 text-jesus">Words of Y'shua</span>}
             <button type="button" className="min-h-11 px-2 text-garnet" onClick={() => void shareVerse()}>
               {copied === "sent" ? "Sent" : copied === "share" ? "Copied" : "Share"}
             </button>
@@ -311,6 +333,28 @@ export function VerseView({
   );
 }
 
+function EnglishBits({ text, onTerm }: { text: string; onTerm: (key: string) => void }) {
+  return englishRuns(text).map((run, i) =>
+    run.kind === "term" ? (
+      <button key={i} type="button" className="font-semibold text-garnet underline decoration-gold/40" onClick={() => onTerm(run.key)}>
+        {run.text}
+      </button>
+    ) : run.kind === "em" ? (
+      <em key={i}>{run.text}</em>
+    ) : (
+      nameRuns(run.text).map((part, j) =>
+        part.kind === "name" ? (
+          <Link key={`${i}-${j}`} to="/names" hash={part.id} className={NAME_CLASS}>
+            {part.text}
+          </Link>
+        ) : (
+          <span key={`${i}-${j}`}>{part.text}</span>
+        ),
+      )
+    ),
+  );
+}
+
 function Parallel({
   pending,
   text,
@@ -320,6 +364,8 @@ function Parallel({
   size,
   line,
   ink,
+  say,
+  cut,
   marks,
   chapter,
   verse,
@@ -333,6 +379,8 @@ function Parallel({
   size: 0 | 1 | 2 | 3 | 4;
   line: 0 | 1 | 2;
   ink: string;
+  say: string[] | null;
+  cut: number | null;
   marks: { kind: string; text: string }[];
   chapter: number;
   verse: number;
@@ -342,29 +390,48 @@ function Parallel({
   if (!text && emptyEn) return <p className="text-sm text-muted">This verse is empty in the English text.</p>;
   if (!text) return <p className="text-sm text-muted">This verse is not yet in {language.label}.</p>;
   const runs = lang === "en" ? englishRuns(text) : [{ kind: "text" as const, text }];
+  const clauses = lang === "en" && say ? speechSpans(text, say) : null;
+  const lead = !clauses && cut != null && cut > 0 && cut < text.length ? cut : null;
+  const face =
+    language.face === "syriac"
+      ? "font-syriac"
+      : language.face === "arab"
+        ? "font-arab"
+        : language.face === "hebrew"
+          ? "font-hebrew"
+          : language.face === "greek"
+            ? "font-greek"
+            : language.face === "cyrl"
+              ? "font-cyr"
+              : "";
   return (
-    <p className={`${EN[size]} ${LEADING[line]} ${ink} ${language.face === "syriac" ? "font-syriac" : language.face === "arab" ? "font-arab" : language.face === "hebrew" ? "font-hebrew" : language.face === "greek" ? "font-greek" : language.face === "cyrl" ? "font-cyr" : ""}`} dir={language.dir} lang={language.id === "aii" ? "syr" : language.id}>
-      {runs.map((run, i) =>
-        run.kind === "term" ? (
-          <button key={i} type="button" className="font-semibold text-garnet underline decoration-gold/40" onClick={() => onTerm(run.key)}>
-            {run.text}
-          </button>
-        ) : run.kind === "em" ? (
-          <em key={i}>{run.text}</em>
-        ) : lang === "en" ? (
-          nameRuns(run.text).map((part, j) =>
-            part.kind === "name" ? (
-              <Link key={`${i}-${j}`} to="/names" hash={part.id} className={NAME_CLASS}>
-                {part.text}
-              </Link>
-            ) : (
-              <span key={`${i}-${j}`}>{part.text}</span>
-            ),
+    <p className={`${EN[size]} ${LEADING[line]} ${clauses || lead ? "text-ink" : ink} ${face}`} dir={language.dir} lang={language.id === "aii" ? "syr" : language.id}>
+      {clauses
+        ? clauses.map((span, index) => (
+            <span key={index} className={span.red ? "text-jesus" : undefined}>
+              <EnglishBits text={span.text} onTerm={onTerm} />
+            </span>
+          ))
+        : lead
+          ? (
+            <>
+              <span>{text.slice(0, lead)}</span>
+              <span className="text-jesus">{text.slice(lead)}</span>
+            </>
           )
-        ) : (
-          <span key={i}>{run.text}</span>
-        ),
-      )}
+        : runs.map((run, i) =>
+            run.kind === "term" ? (
+              <button key={i} type="button" className="font-semibold text-garnet underline decoration-gold/40" onClick={() => onTerm(run.key)}>
+                {run.text}
+              </button>
+            ) : run.kind === "em" ? (
+              <em key={i}>{run.text}</em>
+            ) : lang === "en" ? (
+              <EnglishBits key={i} text={run.text} onTerm={onTerm} />
+            ) : (
+              <span key={i}>{run.text}</span>
+            ),
+          )}
       {marks.length > 0 && (
         <sup className="text-gold">
           {marks.map((_, i) => (

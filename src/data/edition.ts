@@ -76,9 +76,9 @@ export const NOTES: Record<string, string> = {
   "mark.16.8":
     "In the oldest Greek copies Mark ends with the women’s fear, at verse 8. This Peshitta text goes on through verse 20.",
   "mark.16.9":
-    "The longer ending is present in this edition: he arose on the first of the week and appeared first to Mary Magdalene.",
+    "The longer ending is present in this edition: he arose on the first of the week and appeared first to Mary Magdalene. The charge in 16:15–18 is marked as his voice, because this edition prints those verses.",
   "luke.23.34":
-    "The Peshitta includes the prayer, ܐܒܐ ܫܒܘܩ ܠܗܘܢ — “Father, forgive them.” Some Greek copies omit it. ܫܒܘܩ is the same root as the debts in the prayer: let it go, forgive.",
+    "The Peshitta includes the prayer, ܐܒܐ ܫܒܘܩ ܠܗܘܢ — “Father, forgive them.” Some Greek copies omit it. ܫܒܘܩ is the same root as the debts in the prayer: let it go, forgive. This edition prints the line, so the words are marked as his.",
   "luke.23.43":
     "ܝܘܡܢܐ ܥܡܝ ܬܗܘܐ ܒܦܪܕܝܣܐ — “today you shall be with me in paradise.” In the Syriac, “today” stands with “you shall be,” not with “I say to you.”",
   "john.1.1":
@@ -86,7 +86,7 @@ export const NOTES: Record<string, string> = {
   "john.1.14":
     "ܘܡܠܬܐ ܒܣܪܐ ܗܘܐ — “and the miltha became flesh.” ܘܐܓܢ ܒܢ — “and he tabernacled among us,” he pitched his dwelling. Murdock keeps “tabernacled.” The only one is ܝܚܝܕܝܐ, and the fullness is grace and ܩܘܫܬܐ, truth.",
   "john.3.16":
-    "ܠܒܪܗ ܝܚܝܕܝܐ — “his only son.” ܚܝܐ ܕܠܥܠܡ is life of the age, which Murdock writes “life eternal.” The verb “perish” is ܢܐܒܕ.",
+    "ܠܒܪܗ ܝܚܝܕܝܐ — “his only son.” ܚܝܐ ܕܠܥܠܡ is life of the age, which Murdock writes “life eternal.” The verb “perish” is ܢܐܒܕ. The words in red stop at 3:15. Verses 16–21 are the evangelist, not the voice of Y'shua.",
   "john.7.53":
     "Murdock’s own note is on this verse: it is missing in many early Syriac editions, and so is the story of the adulteress in the next chapter. The British and Foreign text printed here does include John 7:53–8:11. Read his footnote beside the Syriac.",
   "john.8.58":
@@ -111,4 +111,8 @@ export const NOTES: Record<string, string> = {
     "Jude was outside the original Peshitta canon. What you are reading is the later Syriac of the book, set beside the English of this edition.",
   "revelation.1.1":
     "Revelation was outside the original Peshitta. The Syriac is John Gwynn’s edition of the Crawford manuscript, the text the Bible Society printed in 1905, not the Peshitta proper. ܓܠܝܢܐ is “revelation.”",
+  "revelation.1.8":
+    "The verse names the speaker Master YHWH Elohim, he who is and who was and who is coming. This edition does not mark it as the voice of Y'shua. His voice in the opening vision is 1:11 and 1:17–20.",
+  "revelation.21.6":
+    "These words continue the one who sits on the throne in 21:5. This edition does not mark 21:5–7 as the voice of Y'shua. The same restraint is at 1:8, where the speaker is named Master YHWH Elohim.",
 };
