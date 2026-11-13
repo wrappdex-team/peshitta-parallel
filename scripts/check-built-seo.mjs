@@ -65,7 +65,11 @@ for (const path of ["/", "/seal", "/words", "/read/john/1", "/read/john/21", "/r
     const verse = matthew.chapters[Number(saying[1]) - 1].find(
       (item) => item.v === Number(saying[2]),
     );
-    assert.ok(saying[3].includes(verse.sy), "Words includes actual source text");
+    const text = decode(saying[3].replace(/<[^>]+>/g, ""));
+    assert.ok(
+      (verse.sy && text.includes(verse.sy)) || (verse.en && text.includes(verse.en)),
+      "Words includes actual source text",
+    );
     assert.doesNotMatch(visible, /Opening the words/);
   }
   const robots = [...html.matchAll(/<meta[^>]*name="robots"[^>]*>/g)].map((match) => match[0]);

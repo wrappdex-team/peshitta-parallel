@@ -44,6 +44,14 @@ type Props = {
   onTerm: (key: string) => void;
   listening?: boolean;
   chapterEnd?: boolean;
+  /** Stable id when the same verse number appears more than once on a page. */
+  anchor?: string;
+  /** Saying key, such as `5:3`, for the words page. */
+  saying?: string;
+  /** Shown in place of the verse number, and opens that verse in the book. */
+  cite?: string;
+  guideMark?: boolean;
+  markSpeech?: boolean;
 };
 
 const SY = ["text-lg", "text-xl", "text-2xl", "text-3xl", "text-4xl"] as const;
@@ -79,6 +87,11 @@ export function VerseView({
   onTerm,
   listening = false,
   chapterEnd = false,
+  anchor,
+  saying,
+  cite,
+  guideMark,
+  markSpeech = true,
 }: Props) {
   const [copied, setCopied] = useState("");
   const articleRef = useRef<HTMLElement>(null);
@@ -158,18 +171,31 @@ export function VerseView({
   return (
     <article
       ref={articleRef}
-      id={`v-${verse.v}`}
+      id={anchor ?? `v-${verse.v}`}
+      data-saying={saying}
       data-listening={listening ? "" : undefined}
       className={`group scroll-mt-44 border-b border-line py-6 ${listening ? "bg-gold-soft -mx-4 px-4" : ""} ${highlight ? HIGHLIGHT[highlight] : ""}`}
     >
       <div className="flex gap-3">
-        <a href={`#v-${verse.v}`} className="w-8 shrink-0 pt-1 text-right font-serif text-sm text-gold">
-          {verse.v}
-          {annotation?.bookmark && <span className="ml-1 text-garnet">•</span>}
-        </a>
+        {cite ? (
+          <Link
+            to="/read/$book/$chapter"
+            params={{ book, chapter: String(chapter) }}
+            hash={`v-${verse.v}`}
+            className="w-14 shrink-0 pt-1 text-right font-serif text-sm text-gold"
+          >
+            {cite}
+            {annotation?.bookmark && <span className="ml-1 text-garnet">•</span>}
+          </Link>
+        ) : (
+          <a href={`#v-${verse.v}`} className="w-8 shrink-0 pt-1 text-right font-serif text-sm text-gold">
+            {verse.v}
+            {annotation?.bookmark && <span className="ml-1 text-garnet">•</span>}
+          </a>
+        )}
         <div className="min-w-0 flex-1">
           <div className="mb-1 flex min-h-8 items-center justify-end">
-            {verse.v === 1 ? <InfoMark id="marks" align="end" /> : null}
+            {(guideMark ?? verse.v === 1) ? <InfoMark id="marks" align="end" /> : null}
           </div>
           {noteOpen && (
             <div className="mb-2">
@@ -310,7 +336,7 @@ export function VerseView({
             <button type="button" className="min-h-11 px-2 hover:text-ink" onClick={() => setNoteOpen((v) => !v)} aria-label="Note">
               Note
             </button>
-            {speech && <span className="mr-1 text-jesus">Words of Y'shua</span>}
+            {markSpeech && speech && <span className="mr-1 text-jesus">Words of Y'shua</span>}
             <button type="button" className="min-h-11 px-2 hover:text-garnet" onClick={() => void shareVerse()}>
               {copied === "sent" ? "Sent" : copied === "share" ? "Copied" : "Share"}
             </button>

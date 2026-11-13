@@ -1,22 +1,34 @@
+import { WordStudySheet } from "@/components/word-study";
 import { Modal } from "@/components/modal";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Play } from "lucide-react";
+import { Moon, Search, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Studio } from "@/components/studio";
+import { SearchPanel } from "@/components/search-panel";
+import { VerseView } from "@/components/verse-view";
+import { InfoMark } from "@/components/info-mark";
+import { ReadingSheet, readingLabel } from "@/components/reading-sheet";
+import { ReadingTongue } from "@/components/reading-tongue";
 import { BOOKS } from "@/data/edition";
-import { RED_BOOKS, englishPhrases, foreignSpeech, nextRedBook, speechOf, speechRanges, syriacPhrases, type RedBook } from "@/lib/jesus";
-import { LANGS, languageById, type LangId } from "@/lib/languages";
-import { loadBook, loadParallel, type BookFile, type Verse } from "@/lib/scripture";
+import { useAnnotations } from "@/lib/annotations";
+import { RED_BOOKS, englishPhrases, foreignSpeech, nextRedBook, speechOf, type RedBook } from "@/lib/jesus";
+import { languageById, type LangId } from "@/lib/languages";
+import {
+  TERM_NOTES,
+  loadBook,
+  loadParallel,
+  studyWord,
+  type BookFile,
+  type Verse,
+  type WordGloss,
+  type WordPlace,
+  type WordStudy,
+} from "@/lib/scripture";
 import { cleanEnglish, sayingLines } from "@/lib/speak";
 import { SITE_ORIGIN } from "@/lib/site";
-import { NameText, SyriacNames } from "@/components/name-text";
-import { InfoMark } from "@/components/info-mark";
-import { ReadingKinds } from "@/components/page-guide";
-import { shareCard, verseShare } from "@/lib/share";
 import { usePrefs } from "@/lib/use-prefs";
 import { scrollLineToTop } from "@/lib/scroll-line";
-import { ReadingTongue } from "@/components/reading-tongue";
-import { readingReadFrom, useBindReadingSurface } from "@/lib/reading-surface";
+import { useBindReadingSurface } from "@/lib/reading-surface";
 
 export const Route = createFileRoute("/words")({
   loader: () => loadBook("matthew"),
@@ -36,23 +48,6 @@ export const Route = createFileRoute("/words")({
 type Saying = { chapter: number; verse: Verse; index: number };
 type Heard = { book: string; chapter: number; verse: number };
 
-function readingFace(id: LangId) {
-  const language = languageById(id);
-  const face =
-    language.face === "syriac"
-      ? "font-syriac text-2xl leading-normal"
-      : language.face === "arab"
-        ? "font-arab text-xl leading-relaxed"
-        : language.face === "hebrew"
-          ? "font-hebrew text-xl leading-relaxed"
-          : language.face === "greek"
-            ? "font-greek text-lg leading-relaxed"
-            : language.face === "cyrl"
-              ? "font-cyr text-lg leading-relaxed"
-              : "font-serif text-lg leading-relaxed";
-  return { dir: language.dir, face, code: language.face === "syriac" ? "syr" : language.id };
-}
-
 function lineText(lang: LangId, verse: Verse, grid: string[][] | null, chapter: number, index: number) {
   if (lang === "en") return verse.en;
   return grid?.[chapter - 1]?.[index] ?? "";
@@ -60,6 +55,7 @@ function lineText(lang: LangId, verse: Verse, grid: string[][] | null, chapter: 
 
 function Words() {
   const { prefs, patch } = usePrefs();
+  const annotations = useAnnotations();
   const [book, setBook] = useState<RedBook>("matthew");
   const initialBook = Route.useLoaderData();
   const [otherBook, setDoc] = useState<BookFile | null>(null);
@@ -67,15 +63,16 @@ function Words() {
   const [parallel, setParallel] = useState<string[][] | null>(null);
   const [parallel2, setParallel2] = useState<string[][] | null>(null);
   const [err, setErr] = useState("");
-  const [shared, setShared] = useState("");
   const [heard, setHeard] = useState<Heard | null>(null);
   const [focusKey, setFocusKey] = useState("");
   const [reading, setReading] = useState(false);
   const [studio, setStudio] = useState(false);
   const [picked, setPicked] = useState("");
+  const [search, setSearch] = useState(false);
+  const [sheet, setSheet] = useState<{ title: string; roman: string; body: string } | { study: WordStudy } | null>(null);
   const meta = BOOKS.find((item) => item.id === book);
   const tongue = languageById(prefs.lang);
-  const second = prefs.lang2 !== "none" ? languageById(prefs.lang2) : null;
+  const wide = prefs.lang2 !== "none";
 
   useEffect(() => {
     let live = true;
@@ -161,7 +158,7 @@ function Words() {
     );
     for (const node of nodes) observer.observe(node);
     return () => observer.disconnect();
-  }, [doc, book, prefs.lang, prefs.lang2]);
+  }, [doc, book, prefs.lang, prefs.lang2, prefs.face]);
 
   useBindReadingSurface({
     book,
@@ -205,6 +202,16 @@ function Words() {
     return cleanEnglish(text);
   }
 
+  function onWord(_info: WordGloss | null, surface: string, place?: WordPlace) {
+    setSheet({ study: studyWord(surface, place) });
+  }
+
+  function onTerm(key: string) {
+    const note = TERM_NOTES[key];
+    if (!note) return;
+    setSheet({ title: note.title, roman: "", body: note.body });
+  }
+
   function openStudio() {
     const selected = window.getSelection()?.toString().replace(/\s+/g, " ").trim() ?? "";
     const key = heard && heard.book === book ? `${heard.chapter}:${heard.verse}` : focusKey;
@@ -213,218 +220,135 @@ function Words() {
     setStudio(true);
   }
 
-  const pending = prefs.lang !== "en" && !parallel;
-  const pending2 = prefs.lang2 !== "none" && prefs.lang2 !== "en" && !parallel2;
-
   return (
-    <main className={`mx-auto min-h-app bg-paper px-5 pt-safe pb-[calc(14rem+env(safe-area-inset-bottom,0px))] text-ink sm:px-8 lg:px-12 ${prefs.lang2 === "none" ? "max-w-3xl" : "max-w-6xl"}`}>
-      <div className="pt-6">
-        <Link to="/" className="inline-flex min-h-11 items-center text-garnet">
-          All books
-        </Link>
-        <p className="mt-6 font-syriac text-4xl text-syriac" lang="syr" dir="rtl">
-          {meta?.sy}
-        </p>
-        <h1 className="mt-2 flex items-center gap-1 font-serif text-4xl font-semibold leading-tight">
-          Words of Y'shua
-          <InfoMark id="red" />
-        </h1>
-        <p className="mt-3 max-w-xl leading-relaxed text-muted">
-          The words in red, in the order this book keeps them. Hear them on this device, or open a line in the studio.
-        </p>
-        {doc && <p className="mt-2 text-xs tracking-widest text-gold">{sayings.length} SAYINGS</p>}
-        <div className="toolbar-scroll mt-4 flex gap-1 overflow-x-auto border-b border-line">
+    <div className="min-h-app bg-paper text-ink">
+      <header className="sticky top-0 z-20 border-b border-line bg-paper pt-safe">
+        <div className={`mx-auto flex items-center justify-between px-2 py-1 ${wide ? "max-w-6xl" : "max-w-3xl"}`}>
+          <Link to="/" className="flex min-h-11 shrink-0 items-center px-2 text-sm text-garnet" aria-label="All books">
+            Books
+          </Link>
+          <div className="min-w-0 text-center">
+            <h1 className="flex items-center justify-center gap-1 truncate font-serif text-lg leading-tight">
+              Words of Y'shua
+              <InfoMark id="red" />
+            </h1>
+            <span className="block text-xs text-gold">
+              {meta?.name ?? "Gospel"}
+              {doc ? ` · ${sayings.length}` : ""}
+            </span>
+          </div>
+          <div className="flex">
+            <button type="button" className="flex size-11 items-center justify-center" aria-label="Search" onClick={() => setSearch(true)}>
+              <Search className="size-5" />
+            </button>
+            <button
+              type="button"
+              className="flex size-11 items-center justify-center"
+              aria-label={prefs.theme === "night" ? "Day theme" : "Night theme"}
+              onClick={() => patch({ theme: prefs.theme === "night" ? "day" : "night" })}
+            >
+              {prefs.theme === "night" ? <Sun className="size-5" /> : <Moon className="size-5" />}
+            </button>
+          </div>
+        </div>
+        <div className={`toolbar-scroll mx-auto flex gap-1 overflow-x-auto px-3 pb-2 ${wide ? "max-w-6xl" : "max-w-3xl"}`}>
           {RED_BOOKS.map((id) => {
             const item = BOOKS.find((entry) => entry.id === id);
+            const current = book === id;
             return (
               <button
                 key={id}
                 type="button"
-                aria-pressed={book === id}
+                aria-pressed={current}
                 onClick={() => setBook(id)}
-                className={`min-h-11 shrink-0 px-3 ${book === id ? "text-garnet" : "text-muted"}`}
+                className={`flex min-h-11 shrink-0 items-center px-3 text-sm ${current ? "bg-garnet text-paper" : "text-muted"}`}
               >
                 {item?.name ?? id}
               </button>
             );
           })}
         </div>
+      </header>
+
+      <main className={`mx-auto px-4 pb-[calc(14rem+env(safe-area-inset-bottom,0px))] sm:px-6 lg:px-10 ${wide ? "max-w-6xl" : "max-w-3xl"}`}>
         <ReadingTongue
-          label={second ? `${tongue.label} · ${second.label}` : tongue.label}
+          label={readingLabel(prefs.lang, prefs.lang2, prefs.face)}
           pulse={heard ? heard.chapter * 1000 + heard.verse : 0}
-          stickyTop="0.75rem"
+          stickyTop="calc(env(safe-area-inset-top, 0px) + 7.5rem)"
           onClick={() => setReading(true)}
         />
         {err && <p className="mt-6 text-garnet">{err}</p>}
         {!doc && !err && <p className="mt-6 text-muted">Opening the words…</p>}
-        <div className="mt-2">
-          {sayings.map(({ chapter, verse, index }, position) => {
-            const showChapter = position === 0 || sayings[position - 1].chapter !== chapter;
-            const key = `${chapter}:${verse.v}`;
-            const listening = heard?.book === book && heard.chapter === chapter && heard.verse === verse.v;
-            const speech = speechOf(book, chapter, verse.v);
-            const phrases = englishPhrases(book, chapter, verse.v, verse.en);
-            const ownWords = phrases?.join(" ") ?? "";
-            const solid = speech?.kind === "whole" && !phrases;
-            const mainLine = lineText(tongue.id, verse, parallel, chapter, index);
-            const mainCut = tongue.id !== "en" && speech?.kind === "whole" && phrases ? foreignSpeech(mainLine, tongue.id) : null;
-            const primary = tongue.id === "en" ? (phrases ? ownWords : mainLine) : (mainCut ?? mainLine);
-            const sideLine = second
-              ? lineText(second.id, verse, second.id === "en" ? null : parallel2, chapter, index)
-              : "";
-            const sideCut = second && second.id !== "en" && speech?.kind === "whole" && phrases ? foreignSpeech(sideLine, second.id) : null;
-            const extra = second ? (second.id === "en" ? (phrases ? ownWords : sideLine) : (sideCut ?? sideLine)) : "";
-            const mainRed = tongue.id === "en" ? solid || !!phrases : solid || !!mainCut;
-            const sideRed = !second ? false : second.id === "en" ? solid || !!phrases : solid || !!sideCut;
-            const syMark = syriacPhrases(book, chapter, verse.v, verse.sy || "", verse.en);
-            const syRanges = syMark && verse.sy ? speechRanges(verse.sy, syMark.say, syMark.which) : null;
-            const syRed = speech?.kind === "whole" && !syRanges;
-            const mainFace = readingFace(tongue.id);
-            const sideFace = second ? readingFace(second.id) : null;
-            return (
-              <article
-                key={key}
-                id={`w-${chapter}-${verse.v}`}
-                data-saying={key}
-                aria-current={listening ? "true" : undefined}
-                data-listening={listening ? "" : undefined}
-                className={`group border-b border-line py-5 ${listening ? "bg-gold-soft -mx-5 px-5" : ""}`}
-              >
-                {showChapter && <p className="mb-2 text-xs tracking-widest text-gold">CHAPTER {chapter}</p>}
-                <div className="flex items-center justify-between gap-2">
-                  <Link
-                    to="/read/$book/$chapter"
-                    params={{ book, chapter: String(chapter) }}
-                    hash={`v-${verse.v}`}
-                    className="text-sm text-gold"
-                  >
-                    {meta?.name} {chapter}:{verse.v}
-                  </Link>
-                  <div className="verse-tools flex shrink-0 items-center">
-                    <button
-                      type="button"
-                      className="min-h-11 px-2 text-sm text-garnet"
-                      onClick={() => {
-                        const lines = [verse.sy, primary, extra].filter((line) => Boolean(line && line.trim()));
-                        void shareCard(
-                          verseShare({ bookName: meta?.name ?? "Reading", book, chapter, verse: verse.v, lines }),
-                        ).then((result) => {
-                          if (result === "copied" || result === "shared") {
-                            setShared(key);
-                            window.setTimeout(() => setShared(""), 1200);
-                          }
-                        });
-                      }}
-                    >
-                      {shared === key ? "Sent" : "Share"}
-                    </button>
-                    <button
-                      type="button"
-                      className="flex size-11 items-center justify-center text-garnet"
-                      aria-label={`Read ${meta?.name ?? "this book"} ${chapter}:${verse.v}`}
-                      onClick={() => {
-                        setFocusKey(key);
-                        readingReadFrom(key);
-                      }}
-                    >
-                      <Play className="size-4" />
-                    </button>
-                  </div>
-                </div>
-                {verse.sy && (
-                  <p dir="rtl" lang="syr" className={`mt-2 font-syriac text-2xl leading-normal ${syRed ? "text-jesus" : "text-syriac"}`}>
-                    <SyriacNames text={verse.sy} english={verse.en} ranges={syRanges} />
-                  </p>
-                )}
-                {speech?.kind === "part" && tongue.id !== "en" && (
-                  <p className="mt-2 font-serif leading-relaxed text-jesus">{ownWords}</p>
-                )}
-                {pending && position === 0 && <p className="mt-2 text-muted">Opening this language…</p>}
-                {!pending && (primary || sideFace) && (
-                  <div className={sideFace ? "mt-3 grid items-start gap-6 md:grid-cols-2 md:gap-0" : ""}>
-                    {primary && (
-                      <p data-reading-line="" dir={mainFace.dir} lang={mainFace.code} className={`mt-2 min-w-0 break-words leading-relaxed ${sideFace ? "md:pr-8" : ""} ${mainRed ? "text-jesus" : "text-ink"} ${mainFace.face}`}>
-                        {tongue.id === "en" ? <NameText text={primary} /> : primary}
-                      </p>
-                    )}
-                    {sideFace && (extra || (pending2 && position === 0)) && (
-                      <p dir={sideFace.dir} lang={sideFace.code} className={`mt-2 min-w-0 break-words leading-relaxed md:border-l md:border-line md:pl-8 ${pending2 ? "text-muted" : `${sideRed ? "text-jesus" : "text-ink"} ${sideFace.face}`}`}>
-                        {pending2 ? "Opening this language…" : second?.id === "en" ? <NameText text={extra} /> : extra}
-                      </p>
-                    )}
-                  </div>
-                )}
-              </article>
-            );
-          })}
-        </div>
-      </div>
+        {sayings.map(({ chapter, verse, index }, position) => {
+          const showChapter = position === 0 || sayings[position - 1].chapter !== chapter;
+          const key = `${chapter}:${verse.v}`;
+          const listening = heard?.book === book && heard.chapter === chapter && heard.verse === verse.v;
+          return (
+            <div key={key}>
+              {showChapter && <p className="mb-1 mt-6 text-xs tracking-widest text-gold">CHAPTER {chapter}</p>}
+              <VerseView
+                book={book}
+                bookName={meta?.name ?? book}
+                chapter={chapter}
+                verse={verse}
+                words={prefs.words}
+                face={prefs.face}
+                lang={tongue.id}
+                parallel={prefs.lang === "en" ? verse.en : (parallel?.[chapter - 1]?.[index] ?? "")}
+                pending={prefs.lang !== "en" && !parallel}
+                lang2={prefs.lang2}
+                parallel2={prefs.lang2 === "none" ? "" : prefs.lang2 === "en" ? verse.en : (parallel2?.[chapter - 1]?.[index] ?? "")}
+                pending2={prefs.lang2 !== "none" && prefs.lang2 !== "en" && !parallel2}
+                size={prefs.size}
+                line={prefs.line}
+                showNotes={prefs.notes}
+                annotation={annotations.get(book, chapter, verse.v)}
+                onHighlight={() => annotations.toggleHighlight(book, chapter, verse.v)}
+                onNote={(note) => annotations.setNote(book, chapter, verse.v, note)}
+                onBookmark={() => annotations.toggleBookmark(book, chapter, verse.v)}
+                onWord={onWord}
+                onTerm={onTerm}
+                listening={listening}
+                anchor={`w-${chapter}-${verse.v}`}
+                saying={key}
+                cite={`${chapter}:${verse.v}`}
+                guideMark={position === 0}
+                markSpeech={false}
+              />
+            </div>
+          );
+        })}
+      </main>
+
       <Studio open={studio} passage={picked} onClose={() => setStudio(false)} />
-      {reading && (
-        <Modal label="Reading" className="fixed inset-0 z-40 flex items-end bg-scrim" onClose={() => setReading(false)}>
+      <SearchPanel open={search} onClose={() => setSearch(false)} />
+      <ReadingSheet open={reading} onClose={() => setReading(false)} onStudio={openStudio} />
+      {sheet && (
+        <Modal label={"study" in sheet ? "Word" : sheet.title} className="fixed inset-0 z-30 flex items-end bg-scrim" onClose={() => setSheet(null)}>
           <div
             className="max-h-sheet w-full overflow-y-auto border-t border-line bg-paper px-5 py-5 pb-safe"
             onClick={(event) => event.stopPropagation()}
           >
             <div className="mx-auto max-w-3xl">
-              <div className="mb-2 flex items-center justify-between">
-                <h2 className="font-serif text-lg">Reading</h2>
-                <button type="button" className="min-h-11 px-2 text-garnet" onClick={() => setReading(false)}>
-                  Close
-                </button>
-              </div>
-              <Link to="/guide" className="mb-3 inline-flex min-h-11 items-center text-sm text-garnet" onClick={() => setReading(false)}>
-                More in the guide
-              </Link>
-              <p className="mb-3 text-sm leading-relaxed text-muted">One language. A second language is optional.</p>
-              <p className="text-xs tracking-widest text-gold">LANGUAGE</p>
-              <div className="mt-1 flex flex-wrap">
-                {LANGS.map((item) => (
-                  <button
-                    key={item.id}
-                    type="button"
-                    aria-pressed={prefs.lang === item.id}
-                    onClick={() => patch({ lang: item.id === prefs.lang2 ? prefs.lang : item.id, lang2: item.id === prefs.lang2 ? "none" : prefs.lang2 })}
-                    className={`min-h-11 px-3 ${prefs.lang === item.id ? "text-garnet" : "text-muted"} ${item.face === "syriac" ? "font-syriac text-lg" : item.face === "arab" ? "font-arab text-lg" : item.face === "hebrew" ? "font-hebrew text-lg" : item.face === "greek" ? "font-greek" : item.face === "cyrl" ? "font-cyr" : ""}`}
-                  >
-                    {item.label}
-                  </button>
-                ))}
-              </div>
-              <p className="mt-4 text-xs tracking-widest text-gold">ALSO</p>
-              <div className="mt-1 flex flex-wrap">
-                <button
-                  type="button"
-                  aria-pressed={prefs.lang2 === "none"}
-                  onClick={() => patch({ lang2: "none" })}
-                  className={`min-h-11 px-3 ${prefs.lang2 === "none" ? "text-garnet" : "text-muted"}`}
-                >
-                  None
-                </button>
-                {LANGS.filter((item) => item.id !== prefs.lang).map((item) => (
-                  <button
-                    key={item.id}
-                    type="button"
-                    aria-pressed={prefs.lang2 === item.id}
-                    onClick={() => patch({ lang2: item.id })}
-                    className={`min-h-11 px-3 ${prefs.lang2 === item.id ? "text-garnet" : "text-muted"} ${item.face === "syriac" ? "font-syriac text-lg" : item.face === "arab" ? "font-arab text-lg" : item.face === "hebrew" ? "font-hebrew text-lg" : item.face === "greek" ? "font-greek" : item.face === "cyrl" ? "font-cyr" : ""}`}
-                  >
-                    {item.label}
-                  </button>
-                ))}
-              </div>
-              <p className="mt-6 text-xs tracking-widest text-gold">PREMIUM</p>
-              <div className="mt-1 flex items-center gap-1">
-                <button type="button" className="min-h-11 text-left text-sm text-muted" onClick={openStudio}>
-                  Studio · AI voice and images
-                </button>
-                <InfoMark id="studio" />
-              </div>
-              <ReadingKinds />
+              {"study" in sheet ? (
+                <WordStudySheet
+                  study={sheet.study}
+                  langs={[tongue.id, ...(prefs.lang2 !== "none" ? [languageById(prefs.lang2).id] : [])]}
+                  onPick={(surface) => setSheet({ study: studyWord(surface) })}
+                />
+              ) : (
+                <>
+                  <p className="font-serif text-2xl">{sheet.title}</p>
+                  <p className="mt-3 leading-relaxed">{sheet.body}</p>
+                </>
+              )}
+              <button type="button" className="mt-4 min-h-11 text-garnet" onClick={() => setSheet(null)}>
+                Close
+              </button>
             </div>
           </div>
         </Modal>
       )}
-    </main>
+    </div>
   );
 }
