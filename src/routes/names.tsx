@@ -3,6 +3,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { bookMeta } from "@/data/edition";
 import { NAMES, type NameEntry } from "@/lib/names";
 import { SITE_ORIGIN } from "@/lib/site";
+import { PageGuide } from "@/components/page-guide";
 
 function firstPlace(ref: string) {
   const match = /^([a-z0-9]+)\s+(\d+):(\d+)$/.exec(ref);
@@ -57,6 +58,7 @@ function Names() {
         <p className="mt-4 text-base leading-relaxed">
           Persons and places in this New Testament. The Syriac is the spelling in the text. The reading beside it is those letters, not a vocalized pronunciation and not another translation. Where one spelling covers more than one person, the note says who this book itself distinguishes. Revelation, 2 Peter, 2 John, 3 John, and Jude are later Syriac, not the old twenty-two-book Peshitta.
         </p>
+        <PageGuide section="names" note="What the reading beside a name is, and what the search matches." />
         <label className="mt-5 block">
           <span className="text-xs tracking-widest text-gold">FIND A NAME</span>
           <input

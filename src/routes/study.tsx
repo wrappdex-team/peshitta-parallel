@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { PageGuide } from "@/components/page-guide";
 import { SITE_ORIGIN } from "@/lib/site";
 
 export const Route = createFileRoute("/study")({
@@ -31,6 +32,7 @@ function Study() {
         <p className="mt-3 font-serif text-xl leading-snug text-garnet">
           The spirit of Y'shua, carried by the first churches, and set in the Peshitta so you can hear Him.
         </p>
+        <PageGuide section="edition" note="What the Syriac is, which books are later, and what the other languages are." />
 
         <div className="mt-8 space-y-4 text-base leading-relaxed">
           <p>Stop browsing. You opened the Injeel. Stay until He speaks.</p>

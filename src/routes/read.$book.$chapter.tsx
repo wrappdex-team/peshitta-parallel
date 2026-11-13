@@ -302,19 +302,24 @@ function Reader() {
       </header>
 
       <main className={`mx-auto px-4 pb-player ${prefs.lang2 === "none" ? "max-w-3xl" : "max-w-5xl"}`}>
-        <button
-          type="button"
-          onClick={() => setReading(true)}
-          className="flex min-h-11 w-full items-center truncate border-b border-line text-left text-sm text-muted"
-        >
-          {[
-            "Reading",
-            languageById(prefs.lang).label,
-            prefs.lang2 !== "none" ? languageById(prefs.lang2).label : "",
-            prefs.face === "sy" ? "Peshitta" : prefs.face === "both" ? "Both" : "",
-            prefs.words ? "Words" : "",
-          ].filter(Boolean).join(" · ")}
-        </button>
+        <div className="flex items-stretch border-b border-line">
+          <button
+            type="button"
+            onClick={() => setReading(true)}
+            className="flex min-h-11 min-w-0 flex-1 items-center truncate text-left text-sm text-muted"
+          >
+            {[
+              "Reading",
+              languageById(prefs.lang).label,
+              prefs.lang2 !== "none" ? languageById(prefs.lang2).label : "",
+              prefs.face === "sy" ? "Peshitta" : prefs.face === "both" ? "Both" : "",
+              prefs.words ? "Words" : "",
+            ].filter(Boolean).join(" · ")}
+          </button>
+          <Link to="/guide" hash="reading" className="flex min-h-11 shrink-0 items-center px-2 text-sm text-garnet">
+            Guide
+          </Link>
+        </div>
 
         {verses?.map((verse, verseIndex) => (
           <VerseView
@@ -380,16 +385,14 @@ function Reader() {
                 Close
               </button>
             </div>
-            <button
-              type="button"
-              className="mb-3 flex min-h-11 w-full items-center border-b border-line text-left text-garnet"
-              onClick={() => {
-                setMenu(false);
-                window.dispatchEvent(new CustomEvent("injeel-guide", { detail: "panel" }));
-              }}
+            <Link
+              to="/guide"
+              hash="reading"
+              className="mb-3 flex min-h-11 w-full items-center border-b border-line text-garnet"
+              onClick={() => setMenu(false)}
             >
               Guide
-            </button>
+            </Link>
             {SECTIONS.map((section) => (
               <div key={section} className="mb-4">
                 <p className="text-xs text-gold">{section}</p>
@@ -547,6 +550,9 @@ function Reader() {
               >
                 Studio · AI voice and images
               </button>
+              <Link to="/guide" hash="reading" className="mt-2 inline-flex min-h-11 items-center text-garnet" onClick={() => setReading(false)}>
+                Guide to these controls
+              </Link>
             </div>
           </div>
         </Modal>

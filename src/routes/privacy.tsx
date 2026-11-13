@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { PageGuide } from "@/components/page-guide";
 import { SITE_ORIGIN } from "@/lib/site";
 
 export const Route = createFileRoute("/privacy")({
@@ -23,6 +24,7 @@ function Privacy() {
           Injeel
         </Link>
         <h1 className="mt-6 font-serif text-4xl">Privacy</h1>
+        <PageGuide section="device" note="Where each control is, before the statement of what is stored." />
         <p className="mt-4 text-base leading-relaxed">
           Injeel does not ask for an account. The chapter you last read, how many times you have finished a chapter, and the languages beside it stay on this device.
         </p>

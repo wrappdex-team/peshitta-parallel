@@ -1,6 +1,6 @@
 import { Modal } from "@/components/modal";
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { bookMeta } from "@/data/edition";
 import { loadLanguageSearch, loadSearch, loadSyriacSearch, type SearchRow } from "@/lib/scripture";
 
@@ -102,6 +102,9 @@ export function SearchPanel({ open, onClose }: Props) {
             placeholder="A word, in English, Greek, Hebrew, Arabic, French, Russian, or Syriac"
             className="min-w-0 flex-1 bg-transparent font-serif text-lg text-ink outline-none placeholder:text-muted"
           />
+          <Link to="/guide" hash="search" className="min-h-11 shrink-0 px-2 text-sm text-garnet" onClick={onClose}>
+            Guide
+          </Link>
           <button type="button" className="min-h-11 shrink-0 px-2 text-garnet" onClick={onClose}>
             Close
           </button>

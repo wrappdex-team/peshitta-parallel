@@ -21,6 +21,10 @@
     <priority>0.3</priority>
   </url>
   <url>
+    <loc>https://injeel.news/guide</loc>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://injeel.news/read/matthew/1</loc>
     <priority>0.7</priority>
   </url>

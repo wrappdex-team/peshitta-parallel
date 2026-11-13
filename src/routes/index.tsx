@@ -93,13 +93,9 @@ function Home() {
           <Link to="/study" className="inline-flex min-h-11 items-center text-garnet">
             About this Injeel
           </Link>
-          <button
-            type="button"
-            className="min-h-11 text-garnet"
-            onClick={() => window.dispatchEvent(new CustomEvent("injeel-guide", { detail: "panel" }))}
-          >
+          <Link to="/guide" className="inline-flex min-h-11 items-center text-garnet">
             Guide
-          </button>
+          </Link>
           <button type="button" className="min-h-11 text-garnet" onClick={() => setSearch(true)}>
             Search
           </button>
@@ -203,16 +199,9 @@ function BookDrawer({ onClose, place }: { onClose: () => void; place?: { book: s
             Close
           </button>
         </div>
-        <button
-          type="button"
-          className="mb-3 flex min-h-11 w-full items-center border-b border-line text-left text-garnet"
-          onClick={() => {
-            onClose();
-            window.dispatchEvent(new CustomEvent("injeel-guide", { detail: "panel" }));
-          }}
-        >
+        <Link to="/guide" className="mb-3 flex min-h-11 w-full items-center border-b border-line text-garnet" onClick={onClose}>
           Guide
-        </button>
+        </Link>
         {SECTIONS.map((section) => (
           <div key={section} className="mb-4">
             <p className="text-xs text-gold">{section}</p>

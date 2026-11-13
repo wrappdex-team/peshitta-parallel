@@ -14,6 +14,9 @@ export function BookLinks({ onDone }: { onDone?: () => void }) {
 
   return (
     <div className="mt-4 border-t border-line">
+      <Link to="/guide" onClick={onDone} className="flex min-h-11 items-center text-garnet">
+        Guide
+      </Link>
       <Link to="/words" onClick={onDone} className="flex min-h-11 items-center text-garnet">
         Words of Y'shua
       </Link>

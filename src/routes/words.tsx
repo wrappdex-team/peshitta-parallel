@@ -10,6 +10,7 @@ import { loadBook, loadParallel, type BookFile, type Verse } from "@/lib/scriptu
 import { cleanEnglish, sayingLines } from "@/lib/speak";
 import { SITE_ORIGIN } from "@/lib/site";
 import { NameText, SyriacNames } from "@/components/name-text";
+import { PageGuide } from "@/components/page-guide";
 import { shareCard, verseShare } from "@/lib/share";
 import { usePrefs } from "@/lib/use-prefs";
 import { readingReadFrom, useBindReadingSurface } from "@/lib/reading-surface";
@@ -230,6 +231,7 @@ function Words() {
         <p className="mt-3 max-w-xl leading-relaxed text-muted">
           The words in red, in the order this book keeps them. Hear them on this device, or open a line in the studio.
         </p>
+        <PageGuide section="sayings" note="Which books are here, and how Read uses them." />
         {doc && <p className="mt-2 text-xs tracking-widest text-gold">{sayings.length} SAYINGS</p>}
         <div className="toolbar-scroll mt-4 flex gap-1 overflow-x-auto border-b border-line">
           {RED_BOOKS.map((id) => {

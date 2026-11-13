@@ -8,7 +8,7 @@ const origin = "https://injeel.news";
 
 test("sitemap covers every catalog chapter exactly once, using only the current demo origin", () => {
   const catalog = JSON.parse(read("src/data/catalog.json"));
-  const expected = ["/", "/words", "/study", "/names", "/privacy"];
+  const expected = ["/", "/words", "/study", "/names", "/privacy", "/guide"];
   for (const book of catalog)
     for (let chapter = 1; chapter <= book.chapters; chapter++)
       expected.push(`/read/${book.id}/${chapter}`);
@@ -29,7 +29,7 @@ test("personal reading utility is noindex but crawlable; public study routes ret
   // No Disallow: /seal: crawlers must be able to see the noindex directive.
   assert.doesNotMatch(read("public/robots.txt"), /Disallow:\s*\/seal/);
   assert.doesNotMatch(read("public/sitemap.xml"), /\/seal<\/loc>/);
-  for (const path of ["index.tsx", "words.tsx", "study.tsx", "names.tsx", "privacy.tsx", "read.$book.$chapter.tsx"]) {
+  for (const path of ["index.tsx", "words.tsx", "study.tsx", "names.tsx", "privacy.tsx", "guide.tsx", "read.$book.$chapter.tsx"]) {
     const source = read(`src/routes/${path}`);
     assert.match(source, /rel: "canonical"/);
     assert.match(source, /SITE_ORIGIN/);

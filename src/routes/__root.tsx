@@ -2,7 +2,6 @@ import { createRootRoute, HeadContent, Outlet, Scripts } from "@tanstack/react-r
 import { AuthProvider } from "@/lib/auth/provider";
 import { PreviewHostBridge } from "@/components/preview-host-bridge";
 import { NativeShell, ThemeColor } from "@/components/device-shell";
-import { Guide } from "@/components/guide";
 import { GospelOffer } from "@/components/gospel-declaration";
 import { SiteReader } from "@/components/site-reader";
 import appCss from "../styles.css?url";
@@ -80,7 +79,6 @@ export const Route = createRootRoute({
         <AuthProvider>
           <Outlet />
           <SiteReader />
-          <Guide />
           <GospelOffer />
         </AuthProvider>
         <Scripts />
