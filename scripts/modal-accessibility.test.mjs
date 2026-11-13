@@ -24,10 +24,26 @@ function searchFixture() {
       if (name === "react") return { useState: (initial) => [initial, () => {}], useMemo: (factory) => factory(), useEffect: (effect) => effects.push(effect) };
       if (name === "react/jsx-runtime") return jsxRuntime;
       if (name === "@/components/modal") return { Modal };
-      if (name === "@tanstack/react-router") return { useNavigate: () => () => {} };
+      if (name === "@tanstack/react-router") return { useNavigate: () => () => {}, Link: (props) => jsxRuntime.jsx("a", props) };
       if (name === "@/data/edition") return { bookMeta: () => null };
       if (name === "@/lib/scripture") return { loadSearch: async () => [], loadSyriacSearch: async () => [], loadLanguageSearch: async () => [] };
       if (name === "@/components/info-mark") return { InfoMark: () => null };
+      if (name === "@/lib/use-prefs") return { usePrefs: () => ({ prefs: { lang: "en", theme: "day" }, patch() {} }) };
+      if (name === "@/lib/search") return {
+        bookTitle: (id) => id,
+        cachedIndex: () => null,
+        chipLangs: () => [{ id: "en", label: "English", face: "serif" }],
+        clipParts: () => ({ before: "", hit: "", after: "" }),
+        faceClass: () => "",
+        foreignScript: () => null,
+        loadIndex: async () => [],
+        lookupNames: () => [],
+        plainLabel: () => "English",
+        prepareSearch: () => ({ hits: [], reference: null, referenceHit: null, aliases: [], direct: [] }),
+        readReference: () => null,
+        resultFace: () => ({ className: "", dir: "ltr", lang: "en" }),
+        resultNote: () => "",
+      };
       throw new Error(`Unexpected modal-search test import: ${name}`);
     },
   });
@@ -258,7 +274,13 @@ test("Modal rerenders retain native activation/focus and use the latest close ca
 });
 
 test("all six active reader/Words/Search/Studio overlays use the coordinated wrapper", () => {
-  const expected = new Map([["src/routes/read.$book.$chapter.tsx", 3], ["src/routes/words.tsx", 1], ["src/components/search-panel.tsx", 1], ["src/components/studio.tsx", 1]]);
+  const expected = new Map([
+    ["src/routes/read.$book.$chapter.tsx", 2],
+    ["src/components/reading-sheet.tsx", 1],
+    ["src/routes/words.tsx", 1],
+    ["src/components/search-panel.tsx", 1],
+    ["src/components/studio.tsx", 1],
+  ]);
   for (const [path, count] of expected) {
     const text = readFileSync(new URL(`../${path}`, import.meta.url), "utf8");
     const source = ts.createSourceFile(path, text, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);

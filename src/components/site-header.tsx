@@ -18,6 +18,7 @@ export function SiteHeader({
   wide = false,
   onBooks,
   mark,
+  book,
   children,
 }: {
   title: string;
@@ -25,6 +26,7 @@ export function SiteHeader({
   wide?: boolean;
   onBooks?: () => void;
   mark?: string;
+  book?: string;
   children?: ReactNode;
 }) {
   const { prefs, patch } = usePrefs();
@@ -74,7 +76,7 @@ export function SiteHeader({
         </div>
         {children ? <div className={`mx-auto ${width}`}>{children}</div> : null}
       </header>
-      <SearchPanel open={search} onClose={() => setSearch(false)} />
+      <SearchPanel open={search} onClose={() => setSearch(false)} book={book} />
     </>
   );
 }

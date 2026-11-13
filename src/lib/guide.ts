@@ -155,12 +155,15 @@ export const GUIDE: GuideSection[] = [
     title: "Search",
     lead: "Search is the magnifying glass in the header, on Home and in a chapter. It searches the text, not the name index.",
     rows: [
-      { term: "Two characters", text: "Fewer than two characters returns nothing. The field says so." },
       {
-        term: "Which index",
-        text: "The letters you type choose the index. Syriac letters search the Peshitta line, not the Sureth reading. Hebrew, Arabic, Greek, and Cyrillic search those readings. A query that contains French accented letters searches the French. Plain Latin letters search the English. Spanish, German, Chinese, and Japanese are page languages only. They have no separate index.",
+        term: "Language",
+        text: "The language chip chooses the text. Peshitta searches the Syriac line, not Sureth. A reference such as John 3:16 jumps to that verse.",
       },
-      { term: "Forty", text: "The list stops at forty matches. Narrow the word if the one you want is not in the first forty." },
+      {
+        term: "Names",
+        text: "The name in this book is the name that is found. Jesus is Y'shua here.",
+      },
+      { term: "The list", text: "The count is shown. More loads the next forty." },
     ],
   },
   {

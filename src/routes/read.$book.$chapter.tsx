@@ -246,6 +246,7 @@ function Reader() {
         subtitle={`Chapter ${chapterNo || "—"}`}
         wide={prefs.lang2 !== "none"}
         onBooks={() => setMenu(true)}
+        book={book}
       >
         <div className="toolbar-scroll flex gap-1 overflow-x-auto px-3 pb-2">
           {Array.from({ length: total }, (_, i) => {

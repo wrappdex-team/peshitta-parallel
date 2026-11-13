@@ -51,7 +51,7 @@ export const HELP: Record<string, HelpTip> = {
   search: {
     title: "Search",
     section: "search",
-    line: "The letters you type choose which text is searched. The list stops at forty.",
+    line: "The language chip chooses the text, a reference jumps to the verse, and the name in this book is the name that is found.",
   },
   aloud: {
     title: "Read aloud",
