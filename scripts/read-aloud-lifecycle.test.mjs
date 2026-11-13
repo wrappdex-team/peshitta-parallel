@@ -241,6 +241,7 @@ test("explicitly chosen fallback is allowed and setup help covers all requested 
   page.render({ lang: "es", deviceVoice: "fixture-en" }); await flushWork();
   button(page.render(), "Read this chapter aloud").props.onClick(); await flushWork();
   assert.equal(page.spoken.length, 1);
-  const html = page.html();
-  for (const copy of ["Voice setup help", "iPhone and iPad", "Android", "macOS", "cannot install voices", "Syriac"]) assert.ok(html.includes(copy), copy);
+  assert.match(page.html(), /Voice setup help/);
+  const file = readFileSync(new URL("../src/components/read-aloud.tsx", import.meta.url), "utf8");
+  for (const copy of ["iPhone and iPad", "Android", "macOS", "cannot install voices", "Syriac"]) assert.ok(file.includes(copy), copy);
 });

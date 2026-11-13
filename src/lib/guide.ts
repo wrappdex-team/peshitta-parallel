@@ -175,7 +175,7 @@ export const GUIDE: GuideSection[] = [
       { term: "Speed", text: "From 50 to 150. One hundred is the device’s ordinary rate." },
       { term: "Leaving the page", text: "The voice keeps going across the site until Stop. Pause and Stop stay on the bar." },
       { term: "Corner", text: "Where the browser allows it. Keeps the screen awake and can show a small player. It stays on the device." },
-      { term: "Voice setup help", text: "Under the bar. Paths for iPhone, Android, and Mac. Syriac is not a system speech language." },
+      { term: "Voice setup help", text: "The small mark beside the voice. Paths for iPhone, Android, and Mac. Syriac is not a system speech language." },
     ],
     notes: [
       "A chapter is kept when its last line is on screen, or when the voice finishes it. The same chapter inside one minute is counted once.",

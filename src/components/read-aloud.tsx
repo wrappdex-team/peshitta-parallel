@@ -43,6 +43,91 @@ type Props = {
 
 type Place = { book: string; chapter: number };
 
+function VoiceMark() {
+  const [open, setOpen] = useState(false);
+  const rootRef = useRef<HTMLSpanElement>(null);
+  const noteRef = useRef<HTMLDivElement>(null);
+  const [box, setBox] = useState<{ left: number; width: number } | null>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    function place() {
+      const anchor = rootRef.current;
+      if (!anchor || typeof anchor.getBoundingClientRect !== "function" || !window.innerWidth) return;
+      const rect = anchor.getBoundingClientRect();
+      const view = window.innerWidth;
+      const width = view < 480 ? view - 32 : Math.min(416, view - 32);
+      const left = Math.max(16, Math.min(view < 480 ? 16 : rect.right - width, view - 16 - width));
+      setBox({ left, width });
+    }
+    function onKey(event: KeyboardEvent) {
+      if (event.key === "Escape") setOpen(false);
+    }
+    function onPointer(event: PointerEvent) {
+      const node = event.target;
+      if (!(node instanceof Node)) return;
+      if (rootRef.current?.contains(node)) return;
+      if (noteRef.current?.contains(node)) return;
+      setOpen(false);
+    }
+    place();
+    window.addEventListener("resize", place);
+    window.addEventListener("scroll", place, true);
+    document.addEventListener("keydown", onKey);
+    document.addEventListener("pointerdown", onPointer);
+    return () => {
+      window.removeEventListener("resize", place);
+      window.removeEventListener("scroll", place, true);
+      document.removeEventListener("keydown", onKey);
+      document.removeEventListener("pointerdown", onPointer);
+    };
+  }, [open]);
+
+  return (
+    <span ref={rootRef} className="relative inline-flex shrink-0">
+      <button
+        type="button"
+        className="inline-flex size-11 items-center justify-center"
+        aria-expanded={open}
+        aria-label="Voice setup help"
+        onClick={() => setOpen((value) => !value)}
+      >
+        <span className="flex size-4 items-center justify-center rounded-full border border-gold font-serif text-[10px] leading-none text-gold" aria-hidden>
+          i
+        </span>
+      </button>
+      {open && (
+        <div
+          ref={noteRef}
+          role="region"
+          aria-label="Voice setup help"
+          className="z-50 overflow-y-auto border border-line bg-paper p-3 text-left"
+          style={{
+            position: "fixed",
+            left: box?.left ?? 16,
+            width: box?.width ?? "auto",
+            right: box ? undefined : 16,
+            bottom: "calc(6.5rem + env(safe-area-inset-bottom, 0px))",
+            maxHeight: "min(70dvh, calc(100dvh - 9rem))",
+          }}
+        >
+          <p className="font-serif text-lg text-ink">Voice setup</p>
+          <div className="mt-2 space-y-3 text-sm leading-relaxed text-ink">
+            <p>Read uses your browser’s device speech, without a provider key. Studio creates media through a paid provider using your own key. INjeel cannot install voices or guarantee any accent, language, or Syriac voice. System settings and voices exposed to a browser can differ.</p>
+            <p><strong>iPhone and iPad:</strong> In Settings → Accessibility, look for Read & Speak → Voices (called Spoken Content on older versions). Choose a language and dialect. For downloadable enhanced voices, Apple also documents VoiceOver → Speech → Add New Language; choose a voice/quality and allow the download to finish on Wi-Fi. You do not need to enable VoiceOver to use INjeel. <a className="text-garnet underline" href="https://support.apple.com/guide/iphone/hear-whats-on-the-screen-or-typed-iph96b214f0/ios">Apple’s current guide</a> · <a className="text-garnet underline" href="https://support.apple.com/en-us/111798">iOS/iPadOS voice downloads</a></p>
+            <p><strong>Android:</strong> Open Settings → Accessibility → Text-to-speech output. Choose the preferred engine and language; use its voice-data/download options where available. Names and paths vary by manufacturer/engine; search Settings for “text-to-speech” if needed. <a className="text-garnet underline" href="https://support.google.com/accessibility/android/answer/6006983?hl=en">Google’s settings and voice-data guide</a></p>
+            <p><strong>macOS:</strong> Apple menu → System Settings → Accessibility → Read & Speak. Choose System voice; open its additional voice controls to browse languages, country/region variants and downloadable voices. Wait until downloads finish, then choose the voice. Older versions may use Spoken Content. <a className="text-garnet underline" href="https://support.apple.com/guide/mac-help/mchlp2290/mac">Apple’s Mac voice guide</a></p>
+            <p>Return here and reopen the voice selector. If new voices do not appear, refresh or reopen the app/browser. Select the voice and adjust Speed here; a system default need not override an explicit app selection. Android browsers may use their speech engine rather than a forced voice. Some voices use network services; availability and pronunciation depend on your device/browser, not the scripture’s historical pronunciation.</p>
+          </div>
+          <button type="button" className="mt-2 min-h-11 text-sm text-garnet" onClick={() => setOpen(false)}>
+            Close
+          </button>
+        </div>
+      )}
+    </span>
+  );
+}
+
 function locate(rows: Line[], from: number, key: string) {
   if (key) {
     const hit = rows.findIndex((row) => row.key === key);
@@ -813,6 +898,7 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
             ))}
           </select>
         </label>
+        <VoiceMark />
         <label className="flex min-h-12 shrink-0 items-center gap-2 border-l border-line px-3">
           <span className="text-xs tracking-widest text-gold">SPEED</span>
           <input
@@ -835,16 +921,6 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
           {status === "idle" && fromLabel ? fromLabel : status === "idle" && fromVerse > 1 ? `From ${fromVerse}` : status === "idle" ? languageById(lang).label : ""}
         </span>
       </div>
-      <details className="mx-auto max-w-5xl px-3 text-sm text-muted">
-        <summary className="min-h-11 cursor-pointer py-3 text-garnet">Voice setup help</summary>
-        <div className="max-h-[50vh] space-y-3 overflow-y-auto pb-4">
-          <p>Read uses your browser’s device speech, without a provider key. Studio creates media through a paid provider using your own key. INjeel cannot install voices or guarantee any accent, language, or Syriac voice. System settings and voices exposed to a browser can differ.</p>
-          <p><strong>iPhone and iPad:</strong> In Settings → Accessibility, look for Read &amp; Speak → Voices (called Spoken Content on older versions). Choose a language and dialect. For downloadable enhanced voices, Apple also documents VoiceOver → Speech → Add New Language; choose a voice/quality and allow the download to finish on Wi-Fi. You do not need to enable VoiceOver to use INjeel. <a className="underline" href="https://support.apple.com/guide/iphone/hear-whats-on-the-screen-or-typed-iph96b214f0/ios">Apple’s current guide</a> · <a className="underline" href="https://support.apple.com/en-us/111798">iOS/iPadOS voice downloads</a></p>
-          <p><strong>Android:</strong> Open Settings → Accessibility → Text-to-speech output. Choose the preferred engine and language; use its voice-data/download options where available. Names and paths vary by manufacturer/engine; search Settings for “text-to-speech” if needed. <a className="underline" href="https://support.google.com/accessibility/android/answer/6006983?hl=en">Google’s settings and voice-data guide</a></p>
-          <p><strong>macOS:</strong> Apple menu → System Settings → Accessibility → Read &amp; Speak. Choose System voice; open its additional voice controls to browse languages, country/region variants and downloadable voices. Wait until downloads finish, then choose the voice. Older versions may use Spoken Content. <a className="underline" href="https://support.apple.com/guide/mac-help/mchlp2290/mac">Apple’s Mac voice guide</a></p>
-          <p>Return here and reopen the voice selector. If new voices do not appear, refresh or reopen the app/browser. Select the voice and adjust Speed here; a system default need not override an explicit app selection. Android browsers may use their speech engine rather than a forced voice. Some voices use network services; availability and pronunciation depend on your device/browser, not the scripture’s historical pronunciation.</p>
-        </div>
-      </details>
       {error && <p className="px-3 pb-2 text-sm text-garnet">{error}</p>}
     </div>
   );
