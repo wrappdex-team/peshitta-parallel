@@ -6,6 +6,7 @@ import { BookLinks } from "@/components/book-links";
 import { SearchPanel } from "@/components/search-panel";
 import { chapterCount } from "@/lib/scripture";
 import { bookProgress, testamentProgress, useReadings } from "@/lib/readings";
+import { EMPTY_DECLARATION, gospelProgress, readDeclaration, type Declaration } from "@/lib/declaration";
 import { SITE_DESCRIPTION, SITE_ORIGIN } from "@/lib/site";
 import { usePrefs } from "@/lib/use-prefs";
 
@@ -24,10 +25,19 @@ function Home() {
   const { prefs, patch, ready } = usePrefs();
   const { counts, ready: readingsReady } = useReadings();
   const whole = testamentProgress(counts);
+  const [declaration, setDeclaration] = useState<Declaration>(EMPTY_DECLARATION);
   const [search, setSearch] = useState(false);
   const [open, setOpen] = useState(false);
   const last = prefs.last;
   const lastBook = BOOKS.find((b) => b.id === last?.book);
+  const declarationReady = readingsReady && gospelProgress(counts).complete && !declaration.kept;
+
+  useEffect(() => {
+    const pull = () => setDeclaration(readDeclaration());
+    pull();
+    window.addEventListener("injeel-declaration", pull);
+    return () => window.removeEventListener("injeel-declaration", pull);
+  }, []);
 
   return (
     <div className="min-h-app bg-paper text-ink">
@@ -83,6 +93,7 @@ function Home() {
         <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-sm">
           <Link to="/seal" className="inline-flex min-h-11 items-center text-garnet">
             Your reading{readingsReady ? ` · ${whole.times > 0 ? 100 : whole.percent}%` : ""}
+            {declarationReady ? " · the declaration" : ""}
           </Link>
           <Link to="/words" className="inline-flex min-h-11 items-center text-garnet">
             Words of Y'shua
