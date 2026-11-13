@@ -266,7 +266,7 @@ export function VerseView({
             </div>
           )}
           {showTr && (
-            <div className={second ? "mt-3 grid gap-4 md:grid-cols-2" : ""}>
+            <div data-reading-line="" className={`min-w-0 break-words ${second ? "mt-3 grid gap-4 md:grid-cols-2" : ""}`}>
               <Parallel
                 pending={pending}
                 text={parallel}
@@ -410,7 +410,7 @@ function Parallel({
               ? "font-cyr"
               : "";
   return (
-    <p className={`${EN[size]} ${LEADING[line]} ${clauses || lead ? "text-ink" : ink} ${face}`} dir={language.dir} lang={language.id === "aii" ? "syr" : language.id}>
+    <p className={`min-w-0 break-words ${EN[size]} ${LEADING[line]} ${clauses || lead ? "text-ink" : ink} ${face}`} dir={language.dir} lang={language.id === "aii" ? "syr" : language.id}>
       {clauses
         ? clauses.map((span, index) => (
             <span key={index} className={span.red ? "text-jesus" : undefined}>

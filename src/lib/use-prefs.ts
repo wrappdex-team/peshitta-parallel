@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { languageById, type LangId } from "@/lib/languages";
+import { languageById, languageFromPhone, type LangId } from "@/lib/languages";
 import type { VoiceId } from "@/lib/speak";
 
 export type Face = "both" | "sy" | "tr";
@@ -23,17 +23,22 @@ const KEY = "peshitta-parallel";
 
 const DEFAULTS: Prefs = {
   theme: "day",
-  words: true,
-  face: "both",
+  words: false,
+  face: "tr",
   size: 2,
   line: 1,
-  notes: true,
+  notes: false,
   voice: "ara",
   deviceVoice: "",
   speed: 100,
   lang: "en",
   lang2: "none",
 };
+
+function fresh(): Prefs {
+  const tags = typeof navigator === "undefined" ? undefined : navigator.languages?.length ? navigator.languages : [navigator.language];
+  return { ...DEFAULTS, lang: languageFromPhone(tags) };
+}
 
 function clampSpeed(value: unknown) {
   const speed = Math.round(Number(value));
@@ -44,7 +49,7 @@ function clampSpeed(value: unknown) {
 function read(): Prefs {
   try {
     const raw = localStorage.getItem(KEY);
-    if (!raw) return DEFAULTS;
+    if (!raw) return fresh();
     const parsed = JSON.parse(raw) as Partial<Prefs>;
     const face = parsed.face === "sy" || parsed.face === "tr" || parsed.face === "both" ? parsed.face : DEFAULTS.face;
     const size = [0, 1, 2, 3, 4].includes(Number(parsed.size)) ? (Number(parsed.size) as 0 | 1 | 2 | 3 | 4) : DEFAULTS.size;
@@ -60,7 +65,7 @@ function read(): Prefs {
         : undefined;
     return { ...DEFAULTS, ...parsed, face, size, line, voice, deviceVoice, speed, lang: languageById(parsed.lang ?? "en").id, lang2, last };
   } catch {
-    return DEFAULTS;
+    return fresh();
   }
 }
 

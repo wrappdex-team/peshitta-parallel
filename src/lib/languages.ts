@@ -17,3 +17,31 @@ export type LangId = (typeof LANGS)[number]["id"];
 export function languageById(id: string) {
   return LANGS.find((item) => item.id === id) ?? LANGS[0];
 }
+
+const PHONE: Record<string, LangId> = {
+  en: "en",
+  el: "el",
+  gr: "el",
+  he: "he",
+  iw: "he",
+  ar: "ar",
+  fr: "fr",
+  ru: "ru",
+  es: "es",
+  zh: "zh",
+  de: "de",
+  ja: "ja",
+  syr: "aii",
+  sy: "aii",
+  aii: "aii",
+};
+
+/** The phone's language, when this reader has it. Otherwise English. */
+export function languageFromPhone(tags: readonly string[] | undefined): LangId {
+  for (const tag of tags ?? []) {
+    const primary = tag.toLowerCase().split("-")[0];
+    const id = primary ? PHONE[primary] : undefined;
+    if (id) return id;
+  }
+  return "en";
+}

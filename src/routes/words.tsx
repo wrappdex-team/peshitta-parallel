@@ -14,6 +14,8 @@ import { InfoMark } from "@/components/info-mark";
 import { ReadingKinds } from "@/components/page-guide";
 import { shareCard, verseShare } from "@/lib/share";
 import { usePrefs } from "@/lib/use-prefs";
+import { scrollLineToTop } from "@/lib/scroll-line";
+import { ReadingTongue } from "@/components/reading-tongue";
 import { readingReadFrom, useBindReadingSurface } from "@/lib/reading-surface";
 
 export const Route = createFileRoute("/words")({
@@ -141,12 +143,9 @@ function Words() {
   useEffect(() => {
     if (!heard || heard.book !== book) return;
     const el = document.getElementById(`w-${heard.chapter}-${heard.verse}`);
-    if (!el) return;
-    const rect = el.getBoundingClientRect();
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (rect.top < 96 || rect.bottom > window.innerHeight - 150) {
-      el.scrollIntoView({ block: "center", behavior: reduced ? "auto" : "smooth" });
-    }
+    const line = el?.querySelector("[data-reading-line]");
+    const target = line instanceof HTMLElement ? line : el;
+    if (target) scrollLineToTop(target);
   }, [heard, doc, book]);
 
   useEffect(() => {
@@ -220,7 +219,7 @@ function Words() {
   const pending2 = prefs.lang2 !== "none" && prefs.lang2 !== "en" && !parallel2;
 
   return (
-    <main className="mx-auto min-h-app max-w-3xl bg-paper px-5 pt-safe pb-player text-ink">
+    <main className="mx-auto min-h-app max-w-3xl bg-paper px-5 pt-safe pb-[calc(12rem+env(safe-area-inset-bottom,0px))] text-ink">
       <div className="pt-6">
         <Link to="/" className="inline-flex min-h-11 items-center text-garnet">
           All books
@@ -252,13 +251,12 @@ function Words() {
             );
           })}
         </div>
-        <button
-          type="button"
+        <ReadingTongue
+          label={second ? `${tongue.label} · ${second.label}` : tongue.label}
+          pulse={heard ? heard.chapter * 1000 + heard.verse : 0}
+          stickyTop="0.75rem"
           onClick={() => setReading(true)}
-          className="flex min-h-11 w-full items-center truncate border-b border-line text-left text-sm text-muted"
-        >
-          {["Reading", tongue.label, second ? second.label : ""].filter(Boolean).join(" · ")}
-        </button>
+        />
         {err && <p className="mt-6 text-garnet">{err}</p>}
         {!doc && !err && <p className="mt-6 text-muted">Opening the words…</p>}
         <div className="mt-2">
@@ -346,7 +344,7 @@ function Words() {
                 {!pending && (primary || sideFace) && (
                   <div className={sideFace ? "mt-2 grid gap-4 md:grid-cols-2" : ""}>
                     {primary && (
-                      <p dir={mainFace.dir} lang={mainFace.code} className={`mt-2 leading-relaxed ${mainRed ? "text-jesus" : "text-ink"} ${mainFace.face}`}>
+                      <p data-reading-line="" dir={mainFace.dir} lang={mainFace.code} className={`mt-2 min-w-0 break-words leading-relaxed ${mainRed ? "text-jesus" : "text-ink"} ${mainFace.face}`}>
                         {tongue.id === "en" ? <NameText text={primary} /> : primary}
                       </p>
                     )}
@@ -379,6 +377,7 @@ function Words() {
               <Link to="/guide" className="mb-3 inline-flex min-h-11 items-center text-sm text-garnet" onClick={() => setReading(false)}>
                 More in the guide
               </Link>
+              <p className="mb-3 text-sm leading-relaxed text-muted">One language. A second language is optional.</p>
               <p className="text-xs tracking-widest text-gold">LANGUAGE</p>
               <div className="mt-1 flex flex-wrap">
                 {LANGS.map((item) => (

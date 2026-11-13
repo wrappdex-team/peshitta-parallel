@@ -68,7 +68,7 @@ export const GUIDE: GuideSection[] = [
   {
     id: "reading",
     title: "Set the page",
-    lead: "The line under the title begins “Reading”. Tap it. That sheet is where the page is set. The same sheet is on Words of Y'shua.",
+    lead: "The Reading button stays with the chapter, above the voice. A new device opens in one language: the language of the phone, or English. Notes are off. Syriac beside it, and a second language, are in this sheet.",
     rows: [
       { term: "Text", text: "The Syriac on the page." },
       { term: "Reading", text: "The language beside the Syriac, or in its place." },
@@ -78,8 +78,8 @@ export const GUIDE: GuideSection[] = [
       { term: "Both", text: "Syriac, and the language you chose." },
       { term: "Peshitta", text: "Syriac only." },
       { term: "The language name", text: "That language only. The button uses the name of the language, not the word “translation”." },
-      { term: "Words", text: "Syriac word buttons under the verse. Turn this off when you want the line unbroken." },
-      { term: "Notes", text: "Edition notes on the wording, the short note at the start of a book, and a note you wrote on a verse." },
+      { term: "Words", text: "Off on a new device. Syriac word buttons under the verse. Turn this on when you want the words." },
+      { term: "Notes", text: "Off on a new device. Edition notes on the wording, the short note at the start of a book, and a note you wrote on a verse." },
       { term: "A− and A+", text: "Five sizes of type." },
       { term: "The line buttons", text: "Three settings for the space between lines. The labels are “Tighter lines” and “Looser lines”." },
       {

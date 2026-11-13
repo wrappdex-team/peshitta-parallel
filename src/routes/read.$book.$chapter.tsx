@@ -26,7 +26,9 @@ import { SITE_ORIGIN } from "@/lib/site";
 import { noteChapter } from "@/lib/readings";
 import { ReadingKinds } from "@/components/page-guide";
 import { parseReaderChapter } from "@/lib/reader-reference";
+import { scrollLineToTop } from "@/lib/scroll-line";
 import { useBindReadingSurface } from "@/lib/reading-surface";
+import { ReadingTongue } from "@/components/reading-tongue";
 
 export const Route = createFileRoute("/read/$book/$chapter")({
   loader: async ({ params }) => {
@@ -140,12 +142,9 @@ function Reader() {
     if (heard == null) return;
     setFocus(heard);
     const el = document.getElementById(`v-${heard}`);
-    if (!el) return;
-    const rect = el.getBoundingClientRect();
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (rect.top < 160 || rect.bottom > window.innerHeight - 32) {
-      el.scrollIntoView({ block: "center", behavior: reduced ? "auto" : "smooth" });
-    }
+    const line = el?.querySelector("[data-reading-line]");
+    const target = line instanceof HTMLElement ? line : el;
+    if (target) scrollLineToTop(target);
   }, [heard]);
 
   const total = chapterCount(book);
@@ -303,23 +302,13 @@ function Reader() {
         </div>
       </header>
 
-      <main className={`mx-auto px-4 pb-player ${prefs.lang2 === "none" ? "max-w-3xl" : "max-w-5xl"}`}>
-        <div className="flex items-stretch border-b border-line">
-          <button
-            type="button"
-            onClick={() => setReading(true)}
-            className="flex min-h-11 min-w-0 flex-1 items-center truncate text-left text-sm text-muted"
-          >
-            {[
-              "Reading",
-              languageById(prefs.lang).label,
-              prefs.lang2 !== "none" ? languageById(prefs.lang2).label : "",
-              prefs.face === "sy" ? "Peshitta" : prefs.face === "both" ? "Both" : "",
-              prefs.words ? "Words" : "",
-            ].filter(Boolean).join(" · ")}
-          </button>
-          <InfoMark id="reading" align="end" />
-        </div>
+      <main className={`mx-auto px-4 pb-[calc(12rem+env(safe-area-inset-bottom,0px))] ${prefs.lang2 === "none" ? "max-w-3xl" : "max-w-5xl"}`}>
+        <ReadingTongue
+          label={readingLabel(prefs.lang, prefs.lang2, prefs.face)}
+          pulse={heard ?? 0}
+          stickyTop="calc(env(safe-area-inset-top, 0px) + 7.5rem)"
+          onClick={() => setReading(true)}
+        />
 
         {verses?.map((verse, verseIndex) => (
           <VerseView
@@ -477,11 +466,22 @@ function Reader() {
               <Link to="/guide" className="mb-3 inline-flex min-h-11 items-center text-sm text-garnet" onClick={() => setReading(false)}>
                 More in the guide
               </Link>
-              <p className="text-xs tracking-widest text-gold">PAGE</p>
+              <p className="text-xs tracking-widest text-gold">LANGUAGE</p>
               <div className="mt-1 flex flex-wrap">
-                <FaceButton label="Both" active={prefs.face === "both"} onClick={() => patch({ face: "both" })} />
-                <FaceButton label="Peshitta" active={prefs.face === "sy"} onClick={() => patch({ face: "sy" })} />
-                <FaceButton label={languageById(prefs.lang).label} active={prefs.face === "tr"} onClick={() => patch({ face: "tr" })} />
+                {LANGS.map((item) => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    aria-pressed={prefs.lang === item.id}
+                    onClick={() => patch({ lang: item.id === prefs.lang2 ? prefs.lang : item.id, lang2: item.id === prefs.lang2 ? "none" : prefs.lang2 })}
+                    className={`min-h-11 px-3 ${prefs.lang === item.id ? "text-garnet" : "text-muted"} ${item.face === "syriac" ? "font-syriac text-lg" : item.face === "arab" ? "font-arab text-lg" : item.face === "hebrew" ? "font-hebrew text-lg" : item.face === "greek" ? "font-cyr" : item.face === "cyrl" ? "font-cyr" : ""}`}
+                  >
+                    {item.label}
+                  </button>
+                ))}
+              </div>
+              <p className="mt-4 text-xs tracking-widest text-gold">PAGE</p>
+              <div className="mt-1 flex flex-wrap">
                 <FaceButton label="Words" active={prefs.words} onClick={() => patch({ words: !prefs.words })} />
                 <FaceButton label="Notes" active={prefs.notes} onClick={() => patch({ notes: !prefs.notes })} />
                 <button type="button" className="flex size-11 items-center justify-center" aria-label="Smaller type" onClick={() => patch({ size: Math.max(0, prefs.size - 1) as 0 | 1 | 2 | 3 | 4 })}>
@@ -497,21 +497,13 @@ function Reader() {
                   ≡+
                 </button>
               </div>
-              <p className="mt-4 text-xs tracking-widest text-gold">LANGUAGE</p>
+              <p className="mt-4 text-xs tracking-widest text-gold">PARALLEL</p>
+              <p className="mt-1 text-sm leading-relaxed text-muted">Syriac beside this language, or a second language. Off until you choose it.</p>
               <div className="mt-1 flex flex-wrap">
-                {LANGS.map((item) => (
-                  <button
-                    key={item.id}
-                    type="button"
-                    aria-pressed={prefs.lang === item.id}
-                    onClick={() => patch({ lang: item.id === prefs.lang2 ? prefs.lang : item.id, lang2: item.id === prefs.lang2 ? "none" : prefs.lang2 })}
-                    className={`min-h-11 px-3 ${prefs.lang === item.id ? "text-garnet" : "text-muted"} ${item.face === "syriac" ? "font-syriac text-lg" : item.face === "arab" ? "font-arab text-lg" : item.face === "hebrew" ? "font-hebrew text-lg" : item.face === "greek" ? "font-greek" : item.face === "cyrl" ? "font-cyr" : ""}`}
-                  >
-                    {item.label}
-                  </button>
-                ))}
+                <FaceButton label={languageById(prefs.lang).label} active={prefs.face === "tr"} onClick={() => patch({ face: "tr" })} />
+                <FaceButton label="Both" active={prefs.face === "both"} onClick={() => patch({ face: "both" })} />
+                <FaceButton label="Peshitta" active={prefs.face === "sy"} onClick={() => patch({ face: "sy" })} />
               </div>
-              <p className="mt-4 text-xs tracking-widest text-gold">ALSO</p>
               <div className="mt-1 flex flex-wrap">
                 <button
                   type="button"
@@ -519,7 +511,7 @@ function Reader() {
                   onClick={() => patch({ lang2: "none" })}
                   className={`min-h-11 px-3 ${prefs.lang2 === "none" ? "text-garnet" : "text-muted"}`}
                 >
-                  None
+                  No second language
                 </button>
                 {LANGS.filter((item) => item.id !== prefs.lang).map((item) => (
                   <button
@@ -556,6 +548,16 @@ function Reader() {
       )}
     </div>
   );
+}
+
+function readingLabel(lang: string, lang2: string, face: "both" | "sy" | "tr") {
+  if (face === "sy") return "Peshitta";
+  const name = languageById(lang).label;
+  const second = lang2 !== "none" ? languageById(lang2).label : "";
+  if (face === "both" && second) return `${name} · Syriac · ${second}`;
+  if (face === "both") return `${name} · Syriac`;
+  if (second) return `${name} · ${second}`;
+  return name;
 }
 
 function FaceButton({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {

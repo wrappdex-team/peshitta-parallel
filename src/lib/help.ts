@@ -21,7 +21,7 @@ export const HELP: Record<string, HelpTip> = {
   reading: {
     title: "Set the page",
     section: "reading",
-    line: "This line opens the sheet that sets the page.",
+    line: "Stays with the chapter. A new device opens in one language. Notes are off.",
   },
   red: {
     title: "Red type",

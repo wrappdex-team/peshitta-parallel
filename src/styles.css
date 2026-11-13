@@ -136,8 +136,39 @@ html[data-help="off"] .info-mark {
   text-shadow: 0 0 10px rgb(246 231 168 / 0.45);
 }
 
+@keyframes reading-tongue-in {
+  from {
+    transform: translateY(-0.35rem);
+  }
+  to {
+    transform: none;
+  }
+}
+
+@keyframes reading-tongue-bar {
+  from {
+    transform: scaleY(0.2);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+.reading-tongue-bar {
+  transform-origin: top;
+  animation: reading-tongue-bar 0.45s ease;
+}
+
+.reading-tongue {
+  animation: reading-tongue-in 0.35s ease;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
+  }
+  .reading-tongue,
+  .reading-tongue-bar {
+    animation: none;
   }
 }
