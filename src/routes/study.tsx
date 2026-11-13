@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { InfoMark } from "@/components/info-mark";
 import { SITE_ORIGIN } from "@/lib/site";
+import { SiteHeader } from "@/components/site-header";
 
 export const Route = createFileRoute("/study")({
   head: () => ({
@@ -19,18 +19,16 @@ export const Route = createFileRoute("/study")({
 
 function Study() {
   return (
-    <main className="mx-auto min-h-app max-w-3xl bg-paper px-5 pt-safe pb-page text-ink sm:px-8 lg:px-12">
+    <div className="min-h-app bg-paper text-ink">
+      <SiteHeader title="About" mark="edition" />
+      <main className="mx-auto max-w-3xl px-5 pb-page sm:px-8 lg:px-12">
       <div className="pt-6">
-        <Link to="/" className="inline-flex min-h-11 items-center text-garnet">
-          All books
-        </Link>
-        <p className="mt-6 font-syriac text-4xl text-syriac" lang="syr" dir="rtl">
+        <p className="font-syriac text-4xl text-syriac" lang="syr" dir="rtl">
           ܐܘܢܓܠܝܘܢ
         </p>
         <p className="mt-3 text-xs tracking-widest text-gold">ABOUT THIS INJEEL</p>
-        <h1 className="mt-2 flex flex-wrap items-center gap-1 font-serif text-4xl font-semibold leading-tight">
+        <h1 className="mt-2 font-serif text-4xl font-semibold leading-tight">
           The book still has His breath in it
-          <InfoMark id="edition" />
         </h1>
         <p className="mt-3 font-serif text-xl leading-snug text-garnet">
           The spirit of Y'shua, carried by the first churches, and set in the Peshitta so you can hear Him.
@@ -143,5 +141,6 @@ function Study() {
         </nav>
       </div>
     </main>
+    </div>
   );
 }

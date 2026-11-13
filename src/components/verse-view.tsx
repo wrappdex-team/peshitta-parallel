@@ -20,6 +20,8 @@ import { InfoMark } from "@/components/info-mark";
 
 import type { Annotation, Highlight } from "@/lib/annotations";
 
+const MARK_NAME: Record<Highlight, string> = { gold: "Gold", garnet: "Garnet", ink: "Ink" };
+
 type Props = {
   book: string;
   bookName: string;
@@ -327,8 +329,8 @@ export function VerseView({
           )}
           {chapterEnd ? <span data-chapter-end="" className="block h-px" aria-hidden="true" /> : null}
           <div className="verse-tools mt-1 flex flex-wrap items-center gap-1 text-sm text-muted">
-            <button type="button" className="min-h-11 px-2 hover:text-ink" onClick={onHighlight} aria-label="Highlight">
-              Mark
+            <button type="button" className="min-h-11 px-2 hover:text-ink" onClick={onHighlight} aria-label={highlight ? MARK_NAME[highlight] : "Mark"}>
+              {highlight ? MARK_NAME[highlight] : "Mark"}
             </button>
             <button type="button" className="min-h-11 px-2 hover:text-ink" onClick={onBookmark} aria-label="Bookmark">
               {annotation?.bookmark ? "Saved" : "Save"}

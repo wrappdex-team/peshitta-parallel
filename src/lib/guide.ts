@@ -1,6 +1,6 @@
 /** How to use the reader. Labels match the controls on the page. */
 
-export type GuideRow = { term: string; text: string; to?: "/study" | "/privacy" | "/names" | "/words" | "/seal" };
+export type GuideRow = { term: string; text: string; to?: "/study" | "/privacy" | "/names" | "/words" | "/seal" | "/saved" };
 
 export type GuideSection = {
   id: string;
@@ -141,8 +141,9 @@ export const GUIDE: GuideSection[] = [
     title: "Marks on a verse",
     lead: "Each verse has the same three marks, then Share, Copy, and Link. They stay in this browser.",
     rows: [
-      { term: "Highlight", text: "Cycles three grounds: gold, then garnet, then ink, then off. There is no legend on the page. Those are the three steps, in that order." },
-      { term: "Bookmark", text: "Marks the verse. There is no separate list of bookmarks. The mark remains on the verse." },
+      { term: "Highlight", text: "Cycles gold, then garnet, then ink, then off. The button names the color." },
+      { term: "Bookmark", text: "Marks the verse. It stays on the verse, and on Saved." },
+      { term: "Saved", text: "The marks, saves, and notes on this device.", to: "/saved" },
       { term: "Note", text: "A line you write. Stored on this device. Shown when Notes are on." },
       { term: "Share", text: "Sends the verse by the share sheet on this device, or copies it if the device cannot share." },
       { term: "Copy", text: "Puts the verse text on the clipboard." },

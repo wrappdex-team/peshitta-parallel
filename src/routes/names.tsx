@@ -3,7 +3,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { bookMeta } from "@/data/edition";
 import { NAMES, type NameEntry } from "@/lib/names";
 import { SITE_ORIGIN } from "@/lib/site";
-import { InfoMark } from "@/components/info-mark";
+import { SiteHeader } from "@/components/site-header";
 
 function firstPlace(ref: string) {
   const match = /^([a-z0-9]+)\s+(\d+):(\d+)$/.exec(ref);
@@ -49,19 +49,10 @@ function Names() {
   }, [active, rows]);
 
   return (
-    <main className="mx-auto min-h-app max-w-3xl px-5 pt-safe pb-page sm:px-8 lg:px-12">
-      <div className="pt-8">
-        <Link to="/" className="inline-flex min-h-11 items-center text-garnet">
-          Injeel
-        </Link>
-        <h1 className="mt-6 flex items-center gap-1 font-serif text-4xl">
-          Names
-          <InfoMark id="names" />
-        </h1>
-        <p className="mt-4 text-base leading-relaxed">
-          Persons and places in this New Testament. The Syriac is the spelling in the text. The reading beside it is those letters, not a vocalized pronunciation and not another translation. Where one spelling covers more than one person, the note says who this book itself distinguishes. Revelation, 2 Peter, 2 John, 3 John, and Jude are later Syriac, not the old twenty-two-book Peshitta.
-        </p>
-        <label className="mt-5 block">
+    <div className="min-h-app bg-paper text-ink">
+      <SiteHeader title="Names" mark="names" />
+      <main className="mx-auto max-w-3xl px-5 pb-page sm:px-8 lg:px-12">
+        <label className="mt-6 block">
           <span className="text-xs tracking-widest text-gold">FIND A NAME</span>
           <input
             value={query}
@@ -81,8 +72,8 @@ function Names() {
             <NameStudy key={row.id} row={row} active={active === row.id} />
           ))}
         </ul>
-      </div>
-    </main>
+      </main>
+    </div>
   );
 }
 

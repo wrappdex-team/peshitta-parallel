@@ -1,6 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { InfoMark } from "@/components/info-mark";
+import { createFileRoute } from "@tanstack/react-router";
 import { SITE_ORIGIN } from "@/lib/site";
+import { SiteHeader } from "@/components/site-header";
 
 export const Route = createFileRoute("/privacy")({
   head: () => ({
@@ -18,16 +18,10 @@ export const Route = createFileRoute("/privacy")({
 
 function Privacy() {
   return (
-    <main className="mx-auto min-h-app max-w-3xl px-5 pt-safe pb-page sm:px-8 lg:px-12">
-      <div className="pt-8">
-        <Link to="/" className="inline-flex min-h-11 items-center text-garnet">
-          Injeel
-        </Link>
-        <h1 className="mt-6 flex items-center gap-1 font-serif text-4xl">
-          Privacy
-          <InfoMark id="device" />
-        </h1>
-        <p className="mt-4 text-base leading-relaxed">
+    <div className="min-h-app bg-paper text-ink">
+      <SiteHeader title="Privacy" mark="device" />
+      <main className="mx-auto max-w-3xl px-5 pb-page sm:px-8 lg:px-12">
+        <p className="mt-6 text-base leading-relaxed">
           Injeel does not ask for an account. The chapter you last read, how many times you have finished a chapter, and the languages beside it stay on this device.
         </p>
         <p className="mt-4 text-base leading-relaxed">
@@ -48,7 +42,7 @@ function Privacy() {
         <p className="mt-4 text-base leading-relaxed text-muted">
           The site and the installed app are the same reader. Putting Injeel on a home screen does not collect anything more.
         </p>
-      </div>
-    </main>
+      </main>
+    </div>
   );
 }

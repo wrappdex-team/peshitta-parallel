@@ -1,12 +1,10 @@
 import { WordStudySheet } from "@/components/word-study";
 import { Modal } from "@/components/modal";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Moon, Search, Sun } from "lucide-react";
+import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Studio } from "@/components/studio";
-import { SearchPanel } from "@/components/search-panel";
+import { SiteHeader } from "@/components/site-header";
 import { VerseView } from "@/components/verse-view";
-import { InfoMark } from "@/components/info-mark";
 import { ReadingSheet, readingLabel } from "@/components/reading-sheet";
 import { ReadingTongue } from "@/components/reading-tongue";
 import { BOOKS } from "@/data/edition";
@@ -68,7 +66,6 @@ function Words() {
   const [reading, setReading] = useState(false);
   const [studio, setStudio] = useState(false);
   const [picked, setPicked] = useState("");
-  const [search, setSearch] = useState(false);
   const [sheet, setSheet] = useState<{ title: string; roman: string; body: string } | { study: WordStudy } | null>(null);
   const meta = BOOKS.find((item) => item.id === book);
   const tongue = languageById(prefs.lang);
@@ -222,36 +219,13 @@ function Words() {
 
   return (
     <div className="min-h-app bg-paper text-ink">
-      <header className="sticky top-0 z-20 border-b border-line bg-paper pt-safe">
-        <div className={`mx-auto flex items-center justify-between px-2 py-1 ${wide ? "max-w-6xl" : "max-w-3xl"}`}>
-          <Link to="/" className="flex min-h-11 shrink-0 items-center px-2 text-sm text-garnet" aria-label="All books">
-            Books
-          </Link>
-          <div className="min-w-0 text-center">
-            <h1 className="flex items-center justify-center gap-1 truncate font-serif text-lg leading-tight">
-              Words of Y'shua
-              <InfoMark id="red" />
-            </h1>
-            <span className="block text-xs text-gold">
-              {meta?.name ?? "Gospel"}
-              {doc ? ` · ${sayings.length}` : ""}
-            </span>
-          </div>
-          <div className="flex">
-            <button type="button" className="flex size-11 items-center justify-center" aria-label="Search" onClick={() => setSearch(true)}>
-              <Search className="size-5" />
-            </button>
-            <button
-              type="button"
-              className="flex size-11 items-center justify-center"
-              aria-label={prefs.theme === "night" ? "Day theme" : "Night theme"}
-              onClick={() => patch({ theme: prefs.theme === "night" ? "day" : "night" })}
-            >
-              {prefs.theme === "night" ? <Sun className="size-5" /> : <Moon className="size-5" />}
-            </button>
-          </div>
-        </div>
-        <div className={`toolbar-scroll mx-auto flex gap-1 overflow-x-auto px-3 pb-2 ${wide ? "max-w-6xl" : "max-w-3xl"}`}>
+      <SiteHeader
+        title="Words of Y'shua"
+        subtitle={`${meta?.name ?? "Gospel"}${doc ? ` · ${sayings.length}` : ""}`}
+        wide={wide}
+        mark="red"
+      >
+        <div className="toolbar-scroll flex gap-1 overflow-x-auto px-3 pb-2">
           {RED_BOOKS.map((id) => {
             const item = BOOKS.find((entry) => entry.id === id);
             const current = book === id;
@@ -268,7 +242,7 @@ function Words() {
             );
           })}
         </div>
-      </header>
+      </SiteHeader>
 
       <main className={`mx-auto px-4 pb-[calc(14rem+env(safe-area-inset-bottom,0px))] sm:px-6 lg:px-10 ${wide ? "max-w-6xl" : "max-w-3xl"}`}>
         <ReadingTongue
@@ -321,7 +295,6 @@ function Words() {
       </main>
 
       <Studio open={studio} passage={picked} onClose={() => setStudio(false)} />
-      <SearchPanel open={search} onClose={() => setSearch(false)} />
       <ReadingSheet open={reading} onClose={() => setReading(false)} onStudio={openStudio} />
       {sheet && (
         <Modal label={"study" in sheet ? "Word" : sheet.title} className="fixed inset-0 z-30 flex items-end bg-scrim" onClose={() => setSheet(null)}>

@@ -6,7 +6,7 @@ import { openDeclaration } from "@/components/gospel-declaration";
 import { gospelProgress, longDate, nextGospelChapter, readDeclaration, type Declaration } from "@/lib/declaration";
 import { bookProgress, SEAL_MARKS, sealEarned, testamentProgress, timesPhrase, useReadings } from "@/lib/readings";
 import { SITE_ORIGIN } from "@/lib/site";
-import { InfoMark } from "@/components/info-mark";
+import { SiteHeader } from "@/components/site-header";
 import { useEffect, useState } from "react";
 
 export const Route = createFileRoute("/seal")({
@@ -43,20 +43,9 @@ function SealPage() {
   }, []);
 
   return (
-    <main className="mx-auto min-h-app max-w-3xl bg-paper px-5 pt-safe pb-page text-ink sm:px-8 lg:px-12">
-      <div className="pt-6">
-        <Link to="/" className="inline-flex min-h-11 items-center text-garnet">
-          All books
-        </Link>
-        <p className="mt-6 text-xs tracking-widest text-gold">YOUR READING</p>
-        <h1 className="mt-2 flex items-center gap-1 font-serif text-4xl">
-          The seal
-          <InfoMark id="record" />
-        </h1>
-        <p className="mt-3 max-w-prose text-base leading-relaxed">
-          A chapter is kept when you reach its last line, or when the voice finishes it. This record stays on this device.
-        </p>
-
+    <div className="min-h-app bg-paper text-ink">
+      <SiteHeader title="Your reading" mark="record" />
+      <main className="mx-auto max-w-3xl px-5 pb-page sm:px-8 lg:px-12">
         {ready && (
           <section className="mt-8 border border-line bg-raised px-5 py-6">
             <div className="flex items-center gap-4">
@@ -139,8 +128,8 @@ function SealPage() {
               </ul>
             </section>
           ))}
-      </div>
     </main>
+    </div>
   );
 }
 

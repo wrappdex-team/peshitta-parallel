@@ -1,10 +1,10 @@
 import { WordStudySheet } from "@/components/word-study";
 import { Modal } from "@/components/modal";
 import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
-import { ChevronLeft, ChevronRight, Menu, Moon, Search, Sun } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useState } from "react";
-import { SearchPanel } from "@/components/search-panel";
 import { Studio } from "@/components/studio";
+import { SiteHeader } from "@/components/site-header";
 import { BookLinks } from "@/components/book-links";
 import { HelpSwitch } from "@/components/info-mark";
 import { VerseView } from "@/components/verse-view";
@@ -85,7 +85,6 @@ function Reader() {
   const { verses } = Route.useLoaderData();
   const [parallel, setParallel] = useState<string[][] | null>(null);
   const [parallel2, setParallel2] = useState<string[][] | null>(null);
-  const [search, setSearch] = useState(false);
   const [menu, setMenu] = useState(false);
   const [sheet, setSheet] = useState<{ title: string; roman: string; body: string } | { study: WordStudy } | null>(null);
   const [heard, setHeard] = useState<number | null>(null);
@@ -259,30 +258,13 @@ function Reader() {
 
   return (
     <div className="min-h-app bg-paper text-ink">
-      <header className="sticky top-0 z-20 border-b border-line bg-paper pt-safe">
-        <div className={`mx-auto flex items-center justify-between px-2 py-1 ${prefs.lang2 === "none" ? "max-w-3xl" : "max-w-6xl"}`}>
-          <button type="button" className="flex size-11 items-center justify-center" aria-label="Books" onClick={() => setMenu(true)}>
-            <Menu className="size-5" />
-          </button>
-          <Link to="/" className="min-w-0 text-center">
-            <span className="block truncate font-serif text-lg leading-tight">{meta?.name ?? "Peshitta"}</span>
-            <span className="block text-xs text-gold">Chapter {chapterNo || "—"}</span>
-          </Link>
-          <div className="flex">
-            <button type="button" className="flex size-11 items-center justify-center" aria-label="Search" onClick={() => setSearch(true)}>
-              <Search className="size-5" />
-            </button>
-            <button
-              type="button"
-              className="flex size-11 items-center justify-center"
-              aria-label={prefs.theme === "night" ? "Day theme" : "Night theme"}
-              onClick={() => patch({ theme: prefs.theme === "night" ? "day" : "night" })}
-            >
-              {prefs.theme === "night" ? <Sun className="size-5" /> : <Moon className="size-5" />}
-            </button>
-          </div>
-        </div>
-        <div className={`toolbar-scroll mx-auto flex gap-1 overflow-x-auto px-3 pb-2 ${prefs.lang2 === "none" ? "max-w-3xl" : "max-w-6xl"}`}>
+      <SiteHeader
+        title={meta?.name ?? "Peshitta"}
+        subtitle={`Chapter ${chapterNo || "—"}`}
+        wide={prefs.lang2 !== "none"}
+        onBooks={() => setMenu(true)}
+      >
+        <div className="toolbar-scroll flex gap-1 overflow-x-auto px-3 pb-2">
           {Array.from({ length: total }, (_, i) => {
             const n = i + 1;
             const current = n === chapterNo;
@@ -298,7 +280,7 @@ function Reader() {
             );
           })}
         </div>
-      </header>
+      </SiteHeader>
 
       <main className={`mx-auto px-4 pb-[calc(14rem+env(safe-area-inset-bottom,0px))] sm:px-6 lg:px-10 ${prefs.lang2 === "none" ? "max-w-3xl" : "max-w-6xl"}`}>
         <ReadingTongue
@@ -447,7 +429,6 @@ function Reader() {
         </Modal>
       )}
 
-      <SearchPanel open={search} onClose={() => setSearch(false)} />
       <ReadingSheet
         open={reading}
         onClose={() => setReading(false)}

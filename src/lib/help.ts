@@ -14,9 +14,9 @@ export const HELP: Record<string, HelpTip> = {
     line: "The Syriac is the text. Every other column is a reading of it.",
   },
   open: {
-    title: "The shelf",
-    section: "open",
-    line: "Continue is the last verse on this device. A new device opens John 1.",
+    title: "Injeel",
+    section: "edition",
+    line: "Injeel is the Syriac word ܐܘܢܓܠܝܘܢ, “good news.” This book is the New Testament in classical Syriac, a literary Aramaic, in the Peshitta text kept by the churches of the East. The older Peshitta is twenty-two books: the four Gospels, Acts, Paul, Hebrews, James, 1 Peter, and 1 John. 2 Peter, 2 John, 3 John, Jude, and Revelation were put into Syriac later, and the book list marks them rather than folding them into that older collection. The Syriac line is the text. English and the other languages are translations of that Syriac, and the names stay with the spelling in this book: Y'shua, Maryam, Keefa, Mashiyach.",
   },
   reading: {
     title: "Set the page",
@@ -77,5 +77,10 @@ export const HELP: Record<string, HelpTip> = {
     title: "This device",
     section: "device",
     line: "The record stays in this browser. There is no account.",
+  },
+  saved: {
+    title: "Saved",
+    section: "marks",
+    line: "Marks, saves, and notes from this browser. They are not an account.",
   },
 };

@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as GuideRouteImport } from './routes/guide'
 import { Route as NamesRouteImport } from './routes/names'
 import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as SavedRouteImport } from './routes/saved'
 import { Route as SealRouteImport } from './routes/seal'
 import { Route as StudyRouteImport } from './routes/study'
 import { Route as WordsRouteImport } from './routes/words'
@@ -36,6 +37,11 @@ const NamesRoute = NamesRouteImport.update({
 const PrivacyRoute = PrivacyRouteImport.update({
   id: '/privacy',
   path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SavedRoute = SavedRouteImport.update({
+  id: '/saved',
+  path: '/saved',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SealRoute = SealRouteImport.update({
@@ -64,6 +70,7 @@ export interface FileRoutesByFullPath {
   '/guide': typeof GuideRoute
   '/names': typeof NamesRoute
   '/privacy': typeof PrivacyRoute
+  '/saved': typeof SavedRoute
   '/seal': typeof SealRoute
   '/study': typeof StudyRoute
   '/words': typeof WordsRoute
@@ -74,6 +81,7 @@ export interface FileRoutesByTo {
   '/guide': typeof GuideRoute
   '/names': typeof NamesRoute
   '/privacy': typeof PrivacyRoute
+  '/saved': typeof SavedRoute
   '/seal': typeof SealRoute
   '/study': typeof StudyRoute
   '/words': typeof WordsRoute
@@ -85,6 +93,7 @@ export interface FileRoutesById {
   '/guide': typeof GuideRoute
   '/names': typeof NamesRoute
   '/privacy': typeof PrivacyRoute
+  '/saved': typeof SavedRoute
   '/seal': typeof SealRoute
   '/study': typeof StudyRoute
   '/words': typeof WordsRoute
@@ -97,6 +106,7 @@ export interface FileRouteTypes {
     | '/guide'
     | '/names'
     | '/privacy'
+    | '/saved'
     | '/seal'
     | '/study'
     | '/words'
@@ -107,6 +117,7 @@ export interface FileRouteTypes {
     | '/guide'
     | '/names'
     | '/privacy'
+    | '/saved'
     | '/seal'
     | '/study'
     | '/words'
@@ -117,6 +128,7 @@ export interface FileRouteTypes {
     | '/guide'
     | '/names'
     | '/privacy'
+    | '/saved'
     | '/seal'
     | '/study'
     | '/words'
@@ -128,6 +140,7 @@ export interface RootRouteChildren {
   GuideRoute: typeof GuideRoute
   NamesRoute: typeof NamesRoute
   PrivacyRoute: typeof PrivacyRoute
+  SavedRoute: typeof SavedRoute
   SealRoute: typeof SealRoute
   StudyRoute: typeof StudyRoute
   WordsRoute: typeof WordsRoute
@@ -162,6 +175,13 @@ declare module '@tanstack/react-router' {
       path: '/privacy'
       fullPath: '/privacy'
       preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/saved': {
+      id: '/saved'
+      path: '/saved'
+      fullPath: '/saved'
+      preLoaderRoute: typeof SavedRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/seal': {
@@ -200,6 +220,7 @@ const rootRouteChildren: RootRouteChildren = {
   GuideRoute: GuideRoute,
   NamesRoute: NamesRoute,
   PrivacyRoute: PrivacyRoute,
+  SavedRoute: SavedRoute,
   SealRoute: SealRoute,
   StudyRoute: StudyRoute,
   WordsRoute: WordsRoute,

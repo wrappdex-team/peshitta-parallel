@@ -1,10 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { Menu, Moon, Search, Sun } from "lucide-react";
 import { BOOKS, SECTIONS } from "@/data/edition";
 import { BookLinks } from "@/components/book-links";
 import { HelpSwitch, InfoMark } from "@/components/info-mark";
-import { SearchPanel } from "@/components/search-panel";
+import { SiteHeader, requestSearch } from "@/components/site-header";
 import { chapterCount } from "@/lib/scripture";
 import { bookProgress, testamentProgress, useReadings } from "@/lib/readings";
 import { SITE_DESCRIPTION, SITE_ORIGIN } from "@/lib/site";
@@ -22,47 +21,26 @@ export const Route = createFileRoute("/")({
 });
 
 function Home() {
-  const { prefs, patch, ready } = usePrefs();
+  const { prefs, ready } = usePrefs();
   const { counts, ready: readingsReady } = useReadings();
   const whole = testamentProgress(counts);
-  const [search, setSearch] = useState(false);
   const [open, setOpen] = useState(false);
   const last = prefs.last;
   const lastBook = BOOKS.find((b) => b.id === last?.book);
+  const readingPercent = whole.times > 0 ? whole.nextPercent : whole.percent;
 
   return (
     <div className="min-h-app bg-paper text-ink">
-      <header className="sticky top-0 z-20 border-b border-line bg-paper pt-safe">
-        <div className="flex items-center justify-between px-4 py-3">
-        <button type="button" className="flex min-h-11 items-center gap-2" onClick={() => setOpen(true)} aria-label="Books">
-          <Menu className="size-5" />
-          <span className="font-serif text-sm">Books</span>
-        </button>
-        <p className="font-serif text-xl">Injeel</p>
-        <div className="flex items-center">
-          <button type="button" className="flex size-11 items-center justify-center" onClick={() => setSearch(true)} aria-label="Search">
-            <Search className="size-5" />
-          </button>
-          <button
-            type="button"
-            className="flex size-11 items-center justify-center"
-            aria-label={prefs.theme === "night" ? "Day theme" : "Night theme"}
-            onClick={() => patch({ theme: prefs.theme === "night" ? "day" : "night" })}
-          >
-            {prefs.theme === "night" ? <Sun className="size-5" /> : <Moon className="size-5" />}
-          </button>
-        </div>
-        </div>
-      </header>
+      <SiteHeader title="Injeel" onBooks={() => setOpen(true)} />
 
       <main className="mx-auto max-w-3xl px-5 pb-page pt-10 sm:px-8 lg:max-w-4xl lg:px-12">
         <p className="font-syriac text-3xl text-syriac" lang="syr" dir="rtl">
           ܐܘܢܓܠܝܘܢ
         </p>
-        <h1 className="mt-2 flex items-center gap-1 font-serif text-4xl font-semibold tracking-tight">
-          Injeel
-          <InfoMark id="open" />
-        </h1>
+        <div className="mt-2 flex flex-wrap items-center gap-x-1">
+          <h1 className="font-serif text-4xl font-semibold tracking-tight">Injeel</h1>
+          <InfoMark id="open" place="flow" />
+        </div>
         <p className="mt-2 font-serif text-xl text-garnet">The words of Y'shua, kept.</p>
 
         {ready && (
@@ -86,7 +64,10 @@ function Home() {
 
         <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-sm">
           <Link to="/seal" className="inline-flex min-h-11 items-center text-garnet">
-            Your reading{readingsReady ? ` · ${whole.times > 0 ? 100 : whole.percent}%` : ""}
+            Your reading{readingsReady ? ` · ${readingPercent}%` : ""}
+          </Link>
+          <Link to="/saved" className="inline-flex min-h-11 items-center text-garnet">
+            Saved
           </Link>
           <Link to="/words" className="inline-flex min-h-11 items-center text-garnet">
             Words of Y'shua
@@ -97,7 +78,7 @@ function Home() {
           <Link to="/study" className="inline-flex min-h-11 items-center text-garnet">
             About this Injeel
           </Link>
-          <button type="button" className="min-h-11 text-garnet" onClick={() => setSearch(true)}>
+          <button type="button" className="min-h-11 text-garnet" onClick={() => requestSearch()}>
             Search
           </button>
           <InstallButton />
@@ -137,7 +118,6 @@ function Home() {
       </main>
 
       {open && <BookDrawer onClose={() => setOpen(false)} place={last} />}
-      <SearchPanel open={search} onClose={() => setSearch(false)} />
     </div>
   );
 }

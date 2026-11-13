@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { GUIDE } from "@/lib/guide";
 import { SITE_ORIGIN } from "@/lib/site";
+import { SiteHeader } from "@/components/site-header";
 
 export const Route = createFileRoute("/guide")({
   head: () => ({
@@ -18,13 +19,12 @@ export const Route = createFileRoute("/guide")({
 
 function GuidePage() {
   return (
-    <main className="min-h-app bg-paper text-ink">
-      <div className="mx-auto max-w-3xl px-5 pt-safe pb-page sm:px-8 lg:px-12">
+    <div className="min-h-app bg-paper text-ink">
+      <SiteHeader title="Guide" />
+      <main>
+      <div className="mx-auto max-w-3xl px-5 pb-page sm:px-8 lg:px-12">
         <div className="pt-6">
-          <Link to="/" className="inline-flex min-h-11 items-center text-garnet">
-            All books
-          </Link>
-          <p className="mt-6 text-xs tracking-widest text-gold">GUIDE</p>
+          <p className="text-xs tracking-widest text-gold">GUIDE</p>
           <h1 className="mt-2 font-serif text-4xl font-semibold tracking-tight">How to use this reader</h1>
           <p className="mt-3 max-w-2xl text-base leading-relaxed">
             The mark beside a control is one sentence. This page is the rest. It is not a reading of the book. About this Injeel is the essay.
@@ -32,7 +32,7 @@ function GuidePage() {
         </div>
 
         <div className="mt-8 md:grid md:grid-cols-[14rem_minmax(0,1fr)] md:gap-12">
-          <nav aria-label="Guide contents" className="md:sticky md:top-6 md:self-start">
+          <nav aria-label="Guide contents" className="md:sticky md:top-[calc(env(safe-area-inset-top,0px)+4.5rem)] md:self-start">
             <p className="text-xs tracking-widest text-gold">CONTENTS</p>
             <ol className="mt-2 border-t border-line">
               {GUIDE.map((section, index) => (
@@ -52,7 +52,7 @@ function GuidePage() {
 
           <div className="mt-10 md:mt-0">
             {GUIDE.map((section, index) => (
-              <section key={section.id} id={section.id} className="scroll-mt-6 border-t border-line py-8 first:border-t-0 first:pt-0">
+              <section key={section.id} id={section.id} className="scroll-mt-28 border-t border-line py-8 first:border-t-0 first:pt-0">
                 <p className="text-xs tracking-widest text-gold">{String(index + 1).padStart(2, "0")}</p>
                 <h2 className="mt-1 font-serif text-3xl">{section.title}</h2>
                 <p className="mt-3 max-w-2xl text-base leading-relaxed">{section.lead}</p>
@@ -87,5 +87,6 @@ function GuidePage() {
         </div>
       </div>
     </main>
+    </div>
   );
 }

@@ -23,13 +23,26 @@ function useHelpOn() {
   return on;
 }
 
+function withSyriac(text: string) {
+  return text.split(/([\u0700-\u074F]+)/).map((part, index) =>
+    /[\u0700-\u074F]/.test(part) ? (
+      <span key={index} className="font-syriac" lang="syr" dir="rtl">
+        {part}
+      </span>
+    ) : (
+      <span key={index}>{part}</span>
+    ),
+  );
+}
+
 function NoteBody({ id }: { id: string }) {
   const tip = HELP[id];
   if (!tip) return null;
+  const long = tip.line.length > 180;
   return (
     <div className="border border-line bg-paper p-3 text-left">
       <p className="font-serif text-lg text-ink">{tip.title}</p>
-      <p className="mt-2 text-sm leading-relaxed text-ink">{tip.line}</p>
+      <p className={long ? "mt-2 text-base leading-relaxed text-ink" : "mt-2 text-sm leading-relaxed text-ink"}>{withSyriac(tip.line)}</p>
       <p className="mt-3">
         <Link to="/guide" hash={tip.section} className="inline-flex min-h-11 items-center text-sm text-garnet">
           More in the guide
@@ -164,7 +177,7 @@ export function InfoMark({ id, place = "pop", align = "start" }: { id: string; p
     ) : null;
 
   return (
-    <span id={uid} ref={rootRef} className={place === "pop" ? "info-mark relative inline-flex" : "info-mark relative block max-w-full"}>
+    <span id={uid} ref={rootRef} className={place === "pop" ? "info-mark relative inline-flex" : "contents"}>
       <button
         ref={buttonRef}
         type="button"
@@ -178,7 +191,16 @@ export function InfoMark({ id, place = "pop", align = "start" }: { id: string; p
           i
         </span>
       </button>
-      {panel}
+      {place === "flow" && open ? (
+        <div id={`${uid}-note`} role="region" aria-label={tip.title} className="w-full basis-full pt-2">
+          <NoteBody id={id} />
+          <button type="button" className="mt-1 min-h-11 text-sm text-garnet" onClick={shut}>
+            Close
+          </button>
+        </div>
+      ) : (
+        panel
+      )}
     </span>
   );
 }
