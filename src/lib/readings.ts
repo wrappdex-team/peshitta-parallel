@@ -22,17 +22,17 @@ export function readCounts(): Counts {
   }
 }
 
-let lastKey = "";
-let lastAt = 0;
+let creditedKey = "";
+let creditedAt = 0;
 
-/** Count a finished chapter. A second credit for the same chapter inside a few seconds is ignored. */
+/** Count a finished chapter. Reaching the same chapter again in the same minute counts once. */
 export function noteChapter(book: string, chapter: number) {
   if (!book || chapter < 1) return readCounts();
   const key = `${book}:${chapter}`;
   const now = Date.now();
-  if (key === lastKey && now - lastAt < 8000) return readCounts();
-  lastKey = key;
-  lastAt = now;
+  if (key === creditedKey && now - creditedAt < 60_000) return readCounts();
+  creditedKey = key;
+  creditedAt = now;
   const counts = readCounts();
   counts[key] = (counts[key] ?? 0) + 1;
   localStorage.setItem(KEY, JSON.stringify(counts));
@@ -75,7 +75,14 @@ export function bookProgress(counts: Counts, book: string) {
   for (let chapter = 1; chapter <= of; chapter++) {
     if (chapterTimes(counts, book, chapter) > times) ahead += 1;
   }
-  return { times, ahead, of };
+  let open = 1;
+  for (let chapter = 1; chapter <= of; chapter++) {
+    if (chapterTimes(counts, book, chapter) === times) {
+      open = chapter;
+      break;
+    }
+  }
+  return { times, ahead, of, open };
 }
 
 export function testamentProgress(counts: Counts) {

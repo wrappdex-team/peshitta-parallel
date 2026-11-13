@@ -149,8 +149,13 @@ type InstallPrompt = Event & { prompt: () => Promise<void> };
 
 function bookCaption(id: string, counts: Parameters<typeof bookProgress>[0]) {
   const progress = bookProgress(counts, id);
-  if (progress.times > 0) return `read ${progress.times === 1 ? "once" : progress.times === 2 ? "twice" : `${progress.times} times`}`;
-  if (progress.ahead > 0) return `${progress.ahead} of ${progress.of} chapters`;
+  if (progress.times > 0 && progress.ahead === 0) {
+    return `read ${progress.times === 1 ? "once" : progress.times === 2 ? "twice" : `${progress.times} times`}`;
+  }
+  if (progress.times > 0) {
+    return `read ${progress.times === 1 ? "once" : progress.times === 2 ? "twice" : `${progress.times} times`} · chapter ${progress.open} still open`;
+  }
+  if (progress.ahead > 0) return `${progress.ahead} of ${progress.of} · chapter ${progress.open} still open`;
   return `${progress.of} chapters`;
 }
 

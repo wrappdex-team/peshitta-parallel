@@ -140,11 +140,12 @@ function SealPage() {
   );
 }
 
-function bookLine(progress: { times: number; ahead: number; of: number }) {
-  if (progress.times > 0 && progress.ahead > 0) {
-    return `Read ${timesPhrase(progress.times)} · ${progress.ahead} of ${progress.of} into the next`;
+function bookLine(progress: { times: number; ahead: number; of: number; open: number }) {
+  const read = progress.times > 0 ? `Read ${timesPhrase(progress.times)}` : "";
+  if (progress.ahead > 0 && progress.times > 0) {
+    return `${read} · chapter ${progress.open} still open on the next time through`;
   }
-  if (progress.times > 0) return `Read ${timesPhrase(progress.times)}`;
-  if (progress.ahead > 0) return `${progress.ahead} of ${progress.of} chapters`;
+  if (progress.times > 0) return read;
+  if (progress.ahead > 0) return `${progress.ahead} of ${progress.of} · chapter ${progress.open} still open`;
   return `${progress.of} chapters`;
 }

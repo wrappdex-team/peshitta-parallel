@@ -149,23 +149,29 @@ function Reader() {
   const total = chapterCount(book);
 
   useEffect(() => {
-    const last = verses?.[verses.length - 1];
-    if (!last) return;
-    const node = document.getElementById(`v-${last.v}`);
-    if (!node) return;
-    let timer = 0;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        window.clearTimeout(timer);
-        if (!entry?.isIntersecting) return;
-        timer = window.setTimeout(() => noteChapter(book, chapterNo), 800);
-      },
-      { threshold: 0.5 },
-    );
+    if (!verses?.length) return;
+    const node = document.querySelector("[data-chapter-end]");
+    if (!(node instanceof HTMLElement)) return;
+    let noted = false;
+    const reached = () => {
+      if (noted) return;
+      const rect = node.getBoundingClientRect();
+      const lineShown = rect.top <= window.innerHeight - 80 && rect.bottom >= 0;
+      const atEnd = document.documentElement.scrollHeight - window.scrollY - window.innerHeight <= 120;
+      if (!lineShown && !atEnd) return;
+      noted = true;
+      noteChapter(book, chapterNo);
+    };
+    const observer = new IntersectionObserver(reached, { threshold: 0, rootMargin: "0px 0px -80px 0px" });
     observer.observe(node);
+    const resize = new ResizeObserver(reached);
+    resize.observe(document.documentElement);
+    window.addEventListener("scroll", reached, { passive: true });
+    reached();
     return () => {
-      window.clearTimeout(timer);
       observer.disconnect();
+      resize.disconnect();
+      window.removeEventListener("scroll", reached);
     };
   }, [book, chapterNo, verses]);
   const index = BOOKS.findIndex((b) => b.id === book);
@@ -331,6 +337,7 @@ function Reader() {
             onWord={onWord}
             onTerm={onTerm}
             listening={heard === verse.v}
+            chapterEnd={verseIndex === verses.length - 1}
             bookName={meta?.name ?? book}
             lang2={prefs.lang2}
             parallel2={prefs.lang2 === "none" ? "" : prefs.lang2 === "en" ? verse.en : (parallel2?.[chapterNo - 1]?.[verseIndex] ?? "")}

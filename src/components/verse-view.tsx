@@ -42,6 +42,7 @@ type Props = {
   onWord: (info: WordGloss | null, surface: string, place: WordPlace) => void;
   onTerm: (key: string) => void;
   listening?: boolean;
+  chapterEnd?: boolean;
 };
 
 const SY = ["text-lg", "text-xl", "text-2xl", "text-3xl", "text-4xl"] as const;
@@ -76,6 +77,7 @@ export function VerseView({
   onWord,
   onTerm,
   listening = false,
+  chapterEnd = false,
 }: Props) {
   const [copied, setCopied] = useState("");
   const articleRef = useRef<HTMLElement>(null);
@@ -299,6 +301,7 @@ export function VerseView({
               )}
             </div>
           )}
+          {chapterEnd ? <span data-chapter-end="" className="block h-px" aria-hidden="true" /> : null}
           <div className="mt-2 flex flex-wrap items-center gap-1 text-sm">
             {speech && <span className="mr-2 text-jesus">Words of Y'shua</span>}
             <button type="button" className="min-h-11 px-2 text-garnet" onClick={() => void shareVerse()}>
