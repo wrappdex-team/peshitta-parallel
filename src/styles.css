@@ -206,6 +206,30 @@ html[data-help="off"] .info-mark {
   transition: background-color 160ms ease;
 }
 
+/* Short screens: a shorter language bar, and none at all while a reading is going. */
+@media (max-height: 500px) {
+  .reading-tongue-shell {
+    min-height: 2.75rem;
+    margin-bottom: 0.75rem;
+  }
+  .reading-tongue {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+  .reading-tongue-rule {
+    display: none;
+  }
+}
+
+html[data-reading="active"] [data-reading-tongue] {
+  display: none;
+}
+
+[data-read-bar] select {
+  min-width: 0;
+  max-width: 100%;
+}
+
 .verse-tools {
   opacity: 0.42;
   transition: opacity 160ms ease;

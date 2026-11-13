@@ -265,6 +265,7 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
   const [status, setStatus] = useState<"idle" | "playing" | "paused">("idle");
   const [carry, setCarry] = useState(false);
   const [cornerReady, setCornerReady] = useState(false);
+  const [more, setMore] = useState(false);
   const [error, setError] = useState("");
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
   const [spot, setSpot] = useState("");
@@ -700,6 +701,23 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
     if (host.pictureInPictureEnabled) setCornerReady(true);
   }, []);
 
+  // A short screen hides the language bar while a reading is going, so the verse keeps a band.
+  useEffect(() => {
+    const root = document.documentElement;
+    if (!root || typeof window.matchMedia !== "function") return;
+    const media = window.matchMedia("(max-height: 500px)");
+    const apply = () => {
+      if (media.matches && statusRef.current !== "idle") root.dataset.reading = "active";
+      else delete root.dataset.reading;
+    };
+    apply();
+    media.addEventListener("change", apply);
+    return () => {
+      media.removeEventListener("change", apply);
+      delete root.dataset.reading;
+    };
+  }, [status]);
+
   useEffect(() => {
     function onVisibility() {
       if (document.visibilityState !== "visible") return;
@@ -822,6 +840,75 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
   const continueOff = wordsMode ? "Keep reading the words of Y'shua into the next book" : "Keep reading through this book and into the next";
   const placeText = status === "paused" ? (spot ? `Paused · ${spot}` : "Paused") : spot || (carry ? throughLabel : hereLabel);
 
+  const idleNote =
+    status === "idle" && fromLabel
+      ? fromLabel
+      : status === "idle" && fromVerse > 1
+        ? `From ${fromVerse}`
+        : status === "idle"
+          ? languageById(lang).label
+          : "";
+  const readLabel = wordsMode ? "Read these words aloud" : fromVerse > 1 ? "Read from this verse" : "Read this chapter aloud";
+
+  function voiceSelect() {
+    return (
+      <label className="flex h-11 min-w-0 flex-1 items-center px-2">
+        <span className="sr-only">Voice on this device</span>
+        <select
+          value={voices.some((item) => voiceKey(item) === deviceVoice) ? deviceVoice : ""}
+          onFocus={() => setVoices(orderedVoices(lang))}
+          onChange={(event) => chooseDeviceVoice(event.target.value)}
+          className="h-11 w-full min-w-0 max-w-full bg-paper text-sm text-ink"
+          aria-label="Voice on this device"
+        >
+          <option value="">Automatic language match</option>
+          {voices.map((item) => (
+            <option key={voiceKey(item)} value={voiceKey(item)}>
+              {item.name} · {item.lang}
+            </option>
+          ))}
+        </select>
+      </label>
+    );
+  }
+
+  function speedControl(wide: boolean) {
+    return (
+      <label className="flex h-11 min-w-11 max-w-full shrink-0 items-center gap-2 border-l border-line px-3">
+        <span className="text-xs tracking-widest text-gold">SPEED</span>
+        <input
+          type="range"
+          min={50}
+          max={150}
+          step={1}
+          value={Math.min(150, Math.max(50, speed || 100))}
+          aria-label="Reading speed"
+          aria-valuemin={50}
+          aria-valuemax={150}
+          aria-valuenow={speed}
+          aria-valuetext={`${speed} percent`}
+          onChange={(event) => setSpeed(Number(event.target.value))}
+          className={`h-11 w-16 accent-gold ${wide ? "sm:w-32" : ""}`}
+        />
+        <span className="w-11 shrink-0 text-sm tabular-nums text-gold">{speed}%</span>
+      </label>
+    );
+  }
+
+  function cornerButton() {
+    if (!cornerReady) return null;
+    return (
+      <button
+        type="button"
+        onClick={() => void hold.current?.corner()}
+        className="flex min-h-11 min-w-11 shrink-0 items-center whitespace-nowrap px-3 text-garnet"
+        aria-label="Keep the reading in the corner over other apps"
+      >
+        Corner
+      </button>
+    );
+  }
+
   if (dock === "corner") {
     if (!active) return null;
     return (
@@ -846,97 +933,118 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
   }
 
   return (
-    <div className="fixed inset-x-0 bottom-0 z-20 border-t border-line bg-paper pb-safe">
-      {active && (
-        <div className="mx-auto flex max-w-5xl items-center border-b border-line">
+    <div data-read-bar="" className="fixed inset-x-0 bottom-0 z-20 w-full border-t border-line bg-paper pb-safe">
+      <div className="read-bar-wide mx-auto hidden w-full min-[481px]:flex max-w-6xl flex-wrap items-center">
+        {active ? (
           <button
             type="button"
             onClick={toggle}
-            className="flex min-h-11 shrink-0 items-center gap-2 border-l-[3px] border-garnet px-3 font-serif text-lg text-garnet"
+            className="flex min-h-11 min-w-11 shrink-0 items-center gap-2 whitespace-nowrap border-l-[3px] border-garnet px-3 font-serif text-lg text-garnet"
             aria-label={playing ? "Pause the reading" : "Resume the reading"}
           >
             {playing ? <Pause className="size-4" /> : <Play className="size-4" />}
             {label}
           </button>
-          <button
-            type="button"
-            onClick={toggleCarry}
-            aria-pressed={carry}
-            aria-label={carry ? continueOn : continueOff}
-            className={`min-h-11 shrink-0 px-3 ${carry ? "text-garnet" : "text-muted"}`}
-          >
-            {carry ? "Continuing" : "Continue"}
-          </button>
-          <button type="button" onClick={halt} className="flex min-h-11 shrink-0 items-center gap-1 px-3 text-muted">
-            <Square className="size-3.5" />
-            Stop
-          </button>
-          {cornerReady ? (
-            <button
-              type="button"
-              onClick={() => void hold.current?.corner()}
-              className="min-h-11 shrink-0 px-3 text-garnet"
-              aria-label="Keep the reading in the corner over other apps"
-            >
-              Corner
-            </button>
-          ) : null}
-          <span className="ml-auto flex min-h-11 shrink-0 items-center px-3 text-sm text-gold">
-            {placeText}
-          </span>
-        </div>
-      )}
-      <div className="mx-auto flex max-w-6xl items-center">
-        {!active && (
+        ) : (
           <button
             type="button"
             onClick={toggle}
-            className="flex min-h-12 shrink-0 items-center gap-2 border-l-[3px] border-garnet px-3 font-serif text-lg text-garnet"
-            aria-label={wordsMode ? "Read these words aloud" : fromVerse > 1 ? "Read from this verse" : "Read this chapter aloud"}
+            className="flex min-h-11 min-w-11 shrink-0 items-center gap-2 whitespace-nowrap border-l-[3px] border-garnet px-3 font-serif text-lg text-garnet"
+            aria-label={readLabel}
           >
             <Play className="size-4" />
             {label}
           </button>
         )}
-        <label className="flex min-h-11 min-w-0 flex-1 items-center px-2">
-          <span className="sr-only">Voice on this device</span>
-          <select
-            value={voices.some((item) => voiceKey(item) === deviceVoice) ? deviceVoice : ""}
-            onFocus={() => setVoices(orderedVoices(lang))}
-            onChange={(event) => chooseDeviceVoice(event.target.value)}
-            className="w-full min-w-0 max-w-[11rem] truncate bg-paper text-sm text-ink"
-            aria-label="Voice on this device"
+        {active ? (
+          <button
+            type="button"
+            onClick={toggleCarry}
+            aria-pressed={carry}
+            aria-label={carry ? continueOn : continueOff}
+            className={`flex min-h-11 min-w-11 shrink-0 items-center whitespace-nowrap px-3 ${carry ? "text-garnet" : "text-muted"}`}
           >
-            <option value="">Automatic language match</option>
-            {voices.map((item) => (
-              <option key={voiceKey(item)} value={voiceKey(item)}>
-                {item.name} · {item.lang}
-              </option>
-            ))}
-          </select>
-        </label>
-        <VoiceMark />
-        <label className="flex min-h-12 shrink-0 items-center gap-2 border-l border-line px-3">
-          <span className="text-xs tracking-widest text-gold">SPEED</span>
-          <input
-            type="range"
-            min={50}
-            max={150}
-            step={1}
-            value={Math.min(150, Math.max(50, speed || 100))}
-            aria-label="Reading speed"
-            aria-valuemin={50}
-            aria-valuemax={150}
-            aria-valuenow={speed}
-            aria-valuetext={`${speed} percent`}
-            onChange={(event) => setSpeed(Number(event.target.value))}
-            className="h-11 w-16 accent-gold sm:w-32"
-          />
-          <span className="w-11 text-sm tabular-nums text-gold">{speed}%</span>
-        </label>
-        <span className="ml-auto flex min-h-11 shrink-0 items-center px-3 text-sm text-gold">
-          {status === "idle" && fromLabel ? fromLabel : status === "idle" && fromVerse > 1 ? `From ${fromVerse}` : status === "idle" ? languageById(lang).label : ""}
+            {carry ? "Continuing" : "Continue"}
+          </button>
+        ) : null}
+        {active ? (
+          <button type="button" onClick={halt} className="flex min-h-11 min-w-11 shrink-0 items-center gap-1 whitespace-nowrap px-3 text-muted">
+            <Square className="size-3.5" />
+            Stop
+          </button>
+        ) : null}
+        {active ? cornerButton() : null}
+        <span className="flex h-11 min-w-0 max-w-full shrink items-center overflow-hidden px-3 text-sm text-gold">
+          <span className="truncate">{active ? placeText : idleNote}</span>
         </span>
+        <div className="flex w-44 max-w-full shrink-0 items-center">
+          {voiceSelect()}
+          <VoiceMark />
+        </div>
+        {speedControl(true)}
+      </div>
+
+      <div className="read-bar-compact w-full min-[481px]:hidden">
+        <div id="read-bar-more" hidden={!more} className="border-b border-line">
+          <div className="flex min-w-0 items-center">
+            {voiceSelect()}
+            <VoiceMark />
+          </div>
+          {speedControl(false)}
+          {cornerButton()}
+        </div>
+        {active || idleNote ? (
+          <p className="max-w-full truncate px-3 pt-1 text-sm text-gold">{active ? placeText : idleNote}</p>
+        ) : null}
+        <div className="flex w-full flex-wrap items-center">
+          {active ? (
+            <button
+              type="button"
+              onClick={toggle}
+              className="flex min-h-11 min-w-11 shrink-0 items-center gap-2 whitespace-nowrap border-l-[3px] border-garnet px-3 font-serif text-lg text-garnet"
+              aria-label={playing ? "Pause the reading" : "Resume the reading"}
+            >
+              {playing ? <Pause className="size-4" /> : <Play className="size-4" />}
+              {label}
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={toggle}
+              className="flex min-h-11 min-w-11 shrink-0 items-center gap-2 whitespace-nowrap border-l-[3px] border-garnet px-3 font-serif text-lg text-garnet"
+              aria-label={readLabel}
+            >
+              <Play className="size-4" />
+              {label}
+            </button>
+          )}
+          {active ? (
+            <button type="button" onClick={halt} className="flex min-h-11 min-w-11 shrink-0 items-center gap-1 whitespace-nowrap px-3 text-muted">
+              <Square className="size-3.5" />
+              Stop
+            </button>
+          ) : null}
+          {active ? (
+            <button
+              type="button"
+              onClick={toggleCarry}
+              aria-pressed={carry}
+              aria-label={carry ? continueOn : continueOff}
+              className={`flex min-h-11 min-w-11 shrink-0 items-center whitespace-nowrap px-3 ${carry ? "text-garnet" : "text-muted"}`}
+            >
+              {carry ? "Continuing" : "Continue"}
+            </button>
+          ) : null}
+          <button
+            type="button"
+            aria-expanded={more}
+            aria-controls="read-bar-more"
+            onClick={() => setMore((open) => !open)}
+            className="flex min-h-11 min-w-11 shrink-0 items-center whitespace-nowrap px-3 text-ink"
+          >
+            More
+          </button>
+        </div>
       </div>
       {error && <p className="px-3 pb-2 text-sm text-garnet">{error}</p>}
     </div>
