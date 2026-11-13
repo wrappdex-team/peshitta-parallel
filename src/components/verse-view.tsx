@@ -16,6 +16,7 @@ import {
   type WordPlace,
 } from "@/lib/scripture";
 import { useEffect, useRef, useState } from "react";
+import { InfoMark } from "@/components/info-mark";
 
 import type { Annotation, Highlight } from "@/lib/annotations";
 
@@ -166,7 +167,8 @@ export function VerseView({
           {annotation?.bookmark && <span className="ml-1 text-garnet">•</span>}
         </a>
         <div className="min-w-0 flex-1">
-          <div className="mb-1 flex justify-end gap-1 text-xs text-muted">
+          <div className="mb-1 flex items-center justify-end gap-1 text-xs text-muted">
+            {verse.v === 1 ? <InfoMark id="marks" align="end" /> : null}
             <button type="button" className="min-h-8 px-1 hover:text-ink" onClick={onHighlight} aria-label="Highlight">
               Mark
             </button>

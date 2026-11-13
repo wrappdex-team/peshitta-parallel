@@ -17,6 +17,32 @@ type Line = {
   hint?: string;
 };
 
+function StudyMethod({ study }: { study: WordStudy }) {
+  const word = <span className="font-syriac text-lg text-syriac" lang="syr" dir="rtl">{study.word}</span>;
+  if (study.rootNote.includes("is a name")) {
+    return <p className="mt-3 text-sm leading-relaxed">{word} is a name. The letters are the spelling, not a verb root.</p>;
+  }
+  const other = study.kin[0];
+  return (
+    <p className="mt-3 text-sm leading-relaxed">
+      {study.gloss ? <>{word}, glossed “{study.gloss}.”</> : <>No gloss is settled for {word}.</>}
+      {study.root.length > 0 && (
+        <>
+          {" "}
+          The consonants are <span className="font-syriac text-lg text-syriac" lang="syr" dir="rtl">{study.root.join(" · ")}</span>.
+        </>
+      )}
+      {other && (
+        <>
+          {" "}
+          Another form of this root in this Injeel is <span className="font-syriac text-lg text-syriac" lang="syr" dir="rtl">{other.word}</span>
+          {other.gloss ? `, ${other.gloss}` : ""}.
+        </>
+      )}
+    </p>
+  );
+}
+
 const PREFIX_SOUND: Record<string, string> = { "ܘ": "w", "ܕ": "d", "ܒ": "b", "ܠ": "l" };
 
 function syriacSay(study: WordStudy) {
@@ -202,6 +228,7 @@ export function WordStudySheet({
       </p>
       {study.roman && <p className="mt-1 text-sm text-gold">{pronounced || study.roman}</p>}
       <p className="mt-2 font-serif text-xl">{study.gloss || "No gloss is settled for this form."}</p>
+      <StudyMethod study={study} />
       {study.via && <p className="mt-2 text-sm leading-relaxed text-muted">{study.via}</p>}
       {study.note && <p className="mt-2 text-sm leading-relaxed">{study.note}</p>}
 
@@ -251,7 +278,7 @@ export function WordStudySheet({
       <p className="mt-1 text-sm text-muted">{study.rootNote}</p>
       {cognate && (
         <p className="mt-1 text-sm text-muted">
-          Semitic kin of this root: {cognate.gloss}. Hebrew {cognate.he}. Arabic {cognate.ar}.
+          Related forms of this root, not the sense of the verse: {cognate.gloss}. Hebrew {cognate.he}. Arabic {cognate.ar}.
         </p>
       )}
 

@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { Menu, Moon, Search, Sun } from "lucide-react";
 import { BOOKS, SECTIONS } from "@/data/edition";
 import { BookLinks } from "@/components/book-links";
+import { HelpSwitch, InfoMark } from "@/components/info-mark";
 import { SearchPanel } from "@/components/search-panel";
 import { chapterCount } from "@/lib/scripture";
 import { bookProgress, testamentProgress, useReadings } from "@/lib/readings";
@@ -58,7 +59,10 @@ function Home() {
         <p className="font-syriac text-3xl text-syriac" lang="syr" dir="rtl">
           ܐܘܢܓܠܝܘܢ
         </p>
-        <h1 className="mt-2 font-serif text-4xl font-semibold tracking-tight">Injeel</h1>
+        <h1 className="mt-2 flex items-center gap-1 font-serif text-4xl font-semibold tracking-tight">
+          Injeel
+          <InfoMark id="open" />
+        </h1>
         <p className="mt-2 font-serif text-xl text-garnet">The words of Y'shua, kept.</p>
 
         {ready && (
@@ -92,9 +96,6 @@ function Home() {
           </Link>
           <Link to="/study" className="inline-flex min-h-11 items-center text-garnet">
             About this Injeel
-          </Link>
-          <Link to="/guide" className="inline-flex min-h-11 items-center text-garnet">
-            Guide
           </Link>
           <button type="button" className="min-h-11 text-garnet" onClick={() => setSearch(true)}>
             Search
@@ -199,9 +200,7 @@ function BookDrawer({ onClose, place }: { onClose: () => void; place?: { book: s
             Close
           </button>
         </div>
-        <Link to="/guide" className="mb-3 flex min-h-11 w-full items-center border-b border-line text-garnet" onClick={onClose}>
-          Guide
-        </Link>
+        <HelpSwitch />
         {SECTIONS.map((section) => (
           <div key={section} className="mb-4">
             <p className="text-xs text-gold">{section}</p>

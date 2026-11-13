@@ -6,7 +6,7 @@ import { openDeclaration } from "@/components/gospel-declaration";
 import { gospelProgress, longDate, nextGospelChapter, readDeclaration, type Declaration } from "@/lib/declaration";
 import { bookProgress, SEAL_MARKS, sealEarned, testamentProgress, timesPhrase, useReadings } from "@/lib/readings";
 import { SITE_ORIGIN } from "@/lib/site";
-import { PageGuide } from "@/components/page-guide";
+import { InfoMark } from "@/components/info-mark";
 import { useEffect, useState } from "react";
 
 export const Route = createFileRoute("/seal")({
@@ -49,11 +49,13 @@ function SealPage() {
           All books
         </Link>
         <p className="mt-6 text-xs tracking-widest text-gold">YOUR READING</p>
-        <h1 className="mt-2 font-serif text-4xl">The seal</h1>
+        <h1 className="mt-2 flex items-center gap-1 font-serif text-4xl">
+          The seal
+          <InfoMark id="record" />
+        </h1>
         <p className="mt-3 max-w-prose text-base leading-relaxed">
           A chapter is kept when you reach its last line, or when the voice finishes it. This record stays on this device.
         </p>
-        <PageGuide section="record" note="What is counted, what the seal marks, and where the declaration is." />
 
         {ready && (
           <section className="mt-8 border border-line bg-raised px-5 py-6">

@@ -27,7 +27,7 @@ function GuidePage() {
           <p className="mt-6 text-xs tracking-widest text-gold">GUIDE</p>
           <h1 className="mt-2 font-serif text-4xl font-semibold tracking-tight">How to use this reader</h1>
           <p className="mt-3 max-w-2xl text-base leading-relaxed">
-            Each section names a control as it is labeled on the page, and says what that control does. This is not a reading of the book. About this Injeel is the essay.
+            The mark beside a control is one sentence. This page is the rest. It is not a reading of the book. About this Injeel is the essay.
           </p>
         </div>
 

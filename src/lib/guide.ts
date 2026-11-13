@@ -26,7 +26,7 @@ export const GUIDE: GuideSection[] = [
       },
       {
         term: "English",
-        text: "James Murdock’s translation of the Peshitta, from the 1850s. It is the default second column.",
+        text: "The English of this reader, and the default second column. It keeps the names close to the Syriac spelling in this book: Y'shua, Maryam, Keefa, Mashiyach, Elohim. John 1:1 reads “Elohim was the Word.” Where a note names Murdock, it is citing his 1850s translation or his footnote on that verse, not labeling this column as his.",
       },
       {
         term: "Other languages",
@@ -70,6 +70,11 @@ export const GUIDE: GuideSection[] = [
     title: "Set the page",
     lead: "The line under the title begins “Reading”. Tap it. That sheet is where the page is set. The same sheet is on Words of Y'shua.",
     rows: [
+      { term: "Text", text: "The Syriac on the page." },
+      { term: "Reading", text: "The language beside the Syriac, or in its place." },
+      { term: "Gloss", text: "The line under a Syriac word. It does not replace the verse." },
+      { term: "Edition note", text: "A note on the wording, shown when Notes are on." },
+      { term: "Your note", text: "The line you write on a verse. Shown when Notes are on. It stays on this device." },
       { term: "Both", text: "Syriac, and the language you chose." },
       { term: "Peshitta", text: "Syriac only." },
       { term: "The language name", text: "That language only. The button uses the name of the language, not the word “translation”." },
@@ -104,7 +109,7 @@ export const GUIDE: GuideSection[] = [
     title: "A Syriac word",
     lead: "With Words on, each Syriac word is a button. Tap it.",
     rows: [
-      { term: "The form", text: "The word as it stands in the verse, then a gloss when one is settled. “No gloss is settled for this form” means the lexicon does not decide it. It is not a hidden translation." },
+      { term: "The form", text: "The word as it stands in the verse, then a gloss when one is settled. Where none is settled, the line says so." },
       { term: "Build", text: "Prefix, stem, and ending, when the word has them. A bare word is marked “form”." },
       { term: "Play", text: "A reading in the device voice. It does not start while a chapter is already being read." },
       { term: "Root and cognates", text: "Shown when the lexicon has them. A cognate is a related form, not a claim that the verse means the cognate." },
@@ -212,7 +217,7 @@ export const GUIDE: GuideSection[] = [
     title: "This device",
     lead: "No account. Clearing the site’s data in the browser clears the record.",
     rows: [
-      { term: "Stored here", text: "Last verse, languages, type size, day or night, highlights, bookmarks, your notes, chapters kept, and a declaration if you kept one." },
+      { term: "Stored here", text: "Last verse, languages, type size, day or night, highlights, bookmarks, your notes, chapters kept, whether Help is on, and a declaration if you kept one." },
       { term: "Not stored by Injeel", text: "A name on the declaration is not uploaded. Corner and the device voice stay on the phone. Studio is the exception, and only when you submit a passage with a key." },
       { term: "Install", text: "When the browser offers it, Home shows Install. The installed reader is the same site. It does not collect anything more." },
       { term: "About", text: "“About this Injeel” is an essay on the book. It is not this guide.", to: "/study" },

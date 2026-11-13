@@ -1,6 +1,7 @@
 import { Modal } from "@/components/modal";
+import { InfoMark } from "@/components/info-mark";
 import { useEffect, useMemo, useState } from "react";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 import { bookMeta } from "@/data/edition";
 import { loadLanguageSearch, loadSearch, loadSyriacSearch, type SearchRow } from "@/lib/scripture";
 
@@ -91,7 +92,7 @@ export function SearchPanel({ open, onClose }: Props) {
   return (
     <Modal label="Search the New Testament" className="fixed inset-0 z-40 flex items-start justify-center bg-scrim px-4 pt-sheet" onClose={onClose}>
       <div
-        className="max-h-sheet w-full max-w-xl overflow-hidden rounded-lg border border-line bg-paper shadow-none"
+        className="flex max-h-sheet w-full max-w-xl flex-col rounded-lg border border-line bg-paper shadow-none"
         onClick={(event) => event.stopPropagation()}
       >
         <div className="flex items-center gap-2 border-b border-line p-3">
@@ -102,9 +103,7 @@ export function SearchPanel({ open, onClose }: Props) {
             placeholder="A word, in English, Greek, Hebrew, Arabic, French, Russian, or Syriac"
             className="min-w-0 flex-1 bg-transparent font-serif text-lg text-ink outline-none placeholder:text-muted"
           />
-          <Link to="/guide" hash="search" className="min-h-11 shrink-0 px-2 text-sm text-garnet" onClick={onClose}>
-            Guide
-          </Link>
+          <InfoMark id="search" align="end" />
           <button type="button" className="min-h-11 shrink-0 px-2 text-garnet" onClick={onClose}>
             Close
           </button>

@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { SearchPanel } from "@/components/search-panel";
 import { Studio } from "@/components/studio";
 import { BookLinks } from "@/components/book-links";
+import { HelpSwitch, InfoMark } from "@/components/info-mark";
 import { VerseView } from "@/components/verse-view";
 import { BOOKS, SECTIONS, bookMeta } from "@/data/edition";
 import { LANGS, languageById } from "@/lib/languages";
@@ -23,6 +24,7 @@ import { usePrefs } from "@/lib/use-prefs";
 import { useAnnotations } from "@/lib/annotations";
 import { SITE_ORIGIN } from "@/lib/site";
 import { noteChapter } from "@/lib/readings";
+import { ReadingKinds } from "@/components/page-guide";
 import { parseReaderChapter } from "@/lib/reader-reference";
 import { useBindReadingSurface } from "@/lib/reading-surface";
 
@@ -316,9 +318,7 @@ function Reader() {
               prefs.words ? "Words" : "",
             ].filter(Boolean).join(" · ")}
           </button>
-          <Link to="/guide" hash="reading" className="flex min-h-11 shrink-0 items-center px-2 text-sm text-garnet">
-            Guide
-          </Link>
+          <InfoMark id="reading" align="end" />
         </div>
 
         {verses?.map((verse, verseIndex) => (
@@ -385,14 +385,7 @@ function Reader() {
                 Close
               </button>
             </div>
-            <Link
-              to="/guide"
-              hash="reading"
-              className="mb-3 flex min-h-11 w-full items-center border-b border-line text-garnet"
-              onClick={() => setMenu(false)}
-            >
-              Guide
-            </Link>
+            <HelpSwitch />
             {SECTIONS.map((section) => (
               <div key={section} className="mb-4">
                 <p className="text-xs text-gold">{section}</p>
@@ -538,21 +531,22 @@ function Reader() {
                 ))}
               </div>
               <p className="mt-6 text-xs tracking-widest text-gold">PREMIUM</p>
-              <button
-                type="button"
-                className="mt-1 min-h-11 text-left text-sm text-muted"
-                onClick={() => {
-                  setReading(false);
-                  const selected = window.getSelection()?.toString().replace(/\s+/g, " ").trim() ?? "";
-                  setPicked(selected || picked || verses?.[0]?.en || "");
-                  setStudio(true);
-                }}
-              >
-                Studio · AI voice and images
-              </button>
-              <Link to="/guide" hash="reading" className="mt-2 inline-flex min-h-11 items-center text-garnet" onClick={() => setReading(false)}>
-                Guide to these controls
-              </Link>
+              <div className="mt-1 flex items-center gap-1">
+                <button
+                  type="button"
+                  className="min-h-11 text-left text-sm text-muted"
+                  onClick={() => {
+                    setReading(false);
+                    const selected = window.getSelection()?.toString().replace(/\s+/g, " ").trim() ?? "";
+                    setPicked(selected || picked || verses?.[0]?.en || "");
+                    setStudio(true);
+                  }}
+                >
+                  Studio · AI voice and images
+                </button>
+                <InfoMark id="studio" />
+              </div>
+              <ReadingKinds />
             </div>
           </div>
         </Modal>

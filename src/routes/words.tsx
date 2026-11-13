@@ -10,7 +10,8 @@ import { loadBook, loadParallel, type BookFile, type Verse } from "@/lib/scriptu
 import { cleanEnglish, sayingLines } from "@/lib/speak";
 import { SITE_ORIGIN } from "@/lib/site";
 import { NameText, SyriacNames } from "@/components/name-text";
-import { PageGuide } from "@/components/page-guide";
+import { InfoMark } from "@/components/info-mark";
+import { ReadingKinds } from "@/components/page-guide";
 import { shareCard, verseShare } from "@/lib/share";
 import { usePrefs } from "@/lib/use-prefs";
 import { readingReadFrom, useBindReadingSurface } from "@/lib/reading-surface";
@@ -227,11 +228,13 @@ function Words() {
         <p className="mt-6 font-syriac text-4xl text-syriac" lang="syr" dir="rtl">
           {meta?.sy}
         </p>
-        <h1 className="mt-2 font-serif text-4xl font-semibold leading-tight">Words of Y'shua</h1>
+        <h1 className="mt-2 flex items-center gap-1 font-serif text-4xl font-semibold leading-tight">
+          Words of Y'shua
+          <InfoMark id="red" />
+        </h1>
         <p className="mt-3 max-w-xl leading-relaxed text-muted">
           The words in red, in the order this book keeps them. Hear them on this device, or open a line in the studio.
         </p>
-        <PageGuide section="sayings" note="Which books are here, and how Read uses them." />
         {doc && <p className="mt-2 text-xs tracking-widest text-gold">{sayings.length} SAYINGS</p>}
         <div className="toolbar-scroll mt-4 flex gap-1 overflow-x-auto border-b border-line">
           {RED_BOOKS.map((id) => {
@@ -410,9 +413,13 @@ function Words() {
                 ))}
               </div>
               <p className="mt-6 text-xs tracking-widest text-gold">PREMIUM</p>
-              <button type="button" className="mt-1 min-h-11 text-left text-sm text-muted" onClick={openStudio}>
-                Studio · AI voice and images
-              </button>
+              <div className="mt-1 flex items-center gap-1">
+                <button type="button" className="min-h-11 text-left text-sm text-muted" onClick={openStudio}>
+                  Studio · AI voice and images
+                </button>
+                <InfoMark id="studio" />
+              </div>
+              <ReadingKinds />
             </div>
           </div>
         </Modal>

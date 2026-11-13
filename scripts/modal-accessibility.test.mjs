@@ -27,6 +27,7 @@ function searchFixture() {
       if (name === "@tanstack/react-router") return { useNavigate: () => () => {} };
       if (name === "@/data/edition") return { bookMeta: () => null };
       if (name === "@/lib/scripture") return { loadSearch: async () => [], loadSyriacSearch: async () => [], loadLanguageSearch: async () => [] };
+      if (name === "@/components/info-mark") return { InfoMark: () => null };
       throw new Error(`Unexpected modal-search test import: ${name}`);
     },
   });
