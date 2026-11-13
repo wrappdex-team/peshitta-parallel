@@ -143,9 +143,7 @@ function Words() {
   useEffect(() => {
     if (!heard || heard.book !== book) return;
     const el = document.getElementById(`w-${heard.chapter}-${heard.verse}`);
-    const line = el?.querySelector("[data-reading-line]");
-    const target = line instanceof HTMLElement ? line : el;
-    if (target) scrollLineToTop(target);
+    if (el) scrollLineToTop(el);
   }, [heard, doc, book]);
 
   useEffect(() => {
@@ -219,7 +217,7 @@ function Words() {
   const pending2 = prefs.lang2 !== "none" && prefs.lang2 !== "en" && !parallel2;
 
   return (
-    <main className="mx-auto min-h-app max-w-3xl bg-paper px-5 pt-safe pb-[calc(12rem+env(safe-area-inset-bottom,0px))] text-ink">
+    <main className={`mx-auto min-h-app bg-paper px-5 pt-safe pb-[calc(14rem+env(safe-area-inset-bottom,0px))] text-ink sm:px-8 lg:px-12 ${prefs.lang2 === "none" ? "max-w-3xl" : "max-w-6xl"}`}>
       <div className="pt-6">
         <Link to="/" className="inline-flex min-h-11 items-center text-garnet">
           All books
@@ -289,7 +287,8 @@ function Words() {
                 id={`w-${chapter}-${verse.v}`}
                 data-saying={key}
                 aria-current={listening ? "true" : undefined}
-                className={`border-b border-line py-4 ${listening ? "bg-gold-soft -mx-5 px-5" : ""}`}
+                data-listening={listening ? "" : undefined}
+                className={`group border-b border-line py-5 ${listening ? "bg-gold-soft -mx-5 px-5" : ""}`}
               >
                 {showChapter && <p className="mb-2 text-xs tracking-widest text-gold">CHAPTER {chapter}</p>}
                 <div className="flex items-center justify-between gap-2">
@@ -301,7 +300,7 @@ function Words() {
                   >
                     {meta?.name} {chapter}:{verse.v}
                   </Link>
-                  <div className="flex shrink-0 items-center">
+                  <div className="verse-tools flex shrink-0 items-center">
                     <button
                       type="button"
                       className="min-h-11 px-2 text-sm text-garnet"
@@ -342,14 +341,14 @@ function Words() {
                 )}
                 {pending && position === 0 && <p className="mt-2 text-muted">Opening this language…</p>}
                 {!pending && (primary || sideFace) && (
-                  <div className={sideFace ? "mt-2 grid gap-4 md:grid-cols-2" : ""}>
+                  <div className={sideFace ? "mt-3 grid items-start gap-6 md:grid-cols-2 md:gap-0" : ""}>
                     {primary && (
-                      <p data-reading-line="" dir={mainFace.dir} lang={mainFace.code} className={`mt-2 min-w-0 break-words leading-relaxed ${mainRed ? "text-jesus" : "text-ink"} ${mainFace.face}`}>
+                      <p data-reading-line="" dir={mainFace.dir} lang={mainFace.code} className={`mt-2 min-w-0 break-words leading-relaxed ${sideFace ? "md:pr-8" : ""} ${mainRed ? "text-jesus" : "text-ink"} ${mainFace.face}`}>
                         {tongue.id === "en" ? <NameText text={primary} /> : primary}
                       </p>
                     )}
                     {sideFace && (extra || (pending2 && position === 0)) && (
-                      <p dir={sideFace.dir} lang={sideFace.code} className={`mt-2 leading-relaxed ${pending2 ? "text-muted" : `${sideRed ? "text-jesus" : "text-ink"} ${sideFace.face}`}`}>
+                      <p dir={sideFace.dir} lang={sideFace.code} className={`mt-2 min-w-0 break-words leading-relaxed md:border-l md:border-line md:pl-8 ${pending2 ? "text-muted" : `${sideRed ? "text-jesus" : "text-ink"} ${sideFace.face}`}`}>
                         {pending2 ? "Opening this language…" : second?.id === "en" ? <NameText text={extra} /> : extra}
                       </p>
                     )}

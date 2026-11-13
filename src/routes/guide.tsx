@@ -19,7 +19,7 @@ export const Route = createFileRoute("/guide")({
 function GuidePage() {
   return (
     <main className="min-h-app bg-paper text-ink">
-      <div className="mx-auto max-w-5xl px-5 pt-safe pb-page">
+      <div className="mx-auto max-w-3xl px-5 pt-safe pb-page sm:px-8 lg:px-12">
         <div className="pt-6">
           <Link to="/" className="inline-flex min-h-11 items-center text-garnet">
             All books

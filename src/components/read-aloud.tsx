@@ -750,7 +750,7 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
           <button
             type="button"
             onClick={toggle}
-            className="flex min-h-11 shrink-0 items-center gap-1.5 px-3 text-garnet"
+            className="flex min-h-11 shrink-0 items-center gap-2 border-l-[3px] border-garnet px-3 font-serif text-lg text-garnet"
             aria-label={playing ? "Pause the reading" : "Resume the reading"}
           >
             {playing ? <Pause className="size-4" /> : <Play className="size-4" />}
@@ -784,25 +784,25 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
           </span>
         </div>
       )}
-      <div className="toolbar-scroll mx-auto flex max-w-5xl items-center overflow-x-auto">
+      <div className="mx-auto flex max-w-6xl items-center">
         {!active && (
           <button
             type="button"
             onClick={toggle}
-            className="flex min-h-11 shrink-0 items-center gap-1.5 px-3 text-garnet"
+            className="flex min-h-12 shrink-0 items-center gap-2 border-l-[3px] border-garnet px-3 font-serif text-lg text-garnet"
             aria-label={wordsMode ? "Read these words aloud" : fromVerse > 1 ? "Read from this verse" : "Read this chapter aloud"}
           >
             <Play className="size-4" />
             {label}
           </button>
         )}
-        <label className="flex min-h-11 shrink-0 items-center px-2">
+        <label className="flex min-h-11 min-w-0 flex-1 items-center px-2">
           <span className="sr-only">Voice on this device</span>
           <select
             value={voices.some((item) => voiceKey(item) === deviceVoice) ? deviceVoice : ""}
             onFocus={() => setVoices(orderedVoices(lang))}
             onChange={(event) => chooseDeviceVoice(event.target.value)}
-            className="max-w-[11rem] min-h-11 bg-paper text-sm text-ink"
+            className="w-full min-w-0 max-w-[11rem] truncate bg-paper text-sm text-ink"
             aria-label="Voice on this device"
           >
             <option value="">Automatic language match</option>
@@ -813,8 +813,8 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
             ))}
           </select>
         </label>
-        <label className="flex min-h-11 shrink-0 items-center gap-2 px-3">
-          <span className="text-xs tracking-widest text-muted">SPEED</span>
+        <label className="flex min-h-12 shrink-0 items-center gap-2 border-l border-line px-3">
+          <span className="text-xs tracking-widest text-gold">SPEED</span>
           <input
             type="range"
             min={50}
@@ -827,7 +827,7 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
             aria-valuenow={speed}
             aria-valuetext={`${speed} percent`}
             onChange={(event) => setSpeed(Number(event.target.value))}
-            className="h-11 w-32 accent-gold"
+            className="h-11 w-16 accent-gold sm:w-32"
           />
           <span className="w-11 text-sm tabular-nums text-gold">{speed}%</span>
         </label>

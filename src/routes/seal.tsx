@@ -43,7 +43,7 @@ function SealPage() {
   }, []);
 
   return (
-    <main className="mx-auto min-h-app max-w-3xl bg-paper px-5 pt-safe pb-page text-ink">
+    <main className="mx-auto min-h-app max-w-3xl bg-paper px-5 pt-safe pb-page text-ink sm:px-8 lg:px-12">
       <div className="pt-6">
         <Link to="/" className="inline-flex min-h-11 items-center text-garnet">
           All books

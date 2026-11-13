@@ -142,9 +142,7 @@ function Reader() {
     if (heard == null) return;
     setFocus(heard);
     const el = document.getElementById(`v-${heard}`);
-    const line = el?.querySelector("[data-reading-line]");
-    const target = line instanceof HTMLElement ? line : el;
-    if (target) scrollLineToTop(target);
+    if (el) scrollLineToTop(el);
   }, [heard]);
 
   const total = chapterCount(book);
@@ -262,7 +260,7 @@ function Reader() {
   return (
     <div className="min-h-app bg-paper text-ink">
       <header className="sticky top-0 z-20 border-b border-line bg-paper pt-safe">
-        <div className="mx-auto flex max-w-3xl items-center justify-between px-2 py-1">
+        <div className={`mx-auto flex items-center justify-between px-2 py-1 ${prefs.lang2 === "none" ? "max-w-3xl" : "max-w-6xl"}`}>
           <button type="button" className="flex size-11 items-center justify-center" aria-label="Books" onClick={() => setMenu(true)}>
             <Menu className="size-5" />
           </button>
@@ -284,7 +282,7 @@ function Reader() {
             </button>
           </div>
         </div>
-        <div className="toolbar-scroll mx-auto flex max-w-3xl gap-1 overflow-x-auto px-3 pb-2">
+        <div className={`toolbar-scroll mx-auto flex gap-1 overflow-x-auto px-3 pb-2 ${prefs.lang2 === "none" ? "max-w-3xl" : "max-w-6xl"}`}>
           {Array.from({ length: total }, (_, i) => {
             const n = i + 1;
             const current = n === chapterNo;
@@ -302,7 +300,7 @@ function Reader() {
         </div>
       </header>
 
-      <main className={`mx-auto px-4 pb-[calc(12rem+env(safe-area-inset-bottom,0px))] ${prefs.lang2 === "none" ? "max-w-3xl" : "max-w-5xl"}`}>
+      <main className={`mx-auto px-4 pb-[calc(14rem+env(safe-area-inset-bottom,0px))] sm:px-6 lg:px-10 ${prefs.lang2 === "none" ? "max-w-3xl" : "max-w-6xl"}`}>
         <ReadingTongue
           label={readingLabel(prefs.lang, prefs.lang2, prefs.face)}
           pulse={heard ?? 0}

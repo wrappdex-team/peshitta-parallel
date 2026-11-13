@@ -49,7 +49,7 @@ function Names() {
   }, [active, rows]);
 
   return (
-    <main className="mx-auto min-h-app max-w-3xl px-5 pt-safe pb-page">
+    <main className="mx-auto min-h-app max-w-3xl px-5 pt-safe pb-page sm:px-8 lg:px-12">
       <div className="pt-8">
         <Link to="/" className="inline-flex min-h-11 items-center text-garnet">
           Injeel

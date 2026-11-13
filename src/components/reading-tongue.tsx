@@ -16,13 +16,16 @@ export function ReadingTongue({
       data-reading-tongue=""
       onClick={onClick}
       style={{ top: stickyTop }}
-      className="sticky z-20 mb-4 flex min-h-12 w-full items-center justify-between gap-3 border border-garnet bg-gold-soft px-4 text-left text-ink"
+      className="reading-tongue-shell sticky z-20 mb-6 flex min-h-14 w-full items-stretch border-y border-line bg-paper text-left text-ink hover:bg-gold-soft"
     >
-      <span key={pulse} className="reading-tongue flex min-w-0 flex-1 items-center gap-3">
-        <span className="reading-tongue-bar block h-8 w-1 shrink-0 bg-garnet" aria-hidden />
-        <span className="truncate font-serif text-lg">{label}</span>
+      <span key={pulse} className="reading-tongue flex min-w-0 flex-1 items-center gap-3 px-1 py-2">
+        <span className="reading-tongue-bar block h-8 w-[3px] shrink-0 bg-garnet" aria-hidden />
+        <span className="min-w-0">
+          <span className="block truncate font-serif text-xl leading-none">{label}</span>
+          <span className="reading-tongue-rule mt-2 block h-px w-12 bg-gold" aria-hidden />
+        </span>
       </span>
-      <span className="shrink-0 text-xs tracking-widest text-gold">Language</span>
+      <span className="flex shrink-0 items-center px-3 text-xs tracking-widest text-gold">Language</span>
     </button>
   );
 }

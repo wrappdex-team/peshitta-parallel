@@ -55,7 +55,7 @@ function Home() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-3xl px-5 pb-page pt-8">
+      <main className="mx-auto max-w-3xl px-5 pb-page pt-10 sm:px-8 lg:max-w-4xl lg:px-12">
         <p className="font-syriac text-3xl text-syriac" lang="syr" dir="rtl">
           ܐܘܢܓܠܝܘܢ
         </p>

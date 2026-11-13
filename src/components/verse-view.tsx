@@ -159,7 +159,8 @@ export function VerseView({
     <article
       ref={articleRef}
       id={`v-${verse.v}`}
-      className={`scroll-mt-40 border-b border-line py-5 ${listening ? "bg-gold-soft -mx-4 px-4" : ""} ${highlight ? HIGHLIGHT[highlight] : ""}`}
+      data-listening={listening ? "" : undefined}
+      className={`group scroll-mt-44 border-b border-line py-6 ${listening ? "bg-gold-soft -mx-4 px-4" : ""} ${highlight ? HIGHLIGHT[highlight] : ""}`}
     >
       <div className="flex gap-3">
         <a href={`#v-${verse.v}`} className="w-8 shrink-0 pt-1 text-right font-serif text-sm text-gold">
@@ -167,17 +168,8 @@ export function VerseView({
           {annotation?.bookmark && <span className="ml-1 text-garnet">•</span>}
         </a>
         <div className="min-w-0 flex-1">
-          <div className="mb-1 flex items-center justify-end gap-1 text-xs text-muted">
+          <div className="mb-1 flex min-h-8 items-center justify-end">
             {verse.v === 1 ? <InfoMark id="marks" align="end" /> : null}
-            <button type="button" className="min-h-8 px-1 hover:text-ink" onClick={onHighlight} aria-label="Highlight">
-              Mark
-            </button>
-            <button type="button" className="min-h-8 px-1 hover:text-ink" onClick={onBookmark} aria-label="Bookmark">
-              {annotation?.bookmark ? "Saved" : "Save"}
-            </button>
-            <button type="button" className="min-h-8 px-1 hover:text-ink" onClick={() => setNoteOpen((v) => !v)} aria-label="Note">
-              Note
-            </button>
           </div>
           {noteOpen && (
             <div className="mb-2">
@@ -266,7 +258,8 @@ export function VerseView({
             </div>
           )}
           {showTr && (
-            <div data-reading-line="" className={`min-w-0 break-words ${second ? "mt-3 grid gap-4 md:grid-cols-2" : ""}`}>
+            <div data-reading-line="" className={`min-w-0 break-words ${second ? "mt-4 grid items-start gap-6 md:grid-cols-2 md:gap-0" : ""}`}>
+              <div className={second ? "md:pr-8" : ""}>
               <Parallel
                 pending={pending}
                 text={parallel}
@@ -283,7 +276,9 @@ export function VerseView({
                 verse={verse.v}
                 onTerm={onTerm}
               />
+              </div>
               {second && (
+                <div className="md:border-l md:border-line md:pl-8">
                 <Parallel
                   pending={pending2}
                   text={parallel2}
@@ -300,19 +295,29 @@ export function VerseView({
                   verse={verse.v}
                   onTerm={onTerm}
                 />
+                </div>
               )}
             </div>
           )}
           {chapterEnd ? <span data-chapter-end="" className="block h-px" aria-hidden="true" /> : null}
-          <div className="mt-2 flex flex-wrap items-center gap-1 text-sm">
-            {speech && <span className="mr-2 text-jesus">Words of Y'shua</span>}
-            <button type="button" className="min-h-11 px-2 text-garnet" onClick={() => void shareVerse()}>
+          <div className="verse-tools mt-1 flex flex-wrap items-center gap-1 text-sm text-muted">
+            <button type="button" className="min-h-11 px-2 hover:text-ink" onClick={onHighlight} aria-label="Highlight">
+              Mark
+            </button>
+            <button type="button" className="min-h-11 px-2 hover:text-ink" onClick={onBookmark} aria-label="Bookmark">
+              {annotation?.bookmark ? "Saved" : "Save"}
+            </button>
+            <button type="button" className="min-h-11 px-2 hover:text-ink" onClick={() => setNoteOpen((v) => !v)} aria-label="Note">
+              Note
+            </button>
+            {speech && <span className="mr-1 text-jesus">Words of Y'shua</span>}
+            <button type="button" className="min-h-11 px-2 hover:text-garnet" onClick={() => void shareVerse()}>
               {copied === "sent" ? "Sent" : copied === "share" ? "Copied" : "Share"}
             </button>
-            <button type="button" className="min-h-11 px-2 text-garnet" onClick={() => copy("text")}>
+            <button type="button" className="min-h-11 px-2 hover:text-garnet" onClick={() => copy("text")}>
               {copied === "text" ? "Copied" : "Copy"}
             </button>
-            <button type="button" className="min-h-11 px-2 text-muted" onClick={() => copy("link")}>
+            <button type="button" className="min-h-11 px-2 hover:text-ink" onClick={() => copy("link")}>
               {copied === "link" ? "Copied" : "Link"}
             </button>
           </div>

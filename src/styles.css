@@ -75,6 +75,7 @@ html[data-help="off"] .info-mark {
     color: var(--ink);
     min-height: 100%;
     -webkit-text-size-adjust: 100%;
+    transition: background-color 200ms ease, color 200ms ease;
   }
   body {
     margin: 0;
@@ -91,6 +92,9 @@ html[data-help="off"] .info-mark {
   }
   a {
     -webkit-tap-highlight-color: transparent;
+  }
+  button, a, summary, select {
+    transition: color 160ms ease, background-color 160ms ease, border-color 160ms ease;
   }
   input,
   textarea,
@@ -163,12 +167,63 @@ html[data-help="off"] .info-mark {
   animation: reading-tongue-in 0.35s ease;
 }
 
+.reading-tongue-rule {
+  transform-origin: left;
+  animation: tongue-rule 0.4s ease;
+}
+
+.reading-tongue-shell {
+  transition: background-color 160ms ease;
+}
+
+.verse-tools {
+  opacity: 0.42;
+  transition: opacity 160ms ease;
+}
+
+.group:hover .verse-tools,
+.group:focus-within .verse-tools,
+.group[data-listening] .verse-tools {
+  opacity: 1;
+}
+
+@keyframes sheet-up {
+  from {
+    transform: translateY(0.6rem);
+  }
+  to {
+    transform: none;
+  }
+}
+
+dialog[open] > div {
+  animation: sheet-up 220ms ease;
+}
+
+@keyframes tongue-rule {
+  from {
+    transform: scaleX(0.2);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
   }
+  html,
+  button,
+  a,
+  summary,
+  select,
   .reading-tongue,
-  .reading-tongue-bar {
+  .reading-tongue-bar,
+  .reading-tongue-rule,
+  .verse-tools,
+  dialog[open] > div {
     animation: none;
+    transition: none;
   }
 }
