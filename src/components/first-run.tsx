@@ -10,7 +10,47 @@ function htmlLang(id: LangId) {
   return id === "aii" ? "syr" : id;
 }
 
-/** First visit, and again from Books or Reading. Nothing is stored until the visitor answers. */
+function Choice({
+  name,
+  checked,
+  onChange,
+  label,
+  lang,
+  dir,
+  initial,
+}: {
+  name: string;
+  checked: boolean;
+  onChange: () => void;
+  label: string;
+  lang?: string;
+  dir?: "ltr" | "rtl";
+  initial?: boolean;
+}) {
+  return (
+    <label className="relative flex min-h-11 min-w-0 items-center gap-2 px-2">
+      <input
+        type="radio"
+        name={name}
+        className="first-run-choice absolute inset-0 m-0 h-full w-full cursor-pointer appearance-none opacity-0"
+        checked={checked}
+        data-modal-initial={initial ? true : undefined}
+        onChange={onChange}
+      />
+      <span
+        aria-hidden
+        className={`grid size-5 shrink-0 place-items-center border text-sm leading-none ${checked ? "border-garnet bg-garnet text-paper" : "border-line bg-paper text-transparent"}`}
+      >
+        ✓
+      </span>
+      <span className="min-w-0 break-words text-sm leading-tight" lang={lang} dir={dir}>
+        {label}
+      </span>
+    </label>
+  );
+}
+
+/** First visit, and again from Books or Reading. The card stays until the visitor answers. */
 export function FirstRunIntro() {
   const { prefs, patch, ready, introduced } = usePrefs();
   const [manual, setManual] = useState(false);
@@ -59,62 +99,56 @@ export function FirstRunIntro() {
     <Modal
       label="How would you like to read?"
       announce
-      className="fixed inset-0 z-50 flex flex-col overflow-hidden bg-scrim"
+      className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-scrim p-2"
       onClose={quick}
     >
       <div
-        className="my-auto max-h-full w-full min-w-0 max-w-md overflow-y-auto border border-line bg-paper px-4 py-5 font-serif text-ink"
+        data-first-run-card
+        className="first-run-card flex w-full min-w-0 max-w-[28rem] flex-col overflow-hidden border border-line bg-paper font-serif text-ink"
         onClick={(event) => event.stopPropagation()}
       >
-        <h2 className="text-2xl leading-tight">How would you like to read?</h2>
-        <p className="mt-3 text-base leading-relaxed">{COPY}</p>
-        <fieldset className="mt-5 min-w-0">
-          <legend className="text-xs tracking-widest text-gold">PAGE</legend>
-          <div className="mt-1" role="radiogroup" aria-label="Page">
-            <label className="flex min-h-11 w-full min-w-0 items-center gap-3">
-              <input
-                type="radio"
+        <div className="first-run-top shrink-0 px-4 pt-4">
+          <h2 className="text-xl leading-tight">How would you like to read?</h2>
+          <p className="mt-2 text-base leading-snug">{COPY}</p>
+          <fieldset className="mt-3 min-w-0">
+            <legend className="text-xs tracking-widest text-gold">PAGE</legend>
+            <div className="mt-1" role="radiogroup" aria-label="Page">
+              <Choice
                 name="read-face"
-                className="size-11 shrink-0"
                 checked={face === "both"}
-                data-modal-initial={face === "both" ? true : undefined}
                 onChange={() => setFace("both")}
+                label="Syriac side by side"
+                initial={face === "both"}
               />
-              <span className="min-w-0 break-words">Syriac side by side</span>
-            </label>
-            <label className="flex min-h-11 w-full min-w-0 items-center gap-3">
-              <input
-                type="radio"
+              <Choice
                 name="read-face"
-                className="size-11 shrink-0"
                 checked={face === "tr"}
-                data-modal-initial={face === "tr" ? true : undefined}
                 onChange={() => setFace("tr")}
+                label="One language only"
+                initial={face === "tr"}
               />
-              <span className="min-w-0 break-words">One language only</span>
-            </label>
-          </div>
-        </fieldset>
-        <fieldset className="mt-4 min-w-0">
-          <legend className="text-xs tracking-widest text-gold">LANGUAGE</legend>
-          <div className="mt-1" role="radiogroup" aria-label="Language">
-            {LANGS.map((item) => (
-              <label key={item.id} className="flex min-h-11 w-full min-w-0 items-center gap-3">
-                <input
-                  type="radio"
+            </div>
+          </fieldset>
+        </div>
+        <div className="first-run-langs-wrap min-h-0 px-4 pb-2">
+          <fieldset className="min-w-0">
+            <legend className="text-xs tracking-widest text-gold">LANGUAGE</legend>
+            <div className="first-run-langs mt-1" role="radiogroup" aria-label="Language">
+              {LANGS.map((item) => (
+                <Choice
+                  key={item.id}
                   name="read-lang"
-                  className="size-11 shrink-0"
                   checked={lang === item.id}
                   onChange={() => setLang(item.id)}
+                  label={item.label}
+                  lang={htmlLang(item.id)}
+                  dir={item.dir}
                 />
-                <span className="min-w-0 break-words" lang={htmlLang(item.id)} dir={item.dir}>
-                  {item.label}
-                </span>
-              </label>
-            ))}
-          </div>
-        </fieldset>
-        <div className="mt-5 flex min-w-0 flex-col gap-2">
+              ))}
+            </div>
+          </fieldset>
+        </div>
+        <div className="first-run-footer flex min-w-0 flex-col gap-2 border-t border-line bg-paper px-4 py-2">
           <button type="button" className="min-h-11 w-full whitespace-normal bg-garnet px-3 text-paper" onClick={start}>
             Start reading
           </button>

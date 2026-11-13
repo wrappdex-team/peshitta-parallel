@@ -78,13 +78,29 @@ export function parseStoredPrefs(raw: string | null): Prefs {
   }
 }
 
-/** True when this device already has a prefs object, even without an intro field. */
-export function hasStoredPrefs(raw: string | null): boolean {
-  if (!raw) return false;
+export type VisitorStanding = "new" | "pending" | "answered" | "returning";
+
+/**
+ * Decide from the prefs object already in storage. No extra localStorage key.
+ * A returning visitor already had an object with no intro field.
+ * intro 0 means this device wrote (for example the last verse) before anyone answered.
+ * intro 1 means they answered. Any other intro value is ignored, like the parser.
+ */
+export function visitorStanding(raw: string | null): VisitorStanding {
+  if (!raw) return "new";
   try {
-    const parsed = JSON.parse(raw) as unknown;
-    return !!parsed && typeof parsed === "object" && !Array.isArray(parsed);
+    const parsed = JSON.parse(raw) as { intro?: unknown } | null;
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return "new";
+    if (parsed.intro === 1) return "answered";
+    if (parsed.intro === 0) return "pending";
+    return "returning";
   } catch {
-    return false;
+    return "new";
   }
+}
+
+/** True when the card should stay closed: they answered, or the prefs predate the card. */
+export function isIntroduced(raw: string | null) {
+  const standing = visitorStanding(raw);
+  return standing === "answered" || standing === "returning";
 }

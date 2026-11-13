@@ -1,5 +1,5 @@
 import { useEffect, useSyncExternalStore } from "react";
-import { hasStoredPrefs, parseStoredPrefs, type Prefs } from "./prefs-store.ts";
+import { isIntroduced, parseStoredPrefs, visitorStanding, type Prefs } from "./prefs-store.ts";
 
 export type { Face, Prefs } from "./prefs-store.ts";
 
@@ -7,7 +7,7 @@ const KEY = "peshitta-parallel";
 const DEFAULTS: Prefs = parseStoredPrefs(null);
 
 let memory: Prefs | null = null;
-/** False only until the first read finds no saved prefs. A later write does not hide the card. */
+/** False while this device still owes an answer. A place-save must not flip it. */
 let introduced = true;
 const listeners = new Set<() => void>();
 let clientReady = false;
@@ -19,6 +19,10 @@ function emit() {
   for (const listener of listeners) listener();
 }
 
+function paint() {
+  if (typeof document !== "undefined" && memory) document.documentElement.dataset.theme = memory.theme;
+}
+
 function load() {
   if (typeof window === "undefined") {
     memory = { ...DEFAULTS };
@@ -27,7 +31,7 @@ function load() {
   }
   const raw = localStorage.getItem(KEY);
   memory = parseStoredPrefs(raw);
-  introduced = hasStoredPrefs(raw);
+  introduced = isIntroduced(raw);
 }
 
 function ensure() {
@@ -58,20 +62,51 @@ function subscribeReady(listener: () => void) {
   return () => readyListeners.delete(listener);
 }
 
+function persist() {
+  if (typeof window === "undefined" || !memory) return;
+  // A late place-save must not wipe an answer another tab just stored.
+  if (!introduced && memory.intro !== 1 && visitorStanding(localStorage.getItem(KEY)) === "answered") {
+    introduced = true;
+    memory = parseStoredPrefs(localStorage.getItem(KEY));
+    paint();
+    return;
+  }
+  const payload: Record<string, unknown> = { ...memory };
+  if (memory.intro === 1) payload.intro = 1;
+  else if (!introduced) payload.intro = 0;
+  else delete payload.intro;
+  try {
+    localStorage.setItem(KEY, JSON.stringify(payload));
+  } catch {
+    /* private mode still keeps the choice for this visit */
+  }
+}
+
 function patch(partial: Partial<Prefs>) {
   if (!memory) ensure();
+  if (typeof window !== "undefined" && partial.intro !== 1) {
+    const raw = localStorage.getItem(KEY);
+    const standing = visitorStanding(raw);
+    if (standing === "answered" || standing === "returning") {
+      introduced = true;
+      const saved = parseStoredPrefs(raw);
+      memory = { ...saved, ...partial };
+      if (saved.intro === 1) memory.intro = 1;
+      else delete memory.intro;
+      persist();
+      paint();
+      emit();
+      return;
+    }
+  }
   const base = memory ?? { ...DEFAULTS };
   memory = { ...base, ...partial };
   if (partial.intro === 1) {
     memory.intro = 1;
     introduced = true;
   } else if (memory.intro !== 1) delete memory.intro;
-  try {
-    localStorage.setItem(KEY, JSON.stringify(memory));
-  } catch {
-    /* private mode still keeps the choice for this visit */
-  }
-  if (typeof document !== "undefined") document.documentElement.dataset.theme = memory.theme;
+  persist();
+  paint();
   emit();
 }
 
@@ -82,7 +117,7 @@ function watchStorage() {
     if (event.key !== null && event.key !== KEY) return;
     const raw = localStorage.getItem(KEY);
     memory = parseStoredPrefs(raw);
-    introduced = hasStoredPrefs(raw);
+    introduced = isIntroduced(raw);
     document.documentElement.dataset.theme = memory.theme;
     emit();
   });

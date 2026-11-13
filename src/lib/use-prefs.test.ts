@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { parseStoredPrefs } from "./prefs-store.ts";
+import { isIntroduced, parseStoredPrefs, visitorStanding } from "./prefs-store.ts";
 
 test("an intro value that is not 1 is ignored and the other fields still parse", () => {
   const prefs = parseStoredPrefs(
@@ -40,4 +40,26 @@ test("intro 1 is kept", () => {
   assert.equal(prefs.intro, 1);
   assert.equal(prefs.lang, "de");
   assert.equal(prefs.face, "tr");
+});
+
+test("intro 0 is not a parsed choice, and it does not count as a return visit", () => {
+  const raw = JSON.stringify({ intro: 0, face: "tr", lang: "en", last: { book: "john", chapter: 3, verse: 1 } });
+  const prefs = parseStoredPrefs(raw);
+  assert.equal(prefs.intro, undefined);
+  assert.equal(prefs.face, "tr");
+  assert.equal(prefs.lang, "en");
+  assert.deepEqual(prefs.last, { book: "john", chapter: 3, verse: 1 });
+  assert.equal(visitorStanding(raw), "pending");
+  assert.equal(isIntroduced(raw), false);
+});
+
+test("a prefs object with no intro field is a returning visitor", () => {
+  const raw = JSON.stringify({ theme: "day", lang: "fr", face: "both" });
+  assert.equal(visitorStanding(raw), "returning");
+  assert.equal(isIntroduced(raw), true);
+  assert.equal(visitorStanding(null), "new");
+  assert.equal(isIntroduced(null), false);
+  assert.equal(visitorStanding(JSON.stringify({ intro: 1 })), "answered");
+  assert.equal(isIntroduced(JSON.stringify({ intro: 1 })), true);
+  assert.equal(visitorStanding(JSON.stringify({ intro: "yes", lang: "es" })), "returning");
 });
