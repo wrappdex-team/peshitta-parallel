@@ -9,6 +9,7 @@
 @import "@fontsource/noto-serif/cyrillic-400.css";
 @import "@fontsource/noto-serif/greek-400.css";
 @import "@fontsource/noto-serif-hebrew/hebrew-400.css";
+@import "@fontsource/noto-serif-hebrew/hebrew-600.css";
 
 :root {
   --paper: #f3efe4;

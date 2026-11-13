@@ -1,8 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { BOOKS, SECTIONS } from "@/data/edition";
 import { SealMark } from "@/components/seal-mark";
+import { NameSeal } from "@/components/name-seal";
+import { openDeclaration } from "@/components/gospel-declaration";
+import { gospelProgress, longDate, nextGospelChapter, readDeclaration, type Declaration } from "@/lib/declaration";
 import { bookProgress, SEAL_MARKS, sealEarned, testamentProgress, timesPhrase, useReadings } from "@/lib/readings";
 import { SITE_ORIGIN } from "@/lib/site";
+import { useEffect, useState } from "react";
 
 export const Route = createFileRoute("/seal")({
   head: () => ({
@@ -21,10 +25,21 @@ export const Route = createFileRoute("/seal")({
 
 function SealPage() {
   const { counts, ready } = useReadings();
+  const [declaration, setDeclaration] = useState<Declaration>({ kept: false, name: "", date: "", dismissed: false });
   const whole = testamentProgress(counts);
   const earned = sealEarned(whole.times);
   const percent = whole.times > 0 ? 100 : whole.percent;
   const nextSeal = SEAL_MARKS.find((mark) => mark > whole.times);
+  const gospels = gospelProgress(counts);
+  const nextGospel = nextGospelChapter(counts);
+  const nextName = BOOKS.find((book) => book.id === nextGospel?.book)?.name;
+
+  useEffect(() => {
+    const pull = () => setDeclaration(readDeclaration());
+    pull();
+    window.addEventListener("injeel-declaration", pull);
+    return () => window.removeEventListener("injeel-declaration", pull);
+  }, []);
 
   return (
     <main className="mx-auto min-h-app max-w-3xl bg-paper px-5 pt-safe pb-page text-ink">
@@ -37,6 +52,39 @@ function SealPage() {
         <p className="mt-3 max-w-prose text-base leading-relaxed">
           A chapter is kept when you reach its last line, or when the voice finishes it. This record stays on this device.
         </p>
+
+        {ready && (
+          <section className="mt-8 border border-line bg-raised px-5 py-6">
+            <div className="flex items-center gap-4">
+              <NameSeal className="size-20 shrink-0" />
+              <div className="min-w-0">
+                <p className="text-xs tracking-widest text-gold">THE FOUR GOSPELS</p>
+                <p className="mt-1 font-serif text-xl">
+                  {gospels.complete ? "Matthew, Mark, Luke, and John are read." : `${gospels.done} of ${gospels.of} chapters.`}
+                </p>
+                {gospels.complete && declaration.kept ? (
+                  <p className="mt-1 text-sm text-muted">
+                    {declaration.name ? `${declaration.name} · ` : ""}
+                    {longDate(declaration.date) || "Kept on this device"}
+                  </p>
+                ) : null}
+              </div>
+            </div>
+            {gospels.complete ? (
+              <button type="button" className="mt-4 min-h-11 text-garnet" onClick={() => openDeclaration()}>
+                Open the declaration
+              </button>
+            ) : nextGospel && nextName ? (
+              <Link
+                to="/read/$book/$chapter"
+                params={{ book: nextGospel.book, chapter: String(nextGospel.chapter) }}
+                className="mt-4 inline-flex min-h-11 items-center text-garnet"
+              >
+                Continue in {nextName} {nextGospel.chapter}
+              </Link>
+            ) : null}
+          </section>
+        )}
 
         <div className="mt-8 flex flex-col items-center border border-line bg-raised px-5 py-8">
           <SealMark times={ready ? whole.times : 0} />
