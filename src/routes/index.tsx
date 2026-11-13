@@ -48,15 +48,26 @@ function Home() {
             to="/read/$book/$chapter"
             params={{ book: last?.book ?? "john", chapter: String(last?.chapter ?? 1) }}
             hash={last?.verse ? `v-${last.verse}` : undefined}
-            className="mt-6 flex min-h-14 items-center justify-between border border-line bg-raised px-4 py-3"
+            className="mt-6 flex min-h-14 items-center justify-between gap-3 border border-line bg-raised px-4 py-3"
           >
-            <span>
+            <span className="min-w-0">
               <span className="block text-xs text-gold">{last && lastBook ? "Continue" : "Open"}</span>
-              <span className="font-serif text-lg">
-                {last && lastBook ? `${lastBook.name} ${last.chapter}:${last.verse}` : "John 1"}
+              <span className="font-serif text-lg leading-snug">
+                {last && lastBook ? (
+                  <>
+                    {lastBook.name}
+                    <span className="text-gold"> · {lastBook.say}</span>
+                    {` ${last.chapter}:${last.verse}`}
+                  </>
+                ) : (
+                  <>
+                    John
+                    <span className="text-gold"> · Yochanan</span> 1
+                  </>
+                )}
               </span>
             </span>
-            <span className="font-syriac text-2xl text-syriac" lang="syr" dir="rtl">
+            <span className="shrink-0 font-syriac text-2xl text-syriac" lang="syr" dir="rtl">
               {(lastBook ?? BOOKS.find((item) => item.id === "john"))?.sy}
             </span>
           </Link>
@@ -103,7 +114,10 @@ function Home() {
                     className="flex min-h-14 items-center justify-between gap-3 py-2"
                   >
                     <span className="min-w-0">
-                      <span className="block font-serif text-lg">{book.name}</span>
+                      <span className="block font-serif text-lg leading-snug">
+                        {book.name}
+                        <span className="text-gold"> · {book.say}</span>
+                      </span>
                       <span className="block text-sm text-muted">
                         {readingsReady ? bookCaption(book.id, counts) : `${chapterCount(book.id)} chapters`}
                         {book.later ? " · later Syriac" : ""}
@@ -194,10 +208,13 @@ function BookDrawer({ onClose, place }: { onClose: () => void; place?: { book: s
                 params={{ book: book.id, chapter: place?.book === book.id ? String(place.chapter) : "1" }}
                 hash={place?.book === book.id && place.verse > 1 ? `v-${place.verse}` : undefined}
                 onClick={onClose}
-                className="flex min-h-11 items-center justify-between border-b border-line py-1"
+                className="flex min-h-11 items-center justify-between gap-3 border-b border-line py-1"
               >
-                <span>{book.name}</span>
-                <span className="font-syriac text-syriac" lang="syr" dir="rtl">
+                <span className="min-w-0 leading-snug">
+                  {book.name}
+                  <span className="text-gold"> · {book.say}</span>
+                </span>
+                <span className="shrink-0 font-syriac text-syriac" lang="syr" dir="rtl">
                   {book.sy}
                 </span>
               </Link>

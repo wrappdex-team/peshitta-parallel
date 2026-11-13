@@ -368,10 +368,13 @@ function Reader() {
                       params={{ book: item.id, chapter: String(here ? chapterNo : 1) }}
                       hash={here && focus > 1 ? `v-${focus}` : undefined}
                       onClick={() => setMenu(false)}
-                      className={`flex min-h-11 items-center justify-between border-b border-line py-1 ${here ? "text-garnet" : ""}`}
+                      className={`flex min-h-11 items-center justify-between gap-3 border-b border-line py-1 ${here ? "text-garnet" : ""}`}
                     >
-                      <span>{item.name}</span>
-                      <span className="font-syriac text-syriac" lang="syr" dir="rtl">{item.sy}</span>
+                      <span className="min-w-0 leading-snug">
+                        {item.name}
+                        <span className="text-gold"> · {item.say}</span>
+                      </span>
+                      <span className="shrink-0 font-syriac text-syriac" lang="syr" dir="rtl">{item.sy}</span>
                     </Link>
                   );
                 })}

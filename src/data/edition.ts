@@ -1,6 +1,8 @@
 export type BookMeta = {
   id: string;
   name: string;
+  /** How this book says the Syriac title. Not a second search name. */
+  say: string;
   sy: string;
   section: "Gospels" | "Acts" | "Paul" | "Letters" | "Apocalypse";
   later?: boolean;
@@ -10,33 +12,33 @@ export type BookMeta = {
 export const SECTIONS = ["Gospels", "Acts", "Paul", "Letters", "Apocalypse"] as const;
 
 export const BOOKS: BookMeta[] = [
-  { id: "matthew", name: "Matthew", sy: "ܡܬܝ", section: "Gospels", blurb: "The announcement of Matthew. The subscription says he published it in Hebrew, in the land of the Palestinians." },
-  { id: "mark", name: "Mark", sy: "ܡܪܩܘܣ", section: "Gospels", blurb: "This edition includes the longer ending, 16:9–20. The subscription says he proclaimed it in Latin at Rome." },
-  { id: "luke", name: "Luke", sy: "ܠܘܩܐ", section: "Gospels", blurb: "The holy gospel of Luke. The infancy hymns and the passion keep a strongly Semitic line." },
-  { id: "john", name: "John", sy: "ܝܘܚܢܢ", section: "Gospels", blurb: "The subscription says John uttered it in Greek at Ephesus. The Peshitta itself is Syriac; that line is the manuscript’s claim, not a settled history." },
-  { id: "acts", name: "Acts", sy: "ܦܪܟܣܝܣ", section: "Acts", blurb: "The Acts of those who were sent, as the subscription names them: their histories." },
-  { id: "romans", name: "Romans", sy: "ܪܗܘܡܝܐ", section: "Paul", blurb: "Paulos to Rome." },
-  { id: "1corinthians", name: "1 Corinthians", sy: "ܩܘܪܝܢܬܝܐ ܐ", section: "Paul", blurb: "To Corinth, the first letter. The supper and the resurrection are in chapters 11 and 15." },
-  { id: "2corinthians", name: "2 Corinthians", sy: "ܩܘܪܝܢܬܝܐ ܒ", section: "Paul", blurb: "The second letter to Corinth." },
-  { id: "galatians", name: "Galatians", sy: "ܓܠܛܝܐ", section: "Paul", blurb: "To the Galatians. Law, promise, and the sending of the Son." },
-  { id: "ephesians", name: "Ephesians", sy: "ܐܦܣܝܐ", section: "Paul", blurb: "To Ephesus. One body, and grace that is not from works." },
-  { id: "philippians", name: "Philippians", sy: "ܦܝܠܝܦܣܝܐ", section: "Paul", blurb: "To Philippi. The hymn of the likeness of Elohim is in chapter 2." },
-  { id: "colossians", name: "Colossians", sy: "ܩܘܠܣܝܐ", section: "Paul", blurb: "To Colossae. The firstborn of all creation stands in chapter 1." },
-  { id: "1thessalonians", name: "1 Thessalonians", sy: "ܬܣܠܘܢܝܩܝܐ ܐ", section: "Paul", blurb: "The first letter to Thessalonica." },
-  { id: "2thessalonians", name: "2 Thessalonians", sy: "ܬܣܠܘܢܝܩܝܐ ܒ", section: "Paul", blurb: "The second letter to Thessalonica." },
-  { id: "1timothy", name: "1 Timothy", sy: "ܛܝܡܬܐܘܣ ܐ", section: "Paul", blurb: "The first charge to Timothy." },
-  { id: "2timothy", name: "2 Timothy", sy: "ܛܝܡܬܐܘܣ ܒ", section: "Paul", blurb: "The second charge to Timothy." },
-  { id: "titus", name: "Titus", sy: "ܛܛܘܣ", section: "Paul", blurb: "To Titus." },
-  { id: "philemon", name: "Philemon", sy: "ܦܝܠܡܘܢ", section: "Paul", blurb: "A letter of one chapter, for Onesimus." },
-  { id: "hebrews", name: "Hebrews", sy: "ܥܒܪܝܐ", section: "Letters", blurb: "To the Hebrews. Like the Greek, the Peshitta leaves the writer unnamed." },
-  { id: "james", name: "James", sy: "ܝܥܩܘܒ", section: "Letters", blurb: "Ya'akov. Faith that does not act is treated in chapter 2." },
-  { id: "1peter", name: "1 Peter", sy: "ܦܛܪܘܣ ܐ", section: "Letters", blurb: "The first letter of Keefa. Part of the original Peshitta." },
-  { id: "2peter", name: "2 Peter", sy: "ܦܛܪܘܣ ܒ", section: "Letters", later: true, blurb: "Not in the original Peshitta canon. The Syriac here is the later translation printed with the New Testament." },
-  { id: "1john", name: "1 John", sy: "ܝܘܚܢܢ ܐ", section: "Letters", blurb: "The first letter of Yochanan. Part of the original Peshitta. It does not carry the later “three heavenly witnesses.”" },
-  { id: "2john", name: "2 John", sy: "ܝܘܚܢܢ ܒ", section: "Letters", later: true, blurb: "Not in the original Peshitta canon. A later Syriac letter of one chapter." },
-  { id: "3john", name: "3 John", sy: "ܝܘܚܢܢ ܓ", section: "Letters", later: true, blurb: "Not in the original Peshitta canon. A later Syriac letter of one chapter." },
-  { id: "jude", name: "Jude", sy: "ܝܗܘܕܐ", section: "Letters", later: true, blurb: "Not in the original Peshitta canon. The Syriac is the later translation." },
-  { id: "revelation", name: "Revelation", sy: "ܓܠܝܢܐ", section: "Apocalypse", later: true, blurb: "Not in the original Peshitta. The British and Foreign Bible Society text is John Gwynn’s edition of the Crawford manuscript." },
+  { id: "matthew", name: "Matthew", say: "Matai", sy: "ܡܬܝ", section: "Gospels", blurb: "The announcement of Matthew. The subscription says he published it in Hebrew, in the land of the Palestinians." },
+  { id: "mark", name: "Mark", say: "Marqos", sy: "ܡܪܩܘܣ", section: "Gospels", blurb: "This edition includes the longer ending, 16:9–20. The subscription says he proclaimed it in Latin at Rome." },
+  { id: "luke", name: "Luke", say: "Luqa", sy: "ܠܘܩܐ", section: "Gospels", blurb: "The holy gospel of Luke. The infancy hymns and the passion keep a strongly Semitic line." },
+  { id: "john", name: "John", say: "Yochanan", sy: "ܝܘܚܢܢ", section: "Gospels", blurb: "The subscription says John uttered it in Greek at Ephesus. The Peshitta itself is Syriac; that line is the manuscript’s claim, not a settled history." },
+  { id: "acts", name: "Acts", say: "Praksis", sy: "ܦܪܟܣܝܣ", section: "Acts", blurb: "The Acts of those who were sent, as the subscription names them: their histories." },
+  { id: "romans", name: "Romans", say: "Rhomaya", sy: "ܪܗܘܡܝܐ", section: "Paul", blurb: "Paulos to Rome." },
+  { id: "1corinthians", name: "1 Corinthians", say: "Qorinthaya", sy: "ܩܘܪܝܢܬܝܐ ܐ", section: "Paul", blurb: "To Corinth, the first letter. The supper and the resurrection are in chapters 11 and 15." },
+  { id: "2corinthians", name: "2 Corinthians", say: "Qorinthaya", sy: "ܩܘܪܝܢܬܝܐ ܒ", section: "Paul", blurb: "The second letter to Corinth." },
+  { id: "galatians", name: "Galatians", say: "Galataya", sy: "ܓܠܛܝܐ", section: "Paul", blurb: "To the Galatians. Law, promise, and the sending of the Son." },
+  { id: "ephesians", name: "Ephesians", say: "Aphsiya", sy: "ܐܦܣܝܐ", section: "Paul", blurb: "To Ephesus. One body, and grace that is not from works." },
+  { id: "philippians", name: "Philippians", say: "Philipsaya", sy: "ܦܝܠܝܦܣܝܐ", section: "Paul", blurb: "To Philippi. The hymn of the likeness of Elohim is in chapter 2." },
+  { id: "colossians", name: "Colossians", say: "Qolosaya", sy: "ܩܘܠܣܝܐ", section: "Paul", blurb: "To Colossae. The firstborn of all creation stands in chapter 1." },
+  { id: "1thessalonians", name: "1 Thessalonians", say: "Tesaloniquye", sy: "ܬܣܠܘܢܝܩܝܐ ܐ", section: "Paul", blurb: "The first letter to Thessalonica." },
+  { id: "2thessalonians", name: "2 Thessalonians", say: "Tesaloniquye", sy: "ܬܣܠܘܢܝܩܝܐ ܒ", section: "Paul", blurb: "The second letter to Thessalonica." },
+  { id: "1timothy", name: "1 Timothy", say: "Timotheos", sy: "ܛܝܡܬܐܘܣ ܐ", section: "Paul", blurb: "The first charge to Timothy." },
+  { id: "2timothy", name: "2 Timothy", say: "Timotheos", sy: "ܛܝܡܬܐܘܣ ܒ", section: "Paul", blurb: "The second charge to Timothy." },
+  { id: "titus", name: "Titus", say: "Tetos", sy: "ܛܛܘܣ", section: "Paul", blurb: "To Titus." },
+  { id: "philemon", name: "Philemon", say: "Philimon", sy: "ܦܝܠܡܘܢ", section: "Paul", blurb: "A letter of one chapter, for Onesimus." },
+  { id: "hebrews", name: "Hebrews", say: "Ebraye", sy: "ܥܒܪܝܐ", section: "Letters", blurb: "To the Hebrews. Like the Greek, the Peshitta leaves the writer unnamed." },
+  { id: "james", name: "James", say: "Ya'akov", sy: "ܝܥܩܘܒ", section: "Letters", blurb: "Ya'akov. Faith that does not act is treated in chapter 2." },
+  { id: "1peter", name: "1 Peter", say: "Petros", sy: "ܦܛܪܘܣ ܐ", section: "Letters", blurb: "The first letter of Keefa. Part of the original Peshitta." },
+  { id: "2peter", name: "2 Peter", say: "Petros", sy: "ܦܛܪܘܣ ܒ", section: "Letters", later: true, blurb: "Not in the original Peshitta canon. The Syriac here is the later translation printed with the New Testament." },
+  { id: "1john", name: "1 John", say: "Yochanan", sy: "ܝܘܚܢܢ ܐ", section: "Letters", blurb: "The first letter of Yochanan. Part of the original Peshitta. It does not carry the later “three heavenly witnesses.”" },
+  { id: "2john", name: "2 John", say: "Yochanan", sy: "ܝܘܚܢܢ ܒ", section: "Letters", later: true, blurb: "Not in the original Peshitta canon. A later Syriac letter of one chapter." },
+  { id: "3john", name: "3 John", say: "Yochanan", sy: "ܝܘܚܢܢ ܓ", section: "Letters", later: true, blurb: "Not in the original Peshitta canon. A later Syriac letter of one chapter." },
+  { id: "jude", name: "Jude", say: "Yehuda", sy: "ܝܗܘܕܐ", section: "Letters", later: true, blurb: "Not in the original Peshitta canon. The Syriac is the later translation." },
+  { id: "revelation", name: "Revelation", say: "Gelyana", sy: "ܓܠܝܢܐ", section: "Apocalypse", later: true, blurb: "Not in the original Peshitta. The British and Foreign Bible Society text is John Gwynn’s edition of the Crawford manuscript." },
 ];
 
 export function bookMeta(id: string) {
