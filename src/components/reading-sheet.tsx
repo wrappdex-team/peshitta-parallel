@@ -1,8 +1,10 @@
 import { Modal } from "@/components/modal";
 import { InfoMark } from "@/components/info-mark";
+import { OfflineCopy } from "@/components/offline-copy";
 import { ReadingKinds } from "@/components/page-guide";
 import { Link } from "@tanstack/react-router";
 import { LANGS, languageById, type LangId } from "@/lib/languages";
+import { chooseLanguage, chooseSecond } from "@/lib/reading-choice";
 import { usePrefs, type Face } from "@/lib/use-prefs";
 
 export function readingLabel(lang: string, lang2: string, face: Face) {
@@ -38,7 +40,21 @@ function scriptFace(face: string) {
 }
 
 /** The same reading controls as a Gospel chapter. */
-export function ReadingSheet({ open, onClose, onStudio }: { open: boolean; onClose: () => void; onStudio: () => void }) {
+export function ReadingSheet({
+  open,
+  onClose,
+  onStudio,
+  book,
+  chapter,
+  bookName,
+}: {
+  open: boolean;
+  onClose: () => void;
+  onStudio: () => void;
+  book?: string;
+  chapter?: number;
+  bookName?: string;
+}) {
   const { prefs, patch } = usePrefs();
   if (!open) return null;
   return (
@@ -64,7 +80,10 @@ export function ReadingSheet({ open, onClose, onStudio }: { open: boolean; onClo
                 key={item.id}
                 type="button"
                 aria-pressed={prefs.lang === item.id}
-                onClick={() => patch({ lang: item.id === prefs.lang2 ? prefs.lang : item.id, lang2: item.id === prefs.lang2 ? "none" : prefs.lang2 })}
+                onClick={() => {
+                  const next = chooseLanguage(prefs, item.id);
+                  if (next) patch(next);
+                }}
                 className={`min-h-11 px-3 ${prefs.lang === item.id ? "text-garnet" : "text-muted"} ${scriptFace(item.face)}`}
               >
                 {item.label}
@@ -99,7 +118,7 @@ export function ReadingSheet({ open, onClose, onStudio }: { open: boolean; onClo
             <button
               type="button"
               aria-pressed={prefs.lang2 === "none"}
-              onClick={() => patch({ lang2: "none" })}
+              onClick={() => patch(chooseSecond(prefs, "none"))}
               className={`min-h-11 px-3 ${prefs.lang2 === "none" ? "text-garnet" : "text-muted"}`}
             >
               No second language
@@ -109,13 +128,14 @@ export function ReadingSheet({ open, onClose, onStudio }: { open: boolean; onClo
                 key={item.id}
                 type="button"
                 aria-pressed={prefs.lang2 === item.id}
-                onClick={() => patch({ lang2: item.id })}
+                onClick={() => patch(chooseSecond(prefs, item.id))}
                 className={`min-h-11 px-3 ${prefs.lang2 === item.id ? "text-garnet" : "text-muted"} ${scriptFace(item.face)}`}
               >
                 {item.label}
               </button>
             ))}
           </div>
+          {book && bookName ? <OfflineCopy book={book} chapter={chapter} bookName={bookName} /> : null}
           <p className="mt-6 text-xs tracking-widest text-gold">PREMIUM</p>
           <div className="mt-1 flex items-center gap-1">
             <button type="button" className="min-h-11 text-left text-sm text-muted" onClick={onStudio}>

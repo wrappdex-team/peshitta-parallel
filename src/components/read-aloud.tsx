@@ -212,14 +212,31 @@ function orderedVoices(lang: LangId) {
 }
 
 async function linesFor(place: Place, lang: LangId, from: number): Promise<Line[]> {
-  const doc = await loadBook(place.book);
-  const verses = doc.chapters[place.chapter - 1];
-  if (!verses) throw new Error("That chapter is not in this book.");
-  const lines = lang === "en" ? verses.map((verse) => verse.en) : (await loadParallel(lang, place.book))?.[place.chapter - 1];
-  if (!lines) throw new Error("That language is not ready for this chapter yet.");
-  const rows = readingLines(place.book, place.chapter, verses, lines, lang, from);
-  if (!rows.length) throw new Error("This chapter has nothing to read in that language.");
-  return rows;
+  try {
+    const doc = await loadBook(place.book);
+    const verses = doc.chapters[place.chapter - 1];
+    if (!verses) throw new Error("That chapter is not in this book.");
+    const lines = lang === "en" ? verses.map((verse) => verse.en) : (await loadParallel(lang, place.book))?.[place.chapter - 1];
+    if (!lines) throw new Error("That language is not ready for this chapter yet.");
+    const rows = readingLines(place.book, place.chapter, verses, lines, lang, from);
+    if (!rows.length) throw new Error("This chapter has nothing to read in that language.");
+    return rows;
+  } catch (error) {
+    try {
+      const { readOfflineChapter } = await import("@/lib/offline");
+      const copy = await readOfflineChapter(lang, place.book, place.chapter);
+      if (copy?.verses.length) {
+        const verses = copy.verses.map((row) => ({ v: row.v, sy: "", en: row.text }));
+        const lines = copy.verses.map((row) => row.text);
+        const rows = readingLines(place.book, place.chapter, verses, lines, lang, from);
+        if (rows.length) return rows;
+      }
+    } catch {
+      // No copy, or this browser has no storage.
+    }
+    if (error instanceof Error && !/fetch|import|network|dynamically/i.test(error.message)) throw error;
+    throw new Error("This chapter is not on this device.");
+  }
 }
 
 export type ReadAloudHandle = { readFrom: (key?: string) => void };

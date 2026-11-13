@@ -23,6 +23,9 @@ export function BookLinks({ onDone }: { onDone?: () => void }) {
       <Link to="/saved" onClick={onDone} className="flex min-h-11 items-center text-garnet">
         Saved
       </Link>
+      <Link to="/offline" onClick={onDone} className="flex min-h-11 items-center text-garnet">
+        Offline
+      </Link>
       <Link to="/names" onClick={onDone} className="flex min-h-11 items-center text-garnet">
         Name index
       </Link>

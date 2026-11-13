@@ -3,6 +3,7 @@ import { AuthProvider } from "@/lib/auth/provider";
 import { PreviewHostBridge } from "@/components/preview-host-bridge";
 import { NativeShell, ThemeColor } from "@/components/device-shell";
 import { GospelOffer } from "@/components/gospel-declaration";
+import { ReaderCache } from "@/components/reader-cache";
 import { SiteReader } from "@/components/site-reader";
 import appCss from "../styles.css?url";
 
@@ -76,6 +77,7 @@ export const Route = createRootRoute({
           }}
         />
         <NativeShell />
+        <ReaderCache />
         <AuthProvider>
           <Outlet />
           <SiteReader />

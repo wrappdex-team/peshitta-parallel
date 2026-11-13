@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 import { languageById, languageFromPhone, type LangId } from "@/lib/languages";
 import type { VoiceId } from "@/lib/speak";
 
@@ -69,26 +69,56 @@ function read(): Prefs {
   }
 }
 
-export function usePrefs() {
-  const [prefs, setPrefs] = useState<Prefs>(DEFAULTS);
-  const [ready, setReady] = useState(false);
+let memory: Prefs | null = null;
+const listeners = new Set<() => void>();
+let clientReady = false;
+const readyListeners = new Set<() => void>();
 
-  useEffect(() => {
-    const next = read();
-    setPrefs(next);
-    document.documentElement.dataset.theme = next.theme;
-    setReady(true);
-  }, []);
+function emit() {
+  for (const listener of listeners) listener();
+}
 
-  useEffect(() => {
-    if (!ready) return;
-    localStorage.setItem(KEY, JSON.stringify(prefs));
-    document.documentElement.dataset.theme = prefs.theme;
-  }, [prefs, ready]);
+function subscribe(listener: () => void) {
+  listeners.add(listener);
+  return () => listeners.delete(listener);
+}
 
-  function patch(partial: Partial<Prefs>) {
-    setPrefs((prev) => ({ ...prev, ...partial }));
+function getSnapshot() {
+  if (!memory) memory = read();
+  return memory;
+}
+
+function getServerSnapshot() {
+  return DEFAULTS;
+}
+
+function subscribeReady(listener: () => void) {
+  readyListeners.add(listener);
+  return () => readyListeners.delete(listener);
+}
+
+function patch(partial: Partial<Prefs>) {
+  const base = memory ?? (typeof window === "undefined" ? DEFAULTS : read());
+  memory = { ...base, ...partial };
+  try {
+    localStorage.setItem(KEY, JSON.stringify(memory));
+  } catch {
+    /* private mode still keeps the choice for this visit */
   }
+  if (typeof document !== "undefined") document.documentElement.dataset.theme = memory.theme;
+  emit();
+}
+
+/** One reading setup for the whole site. The menu, the page, and the voice share it. */
+export function usePrefs() {
+  const prefs = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  const ready = useSyncExternalStore(subscribeReady, () => clientReady, () => false);
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = getSnapshot().theme;
+    clientReady = true;
+    for (const listener of readyListeners) listener();
+  }, []);
 
   return { prefs, patch, ready };
 }

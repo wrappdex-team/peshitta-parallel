@@ -83,4 +83,9 @@ export const HELP: Record<string, HelpTip> = {
     section: "marks",
     line: "Marks, saves, and notes from this browser. They are not an account.",
   },
+  offline: {
+    title: "Offline",
+    section: "device",
+    line: "One language, stored in this browser: a chapter, a book, or the whole New Testament. The Syriac is not included.",
+  },
 };

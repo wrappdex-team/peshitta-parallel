@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as GuideRouteImport } from './routes/guide'
 import { Route as NamesRouteImport } from './routes/names'
+import { Route as OfflineRouteImport } from './routes/offline'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as SavedRouteImport } from './routes/saved'
 import { Route as SealRouteImport } from './routes/seal'
@@ -32,6 +33,11 @@ const GuideRoute = GuideRouteImport.update({
 const NamesRoute = NamesRouteImport.update({
   id: '/names',
   path: '/names',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OfflineRoute = OfflineRouteImport.update({
+  id: '/offline',
+  path: '/offline',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PrivacyRoute = PrivacyRouteImport.update({
@@ -69,6 +75,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/guide': typeof GuideRoute
   '/names': typeof NamesRoute
+  '/offline': typeof OfflineRoute
   '/privacy': typeof PrivacyRoute
   '/saved': typeof SavedRoute
   '/seal': typeof SealRoute
@@ -80,6 +87,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/guide': typeof GuideRoute
   '/names': typeof NamesRoute
+  '/offline': typeof OfflineRoute
   '/privacy': typeof PrivacyRoute
   '/saved': typeof SavedRoute
   '/seal': typeof SealRoute
@@ -92,6 +100,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/guide': typeof GuideRoute
   '/names': typeof NamesRoute
+  '/offline': typeof OfflineRoute
   '/privacy': typeof PrivacyRoute
   '/saved': typeof SavedRoute
   '/seal': typeof SealRoute
@@ -105,6 +114,7 @@ export interface FileRouteTypes {
     | '/'
     | '/guide'
     | '/names'
+    | '/offline'
     | '/privacy'
     | '/saved'
     | '/seal'
@@ -116,6 +126,7 @@ export interface FileRouteTypes {
     | '/'
     | '/guide'
     | '/names'
+    | '/offline'
     | '/privacy'
     | '/saved'
     | '/seal'
@@ -127,6 +138,7 @@ export interface FileRouteTypes {
     | '/'
     | '/guide'
     | '/names'
+    | '/offline'
     | '/privacy'
     | '/saved'
     | '/seal'
@@ -139,6 +151,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   GuideRoute: typeof GuideRoute
   NamesRoute: typeof NamesRoute
+  OfflineRoute: typeof OfflineRoute
   PrivacyRoute: typeof PrivacyRoute
   SavedRoute: typeof SavedRoute
   SealRoute: typeof SealRoute
@@ -168,6 +181,13 @@ declare module '@tanstack/react-router' {
       path: '/names'
       fullPath: '/names'
       preLoaderRoute: typeof NamesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/offline': {
+      id: '/offline'
+      path: '/offline'
+      fullPath: '/offline'
+      preLoaderRoute: typeof OfflineRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/privacy': {
@@ -219,6 +239,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   GuideRoute: GuideRoute,
   NamesRoute: NamesRoute,
+  OfflineRoute: OfflineRoute,
   PrivacyRoute: PrivacyRoute,
   SavedRoute: SavedRoute,
   SealRoute: SealRoute,

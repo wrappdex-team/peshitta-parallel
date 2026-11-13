@@ -69,6 +69,9 @@ function Home() {
           <Link to="/saved" className="inline-flex min-h-11 items-center text-garnet">
             Saved
           </Link>
+          <Link to="/offline" className="inline-flex min-h-11 items-center text-garnet">
+            Offline
+          </Link>
           <Link to="/words" className="inline-flex min-h-11 items-center text-garnet">
             Words of Y'shua
           </Link>

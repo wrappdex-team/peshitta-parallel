@@ -214,11 +214,10 @@ export function VerseView({
             </div>
           )}
           {annotation?.note && !noteOpen && <p className="mb-2 text-sm italic text-muted">{annotation.note}</p>}
-          {showSy && (
-            missingSy ? (
-              <p className="text-sm text-muted">This verse number is not in the Syriac text.</p>
-            ) : (
-              <p dir="rtl" lang="syr" className={`glow font-syriac ${syColor} ${SY[size]} ${LEADING[line]}`}>
+          {showSy && missingSy ? (
+            <p className="text-sm text-muted">This verse number is not in the Syriac text.</p>
+          ) : verse.sy ? (
+            <p hidden={!showSy} dir="rtl" lang="syr" className={`glow font-syriac ${syColor} ${SY[size]} ${LEADING[line]}`}>
                 {(() => {
                   let prev = "";
                   let offset = 0;
@@ -254,8 +253,7 @@ export function VerseView({
                   });
                 })()}
               </p>
-            )
-          )}
+          ) : null}
           {words && verse.sy && wordsReady && (
             <div dir="rtl" className="mt-3 flex flex-wrap gap-1.5">
               {(() => {

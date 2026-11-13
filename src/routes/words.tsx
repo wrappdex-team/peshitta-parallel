@@ -14,7 +14,6 @@ import { languageById, type LangId } from "@/lib/languages";
 import {
   TERM_NOTES,
   loadBook,
-  loadParallel,
   studyWord,
   type BookFile,
   type Verse,
@@ -25,6 +24,7 @@ import {
 import { cleanEnglish, sayingLines } from "@/lib/speak";
 import { SITE_ORIGIN } from "@/lib/site";
 import { usePrefs } from "@/lib/use-prefs";
+import { useParallelText } from "@/lib/use-parallel";
 import { scrollLineToTop } from "@/lib/scroll-line";
 import { useBindReadingSurface } from "@/lib/reading-surface";
 
@@ -58,8 +58,10 @@ function Words() {
   const initialBook = Route.useLoaderData();
   const [otherBook, setDoc] = useState<BookFile | null>(null);
   const doc = book === initialBook.id ? initialBook : otherBook?.id === book ? otherBook : null;
-  const [parallel, setParallel] = useState<string[][] | null>(null);
-  const [parallel2, setParallel2] = useState<string[][] | null>(null);
+  const primary = useParallelText(prefs.lang, book);
+  const secondary = useParallelText(prefs.lang2, book);
+  const parallel = primary.rows;
+  const parallel2 = secondary.rows;
   const [err, setErr] = useState("");
   const [heard, setHeard] = useState<Heard | null>(null);
   const [focusKey, setFocusKey] = useState("");
@@ -87,38 +89,6 @@ function Words() {
       live = false;
     };
   }, [book, initialBook.id]);
-
-  useEffect(() => {
-    let live = true;
-    setParallel(null);
-    if (prefs.lang === "en") return;
-    loadParallel(prefs.lang, book)
-      .then((next) => {
-        if (live) setParallel(next);
-      })
-      .catch(() => {
-        if (live) setParallel(null);
-      });
-    return () => {
-      live = false;
-    };
-  }, [book, prefs.lang]);
-
-  useEffect(() => {
-    let live = true;
-    setParallel2(null);
-    if (prefs.lang2 === "none" || prefs.lang2 === "en") return;
-    loadParallel(prefs.lang2, book)
-      .then((next) => {
-        if (live) setParallel2(next);
-      })
-      .catch(() => {
-        if (live) setParallel2(null);
-      });
-    return () => {
-      live = false;
-    };
-  }, [book, prefs.lang2]);
 
   useEffect(() => {
     setFocusKey("");
@@ -269,10 +239,10 @@ function Words() {
                 face={prefs.face}
                 lang={tongue.id}
                 parallel={prefs.lang === "en" ? verse.en : (parallel?.[chapter - 1]?.[index] ?? "")}
-                pending={prefs.lang !== "en" && !parallel}
+                pending={primary.pending}
                 lang2={prefs.lang2}
                 parallel2={prefs.lang2 === "none" ? "" : prefs.lang2 === "en" ? verse.en : (parallel2?.[chapter - 1]?.[index] ?? "")}
-                pending2={prefs.lang2 !== "none" && prefs.lang2 !== "en" && !parallel2}
+                pending2={secondary.pending}
                 size={prefs.size}
                 line={prefs.line}
                 showNotes={prefs.notes}
@@ -295,7 +265,14 @@ function Words() {
       </main>
 
       <Studio open={studio} passage={picked} onClose={() => setStudio(false)} />
-      <ReadingSheet open={reading} onClose={() => setReading(false)} onStudio={openStudio} />
+      <ReadingSheet
+        open={reading}
+        onClose={() => setReading(false)}
+        onStudio={openStudio}
+        book={book}
+        chapter={Number(focusKey.split(":")[0]) || 1}
+        bookName={meta?.name ?? book}
+      />
       {sheet && (
         <Modal label={"study" in sheet ? "Word" : sheet.title} className="fixed inset-0 z-30 flex items-end bg-scrim" onClose={() => setSheet(null)}>
           <div

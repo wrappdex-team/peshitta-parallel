@@ -1,6 +1,6 @@
 /** How to use the reader. Labels match the controls on the page. */
 
-export type GuideRow = { term: string; text: string; to?: "/study" | "/privacy" | "/names" | "/words" | "/seal" | "/saved" };
+export type GuideRow = { term: string; text: string; to?: "/study" | "/privacy" | "/names" | "/words" | "/seal" | "/saved" | "/offline" };
 
 export type GuideSection = {
   id: string;
@@ -216,9 +216,10 @@ export const GUIDE: GuideSection[] = [
   {
     id: "device",
     title: "This device",
-    lead: "No account. Clearing the site’s data in the browser clears the record.",
+    lead: "No account. Clearing the site’s data in the browser clears the record and any copy of a language.",
     rows: [
       { term: "Stored here", text: "Last verse, languages, type size, day or night, highlights, bookmarks, your notes, chapters kept, whether Help is on, and a declaration if you kept one." },
+      { term: "A copy", text: "A chapter, a book, or the whole New Testament, in one language, stored in this browser. Language, then Offline. Open the chapter to read it. The Syriac is not included. This is separate from chapters kept.", to: "/offline" },
       { term: "Not stored by Injeel", text: "A name on the declaration is not uploaded. Corner and the device voice stay on the phone. Studio is the exception, and only when you submit a passage with a key." },
       { term: "Install", text: "When the browser offers it, Home shows Install. The installed reader is the same site. It does not collect anything more." },
       { term: "About", text: "“About this Injeel” is an essay on the book. It is not this guide.", to: "/study" },

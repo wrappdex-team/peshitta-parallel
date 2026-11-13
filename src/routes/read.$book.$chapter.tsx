@@ -14,13 +14,15 @@ import {
   TERM_NOTES,
   chapterCount,
   loadBook,
-  loadParallel,
   studyWord,
   type WordGloss,
   type WordPlace,
   type WordStudy,
 } from "@/lib/scripture";
+import { useOfflineChapter } from "@/lib/use-offline";
+import { versesFromDevice } from "@/lib/offline";
 import { usePrefs } from "@/lib/use-prefs";
+import { useParallelText } from "@/lib/use-parallel";
 import { useAnnotations } from "@/lib/annotations";
 import { SITE_ORIGIN } from "@/lib/site";
 import { noteChapter } from "@/lib/readings";
@@ -35,8 +37,12 @@ export const Route = createFileRoute("/read/$book/$chapter")({
     if (parseReaderChapter(params.chapter, chapterCount(params.book)) === null) {
       throw notFound();
     }
-    const doc = await loadBook(params.book);
-    return { verses: doc.chapters[Number(params.chapter) - 1] };
+    try {
+      const doc = await loadBook(params.book);
+      return { verses: doc.chapters[Number(params.chapter) - 1] ?? [] };
+    } catch {
+      return { verses: null };
+    }
   },
   notFoundComponent: ReaderNotFound,
   head: ({ params }) => {
@@ -82,9 +88,18 @@ function Reader() {
   const { prefs, patch } = usePrefs();
   const annotations = useAnnotations();
   const meta = bookMeta(book);
-  const { verses } = Route.useLoaderData();
-  const [parallel, setParallel] = useState<string[][] | null>(null);
-  const [parallel2, setParallel2] = useState<string[][] | null>(null);
+  const { verses: loaded } = Route.useLoaderData();
+  const primaryCopy = useOfflineChapter(prefs.lang, book, chapterNo);
+  const secondCopy = useOfflineChapter(prefs.lang2 === "none" ? "none" : prefs.lang2, book, chapterNo);
+  const offline = primaryCopy.row;
+  const offline2 = secondCopy.row;
+  const view = versesFromDevice(loaded, offline, prefs.lang);
+  const verses = view.verses;
+  const deviceOnly = view.deviceOnly;
+  const primary = useParallelText(prefs.lang, book);
+  const secondary = useParallelText(prefs.lang2, book);
+  const parallel = primary.rows;
+  const parallel2 = secondary.rows;
   const [menu, setMenu] = useState(false);
   const [sheet, setSheet] = useState<{ title: string; roman: string; body: string } | { study: WordStudy } | null>(null);
   const [heard, setHeard] = useState<number | null>(null);
@@ -92,38 +107,6 @@ function Reader() {
   const [picked, setPicked] = useState("");
   const [focus, setFocus] = useState(1);
   const [reading, setReading] = useState(false);
-
-  useEffect(() => {
-    let live = true;
-    setParallel(null);
-    if (prefs.lang === "en") return;
-    loadParallel(prefs.lang, book)
-      .then((next) => {
-        if (live) setParallel(next);
-      })
-      .catch(() => {
-        if (live) setParallel(null);
-      });
-    return () => {
-      live = false;
-    };
-  }, [book, prefs.lang]);
-
-  useEffect(() => {
-    let live = true;
-    setParallel2(null);
-    if (prefs.lang2 === "none" || prefs.lang2 === "en") return;
-    loadParallel(prefs.lang2, book)
-      .then((next) => {
-        if (live) setParallel2(next);
-      })
-      .catch(() => {
-        if (live) setParallel2(null);
-      });
-    return () => {
-      live = false;
-    };
-  }, [book, prefs.lang2]);
 
   useEffect(() => {
     if (!meta || !Number.isFinite(chapterNo) || chapterNo < 1) return;
@@ -289,21 +272,37 @@ function Reader() {
           stickyTop="calc(env(safe-area-inset-top, 0px) + 7.5rem)"
           onClick={() => setReading(true)}
         />
+        {deviceOnly ? (
+          <p className="mb-2 text-sm leading-relaxed text-muted">
+            Reading the {languageById(prefs.lang).label} copy on this device. The Syriac is not in it.
+          </p>
+        ) : null}
+        {!verses && !primaryCopy.ready ? <p className="mt-6 text-muted">Opening the copy on this device…</p> : null}
+        {!verses && primaryCopy.ready ? (
+          <p className="mt-6 text-base leading-relaxed">
+            This chapter is not on this device. Open it while you are connected, then copy it from Language.
+          </p>
+        ) : null}
 
-        {verses?.map((verse, verseIndex) => (
+        {verses?.map((verse, verseIndex) => {
+          const copied = offline?.verses.find((row) => row.v === verse.v)?.text ?? "";
+          const copied2 = offline2?.verses.find((row) => row.v === verse.v)?.text ?? "";
+          const net = parallel?.[chapterNo - 1]?.[verseIndex] ?? "";
+          const net2 = parallel2?.[chapterNo - 1]?.[verseIndex] ?? "";
+          return (
           <VerseView
             key={verse.v}
             book={book}
             chapter={chapterNo}
             verse={verse}
             words={prefs.words}
-            face={prefs.face}
+            face={deviceOnly ? "tr" : prefs.face}
             lang={languageById(prefs.lang).id}
-            parallel={prefs.lang === "en" ? verse.en : (parallel?.[chapterNo - 1]?.[verseIndex] ?? "")}
-            pending={prefs.lang !== "en" && !parallel}
+            parallel={prefs.lang === "en" ? verse.en : net || copied}
+            pending={prefs.lang !== "en" && primary.pending && !copied}
             size={prefs.size}
             line={prefs.line}
-            showNotes={prefs.notes}
+            showNotes={prefs.notes && !deviceOnly}
             annotation={annotations.get(book, chapterNo, verse.v)}
             onHighlight={() => annotations.toggleHighlight(book, chapterNo, verse.v)}
             onNote={(note) => annotations.setNote(book, chapterNo, verse.v, note)}
@@ -314,10 +313,11 @@ function Reader() {
             chapterEnd={verseIndex === verses.length - 1}
             bookName={meta?.name ?? book}
             lang2={prefs.lang2}
-            parallel2={prefs.lang2 === "none" ? "" : prefs.lang2 === "en" ? verse.en : (parallel2?.[chapterNo - 1]?.[verseIndex] ?? "")}
-            pending2={prefs.lang2 !== "none" && prefs.lang2 !== "en" && !parallel2}
+            parallel2={prefs.lang2 === "none" ? "" : prefs.lang2 === "en" ? verse.en : net2 || copied2}
+            pending2={prefs.lang2 !== "none" && prefs.lang2 !== "en" && secondary.pending && !copied2}
           />
-        ))}
+          );
+        })}
 
         {prefs.notes && chapterNo === 1 && meta?.blurb && (
           <p className="mt-6 text-sm leading-relaxed text-muted">{meta.blurb}</p>
@@ -432,6 +432,9 @@ function Reader() {
       <ReadingSheet
         open={reading}
         onClose={() => setReading(false)}
+        book={book}
+        chapter={chapterNo}
+        bookName={meta?.name ?? book}
         onStudio={() => {
           setReading(false);
           const selected = window.getSelection()?.toString().replace(/\s+/g, " ").trim() ?? "";

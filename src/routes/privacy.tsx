@@ -22,7 +22,7 @@ function Privacy() {
       <SiteHeader title="Privacy" mark="device" />
       <main className="mx-auto max-w-3xl px-5 pb-page sm:px-8 lg:px-12">
         <p className="mt-6 text-base leading-relaxed">
-          Injeel does not ask for an account. The chapter you last read, how many times you have finished a chapter, and the languages beside it stay on this device.
+          Injeel does not ask for an account. The chapter you last read, how many times you have finished a chapter, and the languages beside it stay on this device. A copy for offline reading stays in this browser too, in the language you chose, and does not include the Syriac.
         </p>
         <p className="mt-4 text-base leading-relaxed">
           Read uses your browser’s speech service without a provider key. Voices, languages and accents depend on the browser and operating system; some voices use network services. Installing a system voice does not guarantee the browser can use it. Open Voice setup help beside the player for device instructions.
