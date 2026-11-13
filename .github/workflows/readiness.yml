@@ -7,11 +7,12 @@ permissions:
   contents: read
 concurrency:
   group: readiness-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  # Superseded PR pushes may be cancelled, but every commit on main gets a real result.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 jobs:
   check:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -21,9 +22,27 @@ jobs:
           node-version: 22
           cache: npm
       # Never inject production credentials, run install hooks or migrate a DB.
-      - run: npm ci --ignore-scripts --no-audit --no-fund
-      - run: npm test
-      - run: npm run check:data
-      - run: npm run typecheck
-      - run: npm run build:check
-      - run: npm run check:seo:built
+      - name: Install dependencies
+        run: npm ci --ignore-scripts --no-audit --no-fund
+        timeout-minutes: 5
+      - name: Unit tests
+        run: npm test
+        timeout-minutes: 4
+      - name: Scripture data check
+        run: npm run check:data
+        timeout-minutes: 2
+      - name: Typecheck
+        run: npm run typecheck
+        timeout-minutes: 3
+      - name: Production build
+        run: npm run build:check
+        timeout-minutes: 5
+      - name: Built SSR and SEO check
+        run: npm run check:seo:built
+        timeout-minutes: 2
+      - name: Install Playwright Chromium
+        run: npx --no-install playwright install --with-deps --only-shell chromium
+        timeout-minutes: 5
+      - name: Browser tests (built app)
+        run: npm run test:browser
+        timeout-minutes: 5

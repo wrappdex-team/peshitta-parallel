@@ -65,9 +65,12 @@ for (const path of ["/", "/seal", "/words", "/read/john/1", "/read/john/21", "/r
     const verse = matthew.chapters[Number(saying[1]) - 1].find(
       (item) => item.v === Number(saying[2]),
     );
-    const text = decode(saying[3].replace(/<[^>]+>/g, ""));
+    // Word and name links may split a line across elements and line breaks, so
+    // compare with whitespace collapsed; the words themselves must still match.
+    const squash = (value) => value.replace(/\s+/g, " ").trim();
+    const text = squash(decode(saying[3].replace(/<[^>]+>/g, "")));
     assert.ok(
-      (verse.sy && text.includes(verse.sy)) || (verse.en && text.includes(verse.en)),
+      (verse.sy && text.includes(squash(verse.sy))) || (verse.en && text.includes(squash(verse.en))),
       "Words includes actual source text",
     );
     assert.doesNotMatch(visible, /Opening the words/);
