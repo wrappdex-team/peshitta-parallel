@@ -1,6 +1,6 @@
 import { Modal } from "@/components/modal";
 import { InfoMark } from "@/components/info-mark";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { usePrefs } from "@/lib/use-prefs";
 import {
@@ -15,6 +15,7 @@ import {
   plainLabel,
   prepareSearch,
   readReference,
+  referenceNote,
   resultFace,
   resultNote,
   type Placed,
@@ -38,18 +39,21 @@ export function SearchPanel({ open, onClose, book }: { open: boolean; onClose: (
   const [shown, setShown] = useState(memory.shown);
   const [pack, setPack] = useState<{ lang: string; rows: { book: string; chapter: number; verse: number; text: string }[] } | null>(null);
   const [failedFor, setFailedFor] = useState<string | null>(null);
+  const [moreLangs, setMoreLangs] = useState(false);
   const lang = picked ?? prefs.lang;
   const syriacLetters = /[\u0700-\u074F]/.test(q);
   const used = syriacLetters && lang !== "aii" ? "sy" : lang;
-  const offer = syriacLetters ? null : foreignScript(q, used);
+  const offline = typeof navigator !== "undefined" && navigator.onLine === false;
+  const earlyReference = readReference(q, book);
+  const fault = referenceNote(q, book);
+  const offer = syriacLetters || earlyReference || fault ? null : foreignScript(q, used);
   const scopeNow: Scope = scope === "book" && !book ? "all" : scope;
   const cached = cachedIndex(used);
   const rows = cached ?? (pack?.lang === used ? pack.rows : null);
   const failed = failedFor === used;
   const minChars = syriacLetters ? 1 : 2;
-  const wantsIndex = !offer && q.trim().length >= minChars;
+  const wantsIndex = !offer && !fault && q.trim().length >= minChars;
   const loading = wantsIndex && !rows && !failed;
-  const earlyReference = readReference(q, book);
   const earlyNames = q.trim().length >= 2 ? lookupNames(q) : [];
   const prepared = rows && wantsIndex ? prepareSearch(rows, q, used, scopeNow, book) : null;
   const hits = prepared?.hits.slice(0, shown) ?? [];
@@ -61,9 +65,10 @@ export function SearchPanel({ open, onClose, book }: { open: boolean; onClose: (
   const note = resultNote({
     pending: loading,
     failed,
+    offline,
     label: plainLabel(used),
     query: q,
-    total: offer ? 0 : total,
+    total: offer || fault ? 0 : total,
     hasReference: !!reference,
     offer: !!offer,
     named: aliases.length > 0,
@@ -77,9 +82,12 @@ export function SearchPanel({ open, onClose, book }: { open: boolean; onClose: (
     memory.shown = shown;
   }, [q, picked, scope, shown]);
 
+  const chips = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    if (/[\u0700-\u074F]/.test(q) && lang !== "aii" && picked !== "sy") setPicked("sy");
-  }, [q, lang, picked]);
+    const row = chips.current;
+    if (!open || !row) return;
+    row.querySelector<HTMLElement>("[aria-pressed='true']")?.scrollIntoView({ block: "nearest", inline: "nearest" });
+  }, [open, used]);
 
   useEffect(() => {
     if (!open || !wantsIndex) return;
@@ -101,6 +109,8 @@ export function SearchPanel({ open, onClose, book }: { open: boolean; onClose: (
   }, [open, used, wantsIndex]);
 
   function openVerse(place: Placed) {
+    const dialog = chips.current?.closest("dialog");
+    if (dialog?.open) dialog.close();
     onClose();
     void navigate({
       to: "/read/$book/$chapter",
@@ -121,6 +131,7 @@ export function SearchPanel({ open, onClose, book }: { open: boolean; onClose: (
     setScope("all");
     setShown(40);
     setFailedFor(null);
+    setMoreLangs(false);
   }
 
   function searchSpelling(spelling: string) {
@@ -139,49 +150,82 @@ export function SearchPanel({ open, onClose, book }: { open: boolean; onClose: (
   return (
     <Modal label="Search the New Testament" className="fixed inset-0 z-40 flex items-start justify-center bg-scrim px-4 pt-sheet" onClose={onClose}>
       <div className="flex max-h-sheet w-full max-w-xl flex-col border border-line bg-paper" onClick={(event) => event.stopPropagation()}>
-        <div className="flex items-center gap-2 border-b border-line p-3">
+        <div className="flex flex-wrap items-center gap-2 border-b border-line p-3">
           <input
             data-modal-initial
             value={q}
             onChange={(event) => typeQuery(event.target.value)}
             onKeyDown={(event) => {
-              if (event.key !== "Enter") return;
+              if (event.key !== "Enter" || event.nativeEvent.isComposing) return;
               const place = reference ?? hits[0];
-              if (place) openVerse(place);
+              if (!place) return;
+              event.preventDefault();
+              openVerse(place);
             }}
+            type="search"
+            enterKeyHint="search"
+            aria-label="Search words or a reference"
             placeholder="Word or reference"
             autoCapitalize="off"
             autoCorrect="off"
             spellCheck={false}
-            className="min-w-0 flex-1 bg-transparent font-serif text-lg text-ink outline-none placeholder:text-muted"
+            className="h-11 min-w-[120px] flex-1 basis-full bg-transparent font-serif text-lg text-ink outline-none placeholder:text-muted min-[400px]:basis-48"
           />
-          {q ? (
-            <button type="button" className="min-h-11 shrink-0 px-2 text-garnet" onClick={clearSearch}>
-              Clear
+          <div className="ml-auto flex shrink-0 items-center">
+            {q ? (
+              <button type="button" aria-label="Clear search" className="flex size-11 items-center justify-center text-2xl leading-none text-garnet" onClick={clearSearch}>
+                ×
+              </button>
+            ) : null}
+            <InfoMark id="search" align="end" />
+            <button type="button" className="min-h-11 shrink-0 px-2 text-garnet" onClick={onClose}>
+              Close
             </button>
-          ) : null}
-          <InfoMark id="search" align="end" />
-          <button type="button" className="min-h-11 shrink-0 px-2 text-garnet" onClick={onClose}>
-            Close
+          </div>
+        </div>
+        <div className="flex items-stretch border-b border-line">
+          <div ref={chips} className="chip-fade toolbar-scroll flex min-w-0 flex-1 gap-1 overflow-x-auto px-2">
+            {chipLangs(prefs.lang).map((item) => (
+              <LangChip
+                key={item.id}
+                label={item.label}
+                face={faceClass(item.face)}
+                pressed={used === item.id}
+                onClick={() => {
+                  setPicked(item.id);
+                  setShown(40);
+                  setFailedFor(null);
+                }}
+              />
+            ))}
+          </div>
+          <button
+            type="button"
+            className="min-h-11 shrink-0 px-3 text-garnet"
+            aria-expanded={moreLangs}
+            onClick={() => setMoreLangs((value) => !value)}
+          >
+            More languages
           </button>
         </div>
-        <div className="toolbar-scroll flex gap-1 overflow-x-auto border-b border-line px-2">
-          {chipLangs(prefs.lang).map((item) => (
-            <button
-              key={item.id}
-              type="button"
-              aria-pressed={used === item.id}
-              onClick={() => {
-                setPicked(item.id);
-                setShown(40);
-                setFailedFor(null);
-              }}
-              className={`min-h-11 shrink-0 px-3 ${used === item.id ? "text-garnet" : "text-muted"} ${faceClass(item.face)}`}
-            >
-              {item.label}
-            </button>
-          ))}
-        </div>
+        {moreLangs ? (
+          <div className="flex flex-wrap border-b border-line px-2">
+            {chipLangs(prefs.lang).map((item) => (
+              <LangChip
+                key={item.id}
+                label={item.label}
+                face={faceClass(item.face)}
+                pressed={used === item.id}
+                onClick={() => {
+                  setPicked(item.id);
+                  setShown(40);
+                  setFailedFor(null);
+                  setMoreLangs(false);
+                }}
+              />
+            ))}
+          </div>
+        ) : null}
         <div className="flex gap-1 overflow-x-auto border-b border-line px-2">
           <ScopeChip label="All" pressed={scopeNow === "all"} onClick={() => { setScope("all"); setShown(40); }} />
           {book ? <ScopeChip label="This book" pressed={scopeNow === "book"} onClick={() => { setScope("book"); setShown(40); }} /> : null}
@@ -235,8 +279,9 @@ export function SearchPanel({ open, onClose, book }: { open: boolean; onClose: (
               </button>
             </p>
           )}
-          {note ? <p className={`px-4 py-3 text-sm leading-relaxed ${failed ? "text-garnet" : "text-muted"}`}>{note}</p> : null}
-          {total > 0 && <p className="px-4 pt-3 text-sm text-muted">{Math.min(shown, total)} of {total}.</p>}
+          {note && !fault ? <p role="status" aria-live="polite" className={`px-4 py-3 text-sm leading-relaxed ${failed ? "text-garnet" : "text-muted"}`}>{note}</p> : null}
+          {fault ? <p role="status" aria-live="polite" className="px-4 py-3 text-sm leading-relaxed">{fault}</p> : null}
+          {total > 0 && !fault ? <p role="status" aria-live="polite" className="px-4 pt-3 text-sm text-muted">{Math.min(shown, total)} of {total}.</p> : null}
           {hits.map((hit) => {
             const parts = clipParts(hit.text, hit.start, hit.end);
             return (
@@ -268,6 +313,14 @@ export function SearchPanel({ open, onClose, book }: { open: boolean; onClose: (
   );
 }
 
+function LangChip({ label, face, pressed, onClick }: { label: string; face: string; pressed: boolean; onClick: () => void }) {
+  return (
+    <button type="button" aria-pressed={pressed} onClick={onClick} className={`min-h-11 shrink-0 px-3 ${pressed ? "text-garnet" : "text-muted"} ${face}`}>
+      {label}
+    </button>
+  );
+}
+
 function ScopeChip({ label, pressed, onClick }: { label: string; pressed: boolean; onClick: () => void }) {
   return (
     <button type="button" aria-pressed={pressed} onClick={onClick} className={`min-h-11 shrink-0 px-3 ${pressed ? "text-garnet" : "text-muted"}`}>
@@ -281,7 +334,7 @@ function NameLinks({ names, onClose }: { names: { id: string; en: string }[]; on
   return unique.map((name, index) => (
     <span key={name.id}>
       {index > 0 ? (index === unique.length - 1 ? " and " : ", ") : null}
-      <Link to="/names" hash={name.id} className="text-garnet" onClick={onClose}>
+      <Link to="/names" hash={name.id} className="inline-flex min-h-11 items-center text-garnet" onClick={onClose}>
         {name.en}
       </Link>
     </span>

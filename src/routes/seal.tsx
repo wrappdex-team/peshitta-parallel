@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { BOOKS, SECTIONS } from "@/data/edition";
+import { chapterCountLabel } from "@/lib/chapter-label";
 import { SealMark } from "@/components/seal-mark";
 import { NameSeal } from "@/components/name-seal";
 import { openDeclaration } from "@/components/gospel-declaration";
@@ -140,5 +141,5 @@ function bookLine(progress: { times: number; ahead: number; of: number; open: nu
   }
   if (progress.times > 0) return read;
   if (progress.ahead > 0) return `${progress.ahead} of ${progress.of} · chapter ${progress.open} still open`;
-  return `${progress.of} chapters`;
+  return chapterCountLabel(progress.of);
 }

@@ -118,6 +118,22 @@ export async function listOffline(): Promise<OfflinePlace[]> {
   });
 }
 
+/** Verses already copied onto this device, for a search that cannot open the language. */
+export async function offlineVerses(lang: string) {
+  if (typeof indexedDB === "undefined") return [];
+  const places = (await listOffline()).filter((row) => row.lang === lang);
+  const verses: { book: string; chapter: number; verse: number; text: string }[] = [];
+  for (const place of places) {
+    const chapter = await readOfflineChapter(place.lang, place.book, place.chapter);
+    if (!chapter) continue;
+    for (const verse of chapter.verses) {
+      if (!verse.text) continue;
+      verses.push({ book: place.book, chapter: place.chapter, verse: verse.v, text: verse.text });
+    }
+  }
+  return verses;
+}
+
 export async function readOfflineChapter(lang: string, book: string, chapter: number): Promise<OfflineChapter | null> {
   const db = await database();
   const row = await requestToPromise(db.transaction(STORE).objectStore(STORE).get(keyOf(lang, book, chapter)));

@@ -1,4 +1,6 @@
 import { BOOKS } from "../data/edition.ts";
+import { BOOK_TITLES } from "./book-titles.ts";
+import { chapterCountLabel } from "./chapter-label.ts";
 
 export type SearchVerse = { book: string; chapter: number; verse: number; text: string };
 
@@ -45,9 +47,13 @@ const SHORT: Record<string, string[]> = {
 
 const ALIASES: { id: string; alias: string }[] = [];
 for (const book of BOOKS) {
-  const names = new Set<string>([book.name.toLowerCase(), book.sy, ...(SHORT[book.id] ?? [])]);
+  const names = new Set<string>([book.name, book.sy, ...(SHORT[book.id] ?? [])]);
+  for (const titles of Object.values(BOOK_TITLES)) {
+    const title = titles[book.id];
+    if (title) names.add(title);
+  }
   for (const alias of names) {
-    const clean = alias.trim().toLowerCase();
+    const clean = foldAlias(alias.trim());
     if (clean) ALIASES.push({ id: book.id, alias: clean });
   }
 }
@@ -73,13 +79,17 @@ export function syriacForms(word: string) {
   return [stem];
 }
 
+function foldAlias(value: string) {
+  return value.normalize("NFD").replace(/\p{M}/gu, "").toLowerCase();
+}
+
 function normRef(query: string) {
-  return query
+  const text = query
     .trim()
     .replace(/\s+/g, " ")
     .replace(/([A-Za-z])\./g, "$1")
-    .replace(/(\d)\.(\d)/g, "$1:$2")
-    .toLowerCase()
+    .replace(/(\d)\.(\d)/g, "$1:$2");
+  return foldAlias(text)
     .replace(/\b1st\b/g, "1")
     .replace(/\b2nd\b/g, "2")
     .replace(/\b3rd\b/g, "3")
@@ -92,28 +102,80 @@ function boundary(query: string, at: number) {
   return mark === " " || /\d/.test(mark);
 }
 
-/** A verse address, or null. A bare 3:16 needs the open book. A person is not a book. */
-export function parseReference(query: string, currentBook: string | undefined, chapters: (id: string) => number): Placed | null {
+type Address =
+  | { kind: "place"; place: Placed }
+  | { kind: "fault"; note: string };
+
+function bookName(id: string) {
+  return BOOKS.find((book) => book.id === id)?.name ?? id;
+}
+
+function readNumbers(rest: string) {
+  const hit = rest.match(/^(\d+)(?:[:\s]+(\d+))?$/);
+  if (!hit) return null;
+  return { chapter: Number(hit[1]), verse: hit[2] ? Number(hit[2]) : null };
+}
+
+function placeOrFault(
+  id: string,
+  chapter: number,
+  verse: number | null,
+  chapters: (id: string) => number,
+  verses?: (id: string, chapter: number) => number,
+): Address | null {
+  if (chapter < 1) return null;
+  const limit = chapters(id);
+  if (chapter > limit) return { kind: "fault", note: `${bookName(id)} has ${chapterCountLabel(limit)}.` };
+  const verseNo = verse ?? 1;
+  if (verseNo < 1) return null;
+  if (verses) {
+    const count = verses(id, chapter);
+    if (count > 0 && verseNo > count) return { kind: "fault", note: `${bookName(id)} ${chapter} has ${count} verses.` };
+  }
+  return { kind: "place", place: { book: id, chapter, verse: verseNo } };
+}
+
+function addressOf(
+  query: string,
+  currentBook: string | undefined,
+  chapters: (id: string) => number,
+  verses?: (id: string, chapter: number) => number,
+): Address | null {
   const text = normRef(query);
   if (!text) return null;
-  const bareHit = text.match(/^(\d+):(\d+)$/);
+  const bareHit = text.match(/^(\d+)(?:[:\s]+(\d+))$/);
   if (bareHit && currentBook) {
-    const chapter = Number(bareHit[1]);
-    const verse = Number(bareHit[2]);
-    if (chapter >= 1 && verse >= 1 && chapter <= chapters(currentBook)) return { book: currentBook, chapter, verse };
-    return null;
+    return placeOrFault(currentBook, Number(bareHit[1]), Number(bareHit[2]), chapters, verses);
   }
   for (const item of ALIASES) {
     if (!text.startsWith(item.alias) || !boundary(text, item.alias.length)) continue;
-    const rest = text.slice(item.alias.length).trim();
-    const hit = rest.match(/^(\d+)(?::(\d+))?$/);
-    if (!hit) continue;
-    const chapter = Number(hit[1]);
-    const verse = hit[2] ? Number(hit[2]) : 1;
-    if (chapter < 1 || verse < 1 || chapter > chapters(item.id)) return null;
-    return { book: item.id, chapter, verse };
+    const numbers = readNumbers(text.slice(item.alias.length).trim());
+    if (!numbers) continue;
+    return placeOrFault(item.id, numbers.chapter, numbers.verse, chapters, verses);
   }
   return null;
+}
+
+/** A verse address, or null. A bare 3:16 needs the open book. A person is not a book. */
+export function parseReference(
+  query: string,
+  currentBook: string | undefined,
+  chapters: (id: string) => number,
+  verses?: (id: string, chapter: number) => number,
+): Placed | null {
+  const found = addressOf(query, currentBook, chapters, verses);
+  return found?.kind === "place" ? found.place : null;
+}
+
+/** Why a reference did not open. Empty when the query is not a reference, or when it is. */
+export function referenceFault(
+  query: string,
+  currentBook: string | undefined,
+  chapters: (id: string) => number,
+  verses?: (id: string, chapter: number) => number,
+) {
+  const found = addressOf(query, currentBook, chapters, verses);
+  return found?.kind === "fault" ? found.note : "";
 }
 
 function knownParts(known: string) {
@@ -312,6 +374,7 @@ export function foreignScript(query: string, lang: string) {
   if (/[\u0400-\u04FF]/.test(query)) return lang === "ru" ? null : "ru";
   if (/[\u3040-\u30ff]/.test(query)) return lang === "ja" ? null : "ja";
   if (/[\u4e00-\u9fff]/.test(query)) return lang === "zh" || lang === "ja" ? null : "zh";
+  if ((lang === "sy" || lang === "aii") && /[A-Za-z]/.test(query)) return "en";
   return null;
 }
 
@@ -337,6 +400,7 @@ export function plainLabel(lang: string) {
 export function resultNote(input: {
   pending: boolean;
   failed: boolean;
+  offline?: boolean;
   label: string;
   query: string;
   total: number;
@@ -348,6 +412,7 @@ export function resultNote(input: {
   const query = input.query.trim();
   if (!query) return "";
   if (input.pending) return `Opening the ${input.label}.`;
+  if (input.failed && input.offline) return `You're offline and the ${input.label} isn't on this device. Copy it from Language › Offline.`;
   if (input.failed) return `The ${input.label} did not open.`;
   if (input.offer) return "";
   if (query.length < 2 && !input.hasReference && !/[\u0700-\u074F]/.test(query)) return "Type a word, or a reference such as John 3:16.";

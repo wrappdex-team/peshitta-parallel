@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
+import { versesIn } from "./verse-counts.ts";
 import { HELP } from "./help.ts";
 import { speechOf } from "./jesus.ts";
 import { GUIDE } from "./guide.ts";
@@ -12,6 +13,7 @@ import {
   nameSentence,
   orderHits,
   parseReference,
+  referenceFault,
   resultNote,
   searchVerses,
   verseNeedles,
@@ -23,9 +25,10 @@ const catalog = JSON.parse(readFileSync(new URL("../data/catalog.json", import.m
   chapters: number;
 }[];
 const names = (JSON.parse(readFileSync(new URL("../data/names.json", import.meta.url), "utf8")) as { names: NameLite[] }).names;
+
 const chapters = (id: string) => catalog.find((book) => book.id === id)?.chapters ?? 0;
 
-test("a reference opens the verse, including this book’s own name", () => {
+test("a reference opens the verse, including a space, a local title, and a chapter that is not there", () => {
   assert.deepEqual(parseReference("John 3:16", undefined, chapters), { book: "john", chapter: 3, verse: 16 });
   assert.deepEqual(parseReference("Jn 3:16", undefined, chapters), { book: "john", chapter: 3, verse: 16 });
   assert.deepEqual(parseReference("Joh 3.16", undefined, chapters), { book: "john", chapter: 3, verse: 16 });
@@ -39,6 +42,17 @@ test("a reference opens the verse, including this book’s own name", () => {
   assert.equal(parseReference("Keefa 1", undefined, chapters), null);
   assert.equal(parseReference("Yochanan's gospel", undefined, chapters), null);
   assert.equal(parseReference("John 99", undefined, chapters), null);
+  assert.deepEqual(parseReference("john 3 16", undefined, chapters, versesIn), { book: "john", chapter: 3, verse: 16 });
+  assert.deepEqual(parseReference("1 Cor 13 4", undefined, chapters, versesIn), { book: "1corinthians", chapter: 13, verse: 4 });
+  assert.deepEqual(parseReference("3 16", "john", chapters, versesIn), { book: "john", chapter: 3, verse: 16 });
+  assert.deepEqual(parseReference("Juan 3:16", undefined, chapters, versesIn), { book: "john", chapter: 3, verse: 16 });
+  assert.deepEqual(parseReference("Johannes 3:16", undefined, chapters, versesIn), { book: "john", chapter: 3, verse: 16 });
+  assert.equal(parseReference("John 22:1", undefined, chapters, versesIn), null);
+  assert.equal(referenceFault("John 22:1", undefined, chapters, versesIn), "John has 21 chapters.");
+  assert.equal(referenceFault("Philemon 2:1", undefined, chapters, versesIn), "Philemon has 1 chapter.");
+  assert.equal(parseReference("John 3:99", undefined, chapters, versesIn), null);
+  assert.equal(referenceFault("John 3:99", undefined, chapters, versesIn), "John 3 has 36 verses.");
+  assert.equal(referenceFault("John 3:16", undefined, chapters, versesIn), "");
 });
 
 test("Jesus is Y'shua in this book, and Peter reaches Keefa and Petros", () => {
@@ -157,6 +171,13 @@ test("a language that is still opening does not say nothing matches", () => {
   assert.equal(foreignScript("爱", "zh"), null);
   assert.equal(foreignScript("שלום", "en"), "he");
   assert.equal(foreignScript("ܐܠܗܐ", "en"), "sy");
+  assert.equal(foreignScript("love", "sy"), "en");
+  assert.equal(foreignScript("love", "aii"), "en");
+  assert.equal(foreignScript("love", "en"), null);
+  assert.equal(
+    resultNote({ pending: false, failed: true, offline: true, label: "German", query: "Gott", total: 0, hasReference: false, offer: false }),
+    "You're offline and the German isn't on this device. Copy it from Language › Offline.",
+  );
 });
 
 test("the guide no longer says the alphabet chooses the index", () => {
