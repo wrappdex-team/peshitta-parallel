@@ -152,7 +152,7 @@ the base text. The reader offers these parallel IDs:
 
 | ID                            | Reading                                                               | Coverage caveat                                                                      |
 | ----------------------------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
-| `en`                          | James Murdock’s English (project-edited name forms)                   | Stored beside Syriac; no known blank fields.                                         |
+| `en`                          | Adapted from James Murdock’s English                                  | Stored beside Syriac; no known blank fields.                                         |
 | `ar`, `fr`, `ru`              | Arabic, French, Russian                                               | 27 book grids each; no known blank fields.                                           |
 | `es`, `zh`, `aii`, `de`, `ja` | Spanish, Simplified Chinese, Sureth (modern Syriac), German, Japanese | 27 book grids each; no known blank fields.                                           |
 | `el`, `he`                    | Contemporary Greek, modern Hebrew                                     | AI-assisted English-pivot study readings; 27 book grids each, no known blank fields. |
