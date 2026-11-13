@@ -4,10 +4,11 @@ import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-ro
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Studio } from "@/components/studio";
-import { SiteHeader } from "@/components/site-header";
+import { BookTitle, bookLabel } from "@/components/book-name";
 import { BookLinks } from "@/components/book-links";
 import { HelpSwitch } from "@/components/info-mark";
 import { VerseView } from "@/components/verse-view";
+import { SiteHeader } from "@/components/site-header";
 import { BOOKS, SECTIONS, bookMeta } from "@/data/edition";
 import { languageById } from "@/lib/languages";
 import {
@@ -368,13 +369,10 @@ function Reader() {
                       params={{ book: item.id, chapter: String(here ? chapterNo : 1) }}
                       hash={here && focus > 1 ? `v-${focus}` : undefined}
                       onClick={() => setMenu(false)}
-                      className={`flex min-h-11 items-center justify-between gap-3 border-b border-line py-1 ${here ? "text-garnet" : ""}`}
+                      aria-label={bookLabel(item.name, item.say)}
+                      className={`block min-h-11 border-b border-line py-1 ${here ? "text-garnet" : ""}`}
                     >
-                      <span className="min-w-0 leading-snug">
-                        {item.name}
-                        <span className="text-gold"> · {item.say}</span>
-                      </span>
-                      <span className="shrink-0 font-syriac text-syriac" lang="syr" dir="rtl">{item.sy}</span>
+                      <BookTitle name={item.name} say={item.say} sy={item.sy} nameClass="font-serif" />
                     </Link>
                   );
                 })}

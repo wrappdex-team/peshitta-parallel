@@ -1,4 +1,4 @@
-type Entry = { dialog: HTMLDialogElement; opener: HTMLElement | null };
+type Entry = { dialog: HTMLDialogElement; opener: HTMLElement | null; skipFocus?: boolean };
 const stacks = new WeakMap<Document, Entry[]>();
 
 function visible(element: HTMLElement) {
@@ -49,6 +49,15 @@ export function activateModal(dialog: HTMLDialogElement, dismiss: () => void) {
       dismiss();
       return;
     }
+    if (event.key === "Enter") {
+      const target = event.target;
+      const tag = target && typeof target === "object" && "tagName" in target ? String(target.tagName) : "";
+      if (tag === "INPUT") {
+        event.preventDefault();
+        entry.skipFocus = true;
+      }
+      return;
+    }
     if (event.key !== "Tab" || event.altKey || event.ctrlKey || event.metaKey) return;
     const items = controls(dialog);
     const at = items.indexOf(document.activeElement as HTMLElement);
@@ -73,7 +82,7 @@ export function activateModal(dialog: HTMLDialogElement, dismiss: () => void) {
     dialog.removeEventListener("keydown", keydown);
     if (dialog.open) dialog.close();
     const top = stack.at(-1);
-    if (wasTop && entry.opener?.isConnected && (!top || top.dialog.contains(entry.opener))) {
+    if (wasTop && !entry.skipFocus && entry.opener?.isConnected && (!top || top.dialog.contains(entry.opener))) {
       entry.opener.focus({ preventScroll: true });
     }
     if (top && !top.dialog.contains(document.activeElement)) focusInitial(top.dialog);

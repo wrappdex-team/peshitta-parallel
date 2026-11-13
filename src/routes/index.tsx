@@ -1,9 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { BOOKS, SECTIONS } from "@/data/edition";
+import { BookTitle, bookLabel } from "@/components/book-name";
 import { BookLinks } from "@/components/book-links";
 import { HelpSwitch, InfoMark } from "@/components/info-mark";
 import { SiteHeader, requestSearch } from "@/components/site-header";
+import { chapterCountLabel } from "@/lib/chapter-label";
 import { chapterCount } from "@/lib/scripture";
 import { bookProgress, testamentProgress, useReadings } from "@/lib/readings";
 import { SITE_DESCRIPTION, SITE_ORIGIN } from "@/lib/site";
@@ -48,27 +50,23 @@ function Home() {
             to="/read/$book/$chapter"
             params={{ book: last?.book ?? "john", chapter: String(last?.chapter ?? 1) }}
             hash={last?.verse ? `v-${last.verse}` : undefined}
-            className="mt-6 flex min-h-14 items-center justify-between gap-3 border border-line bg-raised px-4 py-3"
+            aria-label={bookLabel(
+              last && lastBook ? `Continue ${lastBook.name}` : "Open John",
+              (lastBook ?? BOOKS.find((item) => item.id === "john"))?.say ?? "Yochanan",
+              last && lastBook ? `${last.chapter}:${last.verse}` : "1",
+            )}
+            className="mt-6 block min-h-14 border border-line bg-raised px-4 py-3"
           >
-            <span className="min-w-0">
+            <span className="block min-w-0">
               <span className="block text-xs text-gold">{last && lastBook ? "Continue" : "Open"}</span>
-              <span className="font-serif text-lg leading-snug">
-                {last && lastBook ? (
-                  <>
-                    {lastBook.name}
-                    <span className="text-gold"> · {lastBook.say}</span>
-                    {` ${last.chapter}:${last.verse}`}
-                  </>
-                ) : (
-                  <>
-                    John
-                    <span className="text-gold"> · Yochanan</span> 1
-                  </>
-                )}
-              </span>
-            </span>
-            <span className="shrink-0 font-syriac text-2xl text-syriac" lang="syr" dir="rtl">
-              {(lastBook ?? BOOKS.find((item) => item.id === "john"))?.sy}
+              <BookTitle
+                name={last && lastBook ? lastBook.name : "John"}
+                say={(lastBook ?? BOOKS.find((item) => item.id === "john"))?.say ?? "Yochanan"}
+                sy={(lastBook ?? BOOKS.find((item) => item.id === "john"))?.sy ?? ""}
+                nameClass="font-serif text-lg"
+                syClass="text-2xl"
+              />
+              <span className="block text-sm text-muted">{last && lastBook ? `${last.chapter}:${last.verse}` : "1"}</span>
             </span>
           </Link>
         )}
@@ -111,20 +109,15 @@ function Home() {
                     to="/read/$book/$chapter"
                     params={{ book: book.id, chapter: last?.book === book.id ? String(last.chapter) : "1" }}
                     hash={last?.book === book.id && last.verse > 1 ? `v-${last.verse}` : undefined}
-                    className="flex min-h-14 items-center justify-between gap-3 py-2"
+                    aria-label={bookLabel(book.name, book.say, `${readingsReady ? bookCaption(book.id, counts) : chapterCountLabel(chapterCount(book.id))}${book.later ? ", later Syriac" : ""}`)}
+                    className="block min-h-14 py-2"
                   >
-                    <span className="min-w-0">
-                      <span className="block font-serif text-lg leading-snug">
-                        {book.name}
-                        <span className="text-gold"> · {book.say}</span>
-                      </span>
+                    <span className="block min-w-0">
+                      <BookTitle name={book.name} say={book.say} sy={book.sy} nameClass="font-serif text-lg" syClass="text-2xl" />
                       <span className="block text-sm text-muted">
-                        {readingsReady ? bookCaption(book.id, counts) : `${chapterCount(book.id)} chapters`}
+                        {readingsReady ? bookCaption(book.id, counts) : chapterCountLabel(chapterCount(book.id))}
                         {book.later ? " · later Syriac" : ""}
                       </span>
-                    </span>
-                    <span className="shrink-0 font-syriac text-2xl text-syriac" lang="syr" dir="rtl">
-                      {book.sy}
                     </span>
                   </Link>
                 </li>
@@ -150,7 +143,7 @@ function bookCaption(id: string, counts: Parameters<typeof bookProgress>[0]) {
     return `read ${progress.times === 1 ? "once" : progress.times === 2 ? "twice" : `${progress.times} times`} · chapter ${progress.open} still open`;
   }
   if (progress.ahead > 0) return `${progress.ahead} of ${progress.of} · chapter ${progress.open} still open`;
-  return `${progress.of} chapters`;
+  return chapterCountLabel(progress.of);
 }
 
 function InstallButton() {
@@ -208,15 +201,10 @@ function BookDrawer({ onClose, place }: { onClose: () => void; place?: { book: s
                 params={{ book: book.id, chapter: place?.book === book.id ? String(place.chapter) : "1" }}
                 hash={place?.book === book.id && place.verse > 1 ? `v-${place.verse}` : undefined}
                 onClick={onClose}
-                className="flex min-h-11 items-center justify-between gap-3 border-b border-line py-1"
+                aria-label={bookLabel(book.name, book.say)}
+                className="block min-h-11 border-b border-line py-1"
               >
-                <span className="min-w-0 leading-snug">
-                  {book.name}
-                  <span className="text-gold"> · {book.say}</span>
-                </span>
-                <span className="shrink-0 font-syriac text-syriac" lang="syr" dir="rtl">
-                  {book.sy}
-                </span>
+                <BookTitle name={book.name} say={book.say} sy={book.sy} nameClass="font-serif" />
               </Link>
             ))}
           </div>

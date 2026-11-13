@@ -3,11 +3,14 @@ import { bookMeta } from "@/data/edition";
 import { NAMES } from "@/lib/names";
 import { speechOf } from "@/lib/jesus";
 import { chapterCount, loadLanguageSearch, loadSearch, loadSyriacSearch } from "@/lib/scripture";
+import { offlineVerses } from "@/lib/offline";
+import { versesIn } from "@/lib/verse-counts";
 import {
   matchMode,
   nameMatches,
   orderHits,
   parseReference,
+  referenceFault,
   searchVerses,
   verseNeedles,
   type NameHit,
@@ -32,21 +35,48 @@ export function cachedIndex(lang: string) {
   return memory.has(lang) ? memory.get(lang)! : null;
 }
 
+const INDEX_WAIT_MS = 8000;
+
+function within(promise: Promise<SearchVerse[]>, ms: number) {
+  return new Promise<SearchVerse[]>((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error("timeout")), ms);
+    promise.then(
+      (value) => {
+        clearTimeout(timer);
+        resolve(value);
+      },
+      (error) => {
+        clearTimeout(timer);
+        reject(error);
+      },
+    );
+  });
+}
+
+async function fetchIndex(lang: string) {
+  const rows = lang === "en" ? await loadSearch() : lang === "sy" ? await loadSyriacSearch() : await loadLanguageSearch(lang);
+  return rows.map(([book, chapter, verse, text]) => ({ book, chapter, verse, text }));
+}
+
 export function loadIndex(lang: string): Promise<SearchVerse[]> {
   const ready = memory.get(lang);
   if (ready) return Promise.resolve(ready);
   let job = inflight.get(lang);
   if (!job) {
-    job = (lang === "en" ? loadSearch() : lang === "sy" ? loadSyriacSearch() : loadLanguageSearch(lang))
-      .then((rows) => {
-        const verses = rows.map(([book, chapter, verse, text]) => ({ book, chapter, verse, text }));
+    const pending = fetchIndex(lang);
+    pending.catch(() => {});
+    job = within(pending, INDEX_WAIT_MS)
+      .catch(async () => {
+        const stored = await offlineVerses(lang).catch(() => []);
+        if (stored.length) return stored;
+        throw new Error("missing");
+      })
+      .then((verses) => {
         memory.set(lang, verses);
-        inflight.delete(lang);
         return verses;
       })
-      .catch((error) => {
+      .finally(() => {
         inflight.delete(lang);
-        throw error;
       });
     inflight.set(lang, job);
   }
@@ -58,7 +88,11 @@ export function bookTitle(id: string) {
 }
 
 export function readReference(query: string, book?: string): Placed | null {
-  return parseReference(query, book, chapterCount);
+  return parseReference(query, book, chapterCount, versesIn);
+}
+
+export function referenceNote(query: string, book?: string) {
+  return referenceFault(query, book, chapterCount, versesIn);
 }
 
 export function lookupNames(query: string) {
