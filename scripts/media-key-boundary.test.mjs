@@ -126,6 +126,8 @@ function fixture({ provider, signal, cacheCrypto = syntheticCacheCrypto } = {}) 
       if (name === "@/lib/provider-deadline") return deadline;
       if (name === "@/lib/credential-cache-scope") return cacheScope;
       if (name === "@/data/edition") return { BOOKS: [{ id: "fixture", name: "Fixture" }] };
+      // speak.ts reads spoken book titles; the fixture book has none, so English is used.
+      if (name === "@/lib/book-titles") return { BOOK_TITLES: {} };
       if (name === "@/lib/languages") return { languageById: () => ({ id: "en", tts: "en" }) };
       if (name === "@/lib/jesus") return { isJesus: () => false, speechOf: () => null };
       if (name === "@/lib/scripture")
