@@ -4,7 +4,6 @@ import { declarationPng } from "@/lib/declaration-card";
 import {
   DECLARATION,
   EMPTY_DECLARATION,
-  NAME_HEBREW,
   clampName,
   declarationShareText,
   dismissDeclaration,
@@ -17,14 +16,17 @@ import {
 } from "@/lib/declaration";
 import { useReadings } from "@/lib/readings";
 import { SHARE_ORIGIN, shareCard } from "@/lib/share";
+import { readingSessionLive, subscribeReadingLive } from "@/lib/speech-lock";
 import { useEffect, useRef, useState } from "react";
 
-const CENTER = "fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-scrim px-4 py-6";
+const SHEET = "fixed inset-0 z-50 flex items-stretch justify-center bg-scrim sm:items-center sm:px-4 sm:py-6";
 
 export function GospelOffer() {
   const { counts, ready } = useReadings();
   const [record, setRecord] = useState<Declaration>(EMPTY_DECLARATION);
   const [open, setOpen] = useState(false);
+  const [voice, setVoice] = useState(false);
+  const [quiet, setQuiet] = useState(false);
 
   useEffect(() => {
     const pull = () => setRecord(readDeclaration());
@@ -34,28 +36,57 @@ export function GospelOffer() {
   }, []);
 
   useEffect(() => {
-    if (!ready) return;
+    const pull = () => setVoice(readingSessionLive());
+    pull();
+    return subscribeReadingLive(pull);
+  }, []);
+
+  useEffect(() => {
     const show = () => {
-      if (gospelProgress(counts).complete) setOpen(true);
+      if (!gospelProgress(counts).complete) return;
+      setQuiet(false);
+      setOpen(true);
     };
     window.addEventListener("injeel-declaration-open", show);
     return () => window.removeEventListener("injeel-declaration-open", show);
-  }, [counts, ready]);
+  }, [counts]);
 
   useEffect(() => {
-    if (!ready) return;
+    if (!ready || voice || quiet || readingSessionLive()) return;
     const current = readDeclaration();
     if (gospelProgress(counts).complete && !current.kept && !current.dismissed) setOpen(true);
-  }, [ready, counts]);
+  }, [ready, counts, voice, quiet]);
 
-  return <GospelDeclaration open={open} record={record} onClose={() => setOpen(false)} />;
+  function hush() {
+    setQuiet(true);
+    setOpen(false);
+  }
+
+  return (
+    <GospelDeclaration
+      open={open}
+      record={record}
+      onClose={() => setOpen(false)}
+      onHush={hush}
+    />
+  );
 }
 
 export function openDeclaration() {
   window.dispatchEvent(new Event("injeel-declaration-open"));
 }
 
-function GospelDeclaration({ open, record, onClose }: { open: boolean; record: Declaration; onClose: () => void }) {
+function GospelDeclaration({
+  open,
+  record,
+  onClose,
+  onHush,
+}: {
+  open: boolean;
+  record: Declaration;
+  onClose: () => void;
+  onHush: () => void;
+}) {
   const [name, setName] = useState(record.name);
   const [note, setNote] = useState("");
   const [busy, setBusy] = useState(false);
@@ -76,7 +107,7 @@ function GospelDeclaration({ open, record, onClose }: { open: boolean; record: D
   const imageKey = `${signed}\n${date}`;
 
   useEffect(() => {
-    if (!open || !record.kept) return;
+    if (!open) return;
     let cancel = false;
     const key = imageKey;
     declarationPng({ name: signed, date })
@@ -87,7 +118,7 @@ function GospelDeclaration({ open, record, onClose }: { open: boolean; record: D
     return () => {
       cancel = true;
     };
-  }, [open, record.kept, imageKey, signed, date]);
+  }, [open, imageKey, signed, date]);
 
   if (!open) return null;
 
@@ -152,21 +183,18 @@ function GospelDeclaration({ open, record, onClose }: { open: boolean; record: D
 
   function later() {
     dismissDeclaration();
-    onClose();
+    onHush();
   }
 
   return (
-    <Modal label="Declaration" className={CENTER} onClose={record.kept ? onClose : later}>
+    <Modal label="Declaration" className={SHEET} onClose={record.kept ? onClose : onHush}>
       <article
-        className="my-auto w-full max-w-xl border border-gold bg-paper p-2 text-ink sm:p-3"
+        className="flex h-full w-full max-w-xl flex-col border-gold bg-paper text-ink sm:h-auto sm:max-h-[calc(100dvh-3rem)] sm:border"
         onClick={(event) => event.stopPropagation()}
       >
-        <div className="border border-line px-5 py-8 sm:px-10">
+        <div className="min-h-0 flex-1 overflow-y-auto px-5 py-6 sm:px-10 sm:py-8">
           <div className="flex flex-col items-center text-center">
             <NameSeal />
-            <p className="mt-3 font-hebrew text-lg font-semibold text-gold" lang="he" dir="rtl">
-              {NAME_HEBREW}
-            </p>
             <p className="mt-5 text-xs tracking-widest text-gold">THE FOUR GOSPELS</p>
             <p className="mt-2 font-syriac text-3xl text-syriac" lang="syr" dir="rtl">
               ܐܘܢܓܠܝܘܢ
@@ -193,11 +221,14 @@ function GospelDeclaration({ open, record, onClose }: { open: boolean; record: D
               onChange={(event) => setName(event.target.value.slice(0, 80))}
               placeholder="Your name"
               autoComplete="name"
+              maxLength={80}
               className="mt-2 w-full border-0 border-b border-gold bg-transparent py-2 text-center font-serif text-2xl italic text-ink outline-none placeholder:not-italic placeholder:text-muted"
             />
           </label>
+        </div>
 
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
+        <div className="shrink-0 border-t border-line bg-paper px-5 py-3 pb-safe">
+          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
             {!record.kept && (
               <button type="button" className="min-h-11 px-2 text-garnet" onClick={keep} disabled={busy}>
                 Keep this declaration
@@ -222,8 +253,8 @@ function GospelDeclaration({ open, record, onClose }: { open: boolean; record: D
               {record.kept ? "Close" : "Not now"}
             </button>
           </div>
-          {note ? <p className="mt-3 text-center text-sm text-muted">{note}</p> : null}
-          <p className="mt-4 text-center text-xs text-muted">The name stays on this device. Nothing is uploaded.</p>
+          {note ? <p className="mt-2 text-center text-sm text-muted">{note}</p> : null}
+          <p className="mt-2 text-center text-xs text-muted">The name stays on this device. Nothing is uploaded.</p>
         </div>
       </article>
     </Modal>
