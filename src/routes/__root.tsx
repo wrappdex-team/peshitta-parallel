@@ -35,7 +35,7 @@ export const Route = createRootRoute({
         <script
           dangerouslySetInnerHTML={{
             __html:
-              "try{if(JSON.parse(localStorage.getItem('peshitta-parallel')||'{}').theme==='night')document.documentElement.dataset.theme='night'}catch(e){}",
+              "try{var p=JSON.parse(localStorage.getItem('peshitta-parallel')||'{}');if(p.theme==='night')document.documentElement.dataset.theme='night'}catch(e){}try{var h=JSON.parse(localStorage.getItem('injeel-help')||'{}');document.documentElement.dataset.help=h.mode==='off'?'off':'on'}catch(e){document.documentElement.dataset.help='on'}",
           }}
         />
         <PreviewHostBridge />

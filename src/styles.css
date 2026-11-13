@@ -11,6 +11,14 @@
 @import "@fontsource/noto-serif-hebrew/hebrew-400.css";
 @import "@fontsource/noto-serif-hebrew/hebrew-600.css";
 
+html {
+  overflow-x: clip;
+}
+
+html[data-help="off"] .info-mark {
+  display: none;
+}
+
 :root {
   --paper: #f3efe4;
   --paper-raised: #faf7f0;

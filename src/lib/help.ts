@@ -1,4 +1,4 @@
-/** One sentence for the mark beside a control. The rest is on Notes. */
+/** One sentence for the mark beside a control. The rest is in the guide. */
 
 export type HelpTip = {
   title: string;

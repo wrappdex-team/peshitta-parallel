@@ -62,7 +62,7 @@ function GuidePage() {
                       <div key={row.term} className="grid gap-1 border-b border-line py-3 sm:grid-cols-[11rem_minmax(0,1fr)] sm:gap-6">
                         <dt className="font-serif text-lg">
                           {row.to ? (
-                            <Link to={row.to} className="text-garnet">
+                            <Link to={row.to} className="inline-flex min-h-11 items-center text-garnet">
                               {row.term}
                             </Link>
                           ) : (

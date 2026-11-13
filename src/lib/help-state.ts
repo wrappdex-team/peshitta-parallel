@@ -26,15 +26,21 @@ export function readHelp(): HelpState {
     if (!raw) return state;
     const parsed = JSON.parse(raw) as Partial<HelpState>;
     state = { mode: parsed.mode === "off" ? "off" : "on" };
+    paint(state.mode);
   } catch {
     state = EMPTY;
   }
   return state;
 }
 
+function paint(mode: HelpMode) {
+  if (typeof document !== "undefined") document.documentElement.dataset.help = mode;
+}
+
 function write(mode: HelpMode) {
   state = { mode };
   loaded = true;
+  paint(mode);
   try {
     localStorage.setItem(KEY, JSON.stringify(state));
   } catch {

@@ -1,7 +1,9 @@
 import { Link } from "@tanstack/react-router";
-import { useEffect, useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { HELP } from "@/lib/help";
 import { readHelp, setHelpMode, subscribeHelp } from "@/lib/help-state";
+import { placeNote } from "@/lib/note-place";
 
 let openId: string | null = null;
 const openListeners = new Set<() => void>();
@@ -14,8 +16,9 @@ function setOpen(id: string | null) {
 function useHelpOn() {
   const [on, setOn] = useState(true);
   useEffect(() => {
-    setOn(readHelp().mode === "on");
-    return subscribeHelp(() => setOn(readHelp().mode === "on"));
+    const apply = () => setOn(readHelp().mode === "on");
+    apply();
+    return subscribeHelp(apply);
   }, []);
   return on;
 }
@@ -29,10 +32,73 @@ function NoteBody({ id }: { id: string }) {
       <p className="mt-2 text-sm leading-relaxed text-ink">{tip.line}</p>
       <p className="mt-3">
         <Link to="/guide" hash={tip.section} className="inline-flex min-h-11 items-center text-sm text-garnet">
-          Notes
+          More in the guide
         </Link>
       </p>
     </div>
+  );
+}
+
+function PopNote({
+  uid,
+  id,
+  anchorRef,
+  align,
+  onClose,
+}: {
+  uid: string;
+  id: string;
+  anchorRef: { current: HTMLElement | null };
+  align: "start" | "end";
+  onClose: () => void;
+}) {
+  const [frame, setFrame] = useState<ReturnType<typeof placeNote> | null>(null);
+
+  useEffect(() => {
+    function place() {
+      const anchor = anchorRef.current;
+      if (!anchor) return;
+      setFrame(placeNote(anchor.getBoundingClientRect(), { width: window.innerWidth, height: window.innerHeight }, align));
+    }
+    place();
+    window.addEventListener("resize", place);
+    window.addEventListener("scroll", place, true);
+    return () => {
+      window.removeEventListener("resize", place);
+      window.removeEventListener("scroll", place, true);
+    };
+  }, [anchorRef, align]);
+
+  if (!frame || typeof document === "undefined") return null;
+
+  const style = frame.narrow
+    ? {
+        position: "fixed" as const,
+        left: frame.left,
+        width: frame.width,
+        bottom: "calc(8.25rem + env(safe-area-inset-bottom, 0px))",
+        maxHeight: "calc(100dvh - 10rem - env(safe-area-inset-bottom, 0px))",
+        overflowY: "auto" as const,
+        zIndex: 50,
+      }
+    : {
+        position: "fixed" as const,
+        left: frame.left,
+        top: frame.top ?? 16,
+        width: frame.width,
+        maxHeight: `calc(100dvh - ${(frame.top ?? 16) + 16}px)`,
+        overflowY: "auto" as const,
+        zIndex: 50,
+      };
+
+  return createPortal(
+    <div id={`${uid}-note`} role="region" aria-label={HELP[id]?.title} style={style}>
+      <NoteBody id={id} />
+      <button type="button" className="mt-1 min-h-11 text-sm text-garnet" onClick={onClose}>
+        Close
+      </button>
+    </div>,
+    document.body,
   );
 }
 
@@ -41,6 +107,8 @@ export function InfoMark({ id, place = "pop", align = "start" }: { id: string; p
   const uid = useId();
   const tip = HELP[id];
   const on = useHelpOn();
+  const rootRef = useRef<HTMLSpanElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
   const [open, setLocal] = useState(false);
 
   useEffect(() => {
@@ -55,11 +123,13 @@ export function InfoMark({ id, place = "pop", align = "start" }: { id: string; p
   useEffect(() => {
     if (!open) return;
     function onKey(event: KeyboardEvent) {
-      if (event.key === "Escape") setOpen(null);
+      if (event.key === "Escape") shut();
     }
     function onPointer(event: PointerEvent) {
       const node = event.target;
-      if (node instanceof Node && document.getElementById(uid)?.contains(node)) return;
+      if (!(node instanceof Node)) return;
+      if (rootRef.current?.contains(node)) return;
+      if (document.getElementById(`${uid}-note`)?.contains(node)) return;
       setOpen(null);
     }
     document.addEventListener("keydown", onKey);
@@ -76,18 +146,27 @@ export function InfoMark({ id, place = "pop", align = "start" }: { id: string; p
     setOpen(openId === uid ? null : uid);
   }
 
-  const panel = open ? (
-    <div id={`${uid}-note`} className={place === "pop" ? `absolute top-full z-50 mt-1 w-72 max-w-[min(18rem,calc(100vw-2.5rem))] ${align === "end" ? "end-0" : "start-0"}` : "mt-2 max-w-xl"}>
-      <NoteBody id={id} />
-      <button type="button" className="mt-1 min-h-11 text-sm text-garnet" onClick={() => setOpen(null)}>
-        Close
-      </button>
-    </div>
-  ) : null;
+  function shut() {
+    setOpen(null);
+    buttonRef.current?.focus();
+  }
+
+  const panel =
+    open && place === "pop" ? (
+      <PopNote uid={uid} id={id} anchorRef={rootRef} align={align} onClose={shut} />
+    ) : open ? (
+      <div id={`${uid}-note`} role="region" aria-label={tip.title} className="mt-2 max-w-full">
+        <NoteBody id={id} />
+        <button type="button" className="mt-1 min-h-11 text-sm text-garnet" onClick={shut}>
+          Close
+        </button>
+      </div>
+    ) : null;
 
   return (
-    <span id={uid} className={place === "pop" ? "relative inline-flex" : "relative block"}>
+    <span id={uid} ref={rootRef} className={place === "pop" ? "info-mark relative inline-flex" : "info-mark relative block max-w-full"}>
       <button
+        ref={buttonRef}
         type="button"
         className="inline-flex size-11 shrink-0 items-center justify-center"
         aria-expanded={open}
@@ -107,14 +186,19 @@ export function InfoMark({ id, place = "pop", align = "start" }: { id: string; p
 export function HelpSwitch() {
   const on = useHelpOn();
   return (
-    <button
-      type="button"
-      className="flex min-h-11 w-full items-center justify-between border-b border-line text-left"
-      aria-pressed={on}
-      onClick={() => setHelpMode(on ? "off" : "on")}
-    >
-      <span>Help</span>
-      <span className="text-sm text-muted">{on ? "On" : "Off"}</span>
-    </button>
+    <div className="border-b border-line">
+      <button
+        type="button"
+        className="flex min-h-11 w-full items-center justify-between text-left"
+        aria-pressed={on}
+        onClick={() => setHelpMode(on ? "off" : "on")}
+      >
+        <span>Help</span>
+        <span className="text-sm text-muted">{on ? "On" : "Off"}</span>
+      </button>
+      <Link to="/guide" className="flex min-h-11 items-center text-sm text-garnet">
+        More in the guide
+      </Link>
+    </div>
   );
 }

@@ -376,6 +376,9 @@ function Words() {
                   Close
                 </button>
               </div>
+              <Link to="/guide" className="mb-3 inline-flex min-h-11 items-center text-sm text-garnet" onClick={() => setReading(false)}>
+                More in the guide
+              </Link>
               <p className="text-xs tracking-widest text-gold">LANGUAGE</p>
               <div className="mt-1 flex flex-wrap">
                 {LANGS.map((item) => (
