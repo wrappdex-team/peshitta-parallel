@@ -5,7 +5,7 @@ import { ReadingKinds } from "@/components/page-guide";
 import { Link } from "@tanstack/react-router";
 import { LANGS, languageById, type LangId } from "@/lib/languages";
 import { chooseLanguage, chooseSecond } from "@/lib/reading-choice";
-import { usePrefs, type Face } from "@/lib/use-prefs";
+import { requestReadingIntro, usePrefs, type Face } from "@/lib/use-prefs";
 
 export function readingLabel(lang: string, lang2: string, face: Face) {
   if (face === "sy") return "Peshitta";
@@ -70,6 +70,9 @@ export function ReadingSheet({
               Close
             </button>
           </div>
+          <button type="button" className="mb-2 flex min-h-11 items-center text-left text-garnet" onClick={() => requestReadingIntro()}>
+            Choose how you read
+          </button>
           <Link to="/guide" className="mb-3 inline-flex min-h-11 items-center text-sm text-garnet" onClick={onClose}>
             More in the guide
           </Link>

@@ -22,7 +22,7 @@ import {
 } from "@/lib/scripture";
 import { useOfflineChapter } from "@/lib/use-offline";
 import { versesFromDevice } from "@/lib/offline";
-import { usePrefs } from "@/lib/use-prefs";
+import { requestReadingIntro, usePrefs } from "@/lib/use-prefs";
 import { useParallelText } from "@/lib/use-parallel";
 import { useAnnotations } from "@/lib/annotations";
 import { SITE_ORIGIN } from "@/lib/site";
@@ -356,6 +356,16 @@ function Reader() {
                 Close
               </button>
             </div>
+            <button
+              type="button"
+              className="mb-3 flex min-h-11 w-full items-center text-left text-garnet"
+              onClick={() => {
+                setMenu(false);
+                requestReadingIntro();
+              }}
+            >
+              Choose how you read
+            </button>
             <HelpSwitch />
             {SECTIONS.map((section) => (
               <div key={section} className="mb-4">

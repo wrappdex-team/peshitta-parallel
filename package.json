@@ -17,7 +17,7 @@
     "typecheck": "tsc --noEmit",
     "cap:sync": "cap sync",
     "check:auth": "node scripts/check-auth-invariant.mjs",
-    "test": "node --test --test-timeout=60000 --test-force-exit 'scripts/**/*.test.mjs' && node --experimental-strip-types --test --test-timeout=60000 --test-force-exit src/lib/app-data/app-data.test.ts src/lib/app-data/readiness-schedule.test.ts src/lib/auth/gate-identity.test.ts src/lib/auth/sign-in-gate.test.ts src/lib/preview-path-prefix.test.ts src/lib/reader-reference.test.ts src/lib/share.test.ts src/lib/note-place.test.ts src/lib/declaration.test.ts src/lib/search-match.test.ts src/lib/chapter-label.test.ts",
+    "test": "node --test --test-timeout=60000 --test-force-exit 'scripts/**/*.test.mjs' && node --experimental-strip-types --test --test-timeout=60000 --test-force-exit src/lib/app-data/app-data.test.ts src/lib/app-data/readiness-schedule.test.ts src/lib/auth/gate-identity.test.ts src/lib/auth/sign-in-gate.test.ts src/lib/preview-path-prefix.test.ts src/lib/reader-reference.test.ts src/lib/share.test.ts src/lib/note-place.test.ts src/lib/declaration.test.ts src/lib/search-match.test.ts src/lib/chapter-label.test.ts src/lib/use-prefs.test.ts",
     "test:browser": "node --test --test-timeout=180000 --test-force-exit 'scripts/**/*.browser-test.mjs'",
     "lint": "eslint .",
     "format": "prettier --write .",

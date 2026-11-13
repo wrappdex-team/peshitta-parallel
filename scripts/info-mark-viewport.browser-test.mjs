@@ -83,6 +83,12 @@ async function openMarks(page, width, where) {
 for (const width of [320, 390]) {
   test(`help notes stay inside ${width} px`, { timeout: 120000 }, async () => {
     const page = await browser.newPage({ viewport: { width, height: HEIGHT } });
+    await page.addInitScript(() => {
+      localStorage.setItem(
+        "peshitta-parallel",
+        JSON.stringify({ theme: "day", lang: "en", face: "tr", lang2: "none" }),
+      );
+    });
     page.setDefaultTimeout(15000);
     try {
       let opened = 0;

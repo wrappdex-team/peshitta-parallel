@@ -15,6 +15,12 @@ test(
     try {
       browser = await chromium.launch({ headless: true, timeout: 30000 });
       const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
+      await page.addInitScript(() => {
+        localStorage.setItem(
+          "peshitta-parallel",
+          JSON.stringify({ theme: "day", lang: "en", face: "tr", lang2: "none" }),
+        );
+      });
       await page.goto(`${base}/read/john/3`, { waitUntil: "networkidle" });
       await page.getByRole("button", { name: "Search" }).first().click();
       const dialog = page.locator("dialog[aria-label='Search the New Testament']");

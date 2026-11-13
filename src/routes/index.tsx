@@ -9,7 +9,7 @@ import { chapterCountLabel } from "@/lib/chapter-label";
 import { chapterCount } from "@/lib/scripture";
 import { bookProgress, testamentProgress, useReadings } from "@/lib/readings";
 import { SITE_DESCRIPTION, SITE_ORIGIN } from "@/lib/site";
-import { usePrefs } from "@/lib/use-prefs";
+import { requestReadingIntro, usePrefs } from "@/lib/use-prefs";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -190,6 +190,16 @@ function BookDrawer({ onClose, place }: { onClose: () => void; place?: { book: s
             Close
           </button>
         </div>
+        <button
+          type="button"
+          className="mb-3 flex min-h-11 w-full items-center text-left text-garnet"
+          onClick={() => {
+            onClose();
+            requestReadingIntro();
+          }}
+        >
+          Choose how you read
+        </button>
         <HelpSwitch />
         {SECTIONS.map((section) => (
           <div key={section} className="mb-4">
