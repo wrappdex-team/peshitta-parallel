@@ -150,16 +150,17 @@ configure a production database just to run the reader.
 The catalogue contains **27 books, 260 chapters and 7,957 verse slots**. Syriac is
 the base text. The reader offers these parallel IDs:
 
-| ID                            | Reading                                                               | Coverage caveat                                   |
-| ----------------------------- | --------------------------------------------------------------------- | ------------------------------------------------- |
-| `en`                          | James Murdock’s English                                               | Stored beside Syriac; 7 known blank fields.       |
-| `ar`, `fr`, `ru`              | Arabic, French, Russian                                               | Each has 27 book grids and 7 known blank fields.  |
-| `es`, `zh`, `aii`, `de`, `ja` | Spanish, Simplified Chinese, Sureth (modern Syriac), German, Japanese | Each has 27 book grids and 10 known blank fields. |
+| ID                            | Reading                                                               | Coverage caveat                                                                      |
+| ----------------------------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| `en`                          | James Murdock’s English (project-edited name forms)                   | Stored beside Syriac; no known blank fields.                                         |
+| `ar`, `fr`, `ru`              | Arabic, French, Russian                                               | 27 book grids each; no known blank fields.                                           |
+| `es`, `zh`, `aii`, `de`, `ja` | Spanish, Simplified Chinese, Sureth (modern Syriac), German, Japanese | 27 book grids each; no known blank fields.                                           |
+| `el`, `he`                    | Contemporary Greek, modern Hebrew                                     | AI-assisted English-pivot study readings; 27 book grids each, no known blank fields. |
 
 These are structural counts, **not a completeness or translation-quality
-certification**. There are **78 known blank fields**, not 78 distinct verses;
-none of the base Syriac fields are blank in the current audit. Exact references
-are recorded in [`data-known-gaps.json`](docs/data-known-gaps.json).
+certification**. The known-gap baseline in
+[`data-known-gaps.json`](docs/data-known-gaps.json) is empty: no blank fields
+remain, and any new gap fails the regression check.
 
 The edition marks 2 Peter, 2/3 John, Jude and Revelation as later Syriac books,
 not part of the original 22-book Peshitta collection. Its Revelation note names
@@ -179,11 +180,13 @@ that conflict with the desired source-grounded naming policy. **Do not run it as
 an approved language pipeline.** Text, names and pronunciation need qualified
 review under [the source policy](docs/SOURCE_REVIEW.md).
 
-Greek and Hebrew scripture parallels are **not currently present**. The current
-direction is future **Peshitta-source, modern-language translations**, clearly
-labeled by method/version—not importing an unrelated edition and calling it a
-restoration, or calling a Hebrew NT translation an original Hebrew NT. This is a
-plan, not implemented coverage. Before any language work: establish source and
+Contemporary Greek (`el`) and modern Hebrew (`he`) readings **are present**. They
+are AI-assisted study translations from the edition’s English
+(`scripts/translate_el_he.py`): not direct Syriac translations, not human
+reviewed, and not an original Greek or Hebrew New Testament. The direction remains
+**Peshitta-source, modern-language translations**, clearly labeled by
+method/version, and never calling a Hebrew NT translation an original Hebrew NT.
+Before any further language work: establish source and
 rights evidence, verse mapping, Syriac personal/place/object-name handling and
 qualified linguistic review. Do not generate scripture or silently substitute
 names to make coverage counters pass.
@@ -246,7 +249,7 @@ npm run check:seo:built
 | --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `npm test`                  | Unit/repository regressions, including mocked media, storage, speech and modal behavior. Four upstream prose-contract tests skip when their untracked source documents are absent. |
 | `npm run check:data`        | Structural regression gate; prints known gaps and rejects unexpected ones. Passing does not mean complete or accurate scripture.                                                   |
-| `npm run check:data:strict` | Full structural completeness check; **currently fails** on the documented 78 blank fields.                                                                                         |
+| `npm run check:data:strict` | Full structural completeness check; passes with no blank fields. Passing is not a translation-quality certification.                                                               |
 | `npm run typecheck`         | TypeScript, without emitting output.                                                                                                                                               |
 | `npm run build:check`       | Production compilation only; no `db:migrate` invocation.                                                                                                                           |
 | `npm run check:seo:built`   | After compilation, invokes the compiled SSR handler in-process to check valid/invalid routes and SEO. Not browser hydration testing.                                               |
@@ -295,13 +298,21 @@ baseline and should not be read as timeless coverage claims.
 
 ## Attribution and licensing
 
+> **Pending legal review.** The licences below were chosen by the project owner on
+> 2026-11-13 and have not yet been reviewed by a lawyer.
+
+- **Code:** [MIT](LICENSE). This covers the application source, scripts, tests
+  and configuration only.
+- **Project-original data:** [CC0 1.0](DATA-LICENSE.md). This covers study notes,
+  name notes, guide text, the project’s own transliterations and editorial
+  metadata written by INjeel contributors.
+- **Third-party texts keep their own terms.** That includes the Syriac Peshitta
+  digital text (origin still being traced), James Murdock’s English, AI-assisted
+  study translations, fonts and platform assets. Neither MIT nor CC0 relicenses
+  them. See [`DATA-LICENSE.md`](DATA-LICENSE.md) for the table.
+
 Development is maintained in `wrappdex-team/peshitta-parallel`, with contributor
 history preserved in Git. James Murdock and the Syriac edition attributions above
-remain part of the project’s source history, subject to verification.
-
-**No repository-level code licence is currently supplied.** Do not assume MIT or
-another open-source grant from a public repository or a proposed licence.
-Scripture editions, parallel readings, lexicon material, fonts and generated
-media have separate provenance and rights requirements; a future code licence
-cannot confer those permissions. Confirm applicable upstream terms and exact
-edition permissions before redistribution or reuse.
+remain part of the project’s source history, subject to verification. Confirm
+upstream terms and exact edition permissions before redistributing scripture
+or parallel readings.
