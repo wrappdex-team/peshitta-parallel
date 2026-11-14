@@ -99,17 +99,29 @@ function Home() {
       onPointerOut={pressInk}
       onClick={markRowBusy}
     >
+      <a
+        href="#book-list"
+        className="skip-books"
+        onClick={(event) => {
+          const row = document.querySelector<HTMLElement>("#book-list a");
+          if (!row) return;
+          event.preventDefault();
+          row.focus();
+        }}
+      >
+        Skip to books
+      </a>
       <SiteHeader title="Injeel" onBooks={() => setOpen(true)}>
         {showPending ? <div role="progressbar" aria-label="Opening" className="pointer-events-none absolute inset-x-0 bottom-0 h-0.5 bg-gold" /> : null}
       </SiteHeader>
 
       <main className="mx-auto max-w-3xl px-5 pb-page pt-3 sm:px-8 lg:max-w-4xl lg:px-12">
-        <div className="flex items-center justify-between gap-3">
-          <div className="flex min-w-0 flex-nowrap items-center gap-x-1">
+        <div className="home-title flex flex-wrap items-center justify-between gap-x-3">
+          <div className="flex min-w-0 items-center gap-2">
             <h1 className="font-serif text-2xl font-semibold leading-none tracking-tight min-[280px]:text-3xl min-[360px]:text-4xl">Injeel</h1>
             <InfoMark id="open" place="flow" />
           </div>
-          <p className="shrink-0 font-syriac text-xl leading-none text-syriac min-[280px]:text-2xl min-[360px]:text-3xl" lang="syr" dir="rtl">
+          <p className="home-mark font-syriac text-xl leading-none text-syriac min-[280px]:text-2xl min-[360px]:text-3xl" lang="syr" dir="rtl">
             ܐܘܢܓܠܝܘܢ
           </p>
         </div>
@@ -150,7 +162,7 @@ function Home() {
         </div>
 
         <nav data-study="" className="mt-4 grid grid-cols-2 gap-2 min-[481px]:grid-cols-3 min-[1024px]:grid-cols-6" aria-label="Study">
-          <button type="button" className={TILE} onClick={() => requestSearch()}>
+          <button type="button" className={TILE} aria-keyshortcuts="/ Control+K" onClick={() => requestSearch()}>
             <Search className="size-4 text-garnet" aria-hidden />
             <span className="font-serif text-sm leading-tight">Search</span>
             <span className="text-xs leading-snug text-muted">Find a verse or word</span>
@@ -183,7 +195,7 @@ function Home() {
         </nav>
 
         {SECTIONS.map((section) => (
-          <section key={section} className="mt-10">
+          <section key={section} id={section === "Gospels" ? "book-list" : undefined} className="mt-10">
             <h2 className="text-xs tracking-widest text-gold">{section.toUpperCase()}</h2>
             <ul className="mt-2 border-t border-line">
               {BOOKS.filter((b) => b.section === section).map((book) => (
@@ -273,18 +285,18 @@ function BookDrawer({ onClose, place }: { onClose: () => void; place?: { book: s
   const stored = BOOKS.some((book) => book.id === place?.book);
   return (
     <Modal label="New Testament" labelledBy="book-drawer-title" announce className="book-scrim fixed inset-0 z-30 flex" onClose={onClose}>
-      <nav className="book-drawer h-full w-80 max-w-[85%] overflow-y-auto bg-paper p-4 pt-safe pb-safe" onClick={(event) => event.stopPropagation()} aria-label="Books of the New Testament">
-        <div className="mb-3 flex items-center justify-between">
+      <nav className="book-drawer" onClick={(event) => event.stopPropagation()} aria-label="Books of the New Testament">
+        <div className="book-drawer-bar">
           <h2 id="book-drawer-title" className="font-serif text-lg">
             New Testament
           </h2>
-          <button type="button" className="min-h-11 px-2 text-sm text-garnet" data-modal-initial={stored ? undefined : true} onClick={onClose}>
+          <button type="button" className="inline-flex size-11 items-center justify-center text-sm text-garnet" data-modal-initial={stored ? undefined : true} onClick={onClose}>
             Close
           </button>
         </div>
         <button
           type="button"
-          className="mb-3 flex min-h-11 w-full items-center text-left text-garnet"
+          className="mb-2 flex min-h-11 w-full items-center text-left text-garnet"
           onClick={() => {
             onClose();
             requestReadingIntro();
@@ -294,7 +306,7 @@ function BookDrawer({ onClose, place }: { onClose: () => void; place?: { book: s
         </button>
         <HelpSwitch />
         {SECTIONS.map((section) => (
-          <div key={section} className="mb-4">
+          <div key={section} className="mb-2">
             <p className="text-xs text-gold">{section}</p>
             {BOOKS.filter((b) => b.section === section).map((book) => {
               const current = place?.book === book.id;
@@ -308,7 +320,7 @@ function BookDrawer({ onClose, place }: { onClose: () => void; place?: { book: s
                   aria-label={bookLabel(book.name, book.say)}
                   aria-current={current ? "true" : undefined}
                   data-modal-initial={current ? true : undefined}
-                  className="ink-row block min-h-11 border-b border-line py-1"
+                  className="ink-row block min-h-11 border-b border-line py-0.5"
                 >
                   <BookTitle name={book.name} say={book.say} sy={book.sy} nameClass="font-serif" />
                 </Link>

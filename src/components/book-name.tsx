@@ -1,3 +1,5 @@
+import { useLayoutEffect, useRef } from "react";
+
 /** The number stays with the English title, and the dot stays with the name from this book. */
 export function keptTitle(name: string) {
   return name.replace(/^([123]) /, "$1\u00a0");
@@ -10,13 +12,32 @@ export function bookLabel(name: string, say: string, detail = "") {
 }
 
 export function BookName({ name, say, className = "" }: { name: string; say: string; className?: string }) {
+  const ref = useRef<HTMLSpanElement>(null);
   const same = name.replace(/^[123]\s+/, "").toLowerCase() === say.toLowerCase();
+  useLayoutEffect(() => {
+    const node = ref.current;
+    if (!node) return;
+    const fit = () => {
+      const en = node.querySelector<HTMLElement>("[data-en]");
+      const sayNode = node.querySelector<HTMLElement>("[data-say]");
+      const dot = node.querySelector<HTMLElement>("[data-dot]");
+      if (!en || !sayNode) return;
+      const hidden = dot ? getComputedStyle(dot).display === "none" : false;
+      const dotWidth = hidden ? 16 : 0;
+      const broken = en.getBoundingClientRect().width + sayNode.getBoundingClientRect().width + dotWidth > node.clientWidth + 1;
+      node.toggleAttribute("data-broken", broken);
+    };
+    fit();
+    const watch = new ResizeObserver(fit);
+    watch.observe(node);
+    return () => watch.disconnect();
+  }, [name, say]);
   return (
-    <span data-book-name="" className={`book-name flex max-w-full flex-wrap items-baseline leading-snug ${className}`}>
-      <span className="whitespace-nowrap">{keptTitle(name)}</span>
+    <span ref={ref} data-book-name="" className={`book-name flex max-w-full flex-wrap items-baseline leading-snug ${className}`}>
+      <span data-en="" className="whitespace-nowrap">{keptTitle(name)}</span>
       {same ? null : (
-        <span className="whitespace-nowrap text-gold">
-          <span aria-hidden="true">{"\u00a0·\u00a0"}</span>
+        <span data-say="" className="whitespace-nowrap text-gold">
+          <span data-dot="" aria-hidden="true">{"\u00a0·\u00a0"}</span>
           <span className="sr-only">, Syriac title </span>
           {say}
         </span>
