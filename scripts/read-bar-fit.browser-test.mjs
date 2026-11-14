@@ -2,7 +2,7 @@
 // Built app only (scripts/serve-built.mjs). No vite dev server.
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { chromium } from "playwright";
+import { chromium, devices } from "playwright";
 import { startBuiltServer } from "./serve-built.mjs";
 
 const SIZES = [
@@ -30,11 +30,20 @@ function speechStub() {
   const synth = window.speechSynthesis;
   let speaking = false;
   let paused = false;
-  const speak = () => {
+  let ticket = 0;
+  // Each phrase ends so the reading moves on. Cancel drops the phrase that was in flight.
+  const speak = (utter) => {
     speaking = true;
     paused = false;
+    const mine = ++ticket;
+    window.setTimeout(() => {
+      if (mine !== ticket || paused) return;
+      speaking = false;
+      if (utter && typeof utter.onend === "function") utter.onend();
+    }, 1000);
   };
   const cancel = () => {
+    ticket += 1;
     speaking = false;
     paused = false;
   };
@@ -173,6 +182,108 @@ async function fitReport(page) {
   });
 }
 
+function contextOptions(device) {
+  const { defaultBrowserType, ...options } = device;
+  return options;
+}
+
+const FOLLOW = [
+  { name: "750×342", options: contextOptions(devices["iPhone 13 landscape"]) },
+  { name: "Pixel 7 landscape", options: contextOptions(devices["Pixel 7 landscape"]) },
+  { name: "844×390", options: { viewport: { width: 844, height: 390 } } },
+  { name: "206×457", options: { viewport: { width: 206, height: 457 } } },
+];
+
+async function bandReport(page) {
+  return page.evaluate(() => {
+    const bar = document.querySelector("[data-read-bar]");
+    const header = document.querySelector("header");
+    const tongue = document.querySelector("[data-reading-tongue]");
+    const tongueStyle = tongue ? getComputedStyle(tongue) : null;
+    const tongueBox = tongue ? tongue.getBoundingClientRect() : null;
+    const tongueVisible = Boolean(tongueStyle && tongueStyle.display !== "none" && tongueBox && tongueBox.height > 1);
+    const stackBottom = Math.max(header ? header.getBoundingClientRect().bottom : 0, tongueVisible ? tongueBox.bottom : 0);
+    const barBox = bar ? bar.getBoundingClientRect() : null;
+    const barTop = barBox ? barBox.top : window.innerHeight;
+    const verse = document.querySelector("[data-listening]");
+    const verseBox = verse ? verse.getBoundingClientRect() : null;
+    const intersects = Boolean(
+      verseBox &&
+        verseBox.height > 1 &&
+        verseBox.bottom > stackBottom + 0.5 &&
+        verseBox.top < barTop - 0.5,
+    );
+    return {
+      gap: barTop - stackBottom,
+      intersects,
+      id: verse ? verse.id : "",
+      top: verseBox ? verseBox.top : null,
+      bottom: verseBox ? verseBox.bottom : null,
+      stackBottom,
+      barTop,
+      scroll: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      barHeight: barBox ? barBox.height : 0,
+    };
+  });
+}
+
+async function settledVerse(page, verse) {
+  const id = `v-${verse}`;
+  await page.waitForFunction(
+    (want) => {
+      const el = document.getElementById(want);
+      if (!el || !el.hasAttribute("data-listening")) return false;
+      const top = Math.round(el.getBoundingClientRect().top);
+      const now = performance.now();
+      const sample = window.__bandSample || { id: "", top: null, n: 0, since: 0, moved: false };
+      if (sample.id !== want) {
+        window.__bandSample = { id: want, top, n: 1, since: now, moved: false };
+        return false;
+      }
+      if (sample.top !== top) {
+        sample.top = top;
+        sample.n = 1;
+        sample.moved = true;
+        sample.since = now;
+        window.__bandSample = sample;
+        return false;
+      }
+      sample.n += 1;
+      window.__bandSample = sample;
+      // Stable after the smooth scroll, or still where it started once that scroll would have finished.
+      return sample.n >= 3 && (sample.moved || now - sample.since > 400);
+    },
+    id,
+    { timeout: 15000 },
+  );
+}
+
+function assertBand(report, label) {
+  assert.ok(report.scroll <= 1, `${label} horizontal scroll ${report.scroll}`);
+  assert.ok(report.gap + 0.5 >= 120, `${label} band is ${report.gap}px (bar ${report.barTop}, stack ${report.stackBottom})`);
+  assert.equal(report.intersects, true, `${label} ${report.id} ${report.top}–${report.bottom} misses ${report.stackBottom}–${report.barTop}`);
+  assert.ok(report.top >= report.stackBottom - 4, `${label} ${report.id} starts at ${report.top} under the stack ${report.stackBottom}`);
+}
+
+async function readJohn(browser, url, options, label) {
+  const context = await browser.newContext(options);
+  const page = await context.newPage();
+  await page.addInitScript(speechStub);
+  await page.goto(`${url}/read/john/3`, { waitUntil: "domcontentloaded" });
+  const read = page.getByRole("button", { name: "Read this chapter aloud" });
+  await read.waitFor({ state: "visible", timeout: 20000 });
+  const idle = await fitReport(page);
+  assertFit(idle, `${label} idle`);
+  await read.click();
+  try {
+    await page.getByRole("button", { name: "Pause the reading" }).waitFor({ state: "visible", timeout: 20000 });
+  } catch (err) {
+    const failed = await fitReport(page);
+    throw new Error(`did not start (${failed.error || "no bar error"}): ${err instanceof Error ? err.message : err}`);
+  }
+  return { context, page };
+}
+
 function assertFit(report, label) {
   assert.equal(report.missing, false, `${label} has no Read bar`);
   assert.ok(report.scroll <= 1, `${label} horizontal scroll ${report.scroll}`);
@@ -200,6 +311,88 @@ async function hit(page, name) {
   });
   assert.equal(point.owned, true, `${name} hit ${point.target} at ${point.x},${point.y}`);
 }
+
+test("the open band keeps each verse while Read follows", { timeout: 180000 }, async () => {
+  const server = await startBuiltServer();
+  const browser = await chromium.launch({ headless: true, timeout: 30000 });
+  try {
+    for (const size of FOLLOW) {
+      const { context, page } = await readJohn(browser, server.url, size.options, size.name);
+      try {
+        for (let verse = 1; verse <= 5; verse += 1) {
+          await settledVerse(page, verse);
+          const report = await bandReport(page);
+          assert.equal(report.id, `v-${verse}`, `${size.name} was on ${report.id} instead of v-${verse}`);
+          assertBand(report, `${size.name} v-${verse}`);
+          if (verse === 1) {
+            const playing = await fitReport(page);
+            assertFit(playing, `${size.name} playing`);
+          }
+        }
+      } finally {
+        await context.close();
+      }
+    }
+
+    for (const size of [
+      { name: "206×457", options: { viewport: { width: 206, height: 457 } } },
+      { name: "320×568", options: { viewport: { width: 320, height: 568 } } },
+    ]) {
+      const { context, page } = await readJohn(browser, server.url, size.options, size.name);
+      try {
+        await settledVerse(page, 1);
+        const more = page.getByRole("button", { name: "More", exact: true });
+        await more.click();
+        await page.waitForFunction(() => {
+          const bar = document.querySelector("[data-read-bar]");
+          const header = document.querySelector("header");
+          const verse = document.querySelector("[data-listening]");
+          if (!bar || !verse) return false;
+          const tongue = document.querySelector("[data-reading-tongue]");
+          const tongueBox = tongue && getComputedStyle(tongue).display !== "none" ? tongue.getBoundingClientRect() : null;
+          const stackBottom = Math.max(header ? header.getBoundingClientRect().bottom : 0, tongueBox && tongueBox.height > 1 ? tongueBox.bottom : 0);
+          const barTop = bar.getBoundingClientRect().top;
+          const box = verse.getBoundingClientRect();
+          const gap = barTop - stackBottom;
+          const meets = box.height > 1 && box.bottom > stackBottom + 0.5 && box.top < barTop - 0.5 && box.top >= stackBottom - 4;
+          return gap + 0.5 >= 120 && meets;
+        }, { timeout: 1000 });
+        const opened = await bandReport(page);
+        assertBand(opened, `${size.name} More open`);
+        const fitted = await fitReport(page);
+        assertFit(fitted, `${size.name} More open`);
+        await more.click();
+        await page.waitForFunction(() => {
+          const bar = document.querySelector("[data-read-bar]");
+          const header = document.querySelector("header");
+          const verse = document.querySelector("[data-listening]");
+          if (!bar || !verse || bar.getAttribute("data-more") !== "closed") return false;
+          const stackBottom = header ? header.getBoundingClientRect().bottom : 0;
+          const barTop = bar.getBoundingClientRect().top;
+          const box = verse.getBoundingClientRect();
+          return box.bottom > stackBottom + 0.5 && box.top < barTop - 0.5 && box.top >= stackBottom - 4;
+        }, { timeout: 1000 });
+        await more.click();
+        await page.keyboard.press("Escape");
+        await page.waitForFunction(() => {
+          const active = document.activeElement;
+          return (
+            active instanceof HTMLButtonElement &&
+            active.getAttribute("aria-expanded") === "false" &&
+            (active.textContent || "").includes("More")
+          );
+        }, { timeout: 1000 });
+        const closed = await bandReport(page);
+        assert.equal(closed.intersects, true, `${size.name} verse left the band after Escape`);
+      } finally {
+        await context.close();
+      }
+    }
+  } finally {
+    await browser.close();
+    await server.close();
+  }
+});
 
 test("the Read bar keeps its controls and the verse on short screens", { timeout: 180000 }, async () => {
   const server = await startBuiltServer();
@@ -233,12 +426,18 @@ test("the Read bar keeps its controls and the verse on short screens", { timeout
         await page.locator("[data-listening]").waitFor({ state: "attached", timeout: 20000 });
         await page.waitForFunction(() => {
           const verse = document.querySelector("[data-listening]");
-          const bar = document.querySelector("[data-read-bar]");
-          if (!verse || !bar) return false;
-          const top = verse.getBoundingClientRect().top;
-          const bottom = bar.getBoundingClientRect().top;
-          return verse.getBoundingClientRect().bottom > 0 && top < bottom;
-        }, { timeout: 5000 }).catch(() => {});
+          if (!verse) return false;
+          const top = Math.round(verse.getBoundingClientRect().top);
+          const sample = window.__fitSample || { id: "", top: null, n: 0 };
+          const id = verse.id;
+          if (sample.id !== id || sample.top !== top) {
+            window.__fitSample = { id, top, n: 1 };
+            return false;
+          }
+          sample.n += 1;
+          window.__fitSample = sample;
+          return sample.n >= 3;
+        }, { timeout: 8000 });
         const playing = await fitReport(page);
         assertFit(playing, `${entry.path} ${size.name} playing`);
         if (playing.error) assert.fail(`${entry.path} ${size.name} ${playing.error}`);
