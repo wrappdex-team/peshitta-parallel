@@ -148,7 +148,14 @@ test("the name index keeps the cry Abba off Bar Abba and records the people the 
   assert.equal(row("Arios Pagos").known, "Areopagus");
   assert.equal(row("Arios Pagos").kind, "place");
   assert.ok(row("Hawwa").forms.includes("Eve"));
-  assert.equal(row("Yawnaye").id, "junia");
+  assert.equal(row("Yawnaye").id, "yawnaye");
+  assert.equal(row("Yawnaye").kind, "people");
+  assert.equal(row("Junia").id, "junia");
+  assert.equal(row("Junia").kind, "person");
+  assert.equal(row("Megdo").ref, "revelation 16:16");
+  assert.equal(row("Magdu").known, "Magadan");
+  assert.equal(row("Aphsiya").kind, "people");
+  assert.equal(row("Gabriyel").known, "Gabriel");
   const luke = JSON.parse(read("src/data/nt/luke.json"));
   const wife = luke.chapters[7].find((verse) => verse.v === 3);
   assert.match(wife.en, /Yochan the wife of Kuza/);
