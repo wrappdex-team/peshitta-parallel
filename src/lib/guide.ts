@@ -68,7 +68,7 @@ export const GUIDE: GuideSection[] = [
   {
     id: "reading",
     title: "Set the page",
-    lead: "The Reading button stays with the chapter, above the voice. A new device opens in one language: the language of the phone, or English. Notes are off. Syriac beside it, and a second language, are in this sheet.",
+    lead: "The Reading button stays with the chapter, above the voice. A new device asks how you would like to read. Until you answer, the page is English only. Notes are off. Syriac beside it, and a second language, are in this sheet.",
     rows: [
       { term: "Text", text: "The Syriac on the page." },
       { term: "Reading", text: "The language beside the Syriac, or in its place." },
