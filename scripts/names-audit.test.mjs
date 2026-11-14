@@ -40,7 +40,7 @@ test("the name index records every studied person and place with the Syriac, the
   assert.equal(yshua.sy, "ܝܫܘܥ");
   assert.equal(yshua.say, "Y'shua");
   assert.ok(yshua.count > 1000);
-  assert.equal(keefa.known, "Peter");
+  assert.equal(keefa.known, "Peter, Petros");
   assert.equal(herodes.known, "Herod");
   assert.equal(city.kind, "place");
   assert.equal(city.known, "Jerusalem");

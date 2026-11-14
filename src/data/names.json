@@ -807,7 +807,7 @@
       "known": "Aramean",
       "say": "aramaya",
       "kind": "people",
-      "count": 18,
+      "count": 21,
       "ref": "luke 4:27",
       "note": "The Peshitta writes this people ܐܪܡܝܐ. This book prints Aramean. Read from the Syriac letters: aramaya.",
       "sources": [
@@ -3516,7 +3516,7 @@
       "kind": "person",
       "count": 5,
       "ref": "acts 17:5",
-      "note": "Jason of Thessalonike, who hosted the brothers and was dragged before the city chiefs, Acts 17. Romans 16:21 greets Aison, the same spelling ܐܝܣܘܢ, as a kinsman of Paulos. This book prints both Jason and Aison. The familiar English is Jason.",
+      "note": "Jason of Tesaloniqa, who hosted the brothers and was dragged before the city chiefs, Acts 17. Romans 16:21 greets Aison, the same spelling ܐܝܣܘܢ, as a kinsman of Paulos. This book prints both Jason and Aison. The familiar English is Jason.",
       "id": "jason",
       "refs": [
         "acts 17:5",
@@ -3561,21 +3561,25 @@
         "Keefa",
         "Keefa’s"
       ],
-      "known": "Peter",
+      "known": "Peter, Petros",
       "say": "Keefa",
       "kind": "person",
-      "count": 89,
+      "count": 92,
       "ref": "matthew 4:18",
-      "note": "Keefa, a rock. The same word is Shimon’s name and the thing he is named for.",
+      "note": "Keefa, a rock. The same word is Shimon’s name and the thing he is named for. A few later Syriac verses write the Greek name Petros; this book prints Keefa there too.",
       "sources": [
         {
           "script": "Aramaic",
           "text": "כֵּיפָא",
           "say": "Kepha",
-          "note": "The name is Aramaic, a rock. These are Hebrew letters writing that Aramaic word. The Greek Πέτρος is the translation, kept in this book as Petros."
+          "note": "The name is Aramaic, a rock. These are Hebrew letters writing that Aramaic word. The Greek Πέτρος is the translation. This book prints the man’s name as Keefa, including where the later Syriac writes Petros."
         }
       ],
-      "id": "keefa"
+      "id": "keefa",
+      "spellings": [
+        "ܟܐܦܐ",
+        "ܦܛܪܘܣ"
+      ]
     },
     {
       "sy": "ܟܢܥܢ",
@@ -5224,33 +5228,6 @@
       ]
     },
     {
-      "sy": "ܦܛܪܘܣ",
-      "en": "Petros",
-      "forms": [
-        "Petros"
-      ],
-      "known": "Peter",
-      "say": "Petros",
-      "kind": "person",
-      "count": 3,
-      "ref": "acts 1:13",
-      "note": "Petros, the Greek form of the rock-name. The Peshitta’s own name is Keefa.",
-      "sources": [
-        {
-          "script": "Greek",
-          "text": "Πέτρος",
-          "say": "Petros",
-          "note": "The Greek name, meaning a rock. In this Peshitta the man’s own name is Keefa. Petros is the Greek form where the text uses it."
-        }
-      ],
-      "id": "petros",
-      "refs": [
-        "acts 1:13",
-        "1peter 1:1",
-        "2peter 1:1"
-      ]
-    },
-    {
       "sy": "ܦܪܥܘܢ",
       "en": "Pharaoh",
       "forms": [
@@ -6738,7 +6715,7 @@
       "kind": "person",
       "count": 161,
       "ref": "matthew 4:18",
-      "note": "One spelling, and this book itself separates the men. Shimon who is called Keefa, also Petros. Shimon the Zealot, called the Qananya in the lists of the twelve. Shimon the tanner at Yoppa. Shimon the Qurinya, who carried the cross. Shimon the leper at Beth-Anya. Shimon who is called Niger, at Antiokia. And the Shimon in Shamrin who believed Philipos and then asked to buy the gift. The book also spells this name ܣܝܡܘܢ.",
+      "note": "One spelling, and this book itself separates the men. Shimon who is called Keefa. Shimon the Zealot, called the Qananya in the lists of the twelve. Shimon the tanner at Yoppa. Shimon the Qurinya, who carried the cross. Shimon the leper at Beth-Anya. Shimon who is called Niger, at Antiokia. And the Shimon in Shamrin who believed Philipos and then asked to buy the gift. The book also spells this name ܣܝܡܘܢ.",
       "sources": [
         {
           "script": "Hebrew",
@@ -7327,12 +7304,9 @@
       "sy": "ܬܣܠܘܢܝܩܐ",
       "en": "Tesaloniqa",
       "forms": [
-        "Tesaloniqa",
-        "Tesaloniga",
-        "Thessalonica",
-        "Thessalonike"
+        "Tesaloniqa"
       ],
-      "known": "Thessalonica",
+      "known": "Thessalonica, Thessalonike",
       "say": "tesalonīqa",
       "kind": "place",
       "count": 6,
@@ -7354,6 +7328,25 @@
         "acts 27:2",
         "philippians 4:16",
         "2timothy 4:10"
+      ]
+    },
+    {
+      "sy": "ܬܣܠܘܢܝܩܝܐ",
+      "en": "Tesaloniquye",
+      "forms": [
+        "Tesaloniquye",
+        "Thessalonians"
+      ],
+      "known": "Thessalonians",
+      "say": "Tesaloniquye",
+      "kind": "people",
+      "count": 2,
+      "ref": "1thessalonians 1:1",
+      "note": "The Peshitta writes this people ܬܣܠܘܢܝܩܝܐ. This book prints Tesaloniquye, and once Thessalonians. The familiar English is Thessalonians. The city itself is Tesaloniqa.",
+      "id": "tesaloniquye",
+      "refs": [
+        "1thessalonians 1:1",
+        "2thessalonians 1:1"
       ]
     },
     {
