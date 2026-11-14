@@ -930,6 +930,15 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
           aria-valuemax={150}
           aria-valuenow={speed}
           aria-valuetext={`${speed} percent`}
+          onFocus={(event) => {
+            const panel = event.currentTarget.closest("#read-bar-more");
+            const row = event.currentTarget.parentElement;
+            if (!(panel instanceof HTMLElement) || !(row instanceof HTMLElement)) return;
+            const panelBox = panel.getBoundingClientRect();
+            const rowBox = row.getBoundingClientRect();
+            if (rowBox.bottom > panelBox.bottom) panel.scrollTop += rowBox.bottom - panelBox.bottom;
+            else if (rowBox.top < panelBox.top) panel.scrollTop -= panelBox.top - rowBox.top;
+          }}
           onChange={(event) => setSpeed(Number(event.target.value))}
           className={`h-11 w-16 accent-gold ${wide ? "sm:w-32" : ""}`}
         />

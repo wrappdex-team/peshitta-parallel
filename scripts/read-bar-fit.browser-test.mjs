@@ -113,11 +113,23 @@ async function fitReport(page) {
     const bar = document.querySelector("[data-read-bar]");
     const vw = document.documentElement.clientWidth;
     const vh = document.documentElement.clientHeight;
-    if (!bar) return { missing: true, vw, vh, scroll: 0, controls: [] };
+    if (!bar) return { missing: true, vw, vh, scroll: 0, controls: [], pageJumped: false };
+    const pageY = window.scrollY;
     const controls = [...bar.querySelectorAll("button, select, input")].flatMap((el) => {
       const style = getComputedStyle(el);
+      if (style.display === "none" || style.visibility === "hidden") return [];
+      const panel = el.closest("#read-bar-more");
+      if (panel instanceof HTMLElement) {
+        const panelStyle = getComputedStyle(panel);
+        if (panelStyle.overflowY === "auto" || panelStyle.overflowY === "scroll") {
+          const panelBox = panel.getBoundingClientRect();
+          const before = el.getBoundingClientRect();
+          if (before.height > 1 && before.top < panelBox.top - 1) panel.scrollTop -= panelBox.top - before.top;
+          else if (before.height > 1 && before.bottom > panelBox.bottom + 1) panel.scrollTop += before.bottom - panelBox.bottom;
+        }
+      }
       const rect = el.getBoundingClientRect();
-      if (style.display === "none" || style.visibility === "hidden" || rect.width < 1 || rect.height < 1) return [];
+      if (rect.width < 1 || rect.height < 1) return [];
       let clipped = "";
       for (let node = el.parentElement; node; node = node.parentElement) {
         const parent = getComputedStyle(node);
@@ -178,6 +190,7 @@ async function fitReport(page) {
       verseTop: verseBox ? verseBox.top : null,
       verseBottom: verseBox ? verseBox.bottom : null,
       error: (bar.querySelector("p.text-garnet")?.textContent || "").trim(),
+      pageJumped: window.scrollY !== pageY,
     };
   });
 }
@@ -350,6 +363,7 @@ async function readJohn(browser, url, options, label) {
 
 function assertFit(report, label) {
   assert.equal(report.missing, false, `${label} has no Read bar`);
+  assert.equal(report.pageJumped, false, `${label} moved the page to reach a control`);
   assert.ok(report.scroll <= 1, `${label} horizontal scroll ${report.scroll}`);
   assert.ok(report.controls.length > 0, `${label} has no visible Read bar controls`);
   for (const control of report.controls) {
@@ -551,6 +565,106 @@ test("the Read bar keeps its controls and the verse on short screens", { timeout
         }
         await context.close();
       }
+    }
+  } finally {
+    await browser.close();
+    await server.close();
+  }
+});
+
+const SPEED_CASES = [
+  { width: 206, height: 457, name: "206×457", path: "/words", readName: "Read these words aloud" },
+  { width: 320, height: 480, name: "320×480", path: "/words", readName: "Read these words aloud" },
+  { width: 206, height: 457, name: "206×457", path: "/read/john/3", readName: "Read this chapter aloud" },
+  { width: 320, height: 480, name: "320×480", path: "/read/john/3", readName: "Read this chapter aloud" },
+  { width: 320, height: 568, name: "320×568", path: "/words", readName: "Read these words aloud" },
+  { width: 320, height: 568, name: "320×568", path: "/read/john/3", readName: "Read this chapter aloud" },
+  { width: 390, height: 844, name: "390×844", path: "/words", readName: "Read these words aloud" },
+  { width: 390, height: 844, name: "390×844", path: "/read/john/3", readName: "Read this chapter aloud" },
+];
+
+function verseInBand(wantOpen) {
+  const bar = document.querySelector("[data-read-bar]");
+  const header = document.querySelector("header");
+  const verse = document.querySelector("[data-listening]");
+  if (!bar || !verse) return false;
+  if (bar.getAttribute("data-more") !== (wantOpen ? "open" : "closed")) return false;
+  const tongue = document.querySelector("[data-reading-tongue]");
+  const tongueBox = tongue && getComputedStyle(tongue).display !== "none" ? tongue.getBoundingClientRect() : null;
+  const stackBottom = Math.max(header ? header.getBoundingClientRect().bottom : 0, tongueBox && tongueBox.height > 1 ? tongueBox.bottom : 0);
+  const barTop = bar.getBoundingClientRect().top;
+  const box = verse.getBoundingClientRect();
+  const meets = box.height > 1 && box.bottom > stackBottom + 0.5 && box.top < barTop - 0.5 && box.top >= stackBottom - 4;
+  return barTop - stackBottom + 0.5 >= 120 && meets;
+}
+
+async function assertSpeedReachable(page, label) {
+  const beforeY = await page.evaluate(() => window.scrollY);
+  await page.evaluate(() => {
+    const panel = document.querySelector("#read-bar-more");
+    const row = panel?.querySelector(".read-bar-speed");
+    if (!(panel instanceof HTMLElement) || !(row instanceof HTMLElement)) return;
+    const panelBox = panel.getBoundingClientRect();
+    const rowBox = row.getBoundingClientRect();
+    if (rowBox.height < 1) return;
+    if (rowBox.bottom > panelBox.bottom) panel.scrollTop += rowBox.bottom - panelBox.bottom;
+    else if (rowBox.top < panelBox.top) panel.scrollTop -= panelBox.top - rowBox.top;
+  });
+  const afterY = await page.evaluate(() => window.scrollY);
+  assert.equal(afterY, beforeY, `${label} page jumped to reach Speed`);
+  const speed = page.locator(".read-bar-compact").getByRole("slider", { name: "Reading speed" });
+  assert.equal(await speed.isVisible(), true, `${label} speed is not reachable`);
+  assert.equal(await speed.isEnabled(), true, `${label} speed is disabled`);
+  const box = await speed.boundingBox();
+  assert.ok(box, `${label} speed has no box`);
+  assert.ok(box.height + 0.5 >= 44, `${label} speed is ${box ? box.height : 0}px tall`);
+  const view = page.viewportSize();
+  assert.ok(view && box.y >= -1 && box.y + box.height <= view.height + 1, `${label} speed is outside the viewport`);
+  assert.ok(view && box.x >= -1 && box.x + box.width <= view.width + 1, `${label} speed is wider than the screen`);
+  const before = ((await page.locator(".read-bar-compact .read-bar-speed span.tabular-nums").textContent()) || "").trim();
+  await speed.focus();
+  assert.equal(await page.evaluate(() => window.scrollY), beforeY, `${label} focus moved the page`);
+  await speed.press("ArrowRight");
+  await page.waitForFunction(
+    (prev) => {
+      const node = document.querySelector(".read-bar-compact .read-bar-speed span.tabular-nums");
+      return Boolean(node && (node.textContent || "").trim() && (node.textContent || "").trim() !== prev);
+    },
+    before,
+    { timeout: 2000 },
+  );
+}
+
+test("Speed stays reachable and the verse keeps a 120px band", { timeout: 180000 }, async () => {
+  const server = await startBuiltServer();
+  const browser = await chromium.launch({ headless: true, timeout: 30000 });
+  try {
+    for (const entry of SPEED_CASES) {
+      const label = `${entry.path} ${entry.name}`;
+      const context = await openContext(browser, { viewport: { width: entry.width, height: entry.height } });
+      const page = await context.newPage();
+      await seedPrefs(page);
+      await page.addInitScript(speechStub);
+      await page.goto(`${server.url}${entry.path}`, { waitUntil: "domcontentloaded" });
+      const read = page.getByRole("button", { name: entry.readName });
+      await read.waitFor({ state: "visible", timeout: 20000 });
+      await read.click();
+      await page.getByRole("button", { name: "Pause the reading" }).waitFor({ state: "visible", timeout: 20000 });
+      await page.locator("[data-listening]").waitFor({ state: "attached", timeout: 20000 });
+      await scrollSettled(page);
+      const more = page.getByRole("button", { name: "More", exact: true });
+      await more.click();
+      await page.waitForFunction(verseInBand, true, { timeout: 1000 });
+      await scrollSettled(page);
+      assertBand(await bandReport(page), `${label} More open`);
+      await assertSpeedReachable(page, label);
+      const fitted = await fitReport(page);
+      assertFit(fitted, `${label} More open`);
+      await more.click();
+      await page.waitForFunction(verseInBand, false, { timeout: 1000 });
+      await scrollSettled(page);
+      assertBand(await bandReport(page), `${label} More closed`);
+      await context.close();
     }
   } finally {
     await browser.close();
