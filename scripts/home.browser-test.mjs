@@ -293,8 +293,18 @@ test("the home page keeps a manuscript interaction system", { timeout: 180000 },
     await copy.goto(`${server.url}/`, { waitUntil: "domcontentloaded" });
     await copy.getByText("Nothing on this device yet").waitFor();
     await copy.goto(`${server.url}/read/john/1`, { waitUntil: "domcontentloaded" });
-    await copy.locator("[data-reading-tongue]").click();
-    await copy.getByRole("button", { name: "Copy John" }).click();
+    const copyJohn = copy.getByRole("button", { name: "Copy John" });
+    const tongue = copy.locator("[data-reading-tongue]");
+    for (let attempt = 0; attempt < 4; attempt += 1) {
+      await tongue.click();
+      try {
+        await copyJohn.waitFor({ state: "visible", timeout: 4000 });
+        break;
+      } catch (error) {
+        if (attempt === 3) throw error;
+      }
+    }
+    await copyJohn.click();
     await copy.getByText("John is on this device in English.").waitFor({ timeout: 30000 });
     await copy.getByRole("button", { name: "Close", exact: true }).click();
     await copy.goto(`${server.url}/`, { waitUntil: "domcontentloaded" });
