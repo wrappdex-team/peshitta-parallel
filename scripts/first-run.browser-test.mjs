@@ -328,3 +328,130 @@ test("the buttons stay on screen and the card is centred", { timeout: 180000 }, 
     await server.close();
   }
 });
+
+const RETURNING = JSON.stringify({ lang: "es", face: "both", intro: 1 });
+
+async function reopenReading(browser, url) {
+  const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
+  const page = await context.newPage();
+  page.setDefaultTimeout(15000);
+  await page.goto(`${url}/`, { waitUntil: "networkidle" });
+  await page.evaluate((stored) => {
+    localStorage.setItem("peshitta-parallel", stored);
+  }, RETURNING);
+  await page.reload({ waitUntil: "networkidle" });
+  await page.getByRole("link", { name: /Open John/ }).waitFor();
+  assert.equal(await dialog(page).count(), 0);
+  await page.getByRole("button", { name: "Books" }).click();
+  await page.getByRole("button", { name: "Choose how you read" }).click();
+  const card = dialog(page);
+  await card.waitFor();
+  await page.waitForFunction(() => {
+    const open = document.querySelector("dialog[open]");
+    const lang = open?.querySelector("input[name='read-lang']:checked");
+    const face = open?.querySelector("input[name='read-face']:checked");
+    return (
+      lang?.closest("label")?.textContent?.includes("Español") === true &&
+      face?.closest("label")?.textContent?.includes("Syriac side by side") === true
+    );
+  });
+  return { context, page, card };
+}
+
+async function storageSnapshot(page) {
+  return page.evaluate(() => ({
+    localKeys: Object.keys(localStorage).sort(),
+    sessionKeys: Object.keys(sessionStorage).sort(),
+  }));
+}
+
+async function assertStillSpanish(page, before) {
+  const prefs = await prefsOf(page);
+  assert.equal(prefs.lang, "es");
+  assert.equal(prefs.face, "both");
+  assert.equal(prefs.intro, 1);
+  const after = await storageSnapshot(page);
+  assert.deepEqual(after.localKeys, before.localKeys);
+  assert.deepEqual(after.sessionKeys, before.sessionKeys);
+  await page.waitForFunction(() => {
+    if (document.querySelector("dialog[open]")) return false;
+    const active = document.activeElement;
+    const main = document.querySelector("main");
+    const onChoose = active instanceof HTMLElement && (active.textContent ?? "").includes("Choose how you read");
+    const onMain = active === main || (!!main && main.contains(active));
+    return onChoose || onMain;
+  });
+  assert.equal(await page.locator("dialog[open]").count(), 0);
+}
+
+async function assertSpanishVerse(page) {
+  await page.goto(`${new URL(page.url()).origin}/read/john/1`, { waitUntil: "networkidle" });
+  await dialog(page).waitFor({ state: "hidden" });
+  const verse = await verseFace(page);
+  assert.match(verse.text, /En el principio era la Palabra/);
+  assert.ok(verse.syriac > 0, "Syriac column is missing");
+  const prefs = await prefsOf(page);
+  assert.equal(prefs.lang, "es");
+  assert.equal(prefs.face, "both");
+  assert.equal(prefs.intro, 1);
+}
+
+test("reopening the card leaves a returning visitor's reading alone", { timeout: 180000 }, async () => {
+  const server = await startBuiltServer();
+  const browser = await chromium.launch({ headless: true, timeout: 30000 });
+  try {
+    const escape = await reopenReading(browser, server.url);
+    const escapeBefore = await storageSnapshot(escape.page);
+    await escape.page.keyboard.press("Escape");
+    await escape.card.waitFor({ state: "hidden" });
+    await assertStillSpanish(escape.page, escapeBefore);
+    await assertSpanishVerse(escape.page);
+    await escape.context.close();
+
+    const outside = await reopenReading(browser, server.url);
+    const outsideBefore = await storageSnapshot(outside.page);
+    const corner = await outside.page.evaluate(() => {
+      const card = document.querySelector("[data-first-run-card]");
+      const box = card ? card.getBoundingClientRect() : null;
+      return box ? { left: box.left, top: box.top } : null;
+    });
+    assert.ok(corner && (corner.left > 3 || corner.top > 3), "card covers the outside tap");
+    await outside.page.mouse.click(3, 3);
+    await outside.card.waitFor({ state: "hidden" });
+    await assertStillSpanish(outside.page, outsideBefore);
+    await assertSpanishVerse(outside.page);
+    await outside.context.close();
+
+    const cancel = await reopenReading(browser, server.url);
+    const cancelBefore = await storageSnapshot(cancel.page);
+    const cancelButton = cancel.card.getByRole("button", { name: "Cancel" });
+    const cancelBox = await cancelButton.evaluate((node) => {
+      const rect = node.getBoundingClientRect();
+      return { width: rect.width, height: rect.height };
+    });
+    assert.ok(cancelBox.width + 0.5 >= 44 && cancelBox.height + 0.5 >= 44, `${cancelBox.width}×${cancelBox.height}`);
+    await cancelButton.click();
+    await cancel.card.waitFor({ state: "hidden" });
+    await assertStillSpanish(cancel.page, cancelBefore);
+    await assertSpanishVerse(cancel.page);
+    await cancel.context.close();
+
+    const chosen = await reopenReading(browser, server.url);
+    await chosen.card.getByRole("radio", { name: "Deutsch" }).check();
+    await chosen.card.getByRole("radio", { name: "One language only" }).check();
+    await chosen.card.getByRole("button", { name: "Start reading" }).click();
+    await chosen.card.waitFor({ state: "hidden" });
+    const deutsch = await prefsOf(chosen.page);
+    assert.equal(deutsch.lang, "de");
+    assert.equal(deutsch.face, "tr");
+    assert.equal(deutsch.intro, 1);
+    await chosen.page.goto(`${server.url}/read/john/1`, { waitUntil: "networkidle" });
+    const verse = await verseFace(chosen.page);
+    assert.match(verse.text, /Im Anfang war das Wort/);
+    assert.equal(verse.syriac, 0);
+    await chosen.context.close();
+  } finally {
+    await browser.close().catch(() => {});
+    await server.close();
+  }
+});

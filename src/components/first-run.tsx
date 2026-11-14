@@ -95,12 +95,23 @@ export function FirstRunIntro() {
     setManual(false);
   }
 
+  /** A reopened card must not rewrite a saved reading. First visit still takes Quick start. */
+  function dismiss() {
+    if (manual && introduced) {
+      setManual(false);
+      return;
+    }
+    quick();
+  }
+
+  const reopened = manual && introduced;
+
   return (
     <Modal
       label="How would you like to read?"
       announce
       className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-scrim p-2"
-      onClose={quick}
+      onClose={dismiss}
     >
       <div
         data-first-run-card
@@ -149,9 +160,16 @@ export function FirstRunIntro() {
           </fieldset>
         </div>
         <div className="first-run-footer flex min-w-0 flex-col gap-2 border-t border-line bg-paper px-4 py-2">
-          <button type="button" className="min-h-11 w-full whitespace-normal bg-garnet px-3 text-paper" onClick={start}>
-            Start reading
-          </button>
+          <div className="flex min-w-0 items-stretch gap-2">
+            {reopened ? (
+              <button type="button" className="min-h-11 shrink-0 border border-line bg-paper px-3 text-ink" onClick={dismiss}>
+                Cancel
+              </button>
+            ) : null}
+            <button type="button" className="min-h-11 min-w-0 flex-1 whitespace-normal bg-garnet px-3 text-paper" onClick={start}>
+              Start reading
+            </button>
+          </div>
           <button type="button" className="min-h-11 w-full whitespace-normal border border-line px-3 text-ink" onClick={quick}>
             Quick start (English)
           </button>
