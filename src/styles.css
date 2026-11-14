@@ -225,9 +225,19 @@ html[data-reading="active"] [data-reading-tongue] {
   display: none;
 }
 
-/* Short screens: an open More panel must leave 120px of verse. The place line yields while it is open. */
+/* Short screens: an open More panel must leave 120px of verse. The place line yields.
+   Words has a taller sticky stack, so More scrolls instead of hiding Speed. */
 @media (max-height: 500px) {
   [data-read-bar][data-more="open"] .read-bar-compact > p {
+    display: none;
+  }
+  [data-read-bar][data-kind="words"][data-more="open"] .read-bar-compact #read-bar-more {
+    max-height: calc(2.75rem * 2 + 1px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: none;
+  }
+  [data-read-bar][data-kind="words"][data-more="open"] .read-bar-compact #read-bar-more::-webkit-scrollbar {
     display: none;
   }
 }

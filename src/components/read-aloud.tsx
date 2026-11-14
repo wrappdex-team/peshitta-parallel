@@ -62,7 +62,11 @@ function VoiceMark() {
       setBox({ left, width });
     }
     function onKey(event: KeyboardEvent) {
-      if (event.key === "Escape") setOpen(false);
+      if (event.key !== "Escape") return;
+      event.preventDefault();
+      event.stopPropagation();
+      setOpen(false);
+      rootRef.current?.querySelector("button")?.focus();
     }
     function onPointer(event: PointerEvent) {
       const node = event.target;
@@ -74,12 +78,12 @@ function VoiceMark() {
     place();
     window.addEventListener("resize", place);
     window.addEventListener("scroll", place, true);
-    document.addEventListener("keydown", onKey);
+    document.addEventListener("keydown", onKey, true);
     document.addEventListener("pointerdown", onPointer);
     return () => {
       window.removeEventListener("resize", place);
       window.removeEventListener("scroll", place, true);
-      document.removeEventListener("keydown", onKey);
+      document.removeEventListener("keydown", onKey, true);
       document.removeEventListener("pointerdown", onPointer);
     };
   }, [open]);
@@ -474,7 +478,8 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
   useEffect(() => {
     if (!more) return;
     function onKey(event: KeyboardEvent) {
-      if (event.key !== "Escape") return;
+      if (event.key !== "Escape" || event.defaultPrevented) return;
+      if (document.querySelector("[aria-label='Voice setup help'][aria-expanded='true']")) return;
       event.preventDefault();
       setMore(false);
       moreButton.current?.focus();
@@ -899,7 +904,7 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
           className="h-11 w-full min-w-0 max-w-full bg-paper text-sm text-ink"
           aria-label="Voice on this device"
         >
-          <option value="">Automatic language match</option>
+          <option value="">Auto voice</option>
           {voices.map((item) => (
             <option key={voiceKey(item)} value={voiceKey(item)}>
               {item.name} · {item.lang}
@@ -912,7 +917,7 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
 
   function speedControl(wide: boolean) {
     return (
-      <label className="flex h-11 min-w-11 max-w-full shrink-0 items-center gap-2 border-l border-line px-3">
+      <label className="read-bar-speed flex h-11 min-w-11 max-w-full shrink-0 items-center gap-2 border-l border-line px-3">
         <span className="text-xs tracking-widest text-gold">SPEED</span>
         <input
           type="range"
@@ -925,6 +930,15 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
           aria-valuemax={150}
           aria-valuenow={speed}
           aria-valuetext={`${speed} percent`}
+          onFocus={(event) => {
+            const panel = event.currentTarget.closest("#read-bar-more");
+            const row = event.currentTarget.parentElement;
+            if (!(panel instanceof HTMLElement) || !(row instanceof HTMLElement)) return;
+            const panelBox = panel.getBoundingClientRect();
+            const rowBox = row.getBoundingClientRect();
+            if (rowBox.bottom > panelBox.bottom) panel.scrollTop += rowBox.bottom - panelBox.bottom;
+            else if (rowBox.top < panelBox.top) panel.scrollTop -= panelBox.top - rowBox.top;
+          }}
           onChange={(event) => setSpeed(Number(event.target.value))}
           className={`h-11 w-16 accent-gold ${wide ? "sm:w-32" : ""}`}
         />
@@ -971,7 +985,7 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
   }
 
   return (
-    <div data-read-bar="" data-more={more ? "open" : "closed"} className="fixed inset-x-0 bottom-0 z-20 w-full border-t border-line bg-paper pb-safe">
+    <div data-read-bar="" data-kind={wordsMode ? "words" : "chapter"} data-more={more ? "open" : "closed"} className="fixed inset-x-0 bottom-0 z-20 w-full border-t border-line bg-paper pb-safe">
       <div className="read-bar-wide mx-auto hidden w-full min-[481px]:flex max-w-6xl flex-wrap items-center">
         {active ? (
           <button
