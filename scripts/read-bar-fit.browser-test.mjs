@@ -268,6 +268,13 @@ function assertBand(report, label) {
 async function readJohn(browser, url, options, label) {
   const context = await browser.newContext(options);
   const page = await context.newPage();
+  // Prefs with no intro field: a returning visitor, so the first-run card stays closed.
+  await page.addInitScript(() => {
+    localStorage.setItem(
+      "peshitta-parallel",
+      JSON.stringify({ theme: "day", lang: "en", face: "tr", lang2: "none" }),
+    );
+  });
   await page.addInitScript(speechStub);
   await page.goto(`${url}/read/john/3`, { waitUntil: "domcontentloaded" });
   const read = page.getByRole("button", { name: "Read this chapter aloud" });
