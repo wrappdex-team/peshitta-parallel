@@ -225,9 +225,11 @@ html[data-reading="active"] [data-reading-tongue] {
   display: none;
 }
 
-/* Short screens: an open More panel must leave 120px of verse. The place line yields while it is open. */
+/* Short screens: an open More panel must leave 120px of verse. The place line yields.
+   Words has a taller sticky stack, so its Speed row yields too. */
 @media (max-height: 500px) {
-  [data-read-bar][data-more="open"] .read-bar-compact > p {
+  [data-read-bar][data-more="open"] .read-bar-compact > p,
+  [data-read-bar][data-kind="words"][data-more="open"] .read-bar-compact .read-bar-speed {
     display: none;
   }
 }
