@@ -148,6 +148,76 @@ async function tabStops(page, count) {
   }
 }
 
+async function assertStill(page, label) {
+  const y = await page.evaluate(() => window.scrollY);
+  assert.ok(Math.abs(y - 200) < 1, `${label} scrollY ${y}`);
+}
+
+async function touchDrag(page, x, from, to) {
+  const client = await page.context().newCDPSession(page);
+  const steps = 6;
+  await client.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x, y: from, id: 0 }] });
+  for (let step = 1; step <= steps; step += 1) {
+    await client.send("Input.dispatchTouchEvent", {
+      type: "touchMove",
+      touchPoints: [{ x, y: from + ((to - from) * step) / steps, id: 0 }],
+    });
+  }
+  await client.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+  await client.detach();
+}
+
+async function assertScrollLock(page, width, touch) {
+  await page.setViewportSize({ width, height: width === 1280 ? 800 : 844 });
+  await page.evaluate(() => window.scrollTo(0, 200));
+  await page.waitForFunction(() => Math.abs(window.scrollY - 200) < 1);
+  const books = page.getByRole("button", { name: "Books" });
+  const before = width === 1280 ? (await books.boundingBox())?.x : null;
+  await books.click();
+  const dialog = page.getByRole("dialog", { name: "New Testament" });
+  await dialog.waitFor();
+  assert.equal(await page.evaluate(() => document.documentElement.classList.contains("modal-scroll-lock")), true, "Books did not lock the page");
+  const list = dialog.locator(".book-drawer");
+  await page.waitForFunction(() => (document.querySelector(".book-drawer")?.getBoundingClientRect().x ?? -1) >= -1);
+  await page.mouse.move(width - 16, 360);
+  await page.mouse.wheel(0, 600);
+  await assertStill(page, `${width} scrim wheel`);
+  if (touch) {
+    await touchDrag(page, width - 16, 520, 220);
+    await assertStill(page, `${width} scrim touch`);
+  }
+  const listBox = await list.boundingBox();
+  assert.ok(listBox && listBox.x >= -1, "drawer list has no box");
+  const top = await list.evaluate((node) => node.scrollTop);
+  await page.mouse.move(listBox.x + 48, Math.min(listBox.y + 280, listBox.y + listBox.height - 24));
+  await page.mouse.wheel(0, 480);
+  const next = await list.evaluate((node) => node.scrollTop);
+  assert.ok(next > top, `${width} drawer list did not scroll (${top} -> ${next})`);
+  await assertStill(page, `${width} drawer wheel`);
+  await page.keyboard.press("Escape");
+  await dialog.waitFor({ state: "hidden" });
+  await assertStill(page, `${width} close`);
+  assert.equal(await page.evaluate(() => document.activeElement?.getAttribute("aria-label")), "Books");
+  assert.equal(await page.evaluate(() => document.documentElement.classList.contains("modal-scroll-lock")), false);
+  if (before != null) {
+    const after = (await books.boundingBox())?.x;
+    assert.ok(after != null && Math.abs(after - before) < 1, `header shifted ${before} -> ${after}`);
+  }
+
+  await page.evaluate(() => window.scrollTo(0, 200));
+  await page.getByRole("button", { name: "Search", exact: true }).click();
+  const search = page.getByRole("dialog", { name: "Search the New Testament" });
+  await search.waitFor();
+  assert.equal(await page.evaluate(() => document.documentElement.classList.contains("modal-scroll-lock")), true);
+  await page.mouse.move(Math.min(200, width - 16), width === 1280 ? 700 : 760);
+  await page.mouse.wheel(0, 600);
+  await assertStill(page, `${width} search scrim wheel`);
+  await page.keyboard.press("Escape");
+  await search.waitFor({ state: "hidden" });
+  await assertStill(page, `${width} search close`);
+  assert.equal(await page.evaluate(() => document.documentElement.classList.contains("modal-scroll-lock")), false);
+}
+
 async function layout(page, size) {
   await page.setViewportSize({ width: size.width, height: size.height });
   const report = await page.evaluate(() => {
@@ -168,7 +238,7 @@ async function layout(page, size) {
   for (const height of report.rows) assert.ok(height + 0.5 >= 44, `${size.width} row ${height}`);
 }
 
-test("the home page keeps a manuscript interaction system", { timeout: 180000 }, async () => {
+test("the home page keeps a manuscript interaction system", { timeout: 240000 }, async () => {
   const server = await startBuiltServer();
   const browser = await chromium.launch({ headless: true, timeout: 30000 });
   try {
@@ -237,6 +307,20 @@ test("the home page keeps a manuscript interaction system", { timeout: 180000 },
     await dialog.waitFor();
     await page.mouse.click(700, 240);
     await dialog.waitFor({ state: "hidden" });
+    await assertScrollLock(page, 1280, false);
+
+    const phone = await browser.newContext({
+      viewport: { width: 390, height: 844 },
+      hasTouch: true,
+      serviceWorkers: "block",
+    });
+    const touchPage = await phone.newPage();
+    touchPage.setDefaultTimeout(15000);
+    await seed(touchPage, basePrefs({ last: { book: "mark", chapter: 4, verse: 12 } }));
+    await touchPage.goto(`${server.url}/`, { waitUntil: "networkidle" });
+    await touchPage.locator(".continue-card").getByText("verse 12 of 41").waitFor();
+    await assertScrollLock(touchPage, 390, true);
+    await phone.close();
 
     const bytes = await page.evaluate(() =>
       performance.getEntriesByType("resource")

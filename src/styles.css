@@ -15,6 +15,20 @@ html {
   overflow-x: clip;
 }
 
+html.modal-scroll-lock {
+  overflow: hidden;
+  overflow-x: clip;
+}
+@media (min-width: 1280px) {
+  html.modal-scroll-lock {
+    scrollbar-gutter: stable;
+  }
+}
+
+.book-drawer {
+  overscroll-behavior: contain;
+}
+
 html[data-help="off"] .info-mark {
   display: none;
 }
