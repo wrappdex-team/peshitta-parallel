@@ -17,7 +17,7 @@ const PAGES = [
   { path: "/words", readName: "Read these words aloud" },
 ];
 
-function speechStub() {
+function speechStub(hold) {
   const voices = [
     {
       name: "English Test",
@@ -31,11 +31,13 @@ function speechStub() {
   let speaking = false;
   let paused = false;
   let ticket = 0;
-  // Each phrase ends so the reading moves on. Cancel drops the phrase that was in flight.
+  // Each phrase ends so the reading moves on, unless this check holds the phrase.
+  // A phrase that ends scrolls the page, which races a focus sample.
   const speak = (utter) => {
     speaking = true;
     paused = false;
     const mine = ++ticket;
+    if (hold) return;
     window.setTimeout(() => {
       if (mine !== ticket || paused) return;
       speaking = false;
@@ -622,8 +624,12 @@ async function assertSpeedReachable(page, label) {
   assert.ok(view && box.y >= -1 && box.y + box.height <= view.height + 1, `${label} speed is outside the viewport`);
   assert.ok(view && box.x >= -1 && box.x + box.width <= view.width + 1, `${label} speed is wider than the screen`);
   const before = ((await page.locator(".read-bar-compact .read-bar-speed span.tabular-nums").textContent()) || "").trim();
-  await speed.focus();
-  assert.equal(await page.evaluate(() => window.scrollY), beforeY, `${label} focus moved the page`);
+  const jump = await speed.evaluate((el) => {
+    const y0 = window.scrollY;
+    el.focus();
+    return [y0, window.scrollY];
+  });
+  assert.equal(jump[1], jump[0], `${label} focus moved the page ${jump[1]} !== ${jump[0]}`);
   await speed.press("ArrowRight");
   await page.waitForFunction(
     (prev) => {
@@ -644,7 +650,7 @@ test("Speed stays reachable and the verse keeps a 120px band", { timeout: 180000
       const context = await openContext(browser, { viewport: { width: entry.width, height: entry.height } });
       const page = await context.newPage();
       await seedPrefs(page);
-      await page.addInitScript(speechStub);
+      await page.addInitScript(speechStub, true);
       await page.goto(`${server.url}${entry.path}`, { waitUntil: "domcontentloaded" });
       const read = page.getByRole("button", { name: entry.readName });
       await read.waitFor({ state: "visible", timeout: 20000 });
