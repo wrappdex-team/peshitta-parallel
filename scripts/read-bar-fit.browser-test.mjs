@@ -274,6 +274,13 @@ function seedPrefs(page) {
   });
 }
 
+/** The reader service worker caches navigations. A half-installed worker stalls the next page under CI load. */
+async function openContext(browser, options = {}) {
+  const context = await browser.newContext({ ...options, reducedMotion: "reduce", serviceWorkers: "block" });
+  context.setDefaultNavigationTimeout(60000);
+  return context;
+}
+
 /** Wait until smooth scroll has stopped, so a band sample is not taken mid-flight. */
 async function scrollSettled(page) {
   await page.evaluate(
@@ -322,7 +329,7 @@ async function assertVoice(page, label) {
 }
 
 async function readJohn(browser, url, options, label) {
-  const context = await browser.newContext({ ...options, reducedMotion: "reduce" });
+  const context = await openContext(browser, options);
   const page = await context.newPage();
   await seedPrefs(page);
   await page.addInitScript(speechStub);
@@ -400,7 +407,7 @@ test("the open band keeps each verse while Read follows", { timeout: 180000 }, a
         { path: "/read/john/3", readName: "Read this chapter aloud" },
         { path: "/words", readName: "Read these words aloud" },
       ]) {
-        const context = await browser.newContext({ ...size.options, reducedMotion: "reduce" });
+        const context = await openContext(browser, size.options);
         const page = await context.newPage();
         await seedPrefs(page);
         await page.addInitScript(speechStub);
@@ -467,7 +474,7 @@ test("the Read bar keeps its controls and the verse on short screens", { timeout
   try {
     for (const size of SIZES) {
       for (const entry of PAGES) {
-        const context = await browser.newContext({ viewport: size, reducedMotion: "reduce" });
+        const context = await openContext(browser, { viewport: size });
         const page = await context.newPage();
         await seedPrefs(page);
         await page.addInitScript(speechStub);
@@ -564,7 +571,7 @@ test("the voice label fits, and Escape closes one layer", { timeout: 180000 }, a
   const browser = await chromium.launch({ headless: true, timeout: 30000 });
   try {
     for (const size of VOICE_SIZES) {
-      const context = await browser.newContext({ viewport: size, reducedMotion: "reduce" });
+      const context = await openContext(browser, { viewport: size });
       const page = await context.newPage();
       await seedPrefs(page);
       await page.addInitScript(speechStub);
