@@ -1,4 +1,4 @@
-import { readdirSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import type { Plugin } from "vite";
 import { defineConfig } from "vite";
@@ -142,6 +142,24 @@ function authPopupPlugin(): Plugin {
   };
 }
 
+function stampShellPlugin(): Plugin {
+  return {
+    name: "injeel-shell-stamp",
+    apply: "build",
+    async closeBundle() {
+      const file = join(process.cwd(), ".vercel/output/static/reader-sw.js");
+      const deadline = Date.now() + 20000;
+      while (!existsSync(file) && Date.now() < deadline) {
+        await new Promise((resolve) => setTimeout(resolve, 200));
+      }
+      if (!existsSync(file)) return;
+      const id = Date.now().toString(36);
+      const source = readFileSync(file, "utf8").replaceAll("__INJEEL_SHELL_ID__", id);
+      writeFileSync(file, source);
+    },
+  };
+}
+
 // `0.0.0.0:8080` is the live-preview contract — don't change host/port.
 // The dev server starts once `src/router.tsx` and `src/routes/` exist — see
 // AGENTS.md § "First scaffold".
@@ -179,5 +197,6 @@ export default defineConfig(({ command, isPreview }) => ({
         ]
       : []),
     viteReact(),
+    stampShellPlugin(),
   ],
 }));
