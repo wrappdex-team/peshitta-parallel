@@ -40,6 +40,25 @@ export function SiteHeader({
     };
   }, []);
 
+  useEffect(() => {
+    function onKey(event: KeyboardEvent) {
+      if (event.isComposing || event.altKey) return;
+      const target = event.target;
+      if (target instanceof HTMLElement) {
+        const tag = target.tagName;
+        if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || target.isContentEditable) return;
+      }
+      if (document.querySelector("dialog[open]")) return;
+      const slash = event.key === "/" && !event.ctrlKey && !event.metaKey;
+      const find = (event.key === "k" || event.key === "K") && (event.ctrlKey || event.metaKey);
+      if (!slash && !find) return;
+      event.preventDefault();
+      setSearch(true);
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
   return (
     <>
       <header className="sticky top-0 z-20 border-b border-line bg-paper pt-safe">
@@ -61,7 +80,7 @@ export function SiteHeader({
             {subtitle ? <span className="block truncate text-xs text-gold">{subtitle}</span> : null}
           </div>
           <div className="flex">
-            <button type="button" className="ink-icon flex size-11 items-center justify-center" aria-label="Search" onClick={() => setSearch(true)}>
+            <button type="button" className="ink-icon flex size-11 items-center justify-center" aria-label="Search" aria-keyshortcuts="/ Control+K" onClick={() => setSearch(true)}>
               <Search className="size-5" />
             </button>
             <button

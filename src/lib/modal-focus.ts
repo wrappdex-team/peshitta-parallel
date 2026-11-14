@@ -97,13 +97,15 @@ export function activateModal(dialog: HTMLDialogElement, dismiss: () => void) {
       (items[event.shiftKey ? items.length - 1 : 0] ?? dialog).focus();
     }
   }
-  function scrollPort(target: EventTarget | null) {
+  function scrollPort(target: EventTarget | null, axis: "x" | "y") {
     const view = dialog.ownerDocument.defaultView;
     let node: EventTarget | null = target;
     while (node && node !== dialog && typeof node === "object" && "parentElement" in node) {
       const element = node as HTMLElement;
-      const over = view?.getComputedStyle(element).overflowY;
-      if ((over === "auto" || over === "scroll" || over === "overlay") && element.scrollHeight > element.clientHeight + 1) return element;
+      const style = view?.getComputedStyle(element);
+      const overflow = axis === "x" ? style?.overflowX : style?.overflowY;
+      const room = axis === "x" ? element.scrollWidth > element.clientWidth + 1 : element.scrollHeight > element.clientHeight + 1;
+      if ((overflow === "auto" || overflow === "scroll" || overflow === "overlay") && room) return element;
       node = element.parentElement;
     }
     return null;
@@ -113,10 +115,17 @@ export function activateModal(dialog: HTMLDialogElement, dismiss: () => void) {
       if (event.target === dialog) event.preventDefault();
       return;
     }
-    const scroller = scrollPort(event.target);
+    const wheel = event as WheelEvent;
+    // Pinch-zoom and sideways wheels belong to the browser, or to a row that can scroll.
+    if (wheel.ctrlKey || wheel.metaKey) return;
+    if (Math.abs(wheel.deltaX) > Math.abs(wheel.deltaY)) {
+      if (!scrollPort(event.target, "x")) event.preventDefault();
+      return;
+    }
+    const scroller = scrollPort(event.target, "y");
     event.preventDefault();
-    if (!scroller || !("deltaY" in event)) return;
-    const delta = Number((event as WheelEvent).deltaY) || 0;
+    if (!scroller) return;
+    const delta = Number(wheel.deltaY) || 0;
     const max = scroller.scrollHeight - scroller.clientHeight;
     scroller.scrollTop = Math.max(0, Math.min(max, scroller.scrollTop + delta));
   }

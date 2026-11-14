@@ -5,9 +5,8 @@ import { test } from "node:test";
 import { chromium } from "playwright";
 import { startBuiltServer } from "./serve-built.mjs";
 
-// Home script transfer on origin/main edd6bfc was 1,430,820 bytes.
-// This branch measured 1,439,024 (8,204 more). The cap is main + 12 KB.
-const HOME_JS_CAP = 1_430_820 + 12 * 1024;
+// Home script transfer on main 0fdc48d was 1,440,788 bytes. The cap is main + 6 KB.
+const HOME_JS_CAP = 1_440_788 + 6 * 1024;
 const SIZES = [
   { width: 390, height: 844, columns: 2 },
   { width: 206, height: 457, columns: 2 },
@@ -182,6 +181,13 @@ async function assertScrollLock(page, width, touch) {
   await page.mouse.move(width - 16, 360);
   await page.mouse.wheel(0, 600);
   await assertStill(page, `${width} scrim wheel`);
+  const zoom = await page.evaluate(() => {
+    const open = document.querySelector("dialog[open]");
+    const event = new WheelEvent("wheel", { deltaY: 100, ctrlKey: true, cancelable: true, bubbles: true });
+    open.dispatchEvent(event);
+    return event.defaultPrevented;
+  });
+  assert.equal(zoom, false, `${width} zoom wheel was cancelled`);
   if (touch) {
     await touchDrag(page, width - 16, 520, 220);
     await assertStill(page, `${width} scrim touch`);
@@ -238,6 +244,261 @@ async function layout(page, size) {
   for (const height of report.rows) assert.ok(height + 0.5 >= 44, `${size.width} row ${height}`);
 }
 
+async function titleLineStarts(page) {
+  return page.evaluate(() => {
+    const name = document.querySelector(".continue-card [data-book-name]");
+    const lines = [];
+    const walker = document.createTreeWalker(name, NodeFilter.SHOW_TEXT, {
+      acceptNode(node) {
+        return node.parentElement?.closest(".sr-only") ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT;
+      },
+    });
+    let current = null;
+    while (walker.nextNode()) {
+      const value = walker.currentNode.textContent || "";
+      for (let index = 0; index < value.length; index += 1) {
+        const range = document.createRange();
+        range.setStart(walker.currentNode, index);
+        range.setEnd(walker.currentNode, index + 1);
+        const rect = range.getClientRects()[0];
+        if (!rect || rect.width < 0.2) continue;
+        const ch = value[index];
+        if (!ch.trim()) continue;
+        if (!current || Math.abs(current.top - rect.top) > 3) {
+          current = { top: rect.top, first: ch };
+          lines.push(current);
+        }
+      }
+    }
+    return lines.map((line) => line.first);
+  });
+}
+
+async function assertTitleLines(page) {
+  for (const width of [206, 320, 390, 1280]) {
+    await page.setViewportSize({ width, height: width === 1280 ? 800 : 844 });
+    const starts = await titleLineStarts(page);
+    assert.ok(starts.length > 0, `${width} title had no lines`);
+    for (const first of starts) assert.notEqual(first, "·", `${width} title line starts with a dot ${JSON.stringify(starts)}`);
+    if (width === 1280) assert.equal(starts.length, 1, `${width} title lines ${JSON.stringify(starts)}`);
+  }
+}
+
+async function assertKeyboard(page) {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.evaluate(() => document.body.focus());
+  await page.evaluate(() => {
+    const marker = document.createElement("button");
+    document.body.prepend(marker);
+    marker.focus();
+    marker.remove();
+  });
+  await page.keyboard.press("Tab");
+  const skip = await page.evaluate(() => {
+    const el = document.activeElement;
+    const box = el.getBoundingClientRect();
+    return { text: (el.textContent || "").replace(/\s+/g, " ").trim(), top: box.top, height: box.height };
+  });
+  assert.equal(skip.text, "Skip to books");
+  assert.ok(skip.top >= -1 && skip.top < 140 && skip.height > 8, `skip link hidden ${JSON.stringify(skip)}`);
+  await page.keyboard.press("Enter");
+  assert.match(await page.evaluate(() => document.activeElement?.getAttribute("aria-label") || ""), /^Matthew/);
+
+  await page.keyboard.press("/");
+  const search = page.getByRole("dialog", { name: "Search the New Testament" });
+  await search.waitFor();
+  assert.equal(await page.evaluate(() => document.activeElement?.getAttribute("aria-label")), "Search words or a reference");
+  await page.keyboard.type("/");
+  assert.equal(await search.locator("input[type='search']").inputValue(), "/");
+  await page.keyboard.press("Escape");
+  await search.waitFor({ state: "hidden" });
+
+  await page.keyboard.press("Control+k");
+  await search.waitFor();
+  assert.equal(await page.evaluate(() => document.activeElement?.getAttribute("aria-label")), "Search words or a reference");
+  await page.keyboard.press("Escape");
+  await search.waitFor({ state: "hidden" });
+  assert.match(await page.getByRole("button", { name: "Search", exact: true }).getAttribute("aria-keyshortcuts") || "", /Control\+K/);
+
+  await page.getByRole("button", { name: "Books" }).click();
+  const books = page.getByRole("dialog", { name: "New Testament" });
+  await books.waitFor();
+  await page.keyboard.press("/");
+  assert.equal(await page.getByRole("dialog", { name: "Search the New Testament" }).count(), 0);
+  await page.keyboard.press("Escape");
+  await books.waitFor({ state: "hidden" });
+}
+
+async function infoLineAverage(page) {
+  return page.evaluate(() => {
+    const body = document.querySelector(".help-sheet-body p");
+    const lines = [];
+    const walker = document.createTreeWalker(body, NodeFilter.SHOW_TEXT);
+    let current = null;
+    while (walker.nextNode()) {
+      const value = walker.currentNode.textContent || "";
+      for (let index = 0; index < value.length; index += 1) {
+        const range = document.createRange();
+        range.setStart(walker.currentNode, index);
+        range.setEnd(walker.currentNode, index + 1);
+        const rect = range.getClientRects()[0];
+        if (!rect || rect.width < 0.2) continue;
+        if (!value[index].trim()) continue;
+        if (!current || Math.abs(current.top - rect.top) > 3) {
+          current = { top: rect.top, count: 0 };
+          lines.push(current);
+        }
+        current.count += 1;
+      }
+    }
+    return lines.reduce((sum, line) => sum + line.count, 0) / lines.length;
+  });
+}
+
+async function assertInfoSheet(page, width, height, touch) {
+  await page.setViewportSize({ width, height });
+  await page.evaluate(() => window.scrollTo(0, 200));
+  await page.waitForFunction(() => Math.abs(window.scrollY - 200) < 1);
+  await page.evaluate(() => {
+    const button = document.querySelector('button[aria-label="About Injeel"]');
+    button.focus({ preventScroll: true });
+    button.click();
+  });
+  const sheet = page.locator(".help-sheet");
+  await sheet.waitFor();
+  const box = await sheet.boundingBox();
+  const view = page.viewportSize();
+  assert.ok(box && view, "info sheet has no box");
+  if (width < 640) {
+    assert.ok(box.width >= view.width - 2, `${width} info width ${box.width}`);
+    assert.ok(box.height >= view.height - 2, `${width} info height ${box.height}`);
+  } else {
+    assert.ok(box.width >= 560, `wide info width ${box.width}`);
+    assert.ok(Math.abs(box.x + box.width / 2 - view.width / 2) <= 16, `info not centred ${box.x}`);
+  }
+  const scroll = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+  assert.ok(scroll <= 1, `${width} info horizontal scroll ${scroll}`);
+  if (width === 390) assert.ok((await infoLineAverage(page)) >= 25, "info lines are too short");
+  await page.mouse.move(Math.min(width - 20, 180), Math.min(height - 40, 360));
+  await page.mouse.wheel(0, 600);
+  await assertStill(page, `${width} info wheel`);
+  if (touch) {
+    await touchDrag(page, Math.min(70, width / 2), Math.min(520, height - 30), Math.min(240, height / 2));
+    await assertStill(page, `${width} info touch`);
+  }
+  await page.keyboard.press("Escape");
+  await sheet.waitFor({ state: "hidden" });
+  await assertStill(page, `${width} info escape`);
+  assert.equal(await page.evaluate(() => document.activeElement?.getAttribute("aria-label")), "About Injeel");
+  await page.evaluate(() => {
+    const button = document.querySelector('button[aria-label="About Injeel"]');
+    button.focus({ preventScroll: true });
+    button.click();
+  });
+  await sheet.waitFor();
+  await sheet.getByRole("button", { name: "Close" }).click();
+  await sheet.waitFor({ state: "hidden" });
+  await assertStill(page, `${width} info close`);
+  assert.equal(await page.evaluate(() => document.activeElement?.getAttribute("aria-label")), "About Injeel");
+}
+
+async function assertMarkTap(page) {
+  for (const width of [206, 220, 230]) {
+    await page.setViewportSize({ width, height: 520 });
+    const hit = await page.evaluate(() => {
+      const button = document.querySelector('button[aria-label="About Injeel"]');
+      const box = button.getBoundingClientRect();
+      const points = [
+        [box.left + box.width / 2, box.top + box.height / 2],
+        [box.right - 1, box.top + box.height / 2],
+      ];
+      const hits = points.map(([x, y]) => {
+        const node = document.elementFromPoint(x, y);
+        return node === button || button.contains(node);
+      });
+      const sy = document.querySelector(".home-mark")?.getBoundingClientRect();
+      const overlap = Boolean(
+        sy && box.left < sy.right - 0.5 && box.right > sy.left + 0.5 && box.top < sy.bottom - 0.5 && box.bottom > sy.top + 0.5,
+      );
+      return { hits, overlap };
+    });
+    assert.deepEqual(hit.hits, [true, true], `${width} (i) tap ${JSON.stringify(hit)}`);
+    assert.equal(hit.overlap, false, `${width} Syriac covers the (i)`);
+  }
+  for (const width of [240, 320, 390, 1280]) {
+    await page.setViewportSize({ width, height: width === 1280 ? 800 : 700 });
+    const row = await page.evaluate(() => {
+      const title = document.querySelector("main h1").getBoundingClientRect();
+      const sy = document.querySelector(".home-mark").getBoundingClientRect();
+      return title.bottom > sy.top + 2 && sy.bottom > title.top + 2;
+    });
+    assert.equal(row, true, `${width} title and Syriac are not one row`);
+  }
+}
+
+async function assertBookSheet(page, theme) {
+  if (theme === "night") {
+    await page.getByRole("button", { name: "Night theme" }).click();
+    await page.waitForFunction(() => document.documentElement.dataset.theme === "night");
+  }
+  for (const width of [360, 390, 412]) {
+    await page.setViewportSize({ width, height: 844 });
+    await page.getByRole("button", { name: "Books" }).click();
+    const dialog = page.getByRole("dialog", { name: "New Testament" });
+    await dialog.waitFor();
+    const report = await page.evaluate(() => {
+      const sheet = document.querySelector(".book-drawer");
+      const style = getComputedStyle(sheet);
+      const sheetBox = sheet.getBoundingClientRect();
+      const padL = parseFloat(style.paddingLeft);
+      const padR = parseFloat(style.paddingRight);
+      const current = sheet.querySelector("[aria-current='true']");
+      const name = current.querySelector("[data-book-name]").getBoundingClientRect();
+      const before = getComputedStyle(current, "::before");
+      const barRight = current.getBoundingClientRect().left + (parseFloat(before.left) || 0) + (parseFloat(before.width) || 0);
+      const heights = [...sheet.querySelectorAll("a.ink-row")].slice(0, 7).map((row) => row.getBoundingClientRect().height);
+      const dividerPast = [...sheet.querySelectorAll("a.ink-row")].some((row) => row.getBoundingClientRect().right > sheetBox.right - padR + 1);
+      const visible = [...sheet.querySelectorAll("a[href*='/read/']")].filter((link) => {
+        const box = link.getBoundingClientRect();
+        return box.height > 20 && box.top >= sheetBox.top - 1 && box.bottom <= sheetBox.bottom + 1;
+      }).length;
+      return {
+        padL,
+        textFromSheet: name.left - sheetBox.left,
+        textFromBar: name.left - barRight,
+        heights,
+        dividerPast,
+        visible,
+        scroll: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      };
+    });
+    assert.ok(report.padL >= 16, `${theme} ${width} padding ${report.padL}`);
+    assert.ok(report.textFromSheet >= 16, `${theme} ${width} text inset ${report.textFromSheet}`);
+    assert.ok(report.textFromBar >= 8, `${theme} ${width} bar gap ${report.textFromBar}`);
+    assert.equal(report.dividerPast, false, `${theme} ${width} divider escapes`);
+    for (const height of report.heights) assert.ok(height <= 64, `${theme} ${width} row ${height}`);
+    assert.ok(report.visible >= 7, `${theme} ${width} visible books ${report.visible}`);
+    assert.ok(report.scroll <= 1, `${theme} ${width} horizontal scroll`);
+    const close = dialog.getByRole("button", { name: "Close" });
+    await dialog.locator(".book-drawer").evaluate((node) => {
+      node.scrollTop = 480;
+    });
+    const parked = await close.boundingBox();
+    assert.ok(parked && parked.y >= -1 && parked.y < 80 && parked.height >= 40, `${theme} ${width} header left ${JSON.stringify(parked)}`);
+    if (width === 390 && theme === "day") {
+      await close.click();
+    } else {
+      await page.keyboard.press("Escape");
+    }
+    await dialog.waitFor({ state: "hidden" });
+    assert.equal(await page.evaluate(() => document.activeElement?.getAttribute("aria-label")), "Books");
+  }
+  if (theme === "night") {
+    await page.getByRole("button", { name: "Day theme" }).click();
+    await page.waitForFunction(() => document.documentElement.dataset.theme === "day");
+  }
+}
+
 test("the home page keeps a manuscript interaction system", { timeout: 240000 }, async () => {
   const server = await startBuiltServer();
   const browser = await chromium.launch({ headless: true, timeout: 30000 });
@@ -259,6 +520,9 @@ test("the home page keeps a manuscript interaction system", { timeout: 240000 },
     await card.getByText("4:12", { exact: true }).waitFor();
     assert.equal(await card.getByRole("progressbar").getAttribute("aria-valuenow"), "29");
     assert.match(await card.getAttribute("aria-label"), /Continue Mark/);
+    await assertTitleLines(page);
+    await assertKeyboard(page);
+    await assertMarkTap(page);
 
     for (const size of SIZES) await layout(page, size);
     assert.ok(await contrast(page) >= 4.5, "day gold contrast");
@@ -308,6 +572,12 @@ test("the home page keeps a manuscript interaction system", { timeout: 240000 },
     await page.mouse.click(700, 240);
     await dialog.waitFor({ state: "hidden" });
     await assertScrollLock(page, 1280, false);
+    await assertInfoSheet(page, 1280, 800, false);
+    await assertInfoSheet(page, 360, 800, false);
+    await assertInfoSheet(page, 412, 915, false);
+    await assertInfoSheet(page, 206, 457, false);
+    await assertBookSheet(page, "day");
+    await assertBookSheet(page, "night");
 
     const phone = await browser.newContext({
       viewport: { width: 390, height: 844 },
@@ -320,6 +590,7 @@ test("the home page keeps a manuscript interaction system", { timeout: 240000 },
     await touchPage.goto(`${server.url}/`, { waitUntil: "networkidle" });
     await touchPage.locator(".continue-card").getByText("verse 12 of 41").waitFor();
     await assertScrollLock(touchPage, 390, true);
+    await assertInfoSheet(touchPage, 390, 844, true);
     await phone.close();
 
     const bytes = await page.evaluate(() =>

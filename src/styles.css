@@ -27,13 +27,121 @@ html.modal-scroll-lock {
 
 .book-drawer {
   overscroll-behavior: contain;
+  height: 100%;
+  width: calc(100% - 1.25rem);
+  max-width: none;
+  overflow-y: auto;
+  background: var(--paper);
+  padding-inline: max(16px, env(safe-area-inset-left, 0px));
+  padding-bottom: max(16px, env(safe-area-inset-bottom, 0px));
+}
+@media (min-width: 640px) {
+  .book-drawer {
+    width: 20rem;
+    max-width: 85%;
+  }
+}
+.book-drawer-bar {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 2.75rem;
+  margin-inline: calc(-1 * max(16px, env(safe-area-inset-left, 0px)));
+  padding-inline: max(16px, env(safe-area-inset-left, 0px));
+  padding-top: env(safe-area-inset-top, 0px);
+  background: var(--paper);
+}
+.book-drawer .book-name {
+  margin-left: 0.75rem;
+}
+.book-name[data-broken] [data-dot] {
+  display: none;
+}
+
+.home-title {
+  row-gap: 0.5rem;
+}
+@media (max-width: 239px) {
+  .home-mark {
+    flex-basis: 100%;
+  }
+}
+@media (min-width: 240px) {
+  .home-title {
+    flex-wrap: nowrap;
+  }
+}
+
+.skip-books {
+  position: absolute;
+  left: 1rem;
+  top: 0;
+  z-index: 40;
+  transform: translateY(-120%);
+  background: var(--paper);
+  color: var(--ink);
+  padding: 0.5rem 0.75rem;
+}
+.skip-books:focus {
+  transform: none;
+}
+
+.help-scrim {
+  width: 100%;
+  height: 100dvh;
+}
+.help-sheet {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  flex-direction: column;
+  background: var(--paper);
+  color: var(--ink);
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.help-sheet-bar {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  min-height: 2.75rem;
+  padding-inline: max(16px, env(safe-area-inset-left, 0px));
+  background: var(--paper);
+}
+.help-sheet-body {
+  width: min(38rem, 100%);
+  margin-inline: auto;
+  flex: 1;
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: 1rem max(16px, env(safe-area-inset-right, 0px)) 1.5rem max(16px, env(safe-area-inset-left, 0px));
+}
+@media (min-width: 640px) {
+  .help-scrim {
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+  .help-sheet {
+    width: min(36rem, 90vw);
+    height: auto;
+    max-height: min(85dvh, 100%);
+    min-height: 16rem;
+  }
 }
 
 html[data-help="off"] .info-mark {
   display: none;
 }
 
-/* Below a full row, the Syriac title takes the next line and stays at the end. */
+/* The Syriac title takes the next line only when the row itself is under 300px. */
 .book-row {
   container-type: inline-size;
 }
@@ -45,7 +153,7 @@ html[data-help="off"] .info-mark {
   margin-inline-start: auto;
   max-width: 100%;
 }
-@container (max-width: 22.5rem) {
+@container (max-width: 299px) {
   .book-row {
     flex-direction: column;
     align-items: stretch;
@@ -419,11 +527,8 @@ dialog[open] > div {
   }
 }
 
-/* The say sits under the English name on the Continue card only. */
-.continue-card .book-name {
-  flex-direction: column;
-  align-items: flex-start;
-}
+/* The say stays on the English line. The dot drops only when that line breaks. */
+
 .continue-slot,
 .continue-card {
   min-height: 13.5rem;

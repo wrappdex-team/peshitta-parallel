@@ -349,10 +349,10 @@ function Reader() {
 
       {menu && (
         <Modal label="Books" className="fixed inset-0 z-30 flex bg-scrim" onClose={() => setMenu(false)}>
-          <nav className="h-full w-80 max-w-[85%] overflow-y-auto bg-paper p-4 pt-safe pb-safe" onClick={(event) => event.stopPropagation()} aria-label="Books">
-            <div className="mb-3 flex items-center justify-between">
+          <nav className="book-drawer" onClick={(event) => event.stopPropagation()} aria-label="Books">
+            <div className="book-drawer-bar">
               <h2 className="font-serif text-lg">New Testament</h2>
-              <button type="button" className="min-h-11 px-2 text-sm text-garnet" onClick={() => setMenu(false)}>
+              <button type="button" className="inline-flex size-11 items-center justify-center text-sm text-garnet" onClick={() => setMenu(false)}>
                 Close
               </button>
             </div>

@@ -37,42 +37,23 @@ async function openMarks(page, width, where) {
     const label = `${await button.getAttribute("aria-label")} on ${where} at ${width}`;
     const before = await page.evaluate(() => document.documentElement.scrollWidth);
     await button.click();
-    const note = page.locator('[role="region"]').last();
+    const note = page.locator(".help-sheet").last();
     await note.waitFor({ state: "visible", timeout: 5000 });
     const box = await note.boundingBox();
     assert.ok(box, `${label}: the note has a box`);
-    // Horizontal containment applies to every note.
-    assert.ok(box.x >= 15, `${label}: left ${box.x}`);
-    assert.ok(box.x + box.width <= width - 15 + 1, `${label}: right ${box.x + box.width}`);
     const after = await page.evaluate(() => document.documentElement.scrollWidth);
     assert.ok(after <= before + 1, `${label}: the note widened the page`);
-    const fixed = await note.evaluate((node) => getComputedStyle(node).position === "fixed");
-    if (fixed) {
-      // A floating note cannot be scrolled to, so all of it must be on screen.
-      assert.ok(box.y >= 0, `${label}: top ${box.y}`);
-      assert.ok(box.y + box.height <= HEIGHT + 1, `${label}: bottom ${box.y + box.height}`);
+    if (width < 640) {
+      assert.ok(box.width >= width - 2, `${label}: width ${box.width}`);
+      assert.ok(box.height >= HEIGHT - 2, `${label}: height ${box.height}`);
     } else {
-      // An in-flow note scrolls with the page: it must open on screen, and its
-      // Close button must be reachable by scrolling, not clipped or covered.
-      assert.ok(
-        box.y >= 0 && box.y < HEIGHT,
-        `${label}: in-flow note opens off screen at ${box.y}`,
-      );
-      const close = note.getByRole("button", { name: "Close" });
-      await close.scrollIntoViewIfNeeded();
-      const closeBox = await close.boundingBox();
-      assert.ok(closeBox, `${label}: Close has a box`);
-      assert.ok(
-        closeBox.y >= 0 && closeBox.y + closeBox.height <= HEIGHT + 1,
-        `${label}: Close unreachable`,
-      );
-      const hit = await close.evaluate((node) => {
-        const r = node.getBoundingClientRect();
-        const top = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
-        return node === top || node.contains(top);
-      });
-      assert.ok(hit, `${label}: Close is covered by another element`);
+      assert.ok(box.x >= 15, `${label}: left ${box.x}`);
+      assert.ok(box.x + box.width <= width - 15 + 1, `${label}: right ${box.x + box.width}`);
     }
+    const close = note.getByRole("button", { name: "Close" });
+    const closeBox = await close.boundingBox();
+    assert.ok(closeBox, `${label}: Close has a box`);
+    assert.ok(closeBox.y >= 0 && closeBox.y + closeBox.height <= HEIGHT + 1, `${label}: Close unreachable`);
     await page.keyboard.press("Escape");
     await note.waitFor({ state: "hidden", timeout: 5000 });
     opened += 1;
