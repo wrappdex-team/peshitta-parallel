@@ -225,9 +225,11 @@ html[data-reading="active"] [data-reading-tongue] {
   display: none;
 }
 
-/* Short screens: an open More panel must leave 120px of verse. The place line yields while it is open. */
+/* Short screens: an open More panel must leave 120px of verse. The place line yields while it is open.
+   Words of Y'shua keeps a taller header, so the Speed row yields there too. */
 @media (max-height: 500px) {
-  [data-read-bar][data-more="open"] .read-bar-compact > p {
+  [data-read-bar][data-more="open"] .read-bar-compact > p,
+  [data-read-bar][data-more="open"] .read-bar-speed {
     display: none;
   }
 }

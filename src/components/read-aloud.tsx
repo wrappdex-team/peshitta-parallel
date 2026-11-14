@@ -62,7 +62,11 @@ function VoiceMark() {
       setBox({ left, width });
     }
     function onKey(event: KeyboardEvent) {
-      if (event.key === "Escape") setOpen(false);
+      if (event.key !== "Escape") return;
+      event.preventDefault();
+      event.stopPropagation();
+      rootRef.current?.querySelector("button")?.focus();
+      setOpen(false);
     }
     function onPointer(event: PointerEvent) {
       const node = event.target;
@@ -74,12 +78,12 @@ function VoiceMark() {
     place();
     window.addEventListener("resize", place);
     window.addEventListener("scroll", place, true);
-    document.addEventListener("keydown", onKey);
+    document.addEventListener("keydown", onKey, true);
     document.addEventListener("pointerdown", onPointer);
     return () => {
       window.removeEventListener("resize", place);
       window.removeEventListener("scroll", place, true);
-      document.removeEventListener("keydown", onKey);
+      document.removeEventListener("keydown", onKey, true);
       document.removeEventListener("pointerdown", onPointer);
     };
   }, [open]);
@@ -474,7 +478,7 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
   useEffect(() => {
     if (!more) return;
     function onKey(event: KeyboardEvent) {
-      if (event.key !== "Escape") return;
+      if (event.key !== "Escape" || event.defaultPrevented) return;
       event.preventDefault();
       setMore(false);
       moreButton.current?.focus();
@@ -899,7 +903,7 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
           className="h-11 w-full min-w-0 max-w-full bg-paper text-sm text-ink"
           aria-label="Voice on this device"
         >
-          <option value="">Automatic language match</option>
+          <option value="">Auto voice</option>
           {voices.map((item) => (
             <option key={voiceKey(item)} value={voiceKey(item)}>
               {item.name} · {item.lang}
@@ -912,7 +916,7 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
 
   function speedControl(wide: boolean) {
     return (
-      <label className="flex h-11 min-w-11 max-w-full shrink-0 items-center gap-2 border-l border-line px-3">
+      <label className="read-bar-speed flex h-11 min-w-11 max-w-full shrink-0 items-center gap-2 border-l border-line px-3">
         <span className="text-xs tracking-widest text-gold">SPEED</span>
         <input
           type="range"

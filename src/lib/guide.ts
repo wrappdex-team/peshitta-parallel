@@ -175,7 +175,7 @@ export const GUIDE: GuideSection[] = [
       { term: "Pause and Resume", text: "Hold the place, then continue it. The voice is still in session. Other speech on the page waits." },
       { term: "Stop", text: "Ends the session and clears the place." },
       { term: "Continue", text: "When it reads “Continuing”, the voice goes into the next chapter and the next book. When it reads “Continue”, the voice stops at the end of this chapter." },
-      { term: "Voice", text: "“Automatic language match” picks a device voice for the language on the page. You may choose a listed voice instead. The list is what this browser exposes, which is not always every voice installed on the phone." },
+      { term: "Voice", text: "“Auto voice” picks a device voice for the language on the page. You may choose a listed voice instead. The list is what this browser exposes, which is not always every voice installed on the phone." },
       { term: "Speed", text: "From 50 to 150. One hundred is the device’s ordinary rate." },
       { term: "Leaving the page", text: "The voice keeps going across the site until Stop. Pause and Stop stay on the bar." },
       { term: "Corner", text: "Where the browser allows it. Keeps the screen awake and can show a small player. It stays on the device." },
