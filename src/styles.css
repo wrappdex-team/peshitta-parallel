@@ -535,11 +535,6 @@ dialog[open] > div {
   .book-drawer {
     animation: book-in 200ms ease-out;
   }
-  @media (max-width: 280px) {
-    .book-drawer {
-      animation-name: book-in-narrow;
-    }
-  }
 
   @media (prefers-reduced-motion: reduce) {
     .ink-row,
@@ -586,12 +581,9 @@ dialog[open] > div {
   }
 }
 @keyframes book-in {
+  /* A full -100% parks the name box about 16px off the left edge. The title
+     audit then reads that as a spill. Keep a 2.5rem sliver on screen. */
   from {
-    transform: translateX(-100%);
-  }
-}
-@keyframes book-in-narrow {
-  from {
-    transform: translateX(-2.5rem);
+    transform: translateX(calc(-100% + 2.5rem));
   }
 }
