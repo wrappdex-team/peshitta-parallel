@@ -4,9 +4,15 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>Offline — Injeel</title>
+    <script>
+      try {
+        var stored = JSON.parse(localStorage.getItem("peshitta-parallel") || "{}");
+        if (stored.theme === "night") document.documentElement.dataset.theme = "night";
+      } catch (e) {}
+    </script>
     <style>
-      :root { color-scheme: light; }
-      html { overflow-x: clip; }
+      html { overflow-x: clip; color-scheme: light; }
+      html[data-theme="night"] { color-scheme: dark; }
       body {
         margin: 0;
         background: #f3efe4;
@@ -16,6 +22,12 @@
       header {
         border-bottom: 1px solid #d9d0c0;
         background: #f3efe4;
+      }
+      html[data-theme="night"] body,
+      html[data-theme="night"] header {
+        background: #12110f;
+        color: #f0d78c;
+        border-color: #3a342c;
       }
       .row {
         display: flex;
@@ -35,6 +47,7 @@
         color: #7a2e38;
         text-decoration: none;
       }
+      html[data-theme="night"] a { color: #e7b4b8; }
     </style>
   </head>
   <body>
