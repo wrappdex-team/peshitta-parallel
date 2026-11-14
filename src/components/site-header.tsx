@@ -45,11 +45,11 @@ export function SiteHeader({
       <header className="sticky top-0 z-20 border-b border-line bg-paper pt-safe">
         <div className={`mx-auto flex items-center justify-between px-2 py-1 ${width}`}>
           {onBooks ? (
-            <button type="button" className="flex size-11 items-center justify-center" aria-label="Books" onClick={onBooks}>
+            <button type="button" className="ink-icon flex size-11 items-center justify-center" aria-label="Books" onClick={onBooks}>
               <Menu className="size-5" />
             </button>
           ) : (
-            <Link to="/" className="flex size-11 items-center justify-center" aria-label="All books">
+            <Link to="/" className="ink-icon flex size-11 items-center justify-center" aria-label="All books">
               <Menu className="size-5" />
             </Link>
           )}
@@ -61,12 +61,12 @@ export function SiteHeader({
             {subtitle ? <span className="block truncate text-xs text-gold">{subtitle}</span> : null}
           </div>
           <div className="flex">
-            <button type="button" className="flex size-11 items-center justify-center" aria-label="Search" onClick={() => setSearch(true)}>
+            <button type="button" className="ink-icon flex size-11 items-center justify-center" aria-label="Search" onClick={() => setSearch(true)}>
               <Search className="size-5" />
             </button>
             <button
               type="button"
-              className="flex size-11 items-center justify-center"
+              className="ink-icon flex size-11 items-center justify-center"
               aria-label={prefs.theme === "night" ? "Day theme" : "Night theme"}
               onClick={() => patch({ theme: prefs.theme === "night" ? "day" : "night" })}
             >
