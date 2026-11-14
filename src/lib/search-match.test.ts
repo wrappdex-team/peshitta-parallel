@@ -55,7 +55,7 @@ test("a reference opens the verse, including a space, a local title, and a chapt
   assert.equal(referenceFault("John 3:16", undefined, chapters, versesIn), "");
 });
 
-test("Jesus is Y'shua in this book, and Peter reaches Keefa and Petros", () => {
+test("Jesus is Y'shua in this book, and Peter reaches Keefa", () => {
   const jesus = nameMatches("Jesus", names);
   assert.ok(jesus.some((hit) => hit.id === "yshua" && hit.en === "Y'shua" && hit.alias));
   assert.deepEqual(verseNeedles("Jesus", jesus), ["Y'shua"]);
@@ -63,7 +63,9 @@ test("Jesus is Y'shua in this book, and Peter reaches Keefa and Petros", () => {
   assert.equal(nameMatches("Y’shua", names).some((hit) => hit.en === "Y'shua" && !hit.alias), true);
 
   const peter = verseNeedles("Peter", nameMatches("Peter", names)).sort();
-  assert.deepEqual(peter, ["Keefa", "Petros"]);
+  assert.deepEqual(peter, ["Keefa"]);
+  assert.deepEqual(verseNeedles("Petros", nameMatches("Petros", names)), ["Keefa"]);
+  assert.equal(nameSentence(nameMatches("Peter", names)), "Peter is Keefa in this book.");
 });
 
 test("Mary does not match Maryam, and God does not match ungodly", () => {
