@@ -3,6 +3,8 @@ import { activateModal, isTopModal } from "@/lib/modal-focus";
 
 type Props = {
   label: string;
+  /** Points the dialog's name at a heading. When set, aria-label is omitted. */
+  labelledBy?: string;
   className: string;
   onClose: () => void;
   children: ReactNode;
@@ -11,7 +13,7 @@ type Props = {
 };
 
 /** Mounted only while a sheet is open. Rerenders must not reopen it or steal focus. */
-export function Modal({ label, className, onClose, children, announce = false }: Props) {
+export function Modal({ label, labelledBy, className, onClose, children, announce = false }: Props) {
   const dialog = useRef<HTMLDialogElement>(null);
   const close = useRef(onClose);
   close.current = onClose;
@@ -21,7 +23,8 @@ export function Modal({ label, className, onClose, children, announce = false }:
   return (
     <dialog
       ref={dialog}
-      aria-label={label}
+      aria-label={labelledBy ? undefined : label}
+      aria-labelledby={labelledBy}
       role={announce ? "dialog" : undefined}
       aria-modal={announce ? true : undefined}
       className={`m-0 h-full max-h-none w-full max-w-none border-0 p-0 text-inherit backdrop:bg-transparent [&:not([open])]:hidden ${className}`}

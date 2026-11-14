@@ -107,8 +107,18 @@ async function assertUncopiedReader(page, label) {
 }
 
 async function copyJohn(page) {
-  await page.locator("[data-reading-tongue]").click();
-  await page.getByRole("button", { name: "Copy John" }).click();
+  const copy = page.getByRole("button", { name: "Copy John" });
+  const tongue = page.locator("[data-reading-tongue]");
+  for (let attempt = 0; attempt < 4; attempt += 1) {
+    await tongue.click();
+    try {
+      await copy.waitFor({ state: "visible", timeout: 4000 });
+      break;
+    } catch (error) {
+      if (attempt === 3) throw error;
+    }
+  }
+  await copy.click();
   await page.getByText("John is on this device in Español.").waitFor({ timeout: 30000 });
   await page.getByRole("button", { name: "Close", exact: true }).click();
 }

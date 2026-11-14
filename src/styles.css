@@ -15,6 +15,20 @@ html {
   overflow-x: clip;
 }
 
+html.modal-scroll-lock {
+  overflow: hidden;
+  overflow-x: clip;
+}
+@media (min-width: 1280px) {
+  html.modal-scroll-lock {
+    scrollbar-gutter: stable;
+  }
+}
+
+.book-drawer {
+  overscroll-behavior: contain;
+}
+
 html[data-help="off"] .info-mark {
   display: none;
 }
@@ -53,7 +67,7 @@ html[data-help="off"] .info-mark {
   --muted: #5e564c;
   --line: #d9d0c0;
   --garnet: #7a2e38;
-  --gold: #8d6b32;
+  --gold: #80602c;
   --gold-soft: #efe6d2;
   --syriac: #3d241c;
   --scrim: rgb(28 22 18 / 0.4);
@@ -402,5 +416,188 @@ dialog[open] > div {
   dialog[open] > div {
     animation: none;
     transition: none;
+  }
+}
+
+/* The say sits under the English name on the Continue card only. */
+.continue-card .book-name {
+  flex-direction: column;
+  align-items: flex-start;
+}
+.continue-slot,
+.continue-card {
+  min-height: 13.5rem;
+}
+@media (min-width: 481px) {
+  .continue-slot,
+  .continue-card {
+    min-height: 12.5rem;
+  }
+}
+@media (min-width: 1024px) {
+  .continue-slot,
+  .continue-card {
+    min-height: 11rem;
+  }
+}
+[data-study] {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+@media (min-width: 481px) {
+  [data-study] {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (min-width: 1024px) {
+  [data-study] {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+}
+
+@layer components {
+  :where(a, button, [role="button"], summary, select, input):focus-visible {
+    outline: 2px solid var(--garnet);
+    outline-offset: 2px;
+  }
+  :where(a, button, [role="button"], summary, select, input):focus:not(:focus-visible) {
+    outline: none;
+  }
+  .ink-row:focus-visible {
+    outline-offset: -2px;
+  }
+
+  .ink-row,
+  .ink-link,
+  .ink-icon {
+    position: relative;
+    isolation: isolate;
+    -webkit-tap-highlight-color: transparent;
+    transition: background-color 160ms ease, transform 160ms ease, text-decoration-color 160ms ease;
+  }
+  .ink-row {
+    min-height: 2.75rem;
+  }
+  .ink-row::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 2px;
+    background: var(--garnet);
+    transform: scaleY(0);
+    transform-origin: top;
+    transition: transform 160ms ease;
+  }
+  .ink-row[aria-current="true"]::before {
+    transform: scaleY(1);
+  }
+  .ink-icon {
+    border-radius: 9999px;
+  }
+  .ink-row::after,
+  .ink-link::after,
+  .ink-icon::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(
+      circle at var(--ink-x, 50%) var(--ink-y, 50%),
+      color-mix(in srgb, var(--garnet) 10%, transparent),
+      transparent 70%
+    );
+    opacity: 0;
+  }
+  @media (hover: hover) {
+    .ink-row:hover {
+      background: var(--paper-raised);
+    }
+    .ink-row:hover::before {
+      transform: scaleY(1);
+    }
+    .ink-link:hover {
+      text-decoration-line: underline;
+      text-underline-offset: 3px;
+      text-decoration-thickness: 1px;
+    }
+    .ink-icon:hover {
+      background: var(--gold-soft);
+    }
+  }
+  .ink-row:active,
+  .ink-row[data-pressed],
+  .ink-link:active,
+  .ink-link[data-pressed],
+  .ink-icon:active,
+  .ink-icon[data-pressed] {
+    transform: scale(0.985);
+    background: var(--gold-soft);
+    transition-duration: 80ms;
+  }
+  .ink-row[data-pressed]::after,
+  .ink-link[data-pressed]::after,
+  .ink-icon[data-pressed]::after {
+    opacity: 1;
+    animation: ink-bloom 280ms ease-out forwards;
+  }
+
+  .book-scrim {
+    background: var(--scrim);
+    animation: scrim-in 200ms ease-out;
+  }
+  .book-drawer {
+    animation: book-in 200ms ease-out;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ink-row,
+    .ink-link,
+    .ink-icon,
+    .ink-row::before,
+    .ink-row::after,
+    .ink-link::after,
+    .ink-icon::after,
+    .book-drawer,
+    .book-scrim {
+      transition: none;
+      animation: none;
+    }
+    .ink-row:active,
+    .ink-row[data-pressed],
+    .ink-link:active,
+    .ink-link[data-pressed],
+    .ink-icon:active,
+    .ink-icon[data-pressed] {
+      transform: none;
+      transition-duration: 0s;
+    }
+    .ink-row[data-pressed]::after,
+    .ink-link[data-pressed]::after,
+    .ink-icon[data-pressed]::after {
+      opacity: 0;
+      animation: none;
+    }
+  }
+}
+
+@keyframes ink-bloom {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+@keyframes scrim-in {
+  from {
+    background-color: transparent;
+  }
+}
+@keyframes book-in {
+  /* A full -100% parks the name box about 16px off the left edge. The title
+     audit then reads that as a spill. Keep a 2.5rem sliver on screen. */
+  from {
+    transform: translateX(calc(-100% + 2.5rem));
   }
 }
