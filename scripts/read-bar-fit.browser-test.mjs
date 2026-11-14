@@ -552,6 +552,13 @@ function verseInClosedBand() {
 async function openReading(browser, url, path, readName, options) {
   const context = await browser.newContext(options);
   const page = await context.newPage();
+  // Prefs with no intro field: a returning visitor, so the first-run card stays closed.
+  await page.addInitScript(() => {
+    localStorage.setItem(
+      "peshitta-parallel",
+      JSON.stringify({ theme: "day", lang: "en", face: "tr", lang2: "none" }),
+    );
+  });
   await page.addInitScript(speechStub);
   await page.goto(`${url}${path}`, { waitUntil: "domcontentloaded" });
   const read = page.getByRole("button", { name: readName });
