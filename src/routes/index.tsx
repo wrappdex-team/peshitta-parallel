@@ -103,17 +103,19 @@ function Home() {
         {showPending ? <div role="progressbar" aria-label="Opening" className="pointer-events-none absolute inset-x-0 bottom-0 h-0.5 bg-gold" /> : null}
       </SiteHeader>
 
-      <main className="mx-auto max-w-3xl px-5 pb-page pt-10 sm:px-8 lg:max-w-4xl lg:px-12">
-        <p className="font-syriac text-3xl text-syriac" lang="syr" dir="rtl">
-          ܐܘܢܓܠܝܘܢ
-        </p>
-        <div className="mt-2 flex flex-wrap items-center gap-x-1">
-          <h1 className="font-serif text-4xl font-semibold tracking-tight">Injeel</h1>
-          <InfoMark id="open" place="flow" />
+      <main className="mx-auto max-w-3xl px-5 pb-page pt-3 sm:px-8 lg:max-w-4xl lg:px-12">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex min-w-0 flex-nowrap items-center gap-x-1">
+            <h1 className="font-serif text-2xl font-semibold leading-none tracking-tight min-[280px]:text-3xl min-[360px]:text-4xl">Injeel</h1>
+            <InfoMark id="open" place="flow" />
+          </div>
+          <p className="shrink-0 font-syriac text-xl leading-none text-syriac min-[280px]:text-2xl min-[360px]:text-3xl" lang="syr" dir="rtl">
+            ܐܘܢܓܠܝܘܢ
+          </p>
         </div>
-        <p className="mt-2 font-serif text-xl text-garnet">The words of Y'shua, kept.</p>
+        <p className="mt-1 font-serif text-lg leading-tight text-garnet min-[360px]:text-xl">The words of Y'shua, kept.</p>
 
-        <div className="continue-slot mt-6">
+        <div className="continue-slot mt-4">
           {ready ? (
             <Link
               to="/read/$book/$chapter"
