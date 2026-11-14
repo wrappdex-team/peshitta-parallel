@@ -363,7 +363,7 @@ test("the open band keeps each verse while Read follows", { timeout: 180000 }, a
           const gap = barTop - stackBottom;
           const meets = box.height > 1 && box.bottom > stackBottom + 0.5 && box.top < barTop - 0.5 && box.top >= stackBottom - 4;
           return gap + 0.5 >= 120 && meets;
-        }, { timeout: 1000 });
+        }, undefined, { timeout: 1000 });
         const opened = await bandReport(page);
         assertBand(opened, `${size.name} More open`);
         const fitted = await fitReport(page);
@@ -378,7 +378,7 @@ test("the open band keeps each verse while Read follows", { timeout: 180000 }, a
           const barTop = bar.getBoundingClientRect().top;
           const box = verse.getBoundingClientRect();
           return box.bottom > stackBottom + 0.5 && box.top < barTop - 0.5 && box.top >= stackBottom - 4;
-        }, { timeout: 1000 });
+        }, undefined, { timeout: 1000 });
         await more.click();
         await page.keyboard.press("Escape");
         await page.waitForFunction(() => {
@@ -388,7 +388,7 @@ test("the open band keeps each verse while Read follows", { timeout: 180000 }, a
             active.getAttribute("aria-expanded") === "false" &&
             (active.textContent || "").includes("More")
           );
-        }, { timeout: 1000 });
+        }, undefined, { timeout: 1000 });
         const closed = await bandReport(page);
         assert.equal(closed.intersects, true, `${size.name} verse left the band after Escape`);
       } finally {
@@ -444,7 +444,7 @@ test("the Read bar keeps its controls and the verse on short screens", { timeout
           sample.n += 1;
           window.__fitSample = sample;
           return sample.n >= 3;
-        }, { timeout: 8000 });
+        }, undefined, { timeout: 8000 });
         const playing = await fitReport(page);
         assertFit(playing, `${entry.path} ${size.name} playing`);
         if (playing.error) assert.fail(`${entry.path} ${size.name} ${playing.error}`);
@@ -489,6 +489,239 @@ test("the Read bar keeps its controls and the verse on short screens", { timeout
         }
         await context.close();
       }
+    }
+  } finally {
+    await browser.close();
+    await server.close();
+  }
+});
+
+const VOICE_VIEWPORTS = [
+  { name: "750×342", options: contextOptions(devices["iPhone 13 landscape"]) },
+  { name: "844×390", options: { viewport: { width: 844, height: 390 } } },
+  { name: "390×844", options: { viewport: { width: 390, height: 844 } } },
+  { name: "320×568", options: { viewport: { width: 320, height: 568 } } },
+  { name: "206×457", options: { viewport: { width: 206, height: 457 } } },
+];
+
+// A native select often reports scrollWidth === clientWidth while painting a cut word.
+// Measure the selected option in the select's font. Pass only when those glyphs fit, or the text itself ends in an ellipsis.
+function voiceLabelInPage(el) {
+  const selected = el.selectedIndex >= 0 ? el.options[el.selectedIndex] : null;
+  const text = selected ? selected.text : "";
+  const style = getComputedStyle(el);
+  const probe = document.createElement("span");
+  probe.textContent = text;
+  probe.style.cssText = "position:absolute;left:-9999px;top:0;white-space:nowrap;visibility:hidden";
+  probe.style.font = style.font;
+  probe.style.fontFamily = style.fontFamily;
+  probe.style.fontSize = style.fontSize;
+  probe.style.fontWeight = style.fontWeight;
+  probe.style.fontStyle = style.fontStyle;
+  probe.style.letterSpacing = style.letterSpacing;
+  document.body.appendChild(probe);
+  const textWidth = probe.getBoundingClientRect().width;
+  probe.remove();
+  const pad = (parseFloat(style.paddingLeft) || 0) + (parseFloat(style.paddingRight) || 0);
+  const rect = el.getBoundingClientRect();
+  return {
+    text,
+    textWidth,
+    room: el.clientWidth - pad,
+    clientWidth: el.clientWidth,
+    scrollWidth: el.scrollWidth,
+    height: rect.height,
+    aria: el.getAttribute("aria-label"),
+  };
+}
+
+function verseInOpenBand() {
+  const bar = document.querySelector("[data-read-bar]");
+  const header = document.querySelector("header");
+  const verse = document.querySelector("[data-listening]");
+  if (!bar || !verse) return false;
+  const tongue = document.querySelector("[data-reading-tongue]");
+  const tongueBox = tongue && getComputedStyle(tongue).display !== "none" ? tongue.getBoundingClientRect() : null;
+  const stackBottom = Math.max(header ? header.getBoundingClientRect().bottom : 0, tongueBox && tongueBox.height > 1 ? tongueBox.bottom : 0);
+  const barTop = bar.getBoundingClientRect().top;
+  const box = verse.getBoundingClientRect();
+  const meets = box.height > 1 && box.bottom > stackBottom + 0.5 && box.top < barTop - 0.5 && box.top >= stackBottom - 4;
+  return barTop - stackBottom + 0.5 >= 120 && meets;
+}
+
+function verseInClosedBand() {
+  const bar = document.querySelector("[data-read-bar]");
+  const header = document.querySelector("header");
+  const verse = document.querySelector("[data-listening]");
+  if (!bar || !verse || bar.getAttribute("data-more") !== "closed") return false;
+  const tongue = document.querySelector("[data-reading-tongue]");
+  const tongueBox = tongue && getComputedStyle(tongue).display !== "none" ? tongue.getBoundingClientRect() : null;
+  const stackBottom = Math.max(header ? header.getBoundingClientRect().bottom : 0, tongueBox && tongueBox.height > 1 ? tongueBox.bottom : 0);
+  const barTop = bar.getBoundingClientRect().top;
+  const box = verse.getBoundingClientRect();
+  const meets = box.height > 1 && box.bottom > stackBottom + 0.5 && box.top < barTop - 0.5 && box.top >= stackBottom - 4;
+  return barTop - stackBottom + 0.5 >= 120 && meets;
+}
+
+async function openReading(browser, url, path, readName, options) {
+  const context = await browser.newContext(options);
+  const page = await context.newPage();
+  // Prefs with no intro field: a returning visitor, so the first-run card stays closed.
+  await page.addInitScript(() => {
+    localStorage.setItem(
+      "peshitta-parallel",
+      JSON.stringify({ theme: "day", lang: "en", face: "tr", lang2: "none" }),
+    );
+  });
+  await page.addInitScript(speechStub);
+  await page.goto(`${url}${path}`, { waitUntil: "domcontentloaded" });
+  const read = page.getByRole("button", { name: readName });
+  await read.waitFor({ state: "visible", timeout: 20000 });
+  return { context, page, read };
+}
+
+async function assertVoiceLabel(page, label) {
+  const picker = page.getByRole("combobox", { name: "Voice on this device" });
+  if ((await picker.count()) === 0) {
+    const more = page.getByRole("button", { name: "More", exact: true });
+    assert.equal(await more.count(), 1, `${label} hides the voice picker and has no More button`);
+    if ((await more.getAttribute("aria-expanded")) !== "true") await more.click();
+  }
+  await picker.waitFor({ state: "visible" });
+  const mark = page.getByRole("button", { name: "Voice setup help" });
+  await mark.waitFor({ state: "visible" });
+  const measure = await picker.evaluate(voiceLabelInPage);
+  const markBox = await mark.boundingBox();
+  assert.equal(measure.aria, "Voice on this device", `${label} accessible name is ${measure.aria}`);
+  assert.ok(measure.text.length > 0, `${label} voice option is empty`);
+  assert.ok(measure.height + 0.5 >= 44, `${label} voice picker is ${measure.height}px tall`);
+  assert.ok(markBox && markBox.height + 0.5 >= 44, `${label} voice mark is ${markBox ? markBox.height : 0}px tall`);
+  const ellipsis = measure.text.endsWith("…") || measure.text.endsWith("...");
+  const fits = measure.scrollWidth <= measure.clientWidth + 1 && measure.textWidth <= measure.room + 1;
+  assert.ok(
+    fits || ellipsis,
+    `${label} voice text "${measure.text}" is ${measure.textWidth}px in ${measure.room}px (scroll ${measure.scrollWidth}, client ${measure.clientWidth})`,
+  );
+  assertFit(await fitReport(page), label);
+}
+
+async function settleListening(page) {
+  await page.locator("[data-listening]").waitFor({ state: "attached", timeout: 20000 });
+  await page.waitForFunction(() => {
+    const verse = document.querySelector("[data-listening]");
+    if (!verse) return false;
+    const top = Math.round(verse.getBoundingClientRect().top);
+    const sample = window.__moreSample || { id: "", top: null, n: 0 };
+    const id = verse.id;
+    if (sample.id !== id || sample.top !== top) {
+      window.__moreSample = { id, top, n: 1 };
+      return false;
+    }
+    sample.n += 1;
+    window.__moreSample = sample;
+    return sample.n >= 3;
+  }, undefined, { timeout: 15000 });
+}
+
+async function assertMoreBand(page, read, label) {
+  await read.click();
+  try {
+    await page.getByRole("button", { name: "Pause the reading" }).waitFor({ state: "visible", timeout: 20000 });
+  } catch (err) {
+    const failed = await fitReport(page);
+    throw new Error(`${label} did not start (${failed.error || "no bar error"}): ${err instanceof Error ? err.message : err}`);
+  }
+  await settleListening(page);
+  const more = page.getByRole("button", { name: "More", exact: true });
+  await more.click();
+  try {
+    await page.waitForFunction(verseInOpenBand, undefined, { timeout: 1000 });
+  } catch (err) {
+    assertBand(await bandReport(page), `${label} More open`);
+    throw err;
+  }
+  assertBand(await bandReport(page), `${label} More open`);
+  assertFit(await fitReport(page), `${label} More open`);
+  await more.click();
+  try {
+    await page.waitForFunction(verseInClosedBand, undefined, { timeout: 1000 });
+  } catch (err) {
+    assertBand(await bandReport(page), `${label} More closed`);
+    throw err;
+  }
+  assertBand(await bandReport(page), `${label} More closed`);
+}
+
+test("the voice label fits and Escape closes one layer", { timeout: 300000 }, async () => {
+  const server = await startBuiltServer();
+  const browser = await chromium.launch({ headless: true, timeout: 30000 });
+  try {
+    for (const size of VOICE_VIEWPORTS) {
+      const { context, page, read } = await openReading(browser, server.url, "/read/john/3", "Read this chapter aloud", size.options);
+      try {
+        const view = page.viewportSize();
+        assert.equal(view && view.width, size.options.viewport.width, `${size.name} width`);
+        assert.equal(view && view.height, size.options.viewport.height, `${size.name} height`);
+        await assertVoiceLabel(page, `${size.name} idle`);
+        await read.click();
+        await page.getByRole("button", { name: "Pause the reading" }).waitFor({ state: "visible", timeout: 20000 });
+        await assertVoiceLabel(page, `${size.name} playing`);
+      } finally {
+        await context.close();
+      }
+    }
+
+    for (const entry of [
+      { name: "206×457", path: "/words", readName: "Read these words aloud", options: { viewport: { width: 206, height: 457 } } },
+      { name: "206×457", path: "/read/john/3", readName: "Read this chapter aloud", options: { viewport: { width: 206, height: 457 } } },
+      { name: "320×568", path: "/words", readName: "Read these words aloud", options: { viewport: { width: 320, height: 568 } } },
+      { name: "320×568", path: "/read/john/3", readName: "Read this chapter aloud", options: { viewport: { width: 320, height: 568 } } },
+    ]) {
+      const { context, page, read } = await openReading(browser, server.url, entry.path, entry.readName, entry.options);
+      try {
+        await assertMoreBand(page, read, `${entry.path} ${entry.name}`);
+      } finally {
+        await context.close();
+      }
+    }
+
+    const { context, page, read } = await openReading(
+      browser,
+      server.url,
+      "/read/john/3",
+      "Read this chapter aloud",
+      { viewport: { width: 320, height: 568 } },
+    );
+    try {
+      await read.click();
+      await page.getByRole("button", { name: "Pause the reading" }).waitFor({ state: "visible", timeout: 20000 });
+      await page.getByRole("button", { name: "More", exact: true }).click();
+      await page.getByRole("button", { name: "Voice setup help" }).click();
+      await page.getByRole("region", { name: "Voice setup help" }).waitFor({ state: "visible" });
+      await page.keyboard.press("Escape");
+      await page.waitForFunction(() => {
+        const bar = document.querySelector("[data-read-bar]");
+        const active = document.activeElement;
+        return (
+          !document.querySelector("[role='region'][aria-label='Voice setup help']") &&
+          bar?.getAttribute("data-more") === "open" &&
+          active instanceof HTMLButtonElement &&
+          active.getAttribute("aria-label") === "Voice setup help"
+        );
+      }, undefined, { timeout: 1000 });
+      await page.keyboard.press("Escape");
+      await page.waitForFunction(() => {
+        const bar = document.querySelector("[data-read-bar]");
+        const active = document.activeElement;
+        return (
+          bar?.getAttribute("data-more") === "closed" &&
+          active instanceof HTMLButtonElement &&
+          active.getAttribute("aria-expanded") === "false" &&
+          (active.textContent || "").includes("More")
+        );
+      }, undefined, { timeout: 1000 });
+    } finally {
+      await context.close();
     }
   } finally {
     await browser.close();
