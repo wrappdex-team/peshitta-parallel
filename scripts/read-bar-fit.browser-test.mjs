@@ -280,13 +280,13 @@ function assertBand(report, label) {
   assert.ok(report.top >= report.stackBottom - 4, `${label} ${report.id} starts at ${report.top} under the stack ${report.stackBottom}`);
 }
 
-function seedPrefs(page) {
-  return page.addInitScript(() => {
+function seedPrefs(page, theme = "day") {
+  return page.addInitScript((mode) => {
     localStorage.setItem(
       "peshitta-parallel",
-      JSON.stringify({ theme: "day", lang: "en", face: "tr", lang2: "none", intro: 1 }),
+      JSON.stringify({ theme: mode, lang: "en", face: "tr", lang2: "none", intro: 1 }),
     );
-  });
+  }, theme);
 }
 
 /** The reader service worker caches navigations. A half-installed worker stalls the next page under CI load. */
@@ -736,3 +736,192 @@ test("the voice label fits, and Escape closes one layer", { timeout: 180000 }, a
     await server.close();
   }
 });
+
+const HINT_CASES = [
+  { width: 206, height: 457, name: "206×457", path: "/words", readName: "Read these words aloud", scroll: "more" },
+  { width: 320, height: 480, name: "320×480", path: "/words", readName: "Read these words aloud", scroll: "more" },
+  { width: 206, height: 457, name: "206×457", path: "/read/john/3", readName: "Read this chapter aloud", scroll: "none" },
+  { width: 320, height: 480, name: "320×480", path: "/read/john/3", readName: "Read this chapter aloud", scroll: "none" },
+  { width: 320, height: 568, name: "320×568", path: "/words", readName: "Read these words aloud", scroll: "none" },
+  { width: 320, height: 568, name: "320×568", path: "/read/john/3", readName: "Read this chapter aloud", scroll: "none" },
+  { width: 390, height: 844, name: "390×844", path: "/words", readName: "Read these words aloud", scroll: "none" },
+  { width: 390, height: 844, name: "390×844", path: "/read/john/3", readName: "Read this chapter aloud", scroll: "none" },
+  { width: 844, height: 390, name: "844×390", path: "/words", readName: "Read these words aloud", scroll: "wide" },
+  { width: 844, height: 390, name: "844×390", path: "/read/john/3", readName: "Read this chapter aloud", scroll: "wide" },
+  { width: 206, height: 457, name: "206×457 night", path: "/words", readName: "Read these words aloud", scroll: "more", theme: "night" },
+];
+
+const CORNER = "#read-bar-more button[aria-label='Keep the reading in the corner over other apps']";
+
+function hintReport() {
+  const panel = document.querySelector("#read-bar-more");
+  const hint = document.querySelector("[data-read-more-hint]");
+  const body = getComputedStyle(document.body).backgroundColor;
+  if (!(panel instanceof HTMLElement) || !(hint instanceof HTMLElement)) return { missing: true, body };
+  const style = getComputedStyle(hint);
+  const box = hint.getBoundingClientRect();
+  const panelBox = panel.getBoundingClientRect();
+  const mask = style.maskImage && style.maskImage !== "none" ? style.maskImage : style.webkitMaskImage;
+  const shown =
+    style.display !== "none" &&
+    style.visibility !== "hidden" &&
+    box.height > 8 &&
+    box.bottom <= panelBox.bottom + 1 &&
+    box.top >= panelBox.bottom - 20;
+  return {
+    missing: false,
+    scroll: panel.getAttribute("data-scroll"),
+    overflow: panel.scrollHeight - panel.clientHeight,
+    sideways: panel.scrollWidth - panel.clientWidth,
+    pageSideways: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+    shown,
+    mask: mask || "none",
+    fade: style.backgroundColor,
+    body,
+    duration: style.transitionDuration,
+    scrollbar: getComputedStyle(panel).scrollbarWidth,
+  };
+}
+
+function rowInPanel(selector) {
+  const el = document.querySelector(selector);
+  const panel = document.querySelector("#read-bar-more");
+  if (!(el instanceof HTMLElement) || !(panel instanceof HTMLElement)) return null;
+  const rect = el.getBoundingClientRect();
+  const panelBox = panel.getBoundingClientRect();
+  return {
+    height: rect.height,
+    top: rect.top,
+    bottom: rect.bottom,
+    left: rect.left,
+    right: rect.right,
+    panelTop: panelBox.top,
+    panelBottom: panelBox.bottom,
+    vh: window.innerHeight,
+    vw: window.innerWidth,
+    inside: rect.height > 1 && rect.top >= panelBox.top - 1 && rect.bottom <= panelBox.bottom + 1,
+  };
+}
+
+test("a short Words More panel shows that it scrolls", { timeout: 180000 }, async () => {
+  const server = await startBuiltServer();
+  const browser = await chromium.launch({ headless: true, timeout: 30000 });
+  try {
+    for (const entry of HINT_CASES) {
+      const label = `${entry.path} ${entry.name}`;
+      const context = await openContext(browser, { viewport: { width: entry.width, height: entry.height } });
+      const page = await context.newPage();
+      await seedPrefs(page, entry.theme || "day");
+      await page.addInitScript(speechStub, true);
+      await page.goto(`${server.url}${entry.path}`, { waitUntil: "domcontentloaded" });
+      const read = page.getByRole("button", { name: entry.readName });
+      await read.waitFor({ state: "visible", timeout: 20000 });
+      await read.click();
+      await page.getByRole("button", { name: "Pause the reading" }).waitFor({ state: "visible", timeout: 20000 });
+      await page.locator("[data-listening]").waitFor({ state: "attached", timeout: 20000 });
+      await scrollSettled(page);
+
+      if (entry.scroll === "wide") {
+        assert.equal(await page.getByRole("button", { name: "More", exact: true }).count(), 0, `${label} shows More`);
+        const compact = await page.locator(".read-bar-compact").evaluate((el) => getComputedStyle(el).display);
+        assert.equal(compact, "none", `${label} compact bar is ${compact}`);
+        assertFit(await fitReport(page), label);
+        assertBand(await bandReport(page), label);
+        assert.ok((await bandReport(page)).scroll <= 1, `${label} sideways`);
+        await context.close();
+        continue;
+      }
+
+      const more = page.getByRole("button", { name: "More", exact: true });
+      await more.click();
+      await page.waitForFunction(verseInBand, true, { timeout: 1000 });
+      await scrollSettled(page);
+      assertBand(await bandReport(page), `${label} More open`);
+      await page.waitForFunction(
+        (want) => document.querySelector("#read-bar-more")?.getAttribute("data-scroll") === want,
+        entry.scroll,
+        { timeout: 2000 },
+      );
+      const hint = await page.evaluate(hintReport);
+      assert.equal(hint.missing, false, `${label} has no More panel`);
+      assert.equal(hint.scroll, entry.scroll, `${label} data-scroll`);
+      assert.ok(hint.sideways <= 1, `${label} panel sideways ${hint.sideways}`);
+      assert.ok(hint.pageSideways <= 1, `${label} page sideways ${hint.pageSideways}`);
+      const duration = String(hint.duration || "");
+      assert.ok(duration.split(",").every((part) => parseFloat(part) === 0), `${label} hint transition ${duration}`);
+
+      if (entry.scroll === "more") {
+        assert.ok(hint.overflow > 1, `${label} panel does not scroll (${hint.overflow})`);
+        assert.equal(hint.shown, true, `${label} hint is hidden`);
+        assert.notEqual(hint.mask, "none", `${label} hint has no mask`);
+        assert.equal(hint.fade, hint.body, `${label} fade ${hint.fade} is not paper ${hint.body}`);
+        assert.equal(hint.scrollbar, "thin", `${label} scrollbar is ${hint.scrollbar}`);
+        const voice = await page.evaluate(rowInPanel, "#read-bar-more select");
+        const speed = await page.evaluate(rowInPanel, "#read-bar-more .read-bar-speed");
+        assert.ok(voice?.inside, `${label} voice is outside the panel`);
+        assert.ok(speed?.inside, `${label} speed is outside the panel`);
+        assert.ok(speed && speed.height + 0.5 >= 44, `${label} speed is ${speed ? speed.height : 0}px`);
+
+        const pageY = await page.evaluate(() => {
+          const panel = document.querySelector("#read-bar-more");
+          const y = window.scrollY;
+          if (panel instanceof HTMLElement) panel.scrollTop = panel.scrollHeight;
+          return y;
+        });
+        await page.waitForFunction(
+          () => document.querySelector("#read-bar-more")?.getAttribute("data-scroll") === "end",
+          undefined,
+          { timeout: 2000 },
+        );
+        const ended = await page.evaluate(hintReport);
+        assert.equal(ended.scroll, "end", `${label} did not reach the end`);
+        assert.equal(ended.shown, false, `${label} hint stays at the end`);
+        assert.equal(await page.evaluate(() => window.scrollY), pageY, `${label} scrolling the panel moved the page`);
+        const cornerBox = await page.evaluate(rowInPanel, CORNER);
+        assert.ok(cornerBox, `${label} corner is missing`);
+        assert.ok(cornerBox.height + 0.5 >= 44, `${label} corner is ${cornerBox.height}px`);
+        assert.ok(cornerBox.inside, `${label} corner is outside the panel`);
+        assert.ok(cornerBox.top >= -1 && cornerBox.bottom <= cornerBox.vh + 1 && cornerBox.left >= -1 && cornerBox.right <= cornerBox.vw + 1, `${label} corner is outside the viewport`);
+
+        await page.evaluate(() => {
+          const panel = document.querySelector("#read-bar-more");
+          if (panel instanceof HTMLElement) panel.scrollTop = 0;
+        });
+        await page.waitForFunction(
+          () => document.querySelector("#read-bar-more")?.getAttribute("data-scroll") === "more",
+          undefined,
+          { timeout: 2000 },
+        );
+        const speedSlider = page.locator("#read-bar-more").getByRole("slider", { name: "Reading speed" });
+        const tabY = await speedSlider.evaluate((el) => {
+          const y = window.scrollY;
+          el.focus();
+          return y;
+        });
+        await page.keyboard.press("Tab");
+        await page.waitForFunction(() => document.activeElement?.getAttribute("aria-label") === "Keep the reading in the corner over other apps");
+        await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve(undefined)))));
+        const afterTab = await page.evaluate(rowInPanel, CORNER);
+        assert.equal(await page.evaluate(() => window.scrollY), tabY, `${label} Tab moved the page`);
+        assert.ok(afterTab?.inside, `${label} Tab did not bring Corner into the panel`);
+        assert.ok(afterTab && afterTab.height + 0.5 >= 44, `${label} Corner is ${afterTab ? afterTab.height : 0}px after Tab`);
+        assert.ok(afterTab && afterTab.top >= -1 && afterTab.bottom <= afterTab.vh + 1, `${label} Corner left the viewport`);
+        await page.keyboard.press("Shift+Tab");
+        await page.waitForFunction(() => document.activeElement?.getAttribute("aria-label") === "Reading speed");
+        await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve(undefined)))));
+        const back = await page.evaluate(rowInPanel, "#read-bar-more .read-bar-speed");
+        assert.equal(await page.evaluate(() => window.scrollY), tabY, `${label} Shift+Tab moved the page`);
+        assert.ok(back?.inside, `${label} Shift+Tab did not bring Speed back`);
+      } else {
+        assert.ok(hint.overflow <= 1, `${label} panel scrolls (${hint.overflow})`);
+        assert.equal(hint.shown, false, `${label} shows a hint`);
+        assertFit(await fitReport(page), `${label} More open`);
+      }
+      await context.close();
+    }
+  } finally {
+    await browser.close();
+    await server.close();
+  }
+});
+

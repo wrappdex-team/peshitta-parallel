@@ -235,10 +235,42 @@ html[data-reading="active"] [data-reading-tongue] {
     max-height: calc(2.75rem * 2 + 1px);
     overflow-y: auto;
     overscroll-behavior: contain;
-    scrollbar-width: none;
+    scrollbar-width: thin;
+    scrollbar-color: var(--gold) transparent;
   }
   [data-read-bar][data-kind="words"][data-more="open"] .read-bar-compact #read-bar-more::-webkit-scrollbar {
-    display: none;
+    width: 2px;
+    height: 2px;
+  }
+  [data-read-bar][data-kind="words"][data-more="open"] .read-bar-compact #read-bar-more::-webkit-scrollbar-thumb {
+    background: var(--gold);
+  }
+  [data-read-bar][data-kind="words"][data-more="open"] .read-bar-compact #read-bar-more::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
+
+[data-read-more-hint] {
+  display: none;
+}
+
+#read-bar-more[data-scroll="more"]:not([hidden]) + [data-read-more-hint] {
+  display: block;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 16px;
+  pointer-events: none;
+  background-color: var(--paper);
+  mask-image: linear-gradient(to bottom, transparent, #000);
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000);
+  transition: opacity 160ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #read-bar-more[data-scroll="more"]:not([hidden]) + [data-read-more-hint] {
+    transition-duration: 0s;
   }
 }
 

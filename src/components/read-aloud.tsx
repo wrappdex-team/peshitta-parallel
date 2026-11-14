@@ -244,6 +244,32 @@ async function linesFor(place: Place, lang: LangId, from: number): Promise<Line[
   }
 }
 
+type PanelScroll = "more" | "end" | "none";
+
+function panelScrollOf(panel: HTMLElement): PanelScroll {
+  if (panel.scrollHeight - panel.clientHeight <= 1) return "none";
+  if (panel.scrollTop + panel.clientHeight >= panel.scrollHeight - 1) return "end";
+  return "more";
+}
+
+function revealInPanel(target: HTMLElement) {
+  const panel = target.closest("#read-bar-more");
+  if (!(panel instanceof HTMLElement)) return;
+  const row = target.closest("label, button");
+  if (!(row instanceof HTMLElement) || !panel.contains(row)) return;
+  const x = window.scrollX;
+  const y = window.scrollY;
+  const panelBox = panel.getBoundingClientRect();
+  const rowBox = row.getBoundingClientRect();
+  if (rowBox.bottom > panelBox.bottom + 1) panel.scrollTop += rowBox.bottom - panelBox.bottom;
+  else if (rowBox.top < panelBox.top - 1) panel.scrollTop -= panelBox.top - rowBox.top;
+  const restore = () => {
+    if (window.scrollX !== x || window.scrollY !== y) window.scrollTo(x, y);
+  };
+  restore();
+  window.requestAnimationFrame(restore);
+}
+
 export type ReadAloudHandle = { readFrom: (key?: string) => void };
 
 export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
@@ -300,6 +326,8 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
   const startRef = useRef<(from: number) => Promise<void>>(async () => {});
   const followRef = useRef(true);
   const moreButton = useRef<HTMLButtonElement>(null);
+  const morePanel = useRef<HTMLDivElement>(null);
+  const [panelScroll, setPanelScroll] = useState<PanelScroll>("none");
   const followLineRef = useRef(() => {});
   const expecting = useRef<Place | null>(null);
   const rowRef = useRef<Line | null>(null);
@@ -744,6 +772,23 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
     if (host.pictureInPictureEnabled) setCornerReady(true);
   }, []);
 
+  useEffect(() => {
+    const panel = morePanel.current;
+    if (!panel) return;
+    const measure = () => {
+      const next = panelScrollOf(panel);
+      setPanelScroll((prev) => (prev === next ? prev : next));
+    };
+    measure();
+    panel.addEventListener("scroll", measure, { passive: true });
+    const observer = new ResizeObserver(measure);
+    observer.observe(panel);
+    return () => {
+      panel.removeEventListener("scroll", measure);
+      observer.disconnect();
+    };
+  }, [more, cornerReady]);
+
   // A short screen hides the language bar while a reading is going, so the verse keeps a band.
   useEffect(() => {
     const root = document.documentElement;
@@ -930,15 +975,7 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
           aria-valuemax={150}
           aria-valuenow={speed}
           aria-valuetext={`${speed} percent`}
-          onFocus={(event) => {
-            const panel = event.currentTarget.closest("#read-bar-more");
-            const row = event.currentTarget.parentElement;
-            if (!(panel instanceof HTMLElement) || !(row instanceof HTMLElement)) return;
-            const panelBox = panel.getBoundingClientRect();
-            const rowBox = row.getBoundingClientRect();
-            if (rowBox.bottom > panelBox.bottom) panel.scrollTop += rowBox.bottom - panelBox.bottom;
-            else if (rowBox.top < panelBox.top) panel.scrollTop -= panelBox.top - rowBox.top;
-          }}
+          onFocus={(event) => revealInPanel(event.currentTarget)}
           onChange={(event) => setSpeed(Number(event.target.value))}
           className={`h-11 w-16 accent-gold ${wide ? "sm:w-32" : ""}`}
         />
@@ -953,6 +990,7 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
       <button
         type="button"
         onClick={() => void hold.current?.corner()}
+        onFocus={(event) => revealInPanel(event.currentTarget)}
         className="flex min-h-11 min-w-11 shrink-0 items-center whitespace-nowrap px-3 text-garnet"
         aria-label="Keep the reading in the corner over other apps"
       >
@@ -1037,13 +1075,16 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
       </div>
 
       <div className="read-bar-compact w-full min-[481px]:hidden">
-        <div id="read-bar-more" hidden={!more} className="border-b border-line">
-          <div className="flex min-w-0 items-center">
-            {voiceSelect()}
-            <VoiceMark />
+        <div className="relative">
+          <div id="read-bar-more" ref={morePanel} hidden={!more} data-scroll={panelScroll} className="border-b border-line">
+            <div className="flex min-w-0 items-center">
+              {voiceSelect()}
+              <VoiceMark />
+            </div>
+            {speedControl(false)}
+            {cornerButton()}
           </div>
-          {speedControl(false)}
-          {cornerButton()}
+          <div data-read-more-hint="" aria-hidden="true" />
         </div>
         {active || idleNote ? (
           <p className="max-w-full truncate px-3 pt-1 text-sm text-gold">{active ? placeText : idleNote}</p>
