@@ -7,6 +7,7 @@ import { readingLines, type VoiceId } from "@/lib/speak";
 import { speechOf } from "@/lib/jesus";
 import { holdReading, type ReadingHold } from "@/lib/keep-reading";
 import { setReadingLive } from "@/lib/speech-lock";
+import { scrollLineToTop } from "@/lib/scroll-line";
 
 type Line = { v: number; text: string; chapter?: number; key?: string };
 
@@ -294,6 +295,8 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
   const runner = useRef<(token: number, at: number) => Promise<void>>(async () => {});
   const startRef = useRef<(from: number) => Promise<void>>(async () => {});
   const followRef = useRef(true);
+  const moreButton = useRef<HTMLButtonElement>(null);
+  const followLineRef = useRef(() => {});
   const expecting = useRef<Place | null>(null);
   const rowRef = useRef<Line | null>(null);
   statusRef.current = status;
@@ -310,6 +313,26 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
   if (status === "idle") langRef.current = lang;
   fromRef.current = fromVerse;
   startKeyRef.current = startKey;
+  followLineRef.current = () => {
+    if (statusRef.current === "idle" || !followRef.current) return;
+    const row = rowRef.current;
+    if (!row) return;
+    const chapterNo = row.chapter ?? place.current.chapter;
+    const id = kind === "words" ? `w-${chapterNo}-${row.v}` : `v-${row.v}`;
+    const el = document.getElementById(id);
+    if (el) scrollLineToTop(el);
+  };
+
+  function queueFollow() {
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => followLineRef.current());
+    });
+  }
+
+  function toggleMore() {
+    setMore((open) => !open);
+    queueFollow();
+  }
 
   function heard(row: Line | null) {
     rowRef.current = row;
@@ -447,6 +470,21 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
     onStatus?.(status);
     setReadingLive(status !== "idle");
   }, [onStatus, status]);
+
+  useEffect(() => {
+    if (!more) return;
+    function onKey(event: KeyboardEvent) {
+      if (event.key !== "Escape") return;
+      event.preventDefault();
+      setMore(false);
+      moreButton.current?.focus();
+      window.requestAnimationFrame(() => {
+        window.requestAnimationFrame(() => followLineRef.current());
+      });
+    }
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [more]);
 
   useEffect(() => {
     let live = true;
@@ -933,7 +971,7 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
   }
 
   return (
-    <div data-read-bar="" className="fixed inset-x-0 bottom-0 z-20 w-full border-t border-line bg-paper pb-safe">
+    <div data-read-bar="" data-more={more ? "open" : "closed"} className="fixed inset-x-0 bottom-0 z-20 w-full border-t border-line bg-paper pb-safe">
       <div className="read-bar-wide mx-auto hidden w-full min-[481px]:flex max-w-6xl flex-wrap items-center">
         {active ? (
           <button
@@ -1036,10 +1074,11 @@ export const ReadAloud = forwardRef<ReadAloudHandle, Props>(function ReadAloud({
             </button>
           ) : null}
           <button
+            ref={moreButton}
             type="button"
             aria-expanded={more}
             aria-controls="read-bar-more"
-            onClick={() => setMore((open) => !open)}
+            onClick={toggleMore}
             className="flex min-h-11 min-w-11 shrink-0 items-center whitespace-nowrap px-3 text-ink"
           >
             More
