@@ -99,6 +99,7 @@ test("Other is the five titles and letters", () => {
 
 test("keefa's verse list is the whole count, in canon order", () => {
   const row = NAMES.find((item) => item.id === "keefa");
+  assert.ok(row);
   const verses = nameVerses(row);
   assert.equal(verses.length, row.count);
   assert.equal(verses[0]?.label, "Matthew 4:18");
@@ -107,7 +108,11 @@ test("keefa's verse list is the whole count, in canon order", () => {
 });
 
 test("cards without people or see stay as they are", () => {
-  const snap = ["keefa", "alap", "yhwh", "kandak", "magdu"].map((id) => studySnapshot(NAMES.find((row) => row.id === id)));
+  const snap = ["keefa", "alap", "yhwh", "kandak", "magdu"].map((id) => {
+    const row = NAMES.find((item) => item.id === id);
+    assert.ok(row, id);
+    return studySnapshot(row);
+  });
   assert.deepEqual(
     snap.map((row) => ({ people: row.people, see: row.see })),
     [
