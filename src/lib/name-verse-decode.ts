@@ -1,13 +1,13 @@
 import { BOOKS, bookMeta } from "../data/edition.ts";
 import { VERSE_COUNTS } from "./verse-counts.ts";
 import { NAMES, type NameEntry } from "./names.ts";
+import { decodeNameVersePack } from "./name-verse-codec.ts";
 
 export type NameVerse = { book: string; chapter: number; verse: number; label: string };
 
 const places = buildPlaces();
-const byId = new Map(NAMES.map((row, index) => [row.id, index]));
 let cachedPack = "";
-let cachedLists: number[][] = [];
+let cachedLists = new Map<string, number[]>();
 
 function buildPlaces() {
   const out: { book: string; chapter: number; verse: number }[] = [];
@@ -20,44 +20,10 @@ function buildPlaces() {
   return out;
 }
 
-function decode(pack: string) {
-  const bytes = Uint8Array.from(atob(pack), (char) => char.charCodeAt(0));
-  const out: number[][] = [];
-  let cursor = 0;
-  const readVar = () => {
-    let value = 0;
-    let shift = 0;
-    let bite = 0;
-    do {
-      bite = bytes[cursor++] ?? 0;
-      value |= (bite & 127) << shift;
-      shift += 7;
-    } while (bite & 128);
-    return value;
-  };
-  for (let name = 0; name < NAMES.length; name += 1) {
-    const length = (bytes[cursor] ?? 0) | ((bytes[cursor + 1] ?? 0) << 8);
-    cursor += 2;
-    if (!length) {
-      out.push([]);
-      continue;
-    }
-    const end = cursor + length;
-    const list: number[] = [];
-    let prev = -1;
-    while (cursor < end) {
-      prev += readVar();
-      if (places[prev]) list.push(prev);
-    }
-    out.push(list);
-  }
-  return out;
-}
-
 function listsFor(pack: string) {
   if (pack !== cachedPack) {
     cachedPack = pack;
-    cachedLists = decode(pack);
+    cachedLists = decodeNameVersePack(pack);
   }
   return cachedLists;
 }
@@ -102,13 +68,15 @@ function fromRefs(row: NameEntry): NameVerse[] {
   return out;
 }
 
-/** Every verse nameRuns links to this card, in canon order. Falls back to refs. */
-export function nameVersesFrom(pack: string, row: NameEntry): NameVerse[] {
-  const index = byId.get(row.id);
-  const ordinals = index === undefined ? [] : listsFor(pack)[index] ?? [];
+/** Every verse nameRuns links to this card, in canon order. An unknown id falls back to refs. */
+export function nameVersesFrom(pack: string, row: NameEntry, catalog: readonly NameEntry[] = NAMES): NameVerse[] {
+  const listed = catalog.find((item) => item.id === row.id) ?? row;
+  const ordinals = listsFor(pack).get(listed.id) ?? [];
   if (!ordinals.length) return fromRefs(row);
-  return ordinals.map((at) => {
+  const out: NameVerse[] = [];
+  for (const at of ordinals) {
     const place = places[at];
-    return { ...place, label: labelOf(place.book, place.chapter, place.verse) };
-  });
+    if (place) out.push({ ...place, label: labelOf(place.book, place.chapter, place.verse) });
+  }
+  return out.length ? out : fromRefs(row);
 }
