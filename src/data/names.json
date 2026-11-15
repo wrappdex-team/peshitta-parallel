@@ -7191,14 +7191,19 @@
       "sy": "ܬܕܝ",
       "en": "Tadai",
       "forms": [
-        "Tadai"
+        "Tadai",
+        "Lebbai"
       ],
       "known": "Thaddeus",
       "say": "taday",
+      "root": {
+        "text": "Tadai",
+        "lang": "Aramaic"
+      },
       "kind": "person",
       "count": 2,
       "ref": "matthew 10:3",
-      "note": "The Peshitta writes this person ܬܕܝ. This book prints Tadai. The familiar English is Thaddeus. Read from the Syriac letters: taday.",
+      "note": "The Peshitta writes this person ܬܕܝ. This book prints Tadai. The familiar English is Thaddeus. Read from the Syriac letters: taday. In Matthew 10:3 the Peshitta calls him ܠܒܝ Lebbai (lebbay), surnamed Tadai; the familiar English is Lebbaeus, called Thaddeus.",
       "id": "tadai",
       "refs": [
         "matthew 10:3",
