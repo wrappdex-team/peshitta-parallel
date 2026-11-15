@@ -108,7 +108,20 @@ async function overflow(page) {
 
 let loadStamp = 0;
 
-async function open(page, url) {
+/** The Read control is in the server HTML. Clicks before this effect are dropped. */
+async function waitForNamesReady(page) {
+  await page.waitForFunction(() => typeof window.__setReadingLive === "function");
+}
+
+async function textOf(page, selector) {
+  const handle = await page.waitForFunction((sel) => {
+    const text = (document.querySelector(sel)?.textContent ?? "").replace(/\s+/g, " ").trim();
+    return text || false;
+  }, selector);
+  return handle.jsonValue();
+}
+
+async function open(page, url, commit = false) {
   const next = new URL(url);
   const here = page.url();
   if (here && here !== "about:blank") {
@@ -118,7 +131,13 @@ async function open(page, url) {
       next.searchParams.set("load", String(loadStamp));
     }
   }
-  await page.goto(next.href, { waitUntil: "domcontentloaded" });
+  // A hash landing measures every card before DOMContentLoaded. Text checks
+  // pass commit so they read the server HTML instead of waiting out that layout.
+  await page.goto(next.href, { waitUntil: commit ? "commit" : "domcontentloaded" });
+  // The previous names document stays private until GC. Four copies then stall
+  // past the 20s budget. This does not change what the page renders.
+  await page.evaluate(() => typeof gc === "function" && gc()).catch(() => {});
+  if (!commit && next.pathname === "/names" && !next.hash) await waitForNamesReady(page);
 }
 
 async function shortLinks(page) {
@@ -145,7 +164,8 @@ test("names study guide: English line, Read, and finding", async () => {
   }
 
   const server = await startBuiltServer();
-  const browser = await chromium.launch();
+  // expose-gc lets open() return the previous names document. See open().
+  const browser = await chromium.launch({ args: ["--js-flags=--expose-gc"] });
   try {
     const context = await browser.newContext({ viewport: { width: 1280, height: 800 }, serviceWorkers: "block" });
     const page = await context.newPage();
@@ -179,24 +199,17 @@ test("names study guide: English line, Read, and finding", async () => {
     await page.setViewportSize({ width: 390, height: 844 });
     const day = page.getByRole("button", { name: "Day theme" });
     if ((await day.count()) > 0) await day.click();
-    await open(page,`${server.url}/names#corinth`);
-    await page.locator("#corinth").scrollIntoViewIfNeeded();
-    await page.waitForFunction(() => document.querySelector("#corinth h2")?.innerText.trim() === "Corinth");
-    assert.equal((await page.locator("#corinth h2").innerText()).trim(), "Corinth");
-    assert.equal(
-      (await page.locator("#corinth [data-name-english-line]").innerText()).replace(/\s+/g, " ").trim(),
-      "ENGLISH Corinth",
-    );
-    await page.locator("#keefa").scrollIntoViewIfNeeded();
-    await page.waitForFunction(() => document.querySelector("#keefa h2")?.innerText.trim() === "Keefa");
-    assert.equal((await page.locator("#keefa h2").innerText()).trim(), "Keefa");
-    assert.equal(
-      (await page.locator("#keefa [data-name-english-line]").innerText()).replace(/\s+/g, " ").trim(),
-      "ENGLISH Peter, Petros",
-    );
+    await open(page,`${server.url}/names#corinth`, true);
+    await page.waitForFunction(() => (document.querySelector("#corinth h2")?.textContent ?? "").trim() === "Corinth");
+    assert.equal(await textOf(page, "#corinth h2"), "Corinth");
+    assert.equal(await textOf(page, "#corinth [data-name-english-line]"), "ENGLISH Corinth");
+    await page.waitForFunction(() => (document.querySelector("#keefa h2")?.textContent ?? "").trim() === "Keefa");
+    assert.equal(await textOf(page, "#keefa h2"), "Keefa");
+    assert.equal(await textOf(page, "#keefa [data-name-english-line]"), "ENGLISH Peter, Petros");
 
     await open(page,`${server.url}/names#keefa`);
     await assertPlaced(page, "keefa");
+    await waitForNamesReady(page);
 
     const places = page.getByRole("radio", { name: /^Places\s+151$/ });
     assert.equal(await places.count(), 1);
@@ -221,8 +234,8 @@ test("names study guide: English line, Read, and finding", async () => {
 
     const find = page.getByRole("textbox", { name: "FIND A NAME" });
     await find.fill("yeshua");
-    await page.waitForFunction(() => document.querySelector("main h2")?.innerText.trim() === "Y'shua");
-    assert.equal(await page.locator("main h2").first().innerText(), "Y'shua");
+    await page.waitForFunction(() => (document.querySelector("main h2")?.textContent ?? "").trim() === "Y'shua");
+    assert.equal(((await page.locator("main h2").first().textContent()) ?? "").trim(), "Y'shua");
     await page.waitForFunction(() => new URL(location.href).searchParams.get("q") === "yeshua");
     for (const [typed, root] of [
       ["yaakov", "Ya'akov"],
@@ -234,8 +247,8 @@ test("names study guide: English line, Read, and finding", async () => {
       ["Y'shua", "Y'shua"],
     ]) {
       await find.fill(typed);
-      await page.waitForFunction((name) => document.querySelector("main h2")?.innerText.trim() === name, root);
-      assert.equal(await page.locator("main h2").first().innerText(), root, typed);
+      await page.waitForFunction((name) => (document.querySelector("main h2")?.textContent ?? "").trim() === name, root);
+      assert.equal(((await page.locator("main h2").first().textContent()) ?? "").trim(), root, typed);
     }
 
     await page.setViewportSize({ width: 390, height: 844 });
@@ -266,18 +279,19 @@ test("names study guide: English line, Read, and finding", async () => {
     assert.ok(syriac.widths.length >= 4, `kenaan syriac ${JSON.stringify(syriac.widths)}`);
     for (const width of syriac.widths) assert.ok(width > 0, `glyph width ${width}`);
 
+    await waitForNamesReady(page);
     await find.fill("Corinth");
-    await page.waitForFunction(() => document.querySelector("main h2")?.innerText.trim() === "Corinth");
+    await page.waitForFunction(() => (document.querySelector("main h2")?.textContent ?? "").trim() === "Corinth");
     assert.equal(await page.locator("main h2").count(), 1);
     assert.equal(await page.getByRole("checkbox", { name: "Search descriptions too" }).isChecked(), false);
 
     await find.fill("Peter");
-    await page.waitForFunction(() => document.querySelector("main h2")?.innerText.trim() === "Keefa");
+    await page.waitForFunction(() => (document.querySelector("main h2")?.textContent ?? "").trim() === "Keefa");
     assert.equal(await page.locator("#keefa").count(), 1);
 
     await find.fill("Mary");
-    await page.waitForFunction(() => document.querySelector("main h2")?.innerText.trim() === "Maryam");
-    const maryOrder = await page.locator("main h2").allInnerTexts();
+    await page.waitForFunction(() => (document.querySelector("main h2")?.textContent ?? "").trim() === "Maryam");
+    const maryOrder = await page.locator("main h2").allTextContents();
     const yhwhAt = maryOrder.findIndex((text) => text.trim() === "YHWH");
     assert.equal(maryOrder[0].trim(), "Maryam");
     if (yhwhAt >= 0) assert.ok(yhwhAt > 0, `YHWH at ${yhwhAt}`);
@@ -285,23 +299,25 @@ test("names study guide: English line, Read, and finding", async () => {
     const keefa = NAMES.find((row) => row.id === "keefa");
     await open(page,`${server.url}/names#keefa`);
     await assertPlaced(page, "keefa");
-    assert.equal(await page.locator("#keefa [data-name-kind]").innerText(), "Person");
+    assert.equal(await textOf(page, "#keefa [data-name-kind]"), "Person");
     assert.equal(await page.locator("#keefa [data-name-verse]").count(), 6);
+    assert.equal(await textOf(page, "#keefa [data-name-more]"), `+ ${keefa.count - 6} more`);
     const more = page.locator("#keefa [data-name-more]");
-    assert.equal((await more.innerText()).trim(), `+ ${keefa.count - 6} more`);
     assert.equal(await more.getAttribute("aria-expanded"), "false");
+    await waitForNamesReady(page);
     await more.click();
     await page.waitForFunction((count) => document.querySelectorAll("#keefa [data-name-verse]").length === count, keefa.count);
-    const labels = await page.locator("#keefa [data-name-verse]").allInnerTexts();
+    const labels = await page.locator("#keefa [data-name-verse]").allTextContents();
     assert.equal(labels[0].trim(), "Matthew 4:18");
     for (const label of labels) assert.match(label.trim(), /^[A-Z0-9]/);
     assert.match(await page.locator("#keefa [data-name-verse]").first().getAttribute("href") || "", /\/read\/matthew\/4#v-18$/);
     assert.equal(await page.locator("[data-name-see-line]").count(), 0);
 
-    await open(page,`${server.url}/names#alap`);
-    assert.equal(await page.locator("#alap [data-name-kind]").innerText(), "Letter");
-    await open(page,`${server.url}/names#yhwh`);
-    assert.equal(await page.locator("#yhwh [data-name-kind]").innerText(), "Title");
+    await open(page,`${server.url}/names#alap`, true);
+    assert.equal(await textOf(page, "#alap [data-name-kind]"), "Letter");
+    await open(page,`${server.url}/names#yhwh`, true);
+    assert.equal(await textOf(page, "#yhwh [data-name-kind]"), "Title");
+    await waitForNamesReady(page);
 
     for (const theme of ["day", "night"]) {
       const toggle = page.getByRole("button", { name: theme === "night" ? "Night theme" : "Day theme" });
@@ -334,6 +350,7 @@ test("names study guide: English line, Read, and finding", async () => {
     assert.equal(await page.locator("main h2").count(), 1);
 
     await open(page,`${server.url}/names#keefa`);
+    await waitForNamesReady(page);
     await page.locator("#keefa [data-name-read]").waitFor();
     const read = page.locator("#keefa").getByRole("button", { name: "Read Keefa then Peter" });
     await read.click();
