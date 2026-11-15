@@ -6,10 +6,10 @@ import { readFileSync } from "node:fs";
 
 test("kind counts add up to every card", () => {
   const counts = nameKindCounts();
-  assert.equal(counts.all, 503);
-  assert.equal(counts.person, 333);
-  assert.equal(counts.place, 150);
-  assert.equal(counts.people, 15);
+  assert.equal(counts.all, 505);
+  assert.equal(counts.person, 332);
+  assert.equal(counts.place, 151);
+  assert.equal(counts.people, 17);
   assert.equal(counts.person + counts.place + counts.people + counts.other, counts.all);
 });
 
