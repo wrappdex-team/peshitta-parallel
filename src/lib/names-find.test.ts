@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { NAMES, filterNames, foldApostrophes, foldName, nameKindCounts } from "./names.ts";
+import { NAMES, filterNames, foldApostrophes, foldName, kindLabel, matchRank, nameKindCounts } from "./names.ts";
+import { nameVerses, studyPeople, studySee, studySnapshot } from "./name-verses.ts";
+import { readFileSync } from "node:fs";
 
 test("kind counts add up to every card", () => {
   const counts = nameKindCounts();
@@ -63,4 +65,90 @@ test("Peter ranks Keefa first", () => {
 
 test("places are the place rows", () => {
   assert.equal(filterNames("", "place", false).length, NAMES.filter((row) => row.kind === "place").length);
+});
+
+test("Mary ranks written names ahead of a say-prefix", () => {
+  const hits = filterNames("Mary", "all", false);
+  assert.equal(hits[0]?.id, "maryam");
+  const yhwhAt = hits.findIndex((row) => row.id === "yhwh");
+  assert.ok(yhwhAt > 0);
+  const query = foldName("Mary");
+  for (const row of hits) {
+    const fields = [row.en, row.known, ...(row.forms ?? []), ...(row.spellings ?? []), ...row.known.split(",")];
+    const written = fields.some((field) => {
+      const folded = foldName(field);
+      return folded === query || folded.startsWith(query) || folded.includes(query);
+    });
+    if (written) assert.ok(hits.indexOf(row) < yhwhAt, row.id);
+  }
+  const maryamRank = matchRank(NAMES.find((row) => row.id === "maryam")!, "Mary");
+  const yhwhRank = matchRank(NAMES.find((row) => row.id === "yhwh")!, "Mary");
+  assert.equal(maryamRank, 0);
+  assert.ok(yhwhRank !== null && yhwhRank >= 3, `yhwh rank ${yhwhRank}`);
+});
+
+test("Other is the five titles and letters", () => {
+  assert.equal(nameKindCounts().other, 5);
+  assert.equal(kindLabel("title"), "Title");
+  assert.equal(kindLabel("letter"), "Letter");
+  assert.equal(kindLabel("person"), "Person");
+  for (const row of NAMES.filter((item) => item.kind === "title" || item.kind === "letter")) {
+    assert.equal(kindLabel(row.kind), row.kind === "title" ? "Title" : "Letter");
+  }
+});
+
+test("keefa's verse list is the whole count, in canon order", () => {
+  const row = NAMES.find((item) => item.id === "keefa");
+  const verses = nameVerses(row);
+  assert.equal(verses.length, row.count);
+  assert.equal(verses[0]?.label, "Matthew 4:18");
+  assert.equal(verses.length - 6, row.count - 6);
+  assert.match(verses[0]?.label ?? "", /^[A-Z]/);
+});
+
+test("cards without people or see stay as they are", () => {
+  const snap = ["keefa", "alap", "yhwh", "kandak", "magdu"].map((id) => studySnapshot(NAMES.find((row) => row.id === id)));
+  assert.deepEqual(
+    snap.map((row) => ({ people: row.people, see: row.see })),
+    [
+      { people: 0, see: [] },
+      { people: 0, see: [] },
+      { people: 0, see: [] },
+      { people: 0, see: [] },
+      { people: 0, see: [] },
+    ],
+  );
+});
+
+test("a shared-name fixture renders two people and a see link", () => {
+  const row = {
+    ...NAMES.find((item) => item.id === "yaakov")!,
+    people: [
+      { label: "Ya'akov son of Zabdai", refs: ["matthew 4:21", "matthew 10:2"] },
+      { label: "Ya'akov brother of Y'shua", refs: ["matthew 13:55"] },
+    ],
+    see: ["megdo"],
+  };
+  const lines = studyPeople(row);
+  assert.equal(lines.length, 2);
+  assert.equal(lines[0]?.label, "Ya'akov son of Zabdai");
+  assert.deepEqual(
+    lines[0]?.links.map((link) => link.label),
+    ["Matthew 4:21", "Matthew 10:2"],
+  );
+  assert.equal(lines[0]?.links[0]?.href, "/read/matthew/4#v-21");
+  assert.equal(lines[1]?.label, "Ya'akov brother of Y'shua");
+  assert.equal(lines[1]?.links[0]?.href, "/read/matthew/13#v-55");
+  const see = studySee(row);
+  assert.equal(see.length, 1);
+  assert.equal(see[0]?.href, "/names#megdo");
+  assert.equal(see[0]?.id, "megdo");
+  const page = readFileSync(new URL("../routes/names.tsx", import.meta.url), "utf8");
+  assert.match(page, /studyPeople\(row\)/);
+  assert.match(page, /studySee\(row\)/);
+  assert.match(page, /data-name-person/);
+  assert.match(page, /data-name-see=\{item\.id\}/);
+  assert.match(page, /hashScrollIntoView=\{false\}/);
+  assert.equal(studySnapshot(NAMES.find((item) => item.id === "yaakov")!).people, 0);
+  assert.deepEqual(studySee(NAMES.find((item) => item.id === "yaakov")!), []);
 });

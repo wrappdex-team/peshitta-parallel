@@ -334,7 +334,7 @@ function NameLinks({ names, onClose }: { names: { id: string; en: string }[]; on
   return unique.map((name, index) => (
     <span key={name.id}>
       {index > 0 ? (index === unique.length - 1 ? " and " : ", ") : null}
-      <Link to="/names" hash={name.id} className="inline-flex min-h-11 items-center text-garnet" onClick={onClose}>
+      <Link to="/names" hash={name.id} resetScroll={false} hashScrollIntoView={false} className="inline-flex min-h-11 items-center text-garnet" onClick={onClose}>
         {name.en}
       </Link>
     </span>

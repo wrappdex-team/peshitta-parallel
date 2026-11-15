@@ -6,7 +6,7 @@ import { syriacPieces } from "@/lib/scripture";
 export function NameText({ text }: { text: string }) {
   return nameRuns(text).map((part, index) =>
     part.kind === "name" ? (
-      <Link key={index} to="/names" hash={part.id} className={NAME_CLASS}>
+      <Link key={index} to="/names" hash={part.id} resetScroll={false} hashScrollIntoView={false} className={NAME_CLASS}>
         {part.text}
       </Link>
     ) : (
@@ -28,7 +28,7 @@ export function SyriacNames({ text, english, ranges }: { text: string; english?:
     const color = hot ? "text-jesus" : "";
     if (!named) return <span key={index} className={color}>{piece.text}</span>;
     return (
-      <Link key={index} to="/names" hash={named.id} className={`${NAME_CLASS} font-syriac ${color}`}>
+      <Link key={index} to="/names" hash={named.id} resetScroll={false} hashScrollIntoView={false} className={`${NAME_CLASS} font-syriac ${color}`}>
         {piece.text}
       </Link>
     );
