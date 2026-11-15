@@ -379,6 +379,24 @@ async function assertInfoSheet(page, width, height, touch) {
   const scroll = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   assert.ok(scroll <= 1, `${width} info horizontal scroll ${scroll}`);
   if (width === 390) assert.ok((await infoLineAverage(page)) >= 25, "info lines are too short");
+  if (width === 390) {
+    const ring = await page.evaluate(() => {
+      const sheet = document.querySelector(".help-sheet");
+      const close = sheet.querySelector(".help-sheet-bar button");
+      close.focus({ focusVisible: true });
+      const style = getComputedStyle(close);
+      const closeBox = close.getBoundingClientRect();
+      const sheetBox = sheet.getBoundingClientRect();
+      const offset = parseFloat(style.outlineOffset) || 0;
+      const widthPx = parseFloat(style.outlineWidth) || 0;
+      return {
+        visible: close.matches(":focus-visible"),
+        room: closeBox.top - (offset + widthPx) - sheetBox.top,
+      };
+    });
+    assert.equal(ring.visible, true, "Close is not showing its ring");
+    assert.ok(ring.room >= 0, `Close ring clipped ${JSON.stringify(ring)}`);
+  }
   await page.mouse.move(Math.min(width - 20, 180), Math.min(height - 40, 360));
   await page.mouse.wheel(0, 600);
   await assertStill(page, `${width} info wheel`);

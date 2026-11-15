@@ -112,6 +112,7 @@ html.modal-scroll-lock {
   justify-content: space-between;
   gap: 0.75rem;
   min-height: 2.75rem;
+  padding-top: max(env(safe-area-inset-top), 0.5rem);
   padding-inline: max(16px, env(safe-area-inset-left, 0px));
   background: var(--paper);
 }
@@ -705,4 +706,93 @@ dialog[open] > div {
   from {
     transform: translateX(calc(-100% + 2.5rem));
   }
+}
+
+.names-tools {
+  position: sticky;
+  top: var(--header-h, 3.5rem);
+  z-index: 15;
+  background: var(--paper);
+  padding-top: 0.75rem;
+  padding-bottom: 0.35rem;
+  margin-inline: -1.25rem;
+  padding-inline: 1.25rem;
+}
+@media (min-width: 640px) {
+  .names-tools {
+    margin-inline: -2rem;
+    padding-inline: 2rem;
+  }
+}
+@media (min-width: 1024px) {
+  .names-tools {
+    margin-inline: -3rem;
+    padding-inline: 3rem;
+  }
+}
+.names-az {
+  display: flex;
+  gap: 0.25rem;
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+}
+.names-az::-webkit-scrollbar {
+  display: none;
+}
+.names-az button:disabled {
+  cursor: default;
+  opacity: 0.35;
+}
+.names-chip[aria-checked="true"] {
+  background: var(--gold-soft);
+  box-shadow: inset 0 0 0 1px var(--garnet);
+}
+.name-card {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 300px;
+  overflow-anchor: none;
+}
+.name-verses {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.75rem;
+}
+.name-verses a {
+  max-width: 100%;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.name-verse-book {
+  display: contents;
+}
+.name-verse-book-label {
+  display: none;
+}
+@media (min-width: 800px) {
+  .name-verses {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    gap: 0.5rem;
+  }
+  .name-verse-book {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.25rem 0.75rem;
+  }
+  .name-verse-book-label {
+    display: inline;
+    flex-basis: 100%;
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+  }
+}
+.name-spoken[aria-current="true"] {
+  text-decoration-line: underline;
+  text-decoration-color: var(--gold);
+  text-underline-offset: 0.2em;
+  text-decoration-thickness: 1px;
 }
