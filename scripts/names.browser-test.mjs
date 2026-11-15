@@ -178,6 +178,47 @@ test("names study guide: English line, Read, and finding", async () => {
     await page.waitForFunction(() => document.querySelector("main h2")?.innerText.trim() === "Y'shua");
     assert.equal(await page.locator("main h2").first().innerText(), "Y'shua");
     await page.waitForFunction(() => new URL(location.href).searchParams.get("q") === "yeshua");
+    for (const [typed, root] of [
+      ["yaakov", "Ya'akov"],
+      ["Ya'akov", "Ya'akov"],
+      ["yitzchak", "Yitz'chak"],
+      ["ammanuel", "Ammanu'el"],
+      ["fanuel", "Fanu'el"],
+      ["rechavam", "Rechav'am"],
+      ["Y'shua", "Y'shua"],
+    ]) {
+      await find.fill(typed);
+      await page.waitForFunction((name) => document.querySelector("main h2")?.innerText.trim() === name, root);
+      assert.equal(await page.locator("main h2").first().innerText(), root, typed);
+    }
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto(`${server.url}/names#kenaan`, { waitUntil: "networkidle" });
+    await page.locator("#kenaan [data-note-syriac]").scrollIntoViewIfNeeded();
+    const syriac = await page.evaluate(async () => {
+      await document.fonts.load('16px "Noto Sans Syriac"');
+      const run = document.querySelector("#kenaan [data-note-syriac]");
+      const text = run.firstChild;
+      const widths = [...text.textContent].map((_, index) => {
+        const range = document.createRange();
+        range.setStart(text, index);
+        range.setEnd(text, index + 1);
+        return range.getBoundingClientRect().width;
+      });
+      return {
+        loaded: document.fonts.check('16px "Noto Sans Syriac"', "ܐ"),
+        family: getComputedStyle(run).fontFamily,
+        lang: run.lang,
+        dir: run.dir,
+        widths,
+      };
+    });
+    assert.equal(syriac.loaded, true, "Noto Sans Syriac is not loaded");
+    assert.match(syriac.family, /Noto Sans Syriac/);
+    assert.equal(syriac.lang, "syr");
+    assert.equal(syriac.dir, "rtl");
+    assert.ok(syriac.widths.length >= 4, `kenaan syriac ${JSON.stringify(syriac.widths)}`);
+    for (const width of syriac.widths) assert.ok(width > 0, `glyph width ${width}`);
 
     await find.fill("Corinth");
     await page.waitForFunction(() => document.querySelector("main h2")?.innerText.trim() === "Corinth");

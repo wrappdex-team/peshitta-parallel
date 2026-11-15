@@ -50,6 +50,17 @@ const GLOTTAL = /[ʿʾ]/g;
 const HYPHEN = /[\u2010\u2011\u2012\u2013\u2014-]/g;
 const APOSTROPHE = /['’ʼʻ′]/g;
 
+function plainName(value: string) {
+  return value
+    .normalize("NFD")
+    .replace(MARK, "")
+    .toLowerCase()
+    .replace(GLOTTAL, "")
+    .replace(HYPHEN, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 /**
  * An apostrophe in these spellings stands for the vowel a reader types.
  * Y'shua and yeshua are the same search. Removing this breaks that.
@@ -58,17 +69,21 @@ export function foldApostrophes(value: string) {
   return value.replace(APOSTROPHE, "e").replace(/\s+/g, " ").trim();
 }
 
+function stripApostrophes(value: string) {
+  return value.replace(APOSTROPHE, "").replace(/\s+/g, " ").trim();
+}
+
 /** Case, marks, glottal letters, apostrophes and hyphens, folded the same on both sides. */
 export function foldName(value: string) {
-  const plain = value
-    .normalize("NFD")
-    .replace(MARK, "")
-    .toLowerCase()
-    .replace(GLOTTAL, "")
-    .replace(HYPHEN, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-  return foldApostrophes(plain);
+  return foldApostrophes(plainName(value));
+}
+
+/** Apostrophe removed, and apostrophe spoken as e. A name matches either. */
+function fieldFolds(field: string) {
+  const plain = plainName(field);
+  const removed = stripApostrophes(plain);
+  const spoken = foldApostrophes(plain);
+  return removed === spoken ? [removed] : [removed, spoken];
 }
 
 export function nameBucket(row: NameEntry): NameKindFilter {
@@ -108,10 +123,12 @@ function searchFields(row: NameEntry, notes: boolean) {
 function rankOf(row: NameEntry, query: string, notes: boolean) {
   let best: number | null = null;
   for (const field of searchFields(row, notes)) {
-    const folded = foldName(field);
-    if (!folded) continue;
-    const rank = folded === query ? 0 : folded.startsWith(query) ? 1 : folded.includes(query) ? 2 : null;
-    if (rank !== null && (best === null || rank < best)) best = rank;
+    for (const folded of fieldFolds(field)) {
+      if (!folded) continue;
+      const rank = folded === query ? 0 : folded.startsWith(query) ? 1 : folded.includes(query) ? 2 : null;
+      if (rank !== null && (best === null || rank < best)) best = rank;
+      if (best === 0) return 0;
+    }
   }
   return best;
 }
@@ -119,7 +136,7 @@ function rankOf(row: NameEntry, query: string, notes: boolean) {
 /** Exact name, then prefix, then contains. Notes match only when asked. */
 export function filterNames(query: string, kind: NameKindFilter, notes: boolean) {
   const pool = kind === "all" ? NAMES : NAMES.filter((row) => nameBucket(row) === kind);
-  const folded = foldName(query);
+  const folded = stripApostrophes(plainName(query));
   if (!folded) return pool;
   const hits: { row: NameEntry; rank: number }[] = [];
   for (const row of pool) {

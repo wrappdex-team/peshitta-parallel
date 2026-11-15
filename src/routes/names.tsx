@@ -19,6 +19,18 @@ import { SiteHeader } from "@/components/site-header";
 const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 const COUNTS = nameKindCounts();
 
+function noteWithSyriac(text: string) {
+  return text.split(/([\u0700-\u074F]+)/).map((part, index) =>
+    /[\u0700-\u074F]/.test(part) ? (
+      <span key={index} className="font-syriac" lang="syr" dir="rtl" data-note-syriac="">
+        {part}
+      </span>
+    ) : (
+      <span key={index}>{part}</span>
+    ),
+  );
+}
+
 type NamesSearch = { q?: string; kind?: NameKindFilter; notes?: boolean };
 
 function readSearch(search: Record<string, unknown>): NamesSearch {
@@ -353,7 +365,7 @@ const NameCard = memo(function NameCard({
           Read
         </button>
       </div>
-      <p className="mt-2 text-sm leading-relaxed">{row.note}</p>
+      <p className="mt-2 text-sm leading-relaxed">{noteWithSyriac(row.note)}</p>
       {row.sources?.map((source) => (
         <p key={`${source.script}-${source.text}`} className="mt-2 text-sm leading-relaxed">
           <span className="text-gold">{source.script}</span>{" "}
@@ -361,7 +373,7 @@ const NameCard = memo(function NameCard({
             {source.text}
           </span>
           {source.say ? <span className="text-muted"> · {source.say}</span> : null}
-          {source.note ? <span> {source.note}</span> : null}
+          {source.note ? <span> {noteWithSyriac(source.note)}</span> : null}
         </p>
       ))}
       <p className="mt-2 text-sm text-muted">

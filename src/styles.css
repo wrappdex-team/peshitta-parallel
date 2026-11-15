@@ -112,6 +112,7 @@ html.modal-scroll-lock {
   justify-content: space-between;
   gap: 0.75rem;
   min-height: 2.75rem;
+  padding-top: max(env(safe-area-inset-top), 0.5rem);
   padding-inline: max(16px, env(safe-area-inset-left, 0px));
   background: var(--paper);
 }

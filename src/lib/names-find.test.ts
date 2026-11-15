@@ -26,6 +26,21 @@ test("apostrophe folding is what makes yeshua match", () => {
   assert.equal(foldApostrophes("y'shua"), "yeshua");
 });
 
+test("plain typing and the apostrophe both find the card first", () => {
+  const queries = [
+    ["yaakov", "yaakov"],
+    ["Ya'akov", "yaakov"],
+    ["yitzchak", "yitzchak"],
+    ["ammanuel", "ammanuel"],
+    ["fanuel", "fanuel"],
+    ["rechavam", "rechavam"],
+    ["yeshua", "yshua"],
+    ["Y'shua", "yshua"],
+  ];
+  for (const [query, id] of queries) {
+    assert.equal(filterNames(query, "all", false)[0]?.id, id, query);
+  }
+});
 test("hyphens fold to spaces, so bar abba is Bar-Abba", () => {
   assert.equal(foldName("Bar-Abba"), foldName("bar abba"));
   assert.equal(filterNames("bar abba", "all", false)[0]?.id, "barabba");
