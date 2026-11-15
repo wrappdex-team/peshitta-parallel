@@ -177,7 +177,7 @@ function Home() {
             <span className="font-serif text-sm leading-tight">Words of Y'shua</span>
             <span className="text-xs leading-snug text-muted">In red</span>
           </Link>
-          <Link to="/names" className={TILE}>
+          <Link to="/names" preload="intent" className={TILE}>
             <BookOpen className="size-4 text-garnet" aria-hidden />
             <span className="font-serif text-sm leading-tight">Names</span>
             <span className="text-xs leading-snug text-muted">People and places</span>

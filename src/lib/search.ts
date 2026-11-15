@@ -1,6 +1,6 @@
 import { LANGS } from "@/lib/languages";
 import { bookMeta } from "@/data/edition";
-import { NAMES } from "@/lib/names";
+import type { NameEntry } from "@/lib/names";
 import { speechOf } from "@/lib/jesus";
 import { chapterCount, loadLanguageSearch, loadSearch, loadSyriacSearch } from "@/lib/scripture";
 import { offlineVerses } from "@/lib/offline";
@@ -95,8 +95,37 @@ export function referenceNote(query: string, book?: string) {
   return referenceFault(query, book, chapterCount, versesIn);
 }
 
+let nameCatalog: NameEntry[] | null = null;
+let nameCatalogLoad: Promise<void> | null = null;
+const nameCatalogListeners = new Set<() => void>();
+
+export function namesCatalogReady() {
+  return nameCatalog !== null;
+}
+
+export function subscribeNamesCatalog(onStoreChange: () => void) {
+  nameCatalogListeners.add(onStoreChange);
+  return () => {
+    nameCatalogListeners.delete(onStoreChange);
+  };
+}
+
+/** The name list is a separate file. Fetch it on the first search, not with the home page. */
+export function requestNamesCatalog() {
+  if (nameCatalog || nameCatalogLoad) return;
+  nameCatalogLoad = import("@/lib/names")
+    .then((mod) => {
+      nameCatalog = mod.NAMES;
+      for (const listener of nameCatalogListeners) listener();
+    })
+    .catch(() => {
+      nameCatalogLoad = null;
+    });
+}
+
 export function lookupNames(query: string) {
-  return nameMatches(query, NAMES);
+  if (!nameCatalog) return [];
+  return nameMatches(query, nameCatalog);
 }
 
 export function chipLangs(reading: string) {

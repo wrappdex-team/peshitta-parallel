@@ -21,7 +21,7 @@ test(
           JSON.stringify({ theme: "day", lang: "en", face: "tr", lang2: "none" }),
         );
       });
-      await page.goto(`${base}/read/john/3`, { waitUntil: "networkidle" });
+      await page.goto(`${base}/read/john/3`, { waitUntil: "load" });
       await page.getByRole("button", { name: "Search" }).first().click();
       const dialog = page.locator("dialog[aria-label='Search the New Testament']");
       const input = dialog.getByRole("searchbox", { name: "Search words or a reference" });

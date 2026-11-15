@@ -11,10 +11,11 @@ import {
   type NameEntry,
   type NameKindFilter,
 } from "@/lib/names";
-import { nameVersesFrom, studyPeople, studySee, type NameVerse } from "@/lib/name-verse-decode";
+import { nameVersesFrom, studyPeople, studySee } from "@/lib/name-verse-decode";
 import { loadNameVersePack } from "@/lib/name-verse-load";
 import { readingSessionLive, setReadingLive, subscribeReadingLive } from "@/lib/speech-lock";
 import { SITE_ORIGIN } from "@/lib/site";
+import { nameLink } from "@/lib/share";
 import { SiteHeader } from "@/components/site-header";
 
 const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
@@ -27,16 +28,18 @@ function noteWithSyriac(text: string) {
         {part}
       </span>
     ) : (
-      <span key={index}>{part}</span>
+      part
     ),
   );
 }
 
 type NamesSearch = { q?: string; kind?: NameKindFilter; notes?: boolean };
 
+const SEARCH_KINDS = ["person", "place", "people", "other"];
+
 function readSearch(search: Record<string, unknown>): NamesSearch {
   const kindRaw = typeof search.kind === "string" ? search.kind : "";
-  const kind = NAME_KIND_FILTERS.some((item) => item.id === kindRaw && item.id !== "all") ? (kindRaw as NameKindFilter) : undefined;
+  const kind = SEARCH_KINDS.includes(kindRaw) ? (kindRaw as NameKindFilter) : undefined;
   const q = typeof search.q === "string" && search.q ? search.q : undefined;
   const notes = search.notes === true || search.notes === "1" || search.notes === "true" ? true : undefined;
   return { q, kind, notes };
@@ -60,8 +63,11 @@ export const Route = createFileRoute("/names")({
 
 function syncHeaderHeight() {
   const header = document.querySelector("header");
-  if (!header) return;
-  document.documentElement.style.setProperty("--header-h", `${header.getBoundingClientRect().height}px`);
+  const tools = document.querySelector(".names-tools");
+  const headerH = header?.getBoundingClientRect().height ?? 0;
+  if (header) document.documentElement.style.setProperty("--header-h", `${headerH}px`);
+  const toolsH = tools?.getBoundingClientRect().height ?? 0;
+  if (tools) document.documentElement.style.setProperty("--names-scroll", `${Math.ceil(headerH + toolsH + 12)}px`);
 }
 
 let measuredCount = -1;
@@ -129,7 +135,9 @@ function Names() {
   const deferredQuery = useDeferredValue(query);
   const blocked = useSyncExternalStore(subscribeReadingLive, readingSessionLive, () => false);
   const writing = useRef(false);
+  const [notice, setNotice] = useState("");
   const rows = useMemo(() => filterNames(deferredQuery, kind, notes), [deferredQuery, kind, notes]);
+  const count = useMemo(() => filterNames(query, kind, notes).length, [query, kind, notes]);
   const letters = useMemo(() => new Set(rows.map((row) => (row.en[0] ?? "").toUpperCase())), [rows]);
 
   useEffect(() => {
@@ -141,6 +149,10 @@ function Names() {
     setKind(search.kind ?? "all");
     setNotes(Boolean(search.notes));
   }, [search.q, search.kind, search.notes]);
+
+  useEffect(() => {
+    setNotice("");
+  }, [query, kind, notes]);
 
   useEffect(() => {
     const id = window.setTimeout(() => {
@@ -236,7 +248,7 @@ function Names() {
   }
 
   return (
-    <div className="min-h-app bg-paper text-ink">
+    <div className="names-page min-h-app bg-paper text-ink">
       <SiteHeader title="Names" mark="names" />
       <main className="mx-auto max-w-3xl px-5 pb-page sm:px-8 lg:px-12">
         <div className="names-tools">
@@ -284,9 +296,9 @@ function Names() {
           Search descriptions too
         </label>
         <p aria-live="polite" className="text-sm text-muted">
-          {rows.length} {rows.length === 1 ? "name" : "names"}
+          {notice || `${count} ${count === 1 ? "name" : "names"}`}
         </p>
-        <NameResults rows={rows} active={routeHash} pack={versePack} blocked={blocked} canSpeak={canSpeak} />
+        <NameResults rows={rows} active={routeHash} pack={versePack} blocked={blocked} canSpeak={canSpeak} onNotice={setNotice} />
       </main>
     </div>
   );
@@ -309,17 +321,19 @@ const NameResults = memo(function NameResults({
   pack,
   blocked,
   canSpeak,
+  onNotice,
 }: {
   rows: NameEntry[];
   active: string;
   pack: string;
   blocked: boolean;
   canSpeak: boolean;
+  onNotice: (text: string) => void;
 }) {
   return (
     <ul className="mt-2 border-t border-line">
       {rows.map((row) => (
-        <NameCard key={row.id} row={row} active={active === row.id} pack={pack} blocked={blocked} canSpeak={canSpeak} />
+        <NameCard key={row.id} row={row} active={active === row.id} pack={pack} blocked={blocked} canSpeak={canSpeak} onNotice={onNotice} />
       ))}
     </ul>
   );
@@ -331,12 +345,14 @@ const NameCard = memo(function NameCard({
   pack,
   blocked,
   canSpeak,
+  onNotice,
 }: {
   row: NameEntry;
   active: boolean;
   pack: string;
   blocked: boolean;
   canSpeak: boolean;
+  onNotice: (text: string) => void;
 }) {
   const spoken = nameUtterances(row);
   const root = rootDisplay(row);
@@ -389,55 +405,74 @@ const NameCard = memo(function NameCard({
     }
   }
 
+  async function share() {
+    const link = nameLink(row.id, `${root} — ${row.known}`);
+    const nav = typeof navigator === "undefined" ? undefined : navigator;
+    if (nav && typeof nav.share === "function") {
+      try {
+        await nav.share({ title: link.title, url: link.url });
+        return;
+      } catch (error) {
+        if (error instanceof DOMException && error.name === "AbortError") return;
+      }
+    }
+    try {
+      await nav?.clipboard.writeText(link.url);
+      onNotice("Link copied");
+    } catch {
+      onNotice("Could not copy the link");
+    }
+  }
+
+  const spellings = row.spellings?.filter((spelling) => spelling !== row.sy) ?? [];
   return (
-    <li id={row.id} className={`name-card border-b border-line py-4 ${active ? "-mx-3 bg-gold-soft px-3" : ""}`}>
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
-            <h2 tabIndex={-1} className="font-serif text-2xl font-semibold leading-tight outline-none">{root}</h2>
-            <span className={`text-xs ${lang.pending ? "text-muted" : "tracking-wide text-gold"}`}>{lang.text}</span>
-          </div>
-          <p className="name-spoken mt-1 text-sm" data-name-english-line aria-current={part === "en" ? "true" : undefined}>
-            <span className="text-[0.65rem] font-semibold tracking-[0.14em] text-gold small-caps">ENGLISH</span>{" "}
-            <span data-name-english>{row.known}</span>
-          </p>
-        </div>
-        <p className="max-w-[46%] min-w-0 text-end font-syriac text-2xl leading-none text-syriac [overflow-wrap:anywhere] min-[360px]:text-3xl min-[800px]:text-4xl" lang="syr" dir="rtl">
-          {row.sy}
-        </p>
-      </div>
-      {row.spellings && row.spellings.filter((spelling) => spelling !== row.sy).length > 0 ? (
-        <p className="mt-2 font-syriac text-2xl leading-none text-syriac [overflow-wrap:anywhere]" lang="syr" dir="rtl">
-          {row.spellings.filter((spelling) => spelling !== row.sy).join("  ")}
+    <li id={row.id} className={`name-card flex flex-wrap items-baseline gap-x-3 border-b border-line py-4 ${active ? "-mx-3 bg-gold-soft px-3" : ""}`}>
+      <h2 tabIndex={-1} className="font-serif text-2xl font-semibold leading-tight outline-none">{root}</h2>
+      <span className={`text-xs ${lang.pending ? "text-muted" : "tracking-wide text-gold"}`}>{lang.text}</span>
+      <p className="name-syriac text-end font-syriac text-syriac" lang="syr" dir="rtl">{row.sy}</p>
+      <p className="name-spoken basis-full text-sm" data-name-english-line aria-current={part === "en" ? "true" : undefined}>
+        ENGLISH <span data-name-english>{row.known}</span>
+      </p>
+      {spellings.length > 0 ? (
+        <p className="name-spellings basis-full font-syriac text-syriac" lang="syr" dir="rtl">
+          {spellings.map((spelling) => (
+            <span key={spelling} className="name-syriac-word">{spelling}</span>
+          ))}
         </p>
       ) : null}
-      <div className="mt-2 flex items-start justify-between gap-3">
-        <p className="name-spoken min-w-0 text-sm" data-name-say aria-current={part === "root" ? "true" : undefined}>
-          <span className="text-gold">Say:</span> {spoken[0].text}
-          {ipa ? (
-            <span className="text-muted" title={row.pron?.root?.source}>
-              {" "}
-              · {ipa}
-            </span>
-          ) : null}
-        </p>
-        <button
-          type="button"
-          data-name-read
-          className="ink-icon inline-flex h-11 min-w-11 shrink-0 items-center justify-center gap-1 px-3 text-sm"
-          aria-label={`Read ${root} then ${spoken[1].text}`}
-          aria-pressed={part ? "true" : "false"}
-          disabled={blocked || !canSpeak}
-          title={canSpeak ? undefined : "This device can't read aloud"}
-          onClick={() => void play()}
-        >
-          <SpeakerIcon />
-          Read
-        </button>
-      </div>
-      <p className="mt-2 text-sm leading-relaxed">{noteWithSyriac(row.note)}</p>
+      <p
+        className="name-spoken mt-2 min-w-0 flex-1 text-sm"
+        data-name-say
+        aria-current={part === "root" ? "true" : undefined}
+        title={ipa ? row.pron?.root?.source : undefined}
+      >
+        Say: {spoken[0].text}
+        {ipa ? ` · ${ipa}` : ""}
+      </p>
+      <button
+        type="button"
+        data-name-read
+        className="name-read ink-icon mt-2 inline-flex h-11 min-w-11 shrink-0 items-center justify-center gap-1 px-3 text-sm"
+        aria-label={`Read ${root} then ${spoken[1].text}`}
+        aria-pressed={part ? "true" : "false"}
+        disabled={blocked || !canSpeak}
+        title={canSpeak ? undefined : "This device can't read aloud"}
+        onClick={() => void play()}
+      >
+        Read
+      </button>
+      <button
+        type="button"
+        data-name-link
+        className="name-link ink-icon mt-2 inline-flex h-11 min-w-11 shrink-0 items-center justify-center gap-1 px-3 text-sm"
+        aria-label={`Copy link to ${root}`}
+        onClick={() => void share()}
+      >
+        Link
+      </button>
+      <p className="mt-2 basis-full text-sm leading-relaxed">{noteWithSyriac(row.note)}</p>
       {studyPeople(row).map((person) => (
-        <p key={person.label} className="mt-2 text-sm leading-relaxed" data-name-person="">
+        <p key={person.label} className="mt-2 basis-full text-sm leading-relaxed" data-name-person="">
           {person.label}
           {person.links.length ? " — " : ""}
           {person.links.map((link) => (
@@ -454,7 +489,7 @@ const NameCard = memo(function NameCard({
         </p>
       ))}
       {studySee(row).length ? (
-        <p className="mt-2 text-sm" data-name-see-line="">
+        <p className="mt-2 basis-full text-sm" data-name-see-line="">
           See also{" "}
           {studySee(row).map((item) => (
             <Link
@@ -472,13 +507,13 @@ const NameCard = memo(function NameCard({
         </p>
       ) : null}
       {row.sources?.map((source) => (
-        <p key={`${source.script}-${source.text}`} className="mt-2 text-sm leading-relaxed">
+        <p key={`${source.script}-${source.text}`} className="mt-2 basis-full text-sm leading-relaxed">
           <span className="text-gold">{source.script}</span>{" "}
           <span className={`font-semibold ${source.script === "Greek" ? "font-greek" : source.script === "Hebrew" || source.script === "Aramaic" ? "font-hebrew text-lg" : ""}`}>
             {source.text}
           </span>
-          {source.say ? <span className="text-muted"> · {source.say}</span> : null}
-          {source.note ? <span> {noteWithSyriac(source.note)}</span> : null}
+          {source.say ? ` · ${source.say}` : null}
+          {source.note ? <> {noteWithSyriac(source.note)}</> : null}
         </p>
       ))}
       <VerseList row={row} pack={pack} />
@@ -490,32 +525,36 @@ function VerseList({ row, pack }: { row: NameEntry; pack: string }) {
   const verses = useMemo(() => nameVersesFrom(pack, row), [pack, row]);
   const [open, setOpen] = useState(false);
   const [book, setBook] = useState("");
-  const shown = open ? verses : verses.slice(0, 6);
   const books = useMemo(() => {
+    if (!open) return [];
     const seen: { id: string; name: string }[] = [];
     for (const verse of verses) {
       const name = verse.label.replace(/\s+\d+:\d+$/, "");
       if (!seen.some((item) => item.id === verse.book)) seen.push({ id: verse.book, name });
     }
     return seen;
-  }, [verses]);
-  const filtered = book ? shown.filter((verse) => verse.book === book) : shown;
-  const groups: { id: string; name: string; verses: NameVerse[] }[] = [];
-  for (const verse of filtered) {
-    const name = verse.label.replace(/\s+\d+:\d+$/, "");
-    const last = groups[groups.length - 1];
-    if (last?.id === verse.book) last.verses.push(verse);
-    else groups.push({ id: verse.book, name, verses: [verse] });
-  }
+  }, [open, verses]);
+  const shown = (open ? verses : verses.slice(0, 6)).filter((verse) => !book || verse.book === book);
   return (
     <>
-      <p className="mt-2 text-sm text-muted">
+      <p className="name-verses mt-2 basis-full text-sm">
         <span data-name-kind>{kindLabel(row.kind)}</span>
-        {" · "}
-        {verses.length} {verses.length === 1 ? "verse" : "verses"}
+        {` · ${verses.length} ${verses.length === 1 ? "verse" : "verses"}`}
+        {shown.map((verse) => (
+          <Link
+            key={`${verse.book}-${verse.chapter}-${verse.verse}`}
+            to="/read/$book/$chapter"
+            params={{ book: verse.book, chapter: String(verse.chapter) }}
+            hash={`v-${verse.verse}`}
+            data-name-verse=""
+            className="ink-link inline-flex min-h-6 min-w-0 max-w-full items-center px-1.5 text-garnet"
+          >
+            {verse.label}
+          </Link>
+        ))}
       </p>
       {open && books.length > 1 ? (
-        <div className="mt-2 flex flex-wrap gap-2" role="group" aria-label="Books in this list">
+        <span className="mt-2 flex basis-full flex-wrap gap-2" role="group" aria-label="Books in this list">
           <button type="button" aria-pressed={book === ""} className="ink-row inline-flex min-h-11 items-center px-3 text-sm" onClick={() => setBook("")}>
             All
           </button>
@@ -524,27 +563,8 @@ function VerseList({ row, pack }: { row: NameEntry; pack: string }) {
               {item.name}
             </button>
           ))}
-        </div>
+        </span>
       ) : null}
-      <div className="name-verses mt-1">
-        {groups.map((group) => (
-          <div key={group.id} className="name-verse-book">
-            <span className="name-verse-book-label">{group.name}</span>
-            {group.verses.map((verse) => (
-              <Link
-                key={`${verse.book}-${verse.chapter}-${verse.verse}`}
-                to="/read/$book/$chapter"
-                params={{ book: verse.book, chapter: String(verse.chapter) }}
-                hash={`v-${verse.verse}`}
-                data-name-verse=""
-                className="ink-link inline-flex min-h-6 min-w-0 max-w-full items-center px-1.5 text-garnet [overflow-wrap:anywhere]"
-              >
-                {verse.label}
-              </Link>
-            ))}
-          </div>
-        ))}
-      </div>
       {verses.length > 6 ? (
         <button
           type="button"
@@ -583,13 +603,4 @@ function pause(ms: number) {
   return new Promise<void>((resolve) => {
     window.setTimeout(resolve, ms);
   });
-}
-
-function SpeakerIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.7">
-      <path d="M4 10h3l4-3v10l-4-3H4z" strokeLinejoin="round" />
-      <path d="M16.5 9.2a3.8 3.8 0 0 1 0 5.6" strokeLinecap="round" />
-    </svg>
-  );
 }

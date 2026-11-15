@@ -71,7 +71,7 @@ export function readingReadFrom(key?: string) {
 }
 
 /** Keep the open page's reading controls without clearing them between renders. */
-export function useBindReadingSurface(surface: ReadingSurface) {
+export function useBindReadingSurface(surface: ReadingSurface | null) {
   const box = useRef(surface);
   const token = useRef(Symbol());
   box.current = surface;

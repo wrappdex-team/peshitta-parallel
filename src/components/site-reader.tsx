@@ -1,11 +1,13 @@
-import { useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from "react";
-import { ReadAloud, type ReadAloudHandle } from "@/components/read-aloud";
+import { lazy, Suspense, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from "react";
+import type { ReadAloudHandle } from "@/components/read-aloud";
 import {
   getReadingSurface,
   setReadingHandle,
   subscribeReadingSurface,
   type ReadingSurface,
 } from "@/lib/reading-surface";
+
+const ReadAloud = lazy(() => import("@/components/read-aloud").then((mod) => ({ default: mod.ReadAloud })));
 
 /**
  * One read-aloud for the whole visit. Pages publish what to read; leaving them
@@ -34,29 +36,31 @@ export function SiteReader() {
   if (!view || (!surface && status === "idle")) return null;
 
   return (
-    <ReadAloud
-      ref={handleRef}
-      book={view.book}
-      chapter={view.chapter}
-      voice={view.voice}
-      deviceVoice={view.deviceVoice}
-      speed={view.speed}
-      lang={view.lang}
-      fromVerse={view.fromVerse}
-      loadLines={view.loadLines}
-      nextPlaceOf={view.nextPlaceOf}
-      startKey={view.startKey}
-      fromLabel={view.fromLabel}
-      kind={view.kind}
-      dock={surface ? "bar" : "corner"}
-      onStatus={setStatus}
-      onVoice={(voice) => surfaceRef.current?.onVoice(voice)}
-      onDeviceVoice={(deviceVoice) => surfaceRef.current?.onDeviceVoice(deviceVoice)}
-      onSpeed={(speed) => surfaceRef.current?.onSpeed(speed)}
-      onVerse={(verse) => surfaceRef.current?.onVerse(verse)}
-      onHeard={(line) => surfaceRef.current?.onHeard?.(line)}
-      onAdvance={(place) => surfaceRef.current?.onAdvance(place)}
-      onChapter={(place) => viewRef.current?.onChapter?.(place)}
-    />
+    <Suspense fallback={null}>
+      <ReadAloud
+        ref={handleRef}
+        book={view.book}
+        chapter={view.chapter}
+        voice={view.voice}
+        deviceVoice={view.deviceVoice}
+        speed={view.speed}
+        lang={view.lang}
+        fromVerse={view.fromVerse}
+        loadLines={view.loadLines}
+        nextPlaceOf={view.nextPlaceOf}
+        startKey={view.startKey}
+        fromLabel={view.fromLabel}
+        kind={view.kind}
+        dock={surface ? "bar" : "corner"}
+        onStatus={setStatus}
+        onVoice={(voice) => surfaceRef.current?.onVoice(voice)}
+        onDeviceVoice={(deviceVoice) => surfaceRef.current?.onDeviceVoice(deviceVoice)}
+        onSpeed={(speed) => surfaceRef.current?.onSpeed(speed)}
+        onVerse={(verse) => surfaceRef.current?.onVerse(verse)}
+        onHeard={(line) => surfaceRef.current?.onHeard?.(line)}
+        onAdvance={(place) => surfaceRef.current?.onAdvance(place)}
+        onChapter={(place) => viewRef.current?.onChapter?.(place)}
+      />
+    </Suspense>
   );
 }

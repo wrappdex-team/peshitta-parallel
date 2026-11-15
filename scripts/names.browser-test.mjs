@@ -154,7 +154,7 @@ async function shortLinks(page) {
   });
 }
 
-test("names study guide: English line, Read, and finding", async () => {
+test("names study guide: English line, Read, and finding", { timeout: 420000 }, async () => {
   const speech = readFileSync(new URL("../src/lib/name-speech.ts", import.meta.url), "utf8");
   const pageSource = readFileSync(new URL("../src/routes/names.tsx", import.meta.url), "utf8");
   for (const source of [speech, pageSource]) {
@@ -343,7 +343,7 @@ test("names study guide: English line, Read, and finding", async () => {
     await page.locator("#keefa").waitFor();
     assert.equal(await find.inputValue(), "keefa");
     assert.equal(await page.getByRole("radio", { name: /^Persons\s+/ }).getAttribute("aria-checked"), "true");
-    await page.reload({ waitUntil: "networkidle" });
+    await page.reload({ waitUntil: "load" });
     await page.locator("#keefa").waitFor();
     assert.equal(await page.getByRole("textbox", { name: "FIND A NAME" }).inputValue(), "keefa");
     assert.equal(await page.getByRole("radio", { name: /^Persons\s+/ }).getAttribute("aria-checked"), "true");
@@ -378,7 +378,109 @@ test("names study guide: English line, Read, and finding", async () => {
     await page.evaluate(() => window.__setReadingLive(false));
 
     await open(page, `${server.url}/names`);
-    await page.waitForLoadState("networkidle");
+    await page.waitForLoadState("load");
+    await waitForNamesReady(page);
+    await page.setViewportSize({ width: 390, height: 844 });
+    const domNodes = await page.evaluate(() => document.querySelectorAll("*").length);
+    console.log(`names dom nodes ${domNodes}`);
+    assert.ok(domNodes <= 9000, `DOM nodes ${domNodes} exceed 9000`);
+    const pageErrors = [];
+    page.on("pageerror", (error) => pageErrors.push(String(error)));
+
+    for (const theme of ["day", "night"]) {
+      const toggle = page.getByRole("button", { name: theme === "night" ? "Night theme" : "Day theme" });
+      if ((await toggle.count()) > 0) await toggle.click();
+      await page.waitForFunction((want) => document.documentElement.dataset.theme === want, theme);
+      for (const width of [206, 240, 320, 360, 390, 412, 1280]) {
+        await page.setViewportSize({ width, height: width === 1280 ? 800 : 900 });
+        const broken = await page.evaluate(() => {
+          for (const card of document.querySelectorAll(".name-card")) card.style.contentVisibility = "visible";
+          const bad = [];
+          for (const node of document.querySelectorAll("p.name-syriac")) {
+            const text = (node.textContent || "").trim();
+            if (!text || /\s/.test(text)) continue;
+            const range = document.createRange();
+            range.selectNodeContents(node);
+            const tops = new Set();
+            for (const rect of range.getClientRects()) tops.add(Math.round(rect.top));
+            if (tops.size > 1) bad.push({ id: node.closest("li")?.id || "", text, lines: tops.size });
+          }
+          const scroll = Math.max(
+            document.documentElement.scrollWidth - document.documentElement.clientWidth,
+            document.body.scrollWidth - document.body.clientWidth,
+          );
+          const read = document.querySelector("[data-name-read]");
+          const readBox = read?.getBoundingClientRect();
+          return { bad: bad.slice(0, 5), badCount: bad.length, scroll, readH: readBox?.height ?? 0, readW: readBox?.width ?? 0 };
+        });
+        assert.equal(broken.badCount, 0, `Syriac heading wraps at ${width} ${theme} ${JSON.stringify(broken.bad)}`);
+        assert.ok(broken.scroll <= 1, `horizontal scroll ${broken.scroll} at ${width} ${theme}`);
+        assert.ok(broken.readH + 0.5 >= 44 && broken.readW + 0.5 >= 44, `Read ${broken.readW}x${broken.readH} at ${width}`);
+      }
+    }
+    const dayTitle = page.getByRole("button", { name: "Day theme" });
+    if ((await dayTitle.count()) > 0) await dayTitle.click();
+    await page.setViewportSize({ width: 206, height: 457 });
+    const title = await page.evaluate(() => {
+      const node = document.querySelector("header h1");
+      const style = getComputedStyle(node);
+      const box = node.getBoundingClientRect();
+      return {
+        text: (node.textContent || "").trim(),
+        overflow: style.textOverflow,
+        fits: node.scrollWidth <= node.clientWidth + 1,
+        clipped: box.left < -1 || box.right > window.innerWidth + 1,
+      };
+    });
+    assert.equal(title.text, "Names");
+    assert.equal(title.clipped, false, `Names title clipped ${JSON.stringify(title)}`);
+    assert.ok(title.fits || title.overflow === "ellipsis", `Names title ${JSON.stringify(title)}`);
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    for (const width of [360, 390, 1280]) {
+      await page.setViewportSize({ width, height: width === 1280 ? 800 : 844 });
+      const box = await page.locator("#abba [data-name-link]").boundingBox();
+      assert.ok(box && box.width + 0.5 >= 44 && box.height + 0.5 >= 44, `Link ${box?.width}x${box?.height} at ${width}`);
+    }
+    await page.evaluate(() => {
+      window.__shared = [];
+      navigator.share = (data) => {
+        window.__shared.push(data);
+        return Promise.resolve();
+      };
+    });
+    await page.locator("#abba [data-name-link]").click();
+    const shared = await page.evaluate(() => window.__shared);
+    assert.equal(shared.length, 1);
+    assert.equal(shared[0].url, "https://www.injeel.news/names#abba");
+    assert.match(shared[0].title, /Abba/);
+    await page.evaluate(() => {
+      window.__copied = "";
+      window.__shareSettled = false;
+      navigator.share = () => Promise.reject(new DOMException("cancelled", "AbortError"));
+      navigator.clipboard.writeText = (text) => {
+        window.__copied = text;
+        window.__shareSettled = true;
+        return Promise.resolve();
+      };
+    });
+    await page.locator("#abba [data-name-link]").click();
+    await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+    assert.equal(await page.evaluate(() => window.__copied), "", "cancelling share copied the link");
+    assert.equal(await page.evaluate(() => window.__shareSettled), false, "cancelling share wrote the clipboard");
+    await page.evaluate(() => {
+      Object.defineProperty(navigator, "share", { configurable: true, value: undefined });
+      window.__copied = "";
+      navigator.clipboard.writeText = (text) => {
+        window.__copied = text;
+        return Promise.resolve();
+      };
+    });
+    await page.locator("#keefa [data-name-link]").click();
+    assert.equal(await page.evaluate(() => window.__copied), "https://www.injeel.news/names#keefa");
+    await page.waitForFunction(() => document.querySelector("[aria-live='polite']")?.textContent?.includes("Link copied"));
+    assert.equal(pageErrors.length, 0, pageErrors.join("\n"));
+
     await page.setViewportSize({ width: 390, height: 844 });
     const session = await context.newCDPSession(page);
     await session.send("Emulation.setCPUThrottlingRate", { rate: 4 });
@@ -399,6 +501,32 @@ test("names study guide: English line, Read, and finding", async () => {
           input.dispatchEvent(new InputEvent("input", { bubbles: true }));
         }),
     );
+    const samples = [];
+    for (let sample = 0; sample < 5; sample += 1) {
+      const letter = "qwxzv"[sample];
+      const took = await page.evaluate((next) => {
+        const input = document.querySelector("main input");
+        const live = document.querySelector("[aria-live='polite']");
+        const before = (live?.textContent || "").replace(/\s+/g, " ").trim();
+        const start = performance.now();
+        const set = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value").set;
+        set.call(input, next);
+        input.dispatchEvent(new InputEvent("input", { bubbles: true }));
+        return new Promise((resolve) => {
+          const check = () => {
+            const text = (live?.textContent || "").replace(/\s+/g, " ").trim();
+            if (text !== before && /\d/.test(text)) resolve(performance.now() - start);
+            else requestAnimationFrame(check);
+          };
+          requestAnimationFrame(check);
+        });
+      }, letter);
+      samples.push(took);
+    }
+    samples.sort((a, b) => a - b);
+    const median = samples[2];
+    console.log(`names keystroke median ${Math.round(median)}ms ${samples.map((n) => Math.round(n)).join(",")}`);
+    assert.ok(median <= 150, `keystroke median ${median}ms`);
     await session.send("Emulation.setCPUThrottlingRate", { rate: 1 });
     console.log(`names input paint ${Math.round(paint)}ms`);
     assert.ok(paint < 200, `input paint ${paint}ms`);
@@ -409,13 +537,85 @@ test("names study guide: English line, Read, and finding", async () => {
         .filter((entry) => /\.m?js(\?|$)/.test(new URL(entry.name).pathname) && new URL(entry.name).origin === location.origin)
         .map((entry) => entry.name),
     );
+    const parts = [];
     let bytes = 0;
+    let routeBytes = 0;
     for (const url of urls) {
       const body = Buffer.from(await (await fetch(url)).arrayBuffer());
-      bytes += gzipSync(body).length;
+      const gzip = gzipSync(body).length;
+      bytes += gzip;
+      const path = new URL(url).pathname;
+      const isNames = /\/names[-.]/.test(path);
+      if (isNames) routeBytes += gzip;
+      parts.push(`${String(gzip).padStart(7)} ${String(body.length).padStart(8)} ${isNames ? "NAMES" : "     "} ${path}`);
     }
+    console.log(parts.sort().join("\n"));
     console.log(`names js gzip ${bytes}`);
+    console.log(`names route js gzip ${routeBytes}`);
     assert.ok(bytes <= NAMES_JS_GZIP_CAP, `names JS gzip ${bytes} exceeds ${NAMES_JS_GZIP_CAP}`);
+    assert.ok(routeBytes > 0 && routeBytes <= 300 * 1024, `names route JS gzip ${routeBytes} exceeds ${300 * 1024}`);
+
+    const early = await context.newPage();
+    early.setDefaultTimeout(20000);
+    await seed(early, "day");
+    let holdScripts = true;
+    await early.route("**/*", async (route) => {
+      const sameOrigin = route.request().url().startsWith(server.url);
+      if (holdScripts && sameOrigin && route.request().resourceType() === "script") {
+        while (holdScripts) await new Promise((resolve) => setTimeout(resolve, 40));
+      }
+      await route.continue();
+    });
+    const earlyCdp = await context.newCDPSession(early);
+    await earlyCdp.send("Network.setCacheDisabled", { cacheDisabled: true });
+    await earlyCdp.send("Network.emulateNetworkConditions", {
+      offline: false,
+      latency: 300,
+      downloadThroughput: 200 * 1024,
+      uploadThroughput: 200 * 1024,
+    });
+    await earlyCdp.send("Emulation.setCPUThrottlingRate", { rate: 4 });
+    for (const width of [390, 1280]) {
+      await early.setViewportSize({ width, height: width === 1280 ? 800 : 844 });
+      for (const id of ["perets", "keefa", "pergamos"]) {
+        holdScripts = true;
+        await early.goto("about:blank");
+        await early.goto(`${server.url}/names#${id}`, { waitUntil: "commit" });
+        await early.waitForFunction(
+          (name) => {
+            const card = document.getElementById(name);
+            const head = card?.querySelector("h2");
+            const bar = document.querySelector(".names-tools");
+            if (!head || !bar) return false;
+            const headBox = head.getBoundingClientRect();
+            const barBox = bar.getBoundingClientRect();
+            const clear = headBox.top >= barBox.bottom - 1 && headBox.bottom <= window.innerHeight + 1;
+            return barBox.height > 40 && headBox.height > 8 && getComputedStyle(card).scrollMarginTop !== "0px" && clear;
+          },
+          id,
+          { timeout: 20000 },
+        );
+        const landed = await early.evaluate((name) => {
+          const card = document.getElementById(name);
+          const head = card.querySelector("h2").getBoundingClientRect();
+          const bar = document.querySelector(".names-tools").getBoundingClientRect();
+          return {
+            top: head.top,
+            bottom: head.bottom,
+            cover: bar.bottom,
+            margin: getComputedStyle(card).scrollMarginTop,
+            ready: typeof window.__setReadingLive === "function",
+            height: window.innerHeight,
+          };
+        }, id);
+        assert.equal(landed.ready, false, `${id} at ${width} hydrated before the hash landing`);
+        assert.ok(landed.top >= landed.cover - 1, `${id} at ${width} heading ${Math.round(landed.top)} is under the find bar ${Math.round(landed.cover)} (margin ${landed.margin})`);
+        assert.ok(landed.bottom <= landed.height + 1, `${id} at ${width} heading is cut off`);
+        holdScripts = false;
+        await assertPlaced(early, id);
+      }
+    }
+    await early.close();
     await context.close();
   } finally {
     await browser.close().catch(() => {});
