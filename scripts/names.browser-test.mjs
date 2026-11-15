@@ -7,8 +7,8 @@ import { gzipSync } from "node:zlib";
 import { chromium } from "playwright";
 import { startBuiltServer } from "./serve-built.mjs";
 
-// Same-origin JS gzip on /names at main d0b00ed was 439,667 bytes.
-const NAMES_JS_GZIP_CAP = 439_667 + 6 * 1024;
+// Same-origin JS gzip on /names at main ff0c72e was 442,710 bytes.
+const NAMES_JS_GZIP_CAP = 442_710 + 4 * 1024;
 const registry = JSON.parse(readFileSync(new URL("../src/data/names.json", import.meta.url), "utf8"));
 const NAMES = registry.names;
 const SIZES = [
@@ -58,6 +58,44 @@ function assertEnglish(actual) {
   for (const row of NAMES) assert.equal(actual[row.id], row.known, row.id);
 }
 
+async function assertPlaced(page, id) {
+  const ready = (name) => {
+    const card = document.getElementById(name);
+    const head = card?.querySelector("h2");
+    const bar = document.querySelector(".names-tools");
+    const header = document.querySelector("header");
+    if (!card || !head || !bar || !header) return null;
+    const cardBox = card.getBoundingClientRect();
+    const headBox = head.getBoundingClientRect();
+    const barBox = bar.getBoundingClientRect();
+    const headerBox = header.getBoundingClientRect();
+    const cover = barBox.bottom;
+    const space = window.innerHeight - cover;
+    const fits = cardBox.height <= space + 1;
+    const headClear = headBox.top >= cover + 8 - 0.5;
+    const centred = !fits || Math.abs(cardBox.top + cardBox.height / 2 - (cover + space / 2)) <= space * 0.15 + 1;
+    const inView = !fits || (cardBox.top >= cover - 1 && cardBox.bottom <= window.innerHeight + 1);
+    const focused = document.activeElement === head;
+    const gap = barBox.top - headerBox.bottom;
+    let bleed = false;
+    for (let y = Math.ceil(headerBox.bottom) + 1; y < barBox.bottom; y += 12) {
+      for (let x = 4; x < window.innerWidth; x += 48) {
+        const node = document.elementFromPoint(x, y);
+        if (node && node.closest(".name-card")) bleed = true;
+      }
+    }
+    const ok = cardBox.height >= 40 && space >= 80 && headClear && centred && inView && focused && gap <= 1 && !bleed;
+    window.__placeInfo = { ok, headClear, centred, inView, focused, gap, bleed, fits, headTop: headBox.top, cover, space, cardTop: cardBox.top, cardHeight: cardBox.height, focus: document.activeElement?.tagName ?? "" };
+    return ok;
+  };
+  try {
+    await page.waitForFunction(ready, id);
+  } catch (error) {
+    const info = await page.evaluate(() => window.__placeInfo ?? null);
+    throw new Error(`${id} not placed ${JSON.stringify(info)}\n${error}`);
+  }
+}
+
 async function overflow(page) {
   return page.evaluate(
     () =>
@@ -66,6 +104,21 @@ async function overflow(page) {
         document.body.scrollWidth - document.body.clientWidth,
       ),
   );
+}
+
+let loadStamp = 0;
+
+async function open(page, url) {
+  const next = new URL(url);
+  const here = page.url();
+  if (here && here !== "about:blank") {
+    const current = new URL(here);
+    if (current.pathname === next.pathname && current.search === next.search) {
+      loadStamp += 1;
+      next.searchParams.set("load", String(loadStamp));
+    }
+  }
+  await page.goto(next.href, { waitUntil: "domcontentloaded" });
 }
 
 async function shortLinks(page) {
@@ -98,7 +151,7 @@ test("names study guide: English line, Read, and finding", async () => {
     const page = await context.newPage();
     page.setDefaultTimeout(20000);
     await seed(page, "day");
-    await page.goto(`${server.url}/names`, { waitUntil: "networkidle" });
+    await open(page,`${server.url}/names`);
     await page.locator("#keefa").waitFor();
 
     for (const theme of ["day", "night"]) {
@@ -126,7 +179,7 @@ test("names study guide: English line, Read, and finding", async () => {
     await page.setViewportSize({ width: 390, height: 844 });
     const day = page.getByRole("button", { name: "Day theme" });
     if ((await day.count()) > 0) await day.click();
-    await page.goto(`${server.url}/names#corinth`, { waitUntil: "networkidle" });
+    await open(page,`${server.url}/names#corinth`);
     await page.locator("#corinth").scrollIntoViewIfNeeded();
     await page.waitForFunction(() => document.querySelector("#corinth h2")?.innerText.trim() === "Corinth");
     assert.equal((await page.locator("#corinth h2").innerText()).trim(), "Corinth");
@@ -142,14 +195,8 @@ test("names study guide: English line, Read, and finding", async () => {
       "ENGLISH Peter, Petros",
     );
 
-    await page.goto(`${server.url}/names#keefa`, { waitUntil: "networkidle" });
-    await page.waitForFunction(() => {
-      const card = document.getElementById("keefa");
-      if (!card) return false;
-      const box = card.getBoundingClientRect();
-      const mid = box.top + box.height / 2;
-      return box.height > 40 && Math.abs(mid - window.innerHeight / 2) < 180;
-    });
+    await open(page,`${server.url}/names#keefa`);
+    await assertPlaced(page, "keefa");
 
     const places = page.getByRole("radio", { name: /^Places\s+150$/ });
     assert.equal(await places.count(), 1);
@@ -159,19 +206,18 @@ test("names study guide: English line, Read, and finding", async () => {
     const all = Number((await page.getByRole("radio", { name: /^All\s+/ }).innerText()).replace(/\D/g, ""));
     assert.equal(persons + 150 + peoples + other, all);
     assert.equal(all, 503);
+    const otherChip = page.getByRole("radio", { name: /^Other\s+5$/ });
+    assert.equal(await otherChip.count(), 1);
+    assert.match(await otherChip.getAttribute("title") || "", /Title/);
     await places.click();
     await page.waitForFunction(() => document.querySelectorAll("main h2").length === 150);
 
     await page.getByRole("radio", { name: /^All\s+/ }).click();
     await page.waitForFunction(() => document.querySelectorAll("main h2").length === 503);
     assert.equal(await page.getByRole("button", { name: "V", exact: true }).isDisabled(), true);
+    await open(page,`${server.url}/names`);
     await page.getByRole("button", { name: "Q", exact: true }).click();
-    await page.waitForFunction(() => {
-      const card = document.getElementById("qananya");
-      if (!card) return false;
-      const box = card.getBoundingClientRect();
-      return box.bottom > 0 && box.top < window.innerHeight;
-    });
+    await assertPlaced(page, "qananya");
 
     const find = page.getByRole("textbox", { name: "FIND A NAME" });
     await find.fill("yeshua");
@@ -193,7 +239,7 @@ test("names study guide: English line, Read, and finding", async () => {
     }
 
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto(`${server.url}/names#kenaan`, { waitUntil: "networkidle" });
+    await open(page,`${server.url}/names#kenaan`);
     await page.locator("#kenaan [data-note-syriac]").scrollIntoViewIfNeeded();
     const syriac = await page.evaluate(async () => {
       await document.fonts.load('16px "Noto Sans Syriac"');
@@ -229,7 +275,55 @@ test("names study guide: English line, Read, and finding", async () => {
     await page.waitForFunction(() => document.querySelector("main h2")?.innerText.trim() === "Keefa");
     assert.equal(await page.locator("#keefa").count(), 1);
 
-    await page.goto(`${server.url}/names?q=keefa&kind=person`, { waitUntil: "networkidle" });
+    await find.fill("Mary");
+    await page.waitForFunction(() => document.querySelector("main h2")?.innerText.trim() === "Maryam");
+    const maryOrder = await page.locator("main h2").allInnerTexts();
+    const yhwhAt = maryOrder.findIndex((text) => text.trim() === "YHWH");
+    assert.equal(maryOrder[0].trim(), "Maryam");
+    if (yhwhAt >= 0) assert.ok(yhwhAt > 0, `YHWH at ${yhwhAt}`);
+
+    const keefa = NAMES.find((row) => row.id === "keefa");
+    await open(page,`${server.url}/names#keefa`);
+    await assertPlaced(page, "keefa");
+    assert.equal(await page.locator("#keefa [data-name-kind]").innerText(), "Person");
+    assert.equal(await page.locator("#keefa [data-name-verse]").count(), 6);
+    const more = page.locator("#keefa [data-name-more]");
+    assert.equal((await more.innerText()).trim(), `+ ${keefa.count - 6} more`);
+    assert.equal(await more.getAttribute("aria-expanded"), "false");
+    await more.click();
+    await page.waitForFunction((count) => document.querySelectorAll("#keefa [data-name-verse]").length === count, keefa.count);
+    const labels = await page.locator("#keefa [data-name-verse]").allInnerTexts();
+    assert.equal(labels[0].trim(), "Matthew 4:18");
+    for (const label of labels) assert.match(label.trim(), /^[A-Z0-9]/);
+    assert.match(await page.locator("#keefa [data-name-verse]").first().getAttribute("href") || "", /\/read\/matthew\/4#v-18$/);
+    assert.equal(await page.locator("[data-name-see-line]").count(), 0);
+
+    await open(page,`${server.url}/names#alap`);
+    assert.equal(await page.locator("#alap [data-name-kind]").innerText(), "Letter");
+    await open(page,`${server.url}/names#yhwh`);
+    assert.equal(await page.locator("#yhwh [data-name-kind]").innerText(), "Title");
+
+    for (const theme of ["day", "night"]) {
+      const toggle = page.getByRole("button", { name: theme === "night" ? "Night theme" : "Day theme" });
+      if ((await toggle.count()) > 0) await toggle.click();
+      await page.waitForFunction((want) => document.documentElement.dataset.theme === want, theme);
+      for (const width of [360, 390, 412, 1280]) {
+        await page.setViewportSize({ width, height: width === 1280 ? 800 : 844 });
+        for (const id of ["perets", "keefa", "pergamos"]) {
+          await open(page, `${server.url}/names#${id}`);
+          await assertPlaced(page, id);
+        }
+      }
+    }
+    const dayAgain = page.getByRole("button", { name: "Day theme" });
+    if ((await dayAgain.count()) > 0) await dayAgain.click();
+    await page.setViewportSize({ width: 390, height: 844 });
+    await open(page,`${server.url}/read/matthew/1`);
+    await page.locator("a[href*='#perets']:visible").first().click();
+    await page.waitForURL(/\/names#perets/);
+    await assertPlaced(page, "perets");
+
+    await open(page,`${server.url}/names?q=keefa&kind=person`);
     await page.locator("#keefa").waitFor();
     assert.equal(await find.inputValue(), "keefa");
     assert.equal(await page.getByRole("radio", { name: /^Persons\s+/ }).getAttribute("aria-checked"), "true");
@@ -239,7 +333,7 @@ test("names study guide: English line, Read, and finding", async () => {
     assert.equal(await page.getByRole("radio", { name: /^Persons\s+/ }).getAttribute("aria-checked"), "true");
     assert.equal(await page.locator("main h2").count(), 1);
 
-    await page.goto(`${server.url}/names#keefa`, { waitUntil: "networkidle" });
+    await open(page,`${server.url}/names#keefa`);
     await page.locator("#keefa [data-name-read]").waitFor();
     const read = page.locator("#keefa").getByRole("button", { name: "Read Keefa then Peter" });
     await read.click();
@@ -266,7 +360,8 @@ test("names study guide: English line, Read, and finding", async () => {
     assert.equal(await page.locator("[data-name-read]").count(), 503);
     await page.evaluate(() => window.__setReadingLive(false));
 
-    await page.goto(`${server.url}/names`, { waitUntil: "networkidle" });
+    await open(page, `${server.url}/names`);
+    await page.waitForLoadState("networkidle");
     await page.setViewportSize({ width: 390, height: 844 });
     const session = await context.newCDPSession(page);
     await session.send("Emulation.setCPUThrottlingRate", { rate: 4 });

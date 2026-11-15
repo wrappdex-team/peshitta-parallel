@@ -26,6 +26,10 @@ export type NameEntry = {
   spellings?: string[];
   /** Other verses, when there are only a few. */
   refs?: string[];
+  /** Distinct people who share this name. Optional until the names checker fills it. */
+  people?: { label: string; refs: string[] }[];
+  /** Other cards to open. Optional until the names checker fills it. */
+  see?: string[];
   root?: { text: string; lang: NameRootLang };
   pron?: { root?: NameSound; en?: NameSound };
 };
@@ -107,30 +111,49 @@ export function rootLanguage(row: NameEntry) {
   return { text: raw, pending: false };
 }
 
-function searchFields(row: NameEntry, notes: boolean) {
-  const fields = [row.en, row.known, row.say, row.sy, row.root?.text ?? "", ...(row.forms ?? []), ...(row.spellings ?? [])];
-  for (const part of row.known.split(",")) fields.push(part);
-  if (notes) {
-    if (row.note) fields.push(row.note);
-    for (const source of row.sources ?? []) {
-      if (source.note) fields.push(source.note);
-      if (source.text) fields.push(source.text);
-    }
-  }
-  return fields;
+export function kindLabel(kind: string) {
+  if (kind === "person") return "Person";
+  if (kind === "place") return "Place";
+  if (kind === "people") return "People";
+  if (kind === "title") return "Title";
+  if (kind === "letter") return "Letter";
+  return kind ? kind.charAt(0).toUpperCase() + kind.slice(1) : "Other";
 }
 
-function rankOf(row: NameEntry, query: string, notes: boolean) {
+function foldedRank(fields: string[], query: string) {
   let best: number | null = null;
-  for (const field of searchFields(row, notes)) {
+  for (const field of fields) {
     for (const folded of fieldFolds(field)) {
       if (!folded) continue;
       const rank = folded === query ? 0 : folded.startsWith(query) ? 1 : folded.includes(query) ? 2 : null;
       if (rank !== null && (best === null || rank < best)) best = rank;
-      if (best === 0) return 0;
     }
   }
   return best;
+}
+
+function rankOf(row: NameEntry, query: string, notes: boolean) {
+  const primary = [row.en, row.known, row.root?.text ?? "", ...(row.forms ?? []), ...(row.spellings ?? [])];
+  for (const part of row.known.split(",")) primary.push(part);
+  if (notes) {
+    if (row.note) primary.push(row.note);
+    for (const source of row.sources ?? []) {
+      if (source.note) primary.push(source.note);
+      if (source.text) primary.push(source.text);
+    }
+  }
+  const secondary = [row.say, row.sy];
+  const written = foldedRank(primary, query);
+  const spoken = foldedRank(secondary, query);
+  const ranks = [written, spoken === null ? null : spoken + 3].filter((rank): rank is number => rank !== null);
+  return ranks.length ? Math.min(...ranks) : null;
+}
+
+/** Finder rank. say/sy sit three steps under a written match of the same kind. */
+export function matchRank(row: NameEntry, query: string, notes = false) {
+  const folded = stripApostrophes(plainName(query));
+  if (!folded) return 0;
+  return rankOf(row, folded, notes);
 }
 
 /** Exact name, then prefix, then contains. Notes match only when asked. */

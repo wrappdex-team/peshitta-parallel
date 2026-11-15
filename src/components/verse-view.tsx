@@ -234,6 +234,8 @@ export function VerseView({
                           key={i}
                           to="/names"
                           hash={named.id}
+                          resetScroll={false}
+                          hashScrollIntoView={false}
                           className={`${NAME_CLASS} font-syriac ${hot ? "text-jesus" : ""}`}
                         >
                           {piece.text}
@@ -380,7 +382,7 @@ function EnglishBits({ text, onTerm }: { text: string; onTerm: (key: string) => 
     ) : (
       nameRuns(run.text).map((part, j) =>
         part.kind === "name" ? (
-          <Link key={`${i}-${j}`} to="/names" hash={part.id} className={NAME_CLASS}>
+          <Link key={`${i}-${j}`} to="/names" hash={part.id} resetScroll={false} hashScrollIntoView={false} className={NAME_CLASS}>
             {part.text}
           </Link>
         ) : (

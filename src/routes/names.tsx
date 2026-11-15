@@ -1,17 +1,18 @@
 import { memo, useCallback, useDeferredValue, useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore, type KeyboardEvent } from "react";
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { bookMeta } from "@/data/edition";
+import { createFileRoute, Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { nameUtterances } from "@/lib/name-speech";
 import {
   NAME_KIND_FILTERS,
-  NAMES,
   filterNames,
+  kindLabel,
   nameKindCounts,
   rootDisplay,
   rootLanguage,
   type NameEntry,
   type NameKindFilter,
 } from "@/lib/names";
+import { nameVersesFrom, studyPeople, studySee, type NameVerse } from "@/lib/name-verse-decode";
+import { loadNameVersePack } from "@/lib/name-verse-load";
 import { readingSessionLive, setReadingLive, subscribeReadingLive } from "@/lib/speech-lock";
 import { SITE_ORIGIN } from "@/lib/site";
 import { SiteHeader } from "@/components/site-header";
@@ -43,6 +44,7 @@ function readSearch(search: Record<string, unknown>): NamesSearch {
 
 export const Route = createFileRoute("/names")({
   validateSearch: readSearch,
+  loader: () => loadNameVersePack(),
   head: () => ({
     meta: [
       { title: "Names — Injeel" },
@@ -56,10 +58,50 @@ export const Route = createFileRoute("/names")({
   component: Names,
 });
 
-function firstPlace(ref: string) {
-  const match = /^([a-z0-9]+)\s+(\d+):(\d+)$/.exec(ref);
-  if (!match || !bookMeta(match[1])) return null;
-  return { book: match[1], chapter: match[2], verse: match[3] };
+function syncHeaderHeight() {
+  const header = document.querySelector("header");
+  if (!header) return;
+  document.documentElement.style.setProperty("--header-h", `${header.getBoundingClientRect().height}px`);
+}
+
+let measuredCount = -1;
+
+function measureNameCards() {
+  const cards = document.querySelectorAll<HTMLElement>(".name-card");
+  if (measuredCount === cards.length && cards[0]?.style.containIntrinsicSize) return;
+  for (const card of cards) card.style.contentVisibility = "visible";
+  const heights: number[] = [];
+  for (const card of cards) heights.push(card.getBoundingClientRect().height);
+  for (let index = 0; index < cards.length; index += 1) {
+    cards[index].style.containIntrinsicSize = `${Math.ceil(heights[index])}px`;
+    cards[index].style.contentVisibility = "";
+  }
+  measuredCount = cards.length;
+}
+
+/** Centre the card in the space under the sticky find bar. A taller card parks its heading 16px below the bar. */
+function placeNameCard(id: string, focus: boolean) {
+  const node = document.getElementById(id);
+  if (!node) return;
+  if (focus) measureNameCards();
+  syncHeaderHeight();
+  const heading = node.querySelector("h2");
+  node.style.contentVisibility = "visible";
+  const behavior = document.documentElement.style.scrollBehavior;
+  document.documentElement.style.scrollBehavior = "auto";
+  for (let pass = 0; pass < 4; pass += 1) {
+    const bar = document.querySelector(".names-tools")?.getBoundingClientRect();
+    const header = document.querySelector("header")?.getBoundingClientRect();
+    const cover = Math.max(bar?.bottom ?? 0, header?.bottom ?? 0);
+    const space = window.innerHeight - cover;
+    const card = node.getBoundingClientRect();
+    const head = (heading ?? node).getBoundingClientRect();
+    const delta = card.height <= space ? card.top + card.height / 2 - (cover + space / 2) : head.top - (cover + 16);
+    if (!Number.isFinite(delta) || Math.abs(delta) <= 1) break;
+    window.scrollBy(0, delta);
+  }
+  document.documentElement.style.scrollBehavior = behavior;
+  if (focus && heading instanceof HTMLElement) heading.focus({ preventScroll: true });
 }
 
 type SpeechWindow = Window & { __setReadingLive?: (next: boolean) => void };
@@ -77,11 +119,12 @@ function releaseSpeech(stop: () => void) {
 
 function Names() {
   const search = Route.useSearch();
+  const versePack = Route.useLoaderData();
   const navigate = useNavigate();
+  const routeHash = useRouterState({ select: (state) => state.location.hash });
   const [query, setQuery] = useState(search.q ?? "");
   const [kind, setKind] = useState<NameKindFilter>(search.kind ?? "all");
   const [notes, setNotes] = useState(Boolean(search.notes));
-  const [active, setActive] = useState("");
   const [canSpeak, setCanSpeak] = useState(true);
   const deferredQuery = useDeferredValue(query);
   const blocked = useSyncExternalStore(subscribeReadingLive, readingSessionLive, () => false);
@@ -118,27 +161,49 @@ function Names() {
     return () => window.clearTimeout(id);
   }, [query, kind, notes, search.q, search.kind, search.notes, navigate]);
 
-  useEffect(() => {
-    const read = () => setActive(decodeURIComponent(window.location.hash.replace(/^#/, "")));
-    read();
-    window.addEventListener("hashchange", read);
-    return () => window.removeEventListener("hashchange", read);
+  useLayoutEffect(() => {
+    syncHeaderHeight();
+    const onResize = () => {
+      measuredCount = -1;
+      syncHeaderHeight();
+    };
+    window.addEventListener("resize", onResize);
+    void document.fonts.ready.then(() => syncHeaderHeight());
+    return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  useEffect(() => {
-    if (!active) return;
-    const node = document.getElementById(active);
-    if (!node) return;
-    node.scrollIntoView({ block: "center" });
-    const cover = document.querySelector(".names-tools")?.getBoundingClientRect().bottom ?? 0;
-    const top = node.getBoundingClientRect().top;
-    if (top < cover + 8) window.scrollBy(0, top - cover - 8);
-  }, [active, rows]);
-
   useLayoutEffect(() => {
-    if (!deferredQuery && kind === "all") return;
-    document.querySelector("main .name-card")?.scrollIntoView({ block: "start" });
-  }, [deferredQuery, kind]);
+    if (!routeHash) return;
+    let cancel = false;
+    let frame = 0;
+    const place = (measure: boolean) => {
+      if (!cancel) placeNameCard(routeHash, measure);
+    };
+    // Scroll anchoring applies after the measuring frame, so place again once it lands.
+    const follow = (count: number) => {
+      if (frame) window.cancelAnimationFrame(frame);
+      const step = (left: number) => {
+        if (cancel || left <= 0) return;
+        frame = window.requestAnimationFrame(() => {
+          place(false);
+          step(left - 1);
+        });
+      };
+      step(count);
+    };
+    place(true);
+    follow(2);
+    void document.fonts.ready.then(() => {
+      if (cancel) return;
+      measuredCount = -1;
+      place(true);
+      follow(4);
+    });
+    return () => {
+      cancel = true;
+      if (frame) window.cancelAnimationFrame(frame);
+    };
+  }, [routeHash]);
 
   useEffect(() => {
     setCanSpeak(typeof window.speechSynthesis !== "undefined");
@@ -156,12 +221,14 @@ function Names() {
 
   function jump(letter: string) {
     const row = rows.find((item) => (item.en[0] ?? "").toUpperCase() === letter);
-    const node = row ? document.getElementById(row.id) : null;
-    if (!node) return;
-    node.scrollIntoView({ block: "start" });
-    const cover = document.querySelector(".names-tools")?.getBoundingClientRect().bottom ?? 0;
-    const top = node.getBoundingClientRect().top;
-    if (top < cover + 8) window.scrollBy(0, top - cover - 8);
+    if (!row) return;
+    void navigate({
+      to: "/names",
+      search: { q: query || undefined, kind: kind === "all" ? undefined : kind, notes: notes ? true : undefined },
+      hash: row.id,
+      resetScroll: false,
+      hashScrollIntoView: false,
+    });
   }
 
   function pickKind(next: NameKindFilter) {
@@ -173,7 +240,7 @@ function Names() {
       <SiteHeader title="Names" mark="names" />
       <main className="mx-auto max-w-3xl px-5 pb-page sm:px-8 lg:px-12">
         <div className="names-tools">
-          <label className="mt-3 block">
+          <label className="block">
             <span className="text-xs tracking-widest text-gold">FIND A NAME</span>
             <input
               value={query}
@@ -203,7 +270,7 @@ function Names() {
               type="button"
               role="radio"
               aria-checked={kind === item.id}
-              title={item.id === "other" ? "Titles, letters, and any other kind" : undefined}
+              title={item.id === "all" ? "Person, Place, People, Title, and Letter" : item.id === "other" ? "Title and Letter" : kindLabel(item.id)}
               className="names-chip ink-row inline-flex min-h-11 items-center gap-1 px-3 text-sm"
               onClick={() => pickKind(item.id)}
             >
@@ -219,7 +286,7 @@ function Names() {
         <p aria-live="polite" className="text-sm text-muted">
           {rows.length} {rows.length === 1 ? "name" : "names"}
         </p>
-        <NameResults rows={rows} active={active} blocked={blocked} canSpeak={canSpeak} />
+        <NameResults rows={rows} active={routeHash} pack={versePack} blocked={blocked} canSpeak={canSpeak} />
       </main>
     </div>
   );
@@ -239,18 +306,20 @@ function onKindKey(event: KeyboardEvent<HTMLDivElement>) {
 const NameResults = memo(function NameResults({
   rows,
   active,
+  pack,
   blocked,
   canSpeak,
 }: {
   rows: NameEntry[];
   active: string;
+  pack: string;
   blocked: boolean;
   canSpeak: boolean;
 }) {
   return (
     <ul className="mt-2 border-t border-line">
       {rows.map((row) => (
-        <NameCard key={row.id} row={row} active={active === row.id} blocked={blocked} canSpeak={canSpeak} />
+        <NameCard key={row.id} row={row} active={active === row.id} pack={pack} blocked={blocked} canSpeak={canSpeak} />
       ))}
     </ul>
   );
@@ -259,11 +328,13 @@ const NameResults = memo(function NameResults({
 const NameCard = memo(function NameCard({
   row,
   active,
+  pack,
   blocked,
   canSpeak,
 }: {
   row: NameEntry;
   active: boolean;
+  pack: string;
   blocked: boolean;
   canSpeak: boolean;
 }) {
@@ -271,7 +342,6 @@ const NameCard = memo(function NameCard({
   const root = rootDisplay(row);
   const lang = rootLanguage(row);
   const ipa = row.pron?.root?.ipa && row.pron.root.source ? row.pron.root.ipa : "";
-  const listed = row.refs?.length ? row.refs : [row.ref];
   const [part, setPart] = useState<"" | "root" | "en">("");
   const token = useRef(0);
   const running = useRef(false);
@@ -324,7 +394,7 @@ const NameCard = memo(function NameCard({
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
-            <h2 className="font-serif text-2xl font-semibold leading-tight">{root}</h2>
+            <h2 tabIndex={-1} className="font-serif text-2xl font-semibold leading-tight outline-none">{root}</h2>
             <span className={`text-xs ${lang.pending ? "text-muted" : "tracking-wide text-gold"}`}>{lang.text}</span>
           </div>
           <p className="name-spoken mt-1 text-sm" data-name-english-line aria-current={part === "en" ? "true" : undefined}>
@@ -366,6 +436,41 @@ const NameCard = memo(function NameCard({
         </button>
       </div>
       <p className="mt-2 text-sm leading-relaxed">{noteWithSyriac(row.note)}</p>
+      {studyPeople(row).map((person) => (
+        <p key={person.label} className="mt-2 text-sm leading-relaxed" data-name-person="">
+          {person.label}
+          {person.links.length ? " — " : ""}
+          {person.links.map((link) => (
+            <Link
+              key={link.ref}
+              to="/read/$book/$chapter"
+              params={{ book: link.book, chapter: String(link.chapter) }}
+              hash={`v-${link.verse}`}
+              className="ink-link inline-flex min-h-6 min-w-0 max-w-full items-center px-1.5 text-garnet"
+            >
+              {link.label}
+            </Link>
+          ))}
+        </p>
+      ))}
+      {studySee(row).length ? (
+        <p className="mt-2 text-sm" data-name-see-line="">
+          See also{" "}
+          {studySee(row).map((item) => (
+            <Link
+              key={item.id}
+              to="/names"
+              hash={item.id}
+              resetScroll={false}
+              hashScrollIntoView={false}
+              data-name-see={item.id}
+              className="ink-link inline-flex min-h-6 items-center px-1.5 text-garnet"
+            >
+              {item.label}
+            </Link>
+          ))}
+        </p>
+      ) : null}
       {row.sources?.map((source) => (
         <p key={`${source.script}-${source.text}`} className="mt-2 text-sm leading-relaxed">
           <span className="text-gold">{source.script}</span>{" "}
@@ -376,32 +481,87 @@ const NameCard = memo(function NameCard({
           {source.note ? <span> {noteWithSyriac(source.note)}</span> : null}
         </p>
       ))}
-      <p className="mt-2 text-sm text-muted">
-        {row.kind}
-        {" · "}
-        {row.count} {row.count === 1 ? "verse" : "verses"}
-      </p>
-      <p className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-sm">
-        {listed.map((ref) => {
-          const place = firstPlace(ref);
-          return place ? (
-            <Link
-              key={ref}
-              to="/read/$book/$chapter"
-              params={{ book: place.book, chapter: place.chapter }}
-              hash={`v-${place.verse}`}
-              className="ink-link inline-flex min-h-6 min-w-6 items-center px-1.5 text-garnet"
-            >
-              {ref}
-            </Link>
-          ) : (
-            <span key={ref}>{ref}</span>
-          );
-        })}
-      </p>
+      <VerseList row={row} pack={pack} />
     </li>
   );
 });
+
+function VerseList({ row, pack }: { row: NameEntry; pack: string }) {
+  const verses = useMemo(() => nameVersesFrom(pack, row), [pack, row]);
+  const [open, setOpen] = useState(false);
+  const [book, setBook] = useState("");
+  const shown = open ? verses : verses.slice(0, 6);
+  const books = useMemo(() => {
+    const seen: { id: string; name: string }[] = [];
+    for (const verse of verses) {
+      const name = verse.label.replace(/\s+\d+:\d+$/, "");
+      if (!seen.some((item) => item.id === verse.book)) seen.push({ id: verse.book, name });
+    }
+    return seen;
+  }, [verses]);
+  const filtered = book ? shown.filter((verse) => verse.book === book) : shown;
+  const groups: { id: string; name: string; verses: NameVerse[] }[] = [];
+  for (const verse of filtered) {
+    const name = verse.label.replace(/\s+\d+:\d+$/, "");
+    const last = groups[groups.length - 1];
+    if (last?.id === verse.book) last.verses.push(verse);
+    else groups.push({ id: verse.book, name, verses: [verse] });
+  }
+  return (
+    <>
+      <p className="mt-2 text-sm text-muted">
+        <span data-name-kind>{kindLabel(row.kind)}</span>
+        {" · "}
+        {verses.length} {verses.length === 1 ? "verse" : "verses"}
+      </p>
+      {open && books.length > 1 ? (
+        <div className="mt-2 flex flex-wrap gap-2" role="group" aria-label="Books in this list">
+          <button type="button" aria-pressed={book === ""} className="ink-row inline-flex min-h-11 items-center px-3 text-sm" onClick={() => setBook("")}>
+            All
+          </button>
+          {books.map((item) => (
+            <button key={item.id} type="button" aria-pressed={book === item.id} className="ink-row inline-flex min-h-11 items-center px-3 text-sm" onClick={() => setBook(item.id)}>
+              {item.name}
+            </button>
+          ))}
+        </div>
+      ) : null}
+      <div className="name-verses mt-1">
+        {groups.map((group) => (
+          <div key={group.id} className="name-verse-book">
+            <span className="name-verse-book-label">{group.name}</span>
+            {group.verses.map((verse) => (
+              <Link
+                key={`${verse.book}-${verse.chapter}-${verse.verse}`}
+                to="/read/$book/$chapter"
+                params={{ book: verse.book, chapter: String(verse.chapter) }}
+                hash={`v-${verse.verse}`}
+                data-name-verse=""
+                className="ink-link inline-flex min-h-6 min-w-0 max-w-full items-center px-1.5 text-garnet [overflow-wrap:anywhere]"
+              >
+                {verse.label}
+              </Link>
+            ))}
+          </div>
+        ))}
+      </div>
+      {verses.length > 6 ? (
+        <button
+          type="button"
+          data-name-more=""
+          aria-expanded={open}
+          className="ink-link mt-1 inline-flex min-h-6 items-center px-1.5 text-sm text-garnet"
+          onClick={() => {
+            setOpen((value) => !value);
+            setBook("");
+          }}
+        >
+          {open ? "Show fewer" : `+ ${verses.length - 6} more`}
+        </button>
+      ) : null}
+    </>
+  );
+}
 
 function speakLine(text: string, lang: string, rate: number) {
   return new Promise<void>((resolve) => {
