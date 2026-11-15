@@ -31,6 +31,15 @@
       ],
       "known": "Abba",
       "say": "aba",
+      "root": {
+        "text": "Abba",
+        "lang": "Aramaic"
+      },
+      "pron": {
+        "root": {
+          "respell": "ab-ba"
+        }
+      },
       "kind": "person",
       "count": 3,
       "ref": "mark 14:36",
@@ -257,6 +266,15 @@
       ],
       "known": "Agrippa",
       "say": "agrappos",
+      "root": {
+        "text": "Agrappos",
+        "lang": "needs owner decision"
+      },
+      "pron": {
+        "root": {
+          "respell": "ah-grap-pos"
+        }
+      },
       "kind": "person",
       "count": 14,
       "ref": "acts 12:1",
@@ -367,6 +385,15 @@
       ],
       "known": "Alexandria",
       "say": "aleksandriya",
+      "root": {
+        "text": "Aleksandriya",
+        "lang": "needs owner decision"
+      },
+      "pron": {
+        "root": {
+          "respell": "ah-lek-san-dree-ya"
+        }
+      },
       "kind": "place",
       "count": 3,
       "ref": "acts 6:9",
@@ -818,6 +845,15 @@
       ],
       "known": "Aramean",
       "say": "aramaya",
+      "root": {
+        "text": "Aramaya",
+        "lang": "needs owner decision"
+      },
+      "pron": {
+        "root": {
+          "respell": "ah-ra-mah-ya"
+        }
+      },
       "kind": "people",
       "count": 21,
       "ref": "luke 4:27",
@@ -883,6 +919,15 @@
       ],
       "known": "Aristarchus",
       "say": "aristarkus",
+      "root": {
+        "text": "Aristarkos",
+        "lang": "Greek"
+      },
+      "pron": {
+        "root": {
+          "respell": "ah-ris-tar-kos"
+        }
+      },
       "kind": "person",
       "count": 5,
       "ref": "acts 19:29",
@@ -945,6 +990,15 @@
       ],
       "known": "Artemis",
       "say": "arṭamis",
+      "root": {
+        "text": "Artamis",
+        "lang": "needs owner decision"
+      },
+      "pron": {
+        "root": {
+          "respell": "ar-ta-mis"
+        }
+      },
       "kind": "person",
       "count": 5,
       "ref": "acts 19:24",
@@ -1047,6 +1101,15 @@
       ],
       "known": "Asia",
       "say": "asya",
+      "root": {
+        "text": "Asiya",
+        "lang": "Greek"
+      },
+      "pron": {
+        "root": {
+          "respell": "ah-see-ya"
+        }
+      },
       "kind": "place",
       "count": 18,
       "ref": "acts 2:9",
@@ -1069,6 +1132,15 @@
       ],
       "known": "Athens",
       "say": "atenus",
+      "root": {
+        "text": "Atenus",
+        "lang": "Greek"
+      },
+      "pron": {
+        "root": {
+          "respell": "ah-teh-noos"
+        }
+      },
       "kind": "place",
       "count": 4,
       "ref": "acts 17:15",
@@ -1702,6 +1774,15 @@
       ],
       "known": "Caesar",
       "say": "Qesar",
+      "root": {
+        "text": "Qesar",
+        "lang": "Latin"
+      },
+      "pron": {
+        "root": {
+          "respell": "keh-sar"
+        }
+      },
       "kind": "person",
       "count": 28,
       "ref": "matthew 22:17",
@@ -1995,6 +2076,15 @@
       ],
       "known": "Crete",
       "say": "qreta",
+      "root": {
+        "text": "Qreta",
+        "lang": "needs owner decision"
+      },
+      "pron": {
+        "root": {
+          "respell": "kreh-ta"
+        }
+      },
       "kind": "place",
       "count": 7,
       "ref": "acts 2:11",
@@ -2019,6 +2109,15 @@
       ],
       "known": "Cyprus",
       "say": "qupros",
+      "root": {
+        "text": "Qupros",
+        "lang": "Greek"
+      },
+      "pron": {
+        "root": {
+          "respell": "koo-pros"
+        }
+      },
       "kind": "place",
       "count": 7,
       "ref": "acts 11:19",
@@ -2051,6 +2150,15 @@
       ],
       "known": "Cyrene",
       "say": "qurina",
+      "root": {
+        "text": "Qurina",
+        "lang": "needs owner decision"
+      },
+      "pron": {
+        "root": {
+          "respell": "koo-ree-na"
+        }
+      },
       "kind": "place",
       "count": 3,
       "ref": "acts 2:10",
@@ -2181,6 +2289,15 @@
       ],
       "known": "Demetrius",
       "say": "demetriyos",
+      "root": {
+        "text": "Demetrios",
+        "lang": "Greek"
+      },
+      "pron": {
+        "root": {
+          "respell": "deh-meh-tree-yos"
+        }
+      },
       "kind": "person",
       "count": 3,
       "ref": "acts 19:24",
@@ -2484,6 +2601,15 @@
       ],
       "known": "Epaphras",
       "say": "eppaprā",
+      "root": {
+        "text": "Apapra",
+        "lang": "needs owner decision"
+      },
+      "pron": {
+        "root": {
+          "respell": "ah-pap-ra"
+        }
+      },
       "kind": "person",
       "count": 3,
       "ref": "colossians 1:7",
@@ -2577,6 +2703,15 @@
       ],
       "known": "Esau",
       "say": "esaw",
+      "root": {
+        "text": "Esaw",
+        "lang": "needs owner decision"
+      },
+      "pron": {
+        "root": {
+          "respell": "eh-saw"
+        }
+      },
       "kind": "person",
       "count": 3,
       "ref": "romans 9:13",
@@ -2716,6 +2851,15 @@
       ],
       "known": "Felix",
       "say": "pīlaks",
+      "root": {
+        "text": "Pilkas",
+        "lang": "Latin"
+      },
+      "pron": {
+        "root": {
+          "respell": "peel-kas"
+        }
+      },
       "kind": "person",
       "count": 8,
       "ref": "acts 23:24",
@@ -2748,6 +2892,15 @@
       ],
       "known": "Festus",
       "say": "phestos",
+      "root": {
+        "text": "Phestos",
+        "lang": "needs owner decision"
+      },
+      "pron": {
+        "root": {
+          "respell": "fes-tos"
+        }
+      },
       "kind": "person",
       "count": 14,
       "ref": "acts 24:27",
@@ -2902,6 +3055,15 @@
       ],
       "known": "Gaius",
       "say": "gayos",
+      "root": {
+        "text": "Gayos",
+        "lang": "needs owner decision"
+      },
+      "pron": {
+        "root": {
+          "respell": "gah-yos"
+        }
+      },
       "kind": "person",
       "count": 5,
       "ref": "acts 19:29",
@@ -2924,6 +3086,15 @@
       ],
       "known": "Galatia",
       "say": "galāṭāyā",
+      "root": {
+        "text": "Galatya",
+        "lang": "needs owner decision"
+      },
+      "pron": {
+        "root": {
+          "respell": "ga-laht-ya"
+        }
+      },
       "kind": "place",
       "count": 6,
       "ref": "acts 16:6",
@@ -3003,6 +3174,15 @@
       ],
       "known": "Gallio",
       "say": "gālyōn",
+      "root": {
+        "text": "Galion",
+        "lang": "needs owner decision"
+      },
+      "pron": {
+        "root": {
+          "respell": "gal-yon"
+        }
+      },
       "kind": "person",
       "count": 3,
       "ref": "acts 18:12",
@@ -3460,6 +3640,15 @@
       ],
       "known": "Italy",
       "say": "iṭaliyā",
+      "root": {
+        "text": "Italiya",
+        "lang": "needs owner decision"
+      },
+      "pron": {
+        "root": {
+          "respell": "ee-ta-lee-ya"
+        }
+      },
       "kind": "place",
       "count": 5,
       "ref": "acts 18:2",
@@ -4091,6 +4280,15 @@
       ],
       "known": "Macedonia",
       "say": "maqedonya",
+      "root": {
+        "text": "Maqedonya",
+        "lang": "needs owner decision"
+      },
+      "pron": {
+        "root": {
+          "respell": "ma-keh-don-ya"
+        }
+      },
       "kind": "place",
       "count": 21,
       "ref": "acts 16:9",
@@ -4334,6 +4532,15 @@
       ],
       "known": "Martha",
       "say": "Marta",
+      "root": {
+        "text": "Marta",
+        "lang": "Aramaic"
+      },
+      "pron": {
+        "root": {
+          "respell": "mar-ta"
+        }
+      },
       "kind": "person",
       "count": 12,
       "ref": "luke 10:38",
@@ -4584,6 +4791,15 @@
       ],
       "known": "Miletus",
       "say": "mīlīṭōs",
+      "root": {
+        "text": "Militos",
+        "lang": "needs owner decision"
+      },
+      "pron": {
+        "root": {
+          "respell": "mee-lee-tos"
+        }
+      },
       "kind": "place",
       "count": 3,
       "ref": "acts 20:15",
@@ -5263,6 +5479,15 @@
       ],
       "known": "Pharaoh",
       "say": "Parʿon",
+      "root": {
+        "text": "Par'on",
+        "lang": "needs owner decision"
+      },
+      "pron": {
+        "root": {
+          "respell": "par-on"
+        }
+      },
       "kind": "person",
       "count": 5,
       "ref": "acts 7:10",
@@ -5506,6 +5731,15 @@
       ],
       "known": "Pontus",
       "say": "panṭus",
+      "root": {
+        "text": "Pantus",
+        "lang": "needs owner decision"
+      },
+      "pron": {
+        "root": {
+          "respell": "pan-toos"
+        }
+      },
       "kind": "place",
       "count": 3,
       "ref": "acts 2:9",
@@ -6140,6 +6374,15 @@
       ],
       "known": "Rome",
       "say": "Rhoma",
+      "root": {
+        "text": "Rhoma",
+        "lang": "Greek"
+      },
+      "pron": {
+        "root": {
+          "respell": "ro-ma"
+        }
+      },
       "kind": "place",
       "count": 9,
       "ref": "acts 2:10",
@@ -6674,6 +6917,15 @@
       ],
       "known": "Sheol",
       "say": "Shyol",
+      "root": {
+        "text": "Shyol",
+        "lang": "Hebrew"
+      },
+      "pron": {
+        "root": {
+          "respell": "shee-yol"
+        }
+      },
       "kind": "place",
       "count": 14,
       "ref": "matthew 11:23",
@@ -6916,6 +7168,15 @@
       ],
       "known": "Sinai",
       "say": "sīnay",
+      "root": {
+        "text": "Sinay",
+        "lang": "Hebrew"
+      },
+      "pron": {
+        "root": {
+          "respell": "see-nye"
+        }
+      },
       "kind": "place",
       "count": 4,
       "ref": "acts 7:30",
@@ -6994,6 +7255,15 @@
       ],
       "known": "Sodom",
       "say": "sdom",
+      "root": {
+        "text": "Sdom",
+        "lang": "Hebrew"
+      },
+      "pron": {
+        "root": {
+          "respell": "sdom"
+        }
+      },
       "kind": "place",
       "count": 10,
       "ref": "matthew 10:15",
@@ -7142,6 +7412,15 @@
       ],
       "known": "Syria",
       "say": "surya",
+      "root": {
+        "text": "Surya",
+        "lang": "Greek"
+      },
+      "pron": {
+        "root": {
+          "respell": "soor-ya"
+        }
+      },
       "kind": "place",
       "count": 9,
       "ref": "matthew 4:24",
@@ -7228,6 +7507,15 @@
       ],
       "known": "Tarsus",
       "say": "tarsos",
+      "root": {
+        "text": "Tarsos",
+        "lang": "needs owner decision"
+      },
+      "pron": {
+        "root": {
+          "respell": "tar-sos"
+        }
+      },
       "kind": "place",
       "count": 5,
       "ref": "acts 9:11",
@@ -7407,6 +7695,15 @@
       ],
       "known": "Thyatira",
       "say": "tawtira",
+      "root": {
+        "text": "Tawtira",
+        "lang": "needs owner decision"
+      },
+      "pron": {
+        "root": {
+          "respell": "taw-tee-ra"
+        }
+      },
       "kind": "place",
       "count": 4,
       "ref": "acts 16:14",
@@ -7517,6 +7814,15 @@
       ],
       "known": "Titus",
       "say": "ṭeṭos",
+      "root": {
+        "text": "Tetos",
+        "lang": "Greek"
+      },
+      "pron": {
+        "root": {
+          "respell": "teh-tos"
+        }
+      },
       "kind": "person",
       "count": 13,
       "ref": "acts 18:7",
@@ -7590,6 +7896,15 @@
       ],
       "known": "Troas",
       "say": "ṭrwas",
+      "root": {
+        "text": "Troas",
+        "lang": "needs owner decision"
+      },
+      "pron": {
+        "root": {
+          "respell": "tro-as"
+        }
+      },
       "kind": "place",
       "count": 5,
       "ref": "acts 16:8",
@@ -7612,6 +7927,15 @@
       ],
       "known": "Trophimus",
       "say": "Trophimos",
+      "root": {
+        "text": "Trophimos",
+        "lang": "needs owner decision"
+      },
+      "pron": {
+        "root": {
+          "respell": "tro-fee-mos"
+        }
+      },
       "kind": "person",
       "count": 3,
       "ref": "acts 20:4",
@@ -9481,6 +9805,15 @@
       ],
       "known": "Pharisees",
       "say": "perisha",
+      "root": {
+        "text": "Prisha",
+        "lang": "needs owner decision"
+      },
+      "pron": {
+        "root": {
+          "respell": "pree-sha"
+        }
+      },
       "kind": "people",
       "count": 99,
       "ref": "matthew 3:7",
