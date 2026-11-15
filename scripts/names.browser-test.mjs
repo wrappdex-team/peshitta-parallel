@@ -162,7 +162,7 @@ test("names study guide: English line, Read, and finding", async () => {
         await page.setViewportSize(size);
         await page.waitForTimeout(50);
         assertEnglish(await englishMap(page));
-        assert.equal(await page.locator("main h2").count(), 503, `${theme} ${size.width}`);
+        assert.equal(await page.locator("main h2").count(), 505, `${theme} ${size.width}`);
         const links = await shortLinks(page);
         assert.ok(links.count > 400, `verse links ${links.count}`);
         assert.equal(links.short, 0, `${links.short} verse links under 24px at ${size.width} ${theme}`);
@@ -198,22 +198,22 @@ test("names study guide: English line, Read, and finding", async () => {
     await open(page,`${server.url}/names#keefa`);
     await assertPlaced(page, "keefa");
 
-    const places = page.getByRole("radio", { name: /^Places\s+150$/ });
+    const places = page.getByRole("radio", { name: /^Places\s+151$/ });
     assert.equal(await places.count(), 1);
     const persons = Number((await page.getByRole("radio", { name: /^Persons\s+/ }).innerText()).replace(/\D/g, ""));
     const peoples = Number((await page.getByRole("radio", { name: /^Peoples\s+/ }).innerText()).replace(/\D/g, ""));
     const other = Number((await page.getByRole("radio", { name: /^Other\s+/ }).innerText()).replace(/\D/g, ""));
     const all = Number((await page.getByRole("radio", { name: /^All\s+/ }).innerText()).replace(/\D/g, ""));
-    assert.equal(persons + 150 + peoples + other, all);
-    assert.equal(all, 503);
+    assert.equal(persons + 151 + peoples + other, all);
+    assert.equal(all, 505);
     const otherChip = page.getByRole("radio", { name: /^Other\s+5$/ });
     assert.equal(await otherChip.count(), 1);
     assert.match(await otherChip.getAttribute("title") || "", /Title/);
     await places.click();
-    await page.waitForFunction(() => document.querySelectorAll("main h2").length === 150);
+    await page.waitForFunction(() => document.querySelectorAll("main h2").length === 151);
 
     await page.getByRole("radio", { name: /^All\s+/ }).click();
-    await page.waitForFunction(() => document.querySelectorAll("main h2").length === 503);
+    await page.waitForFunction(() => document.querySelectorAll("main h2").length === 505);
     assert.equal(await page.getByRole("button", { name: "V", exact: true }).isDisabled(), true);
     await open(page,`${server.url}/names`);
     await page.getByRole("button", { name: "Q", exact: true }).click();
@@ -357,7 +357,7 @@ test("names study guide: English line, Read, and finding", async () => {
     await page.waitForFunction(() => typeof window.__setReadingLive === "function");
     await page.evaluate(() => window.__setReadingLive(true));
     await page.waitForFunction(() => document.querySelectorAll("[data-name-read]:not(:disabled)").length === 0);
-    assert.equal(await page.locator("[data-name-read]").count(), 503);
+    assert.equal(await page.locator("[data-name-read]").count(), 505);
     await page.evaluate(() => window.__setReadingLive(false));
 
     await open(page, `${server.url}/names`);
