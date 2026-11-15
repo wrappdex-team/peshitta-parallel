@@ -112,6 +112,7 @@ html.modal-scroll-lock {
   justify-content: space-between;
   gap: 0.75rem;
   min-height: 2.75rem;
+  padding-top: max(env(safe-area-inset-top), 0.5rem);
   padding-inline: max(16px, env(safe-area-inset-left, 0px));
   background: var(--paper);
 }
@@ -705,4 +706,41 @@ dialog[open] > div {
   from {
     transform: translateX(calc(-100% + 2.5rem));
   }
+}
+
+.names-tools {
+  position: sticky;
+  top: calc(3.5rem + env(safe-area-inset-top, 0px));
+  z-index: 15;
+  background: var(--paper);
+  padding-bottom: 0.25rem;
+}
+.names-az {
+  display: flex;
+  gap: 0.25rem;
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+}
+.names-az::-webkit-scrollbar {
+  display: none;
+}
+.names-az button:disabled {
+  cursor: default;
+  opacity: 0.35;
+}
+.names-chip[aria-checked="true"] {
+  background: var(--gold-soft);
+  box-shadow: inset 0 0 0 1px var(--garnet);
+}
+.name-card {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 300px;
+}
+.name-spoken[aria-current="true"] {
+  text-decoration-line: underline;
+  text-decoration-color: var(--gold);
+  text-underline-offset: 0.2em;
+  text-decoration-thickness: 1px;
 }

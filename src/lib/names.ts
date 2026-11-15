@@ -1,4 +1,4 @@
-import registry from "@/data/names.json";
+import registry from "../data/names.json" with { type: "json" };
 
 export type NameSource = {
   script: string;
@@ -6,6 +6,10 @@ export type NameSource = {
   say?: string;
   note?: string;
 };
+
+export type NameSound = { respell: string; ipa?: string; source?: string };
+
+export type NameRootLang = "Aramaic" | "Hebrew" | "Greek" | "Latin" | "needs owner decision";
 
 export type NameEntry = {
   id: string;
@@ -22,12 +26,126 @@ export type NameEntry = {
   spellings?: string[];
   /** Other verses, when there are only a few. */
   refs?: string[];
+  root?: { text: string; lang: NameRootLang };
+  pron?: { root?: NameSound; en?: NameSound };
 };
 
 export const NAME_CLASS =
   "rounded-sm bg-gold-soft px-0.5 font-semibold text-inherit underline decoration-gold/70 underline-offset-2";
 
 export const NAMES = (registry.names as NameEntry[]).slice().sort((a, b) => a.en.localeCompare(b.en, "en"));
+
+export type NameKindFilter = "all" | "person" | "place" | "people" | "other";
+
+export const NAME_KIND_FILTERS: { id: NameKindFilter; label: string }[] = [
+  { id: "all", label: "All" },
+  { id: "person", label: "Persons" },
+  { id: "place", label: "Places" },
+  { id: "people", label: "Peoples" },
+  { id: "other", label: "Other" },
+];
+
+const MARK = /\p{M}/gu;
+const GLOTTAL = /[ʿʾ]/g;
+const HYPHEN = /[\u2010\u2011\u2012\u2013\u2014-]/g;
+const APOSTROPHE = /['’ʼʻ′]/g;
+
+function plainName(value: string) {
+  return value
+    .normalize("NFD")
+    .replace(MARK, "")
+    .toLowerCase()
+    .replace(GLOTTAL, "")
+    .replace(HYPHEN, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+/**
+ * An apostrophe in these spellings stands for the vowel a reader types.
+ * Y'shua and yeshua are the same search. Removing this breaks that.
+ */
+export function foldApostrophes(value: string) {
+  return value.replace(APOSTROPHE, "e").replace(/\s+/g, " ").trim();
+}
+
+function stripApostrophes(value: string) {
+  return value.replace(APOSTROPHE, "").replace(/\s+/g, " ").trim();
+}
+
+/** Case, marks, glottal letters, apostrophes and hyphens, folded the same on both sides. */
+export function foldName(value: string) {
+  return foldApostrophes(plainName(value));
+}
+
+/** Apostrophe removed, and apostrophe spoken as e. A name matches either. */
+function fieldFolds(field: string) {
+  const plain = plainName(field);
+  const removed = stripApostrophes(plain);
+  const spoken = foldApostrophes(plain);
+  return removed === spoken ? [removed] : [removed, spoken];
+}
+
+export function nameBucket(row: NameEntry): NameKindFilter {
+  if (row.kind === "person" || row.kind === "place" || row.kind === "people") return row.kind;
+  return "other";
+}
+
+export function nameKindCounts() {
+  const counts: Record<NameKindFilter, number> = { all: NAMES.length, person: 0, place: 0, people: 0, other: 0 };
+  for (const row of NAMES) counts[nameBucket(row)] += 1;
+  return counts;
+}
+
+export function rootDisplay(row: NameEntry) {
+  return row.root?.text ?? row.en;
+}
+
+export function rootLanguage(row: NameEntry) {
+  const raw = row.root?.lang ?? row.sources?.[0]?.script ?? "Syriac reading";
+  if (raw === "needs owner decision") return { text: "root language: owner to confirm", pending: true };
+  return { text: raw, pending: false };
+}
+
+function searchFields(row: NameEntry, notes: boolean) {
+  const fields = [row.en, row.known, row.say, row.sy, row.root?.text ?? "", ...(row.forms ?? []), ...(row.spellings ?? [])];
+  for (const part of row.known.split(",")) fields.push(part);
+  if (notes) {
+    if (row.note) fields.push(row.note);
+    for (const source of row.sources ?? []) {
+      if (source.note) fields.push(source.note);
+      if (source.text) fields.push(source.text);
+    }
+  }
+  return fields;
+}
+
+function rankOf(row: NameEntry, query: string, notes: boolean) {
+  let best: number | null = null;
+  for (const field of searchFields(row, notes)) {
+    for (const folded of fieldFolds(field)) {
+      if (!folded) continue;
+      const rank = folded === query ? 0 : folded.startsWith(query) ? 1 : folded.includes(query) ? 2 : null;
+      if (rank !== null && (best === null || rank < best)) best = rank;
+      if (best === 0) return 0;
+    }
+  }
+  return best;
+}
+
+/** Exact name, then prefix, then contains. Notes match only when asked. */
+export function filterNames(query: string, kind: NameKindFilter, notes: boolean) {
+  const pool = kind === "all" ? NAMES : NAMES.filter((row) => nameBucket(row) === kind);
+  const folded = stripApostrophes(plainName(query));
+  if (!folded) return pool;
+  const hits: { row: NameEntry; rank: number }[] = [];
+  for (const row of pool) {
+    const rank = rankOf(row, folded, notes);
+    if (rank !== null) hits.push({ row, rank });
+  }
+  hits.sort((a, b) => a.rank - b.rank);
+  return hits.map((hit) => hit.row);
+}
 
 const byForm = new Map<string, NameEntry>();
 for (const name of [...NAMES].sort((a, b) => a.count - b.count)) {
@@ -150,4 +268,3 @@ export function nameRuns(input: string): NameRun[] {
   if (last < input.length) runs.push({ kind: "text", text: input.slice(last) });
   return runs;
 }
-
