@@ -5,20 +5,25 @@ import { languageById, type LangId } from "@/lib/languages";
 import { SITE_ORIGIN } from "@/lib/site";
 import { NAME_CLASS, nameOfSyriac, nameRuns } from "@/lib/names";
 import { shareCard, verseShare } from "@/lib/share";
+import glossOverrides from "@/data/gloss-overrides.json";
 import {
   TERM_NOTES,
   englishRuns,
   glossWord,
+  registerGlossOverrides,
   syriacPieces,
   syriacWords,
   type Verse,
   type WordGloss,
   type WordPlace,
 } from "@/lib/scripture";
+
 import { useEffect, useRef, useState } from "react";
 import { InfoMark } from "@/components/info-mark";
 
 import type { Annotation, Highlight } from "@/lib/annotations";
+
+registerGlossOverrides(glossOverrides as Record<string, string>);
 
 const MARK_NAME: Record<Highlight, string> = { gold: "Gold", garnet: "Garnet", ink: "Ink" };
 

@@ -368,6 +368,17 @@ export type WordPlace = { book: string; chapter: number; verse: number };
  * Unvocalized homographs. The lexicon keeps the usual sense.
  * These verses take the other one.
  */
+/** Per-verse gloss overrides registered from src/data/gloss-overrides.json (reader only). */
+const EXTRA_SENSE: Record<string, LexEntry> = {};
+
+export function registerGlossOverrides(map: Record<string, string>) {
+  for (const [key, gloss] of Object.entries(map)) {
+    const word = key.slice(key.lastIndexOf(":") + 1);
+    const base = lex[word];
+    EXTRA_SENSE[key] = { g: gloss, r: base?.r ?? "", n: base?.n ?? "" };
+  }
+}
+
 const SENSE_AT: Record<string, LexEntry> = {
   "matthew:10:31:ܨܦܪܐ": {
     g: "sparrows",
@@ -393,7 +404,8 @@ const SENSE_AT: Record<string, LexEntry> = {
 
 function lexAt(word: string, place?: WordPlace): LexEntry | undefined {
   if (place) {
-    const pinned = SENSE_AT[`${place.book}:${place.chapter}:${place.verse}:${word}`];
+    const key = `${place.book}:${place.chapter}:${place.verse}:${word}`;
+    const pinned = SENSE_AT[key] ?? EXTRA_SENSE[key];
     if (pinned) return pinned;
   }
   return lex[word];
