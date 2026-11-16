@@ -2710,8 +2710,8 @@
       "say": "elumās",
       "root": {
         "text": "Elumas",
-        "lang": "needs owner decision",
-        "source": "Easton’s and Smith’s Bible Dictionaries (public domain): “the Arabic name of the Jew Bar-jesus”. Arabic is not yet a root-language option, so this waits for the owner."
+        "lang": "Aramaic",
+        "source": "Follows the Syriac verse form (owner decision W-146). Easton’s and Smith’s Bible Dictionaries (public domain) call Elymas “the Arabic name of the Jew Bar-jesus”."
       },
       "pron": {
         "root": {
@@ -5816,8 +5816,8 @@
       "say": "Parʿon",
       "root": {
         "text": "Par'on",
-        "lang": "needs owner decision",
-        "source": "Strong’s G5328 Φαραώ: “of foreign origin (H6547)”; Strong’s H6547 פַּרְעֹה: “of Egyptian derivation” (Strong’s Dictionaries, 1890, public domain). Egyptian is not yet a root-language option, so this waits for the owner."
+        "lang": "Aramaic",
+        "source": "Follows the Syriac verse form (owner decision W-146). Strong’s G5328 Φαραώ: “of foreign origin (H6547)”; Strong’s H6547 פַּרְעֹה: “of Egyptian derivation” (Strong’s Dictionaries, 1890, public domain)."
       },
       "pron": {
         "root": {
@@ -8719,7 +8719,7 @@
       "forms": [
         "Junia"
       ],
-      "known": "Junia",
+      "known": "Junia, Iunia",
       "say": "Yunia",
       "root": {
         "text": "Yunia",
