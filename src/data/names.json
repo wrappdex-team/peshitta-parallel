@@ -174,6 +174,15 @@
       ],
       "known": "Achim",
       "say": "akhin",
+      "root": {
+        "text": "Akhin",
+        "lang": "needs owner decision"
+      },
+      "pron": {
+        "root": {
+          "respell": "ah-kheen"
+        }
+      },
       "kind": "person",
       "count": 1,
       "ref": "matthew 1:14",
@@ -503,6 +512,15 @@
       ],
       "known": "Amphipolis",
       "say": "ampiphulis",
+      "root": {
+        "text": "Ampiphulis",
+        "lang": "needs owner decision"
+      },
+      "pron": {
+        "root": {
+          "respell": "am-pee-poo-lis"
+        }
+      },
       "kind": "place",
       "count": 1,
       "ref": "acts 17:1",
@@ -1169,6 +1187,15 @@
       ],
       "known": "Augustus",
       "say": "aghustus",
+      "root": {
+        "text": "Aghustus",
+        "lang": "needs owner decision"
+      },
+      "pron": {
+        "root": {
+          "respell": "ah-ghoos-toos"
+        }
+      },
       "kind": "person",
       "count": 1,
       "ref": "luke 2:1",
@@ -1257,6 +1284,15 @@
       ],
       "known": "Baal",
       "say": "ba'la",
+      "root": {
+        "text": "Ba'la",
+        "lang": "needs owner decision"
+      },
+      "pron": {
+        "root": {
+          "respell": "bah-la"
+        }
+      },
       "kind": "person",
       "count": 1,
       "ref": "romans 11:4",
@@ -1555,6 +1591,15 @@
       ],
       "known": "Beor",
       "say": "bʿur",
+      "root": {
+        "text": "Be'ur",
+        "lang": "needs owner decision"
+      },
+      "pron": {
+        "root": {
+          "respell": "beh-oor"
+        }
+      },
       "kind": "person",
       "count": 1,
       "ref": "2peter 2:15",
@@ -1755,6 +1800,15 @@
       ],
       "known": "Boaz",
       "say": "baaz",
+      "root": {
+        "text": "Baaz",
+        "lang": "needs owner decision"
+      },
+      "pron": {
+        "root": {
+          "respell": "bah-az"
+        }
+      },
       "kind": "person",
       "count": 2,
       "ref": "matthew 1:5",
@@ -1819,6 +1873,15 @@
       ],
       "known": "Carpus",
       "say": "qarpos",
+      "root": {
+        "text": "Qarpos",
+        "lang": "needs owner decision"
+      },
+      "pron": {
+        "root": {
+          "respell": "kar-pos"
+        }
+      },
       "kind": "person",
       "count": 1,
       "ref": "2timothy 4:13",
@@ -2006,6 +2069,15 @@
       ],
       "known": "Chloe",
       "say": "kloe",
+      "root": {
+        "text": "Kloe",
+        "lang": "needs owner decision"
+      },
+      "pron": {
+        "root": {
+          "respell": "klo-eh"
+        }
+      },
       "kind": "person",
       "count": 1,
       "ref": "1corinthians 1:11",
@@ -2020,6 +2092,15 @@
       ],
       "known": "Claudius",
       "say": "qlawdiyos",
+      "root": {
+        "text": "Qlawdiyos",
+        "lang": "needs owner decision"
+      },
+      "pron": {
+        "root": {
+          "respell": "klaw-dee-yos"
+        }
+      },
       "kind": "person",
       "count": 2,
       "ref": "acts 11:28",
@@ -2350,6 +2431,15 @@
       ],
       "known": "Dionysius",
       "say": "dionysiyos",
+      "root": {
+        "text": "Dionysiyos",
+        "lang": "needs owner decision"
+      },
+      "pron": {
+        "root": {
+          "respell": "dee-o-nee-see-yos"
+        }
+      },
       "kind": "person",
       "count": 1,
       "ref": "acts 17:34",
@@ -2364,6 +2454,15 @@
       ],
       "known": "Diotrephes",
       "say": "diyōṭrepīs",
+      "root": {
+        "text": "Diyotrepis",
+        "lang": "needs owner decision"
+      },
+      "pron": {
+        "root": {
+          "respell": "dee-yo-treh-pees"
+        }
+      },
       "kind": "person",
       "count": 1,
       "ref": "3john 1:9",
@@ -2400,6 +2499,15 @@
       ],
       "known": "Eber",
       "say": "abar",
+      "root": {
+        "text": "Abar",
+        "lang": "needs owner decision"
+      },
+      "pron": {
+        "root": {
+          "respell": "ah-bar"
+        }
+      },
       "kind": "person",
       "count": 1,
       "ref": "luke 3:35",
@@ -2453,6 +2561,15 @@
       ],
       "known": "Eliakim",
       "say": "eliqim",
+      "root": {
+        "text": "Eliqim",
+        "lang": "needs owner decision"
+      },
+      "pron": {
+        "root": {
+          "respell": "eh-lee-keem"
+        }
+      },
       "kind": "person",
       "count": 2,
       "ref": "matthew 1:13",
@@ -2572,6 +2689,15 @@
       ],
       "known": "Elymas",
       "say": "elumās",
+      "root": {
+        "text": "Elumas",
+        "lang": "needs owner decision"
+      },
+      "pron": {
+        "root": {
+          "respell": "eh-loo-mas"
+        }
+      },
       "kind": "person",
       "count": 1,
       "ref": "acts 13:8",
@@ -2629,6 +2755,15 @@
       ],
       "known": "Epaphroditus",
       "say": "epaprodiṭos",
+      "root": {
+        "text": "Epaproditos",
+        "lang": "needs owner decision"
+      },
+      "pron": {
+        "root": {
+          "respell": "eh-pap-ro-dee-tos"
+        }
+      },
       "kind": "person",
       "count": 2,
       "ref": "philippians 2:25",
@@ -2794,6 +2929,15 @@
       ],
       "known": "Eunice",
       "say": "Uniqe",
+      "root": {
+        "text": "Uniqe",
+        "lang": "needs owner decision"
+      },
+      "pron": {
+        "root": {
+          "respell": "oo-nee-keh"
+        }
+      },
       "kind": "person",
       "count": 1,
       "ref": "2timothy 1:5",
@@ -2808,6 +2952,15 @@
       ],
       "known": "Euodia",
       "say": "ʾuhadya",
+      "root": {
+        "text": "Uhadya",
+        "lang": "needs owner decision"
+      },
+      "pron": {
+        "root": {
+          "respell": "oo-had-ya"
+        }
+      },
       "kind": "person",
       "count": 1,
       "ref": "philippians 4:2",
@@ -3202,6 +3355,15 @@
       ],
       "known": "Gamaliel",
       "say": "gamliy'el",
+      "root": {
+        "text": "Gamliel",
+        "lang": "needs owner decision"
+      },
+      "pron": {
+        "root": {
+          "respell": "gam-lee-el"
+        }
+      },
       "kind": "person",
       "count": 2,
       "ref": "acts 5:34",
@@ -3363,6 +3525,15 @@
       ],
       "known": "Hamor",
       "say": "ḥamur",
+      "root": {
+        "text": "Hamur",
+        "lang": "needs owner decision"
+      },
+      "pron": {
+        "root": {
+          "respell": "khah-moor"
+        }
+      },
       "kind": "person",
       "count": 1,
       "ref": "acts 7:16",
@@ -3748,6 +3919,15 @@
       ],
       "known": "Julius",
       "say": "yulyus",
+      "root": {
+        "text": "Yulyus",
+        "lang": "needs owner decision"
+      },
+      "pron": {
+        "root": {
+          "respell": "yool-yoos"
+        }
+      },
       "kind": "person",
       "count": 1,
       "ref": "acts 27:1",
@@ -3866,6 +4046,15 @@
       ],
       "known": "Kuria",
       "say": "qūryā",
+      "root": {
+        "text": "Qurya",
+        "lang": "needs owner decision"
+      },
+      "pron": {
+        "root": {
+          "respell": "koor-ya"
+        }
+      },
       "kind": "person",
       "count": 2,
       "ref": "2john 1:1",
@@ -3994,6 +4183,15 @@
       ],
       "known": "Legion",
       "say": "legyōn",
+      "root": {
+        "text": "Legyon",
+        "lang": "needs owner decision"
+      },
+      "pron": {
+        "root": {
+          "respell": "leg-yon"
+        }
+      },
       "kind": "person",
       "count": 2,
       "ref": "mark 5:9",
@@ -4080,6 +4278,15 @@
       ],
       "known": "Lois",
       "say": "Luwais",
+      "root": {
+        "text": "Luwais",
+        "lang": "needs owner decision"
+      },
+      "pron": {
+        "root": {
+          "respell": "loo-wah-ees"
+        }
+      },
       "kind": "person",
       "count": 1,
       "ref": "2timothy 1:5",
@@ -4208,6 +4415,15 @@
       ],
       "known": "Lydia",
       "say": "ludya",
+      "root": {
+        "text": "Ludya",
+        "lang": "needs owner decision"
+      },
+      "pron": {
+        "root": {
+          "respell": "lood-ya"
+        }
+      },
       "kind": "person",
       "count": 2,
       "ref": "acts 16:14",
@@ -4240,6 +4456,15 @@
       ],
       "known": "Lysias",
       "say": "lusyos",
+      "root": {
+        "text": "Lusyos",
+        "lang": "needs owner decision"
+      },
+      "pron": {
+        "root": {
+          "respell": "loos-yos"
+        }
+      },
       "kind": "person",
       "count": 2,
       "ref": "acts 23:26",
@@ -4688,6 +4913,15 @@
       ],
       "known": "Matthan",
       "say": "mattan",
+      "root": {
+        "text": "Mattan",
+        "lang": "needs owner decision"
+      },
+      "pron": {
+        "root": {
+          "respell": "mat-tan"
+        }
+      },
       "kind": "person",
       "count": 1,
       "ref": "matthew 1:15",
@@ -4702,6 +4936,15 @@
       ],
       "known": "Matthat",
       "say": "maṭṭat",
+      "root": {
+        "text": "Mattat",
+        "lang": "needs owner decision"
+      },
+      "pron": {
+        "root": {
+          "respell": "mat-tat"
+        }
+      },
       "kind": "person",
       "count": 1,
       "ref": "luke 3:24",
@@ -4877,6 +5120,15 @@
       ],
       "known": "Myra",
       "say": "murā",
+      "root": {
+        "text": "Mura",
+        "lang": "needs owner decision"
+      },
+      "pron": {
+        "root": {
+          "respell": "moo-ra"
+        }
+      },
       "kind": "place",
       "count": 1,
       "ref": "acts 27:5",
@@ -4891,6 +5143,15 @@
       ],
       "known": "Mysia",
       "say": "musya",
+      "root": {
+        "text": "Musya",
+        "lang": "needs owner decision"
+      },
+      "pron": {
+        "root": {
+          "respell": "moos-ya"
+        }
+      },
       "kind": "place",
       "count": 2,
       "ref": "acts 16:7",
@@ -4909,6 +5170,15 @@
       ],
       "known": "Naaman",
       "say": "naʿmān",
+      "root": {
+        "text": "Na'man",
+        "lang": "needs owner decision"
+      },
+      "pron": {
+        "root": {
+          "respell": "nah-man"
+        }
+      },
       "kind": "person",
       "count": 1,
       "ref": "luke 4:27",
@@ -4997,6 +5267,15 @@
       ],
       "known": "Nain",
       "say": "nāyn",
+      "root": {
+        "text": "Nayn",
+        "lang": "needs owner decision"
+      },
+      "pron": {
+        "root": {
+          "respell": "nine"
+        }
+      },
       "kind": "place",
       "count": 1,
       "ref": "luke 7:11",
@@ -5268,6 +5547,15 @@
       ],
       "known": "Obed",
       "say": "ubid",
+      "root": {
+        "text": "Ubid",
+        "lang": "needs owner decision"
+      },
+      "pron": {
+        "root": {
+          "respell": "oo-beed"
+        }
+      },
       "kind": "person",
       "count": 2,
       "ref": "matthew 1:5",
@@ -5713,6 +6001,15 @@
       ],
       "known": "Pontius",
       "say": "panṭiyos",
+      "root": {
+        "text": "Pantiyos",
+        "lang": "needs owner decision"
+      },
+      "pron": {
+        "root": {
+          "respell": "pan-tee-yos"
+        }
+      },
       "kind": "person",
       "count": 2,
       "ref": "luke 3:1",
@@ -5759,6 +6056,15 @@
       ],
       "known": "Porcius",
       "say": "porqiyos",
+      "root": {
+        "text": "Porqiyos",
+        "lang": "needs owner decision"
+      },
+      "pron": {
+        "root": {
+          "respell": "por-kee-yos"
+        }
+      },
       "kind": "person",
       "count": 1,
       "ref": "acts 24:27",
@@ -5815,6 +6121,15 @@
       ],
       "known": "Publius",
       "say": "pūplīyūs",
+      "root": {
+        "text": "Pupliyus",
+        "lang": "needs owner decision"
+      },
+      "pron": {
+        "root": {
+          "respell": "poo-plee-yoos"
+        }
+      },
       "kind": "person",
       "count": 2,
       "ref": "acts 28:7",
@@ -6331,6 +6646,15 @@
       ],
       "known": "Regshi",
       "say": "regšay",
+      "root": {
+        "text": "Regshay",
+        "lang": "needs owner decision"
+      },
+      "pron": {
+        "root": {
+          "respell": "reg-shy"
+        }
+      },
       "kind": "person",
       "count": 1,
       "ref": "mark 3:17",
@@ -6359,6 +6683,15 @@
       ],
       "known": "Rhoda",
       "say": "rōdā",
+      "root": {
+        "text": "Roda",
+        "lang": "needs owner decision"
+      },
+      "pron": {
+        "root": {
+          "respell": "ro-da"
+        }
+      },
       "kind": "person",
       "count": 1,
       "ref": "acts 12:13",
@@ -6498,6 +6831,15 @@
       ],
       "known": "Salmone",
       "say": "salmona",
+      "root": {
+        "text": "Salmona",
+        "lang": "needs owner decision"
+      },
+      "pron": {
+        "root": {
+          "respell": "sal-mo-na"
+        }
+      },
       "kind": "place",
       "count": 1,
       "ref": "acts 27:7",
@@ -6657,6 +6999,15 @@
       ],
       "known": "Sergius",
       "say": "sargiyos",
+      "root": {
+        "text": "Sargiyos",
+        "lang": "needs owner decision"
+      },
+      "pron": {
+        "root": {
+          "respell": "sar-gee-yos"
+        }
+      },
       "kind": "person",
       "count": 1,
       "ref": "acts 13:7",
@@ -6671,6 +7022,15 @@
       ],
       "known": "Serug",
       "say": "sarug",
+      "root": {
+        "text": "Sarug",
+        "lang": "needs owner decision"
+      },
+      "pron": {
+        "root": {
+          "respell": "sa-roog"
+        }
+      },
       "kind": "person",
       "count": 1,
       "ref": "luke 3:35",
@@ -7615,6 +7975,15 @@
       ],
       "known": "Tertullus",
       "say": "ṭarṭallōs",
+      "root": {
+        "text": "Tartallos",
+        "lang": "needs owner decision"
+      },
+      "pron": {
+        "root": {
+          "respell": "tar-tal-los"
+        }
+      },
       "kind": "person",
       "count": 2,
       "ref": "acts 24:1",
@@ -7729,6 +8098,15 @@
       ],
       "known": "Tiberias",
       "say": "ṭabaryōs",
+      "root": {
+        "text": "Tabaryos",
+        "lang": "Greek"
+      },
+      "pron": {
+        "root": {
+          "respell": "ta-bar-yos"
+        }
+      },
       "kind": "place",
       "count": 2,
       "ref": "john 6:1",
@@ -8103,6 +8481,15 @@
       ],
       "known": "Tyrannus",
       "say": "ṭuranos",
+      "root": {
+        "text": "Turanos",
+        "lang": "needs owner decision"
+      },
+      "pron": {
+        "root": {
+          "respell": "too-ra-nos"
+        }
+      },
       "kind": "person",
       "count": 1,
       "ref": "acts 19:9",
@@ -8270,6 +8657,15 @@
       ],
       "known": "Junia",
       "say": "Yunia",
+      "root": {
+        "text": "Yunia",
+        "lang": "Greek"
+      },
+      "pron": {
+        "root": {
+          "respell": "yoo-nee-a"
+        }
+      },
       "kind": "person",
       "count": 1,
       "ref": "romans 16:7",
@@ -8755,6 +9151,15 @@
       ],
       "known": "Zadok",
       "say": "zaduq",
+      "root": {
+        "text": "Zaduq",
+        "lang": "needs owner decision"
+      },
+      "pron": {
+        "root": {
+          "respell": "za-dook"
+        }
+      },
       "kind": "person",
       "count": 1,
       "ref": "matthew 1:14",
@@ -8838,6 +9243,15 @@
       ],
       "known": "Zenas",
       "say": "zena",
+      "root": {
+        "text": "Zena",
+        "lang": "needs owner decision"
+      },
+      "pron": {
+        "root": {
+          "respell": "zeh-na"
+        }
+      },
       "kind": "person",
       "count": 1,
       "ref": "titus 3:13",
@@ -9981,6 +10395,15 @@
       ],
       "known": "Wormwood",
       "say": "apsintana",
+      "root": {
+        "text": "Apsintana",
+        "lang": "Greek"
+      },
+      "pron": {
+        "root": {
+          "respell": "ap-seen-ta-na"
+        }
+      },
       "kind": "title",
       "count": 1,
       "ref": "revelation 8:11",
