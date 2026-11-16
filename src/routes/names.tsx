@@ -512,7 +512,7 @@ const NameCard = memo(function NameCard({
           <span className={`font-semibold ${source.script === "Greek" ? "font-greek" : source.script === "Hebrew" || source.script === "Aramaic" ? "font-hebrew text-lg" : ""}`}>
             {source.text}
           </span>
-          {source.say ? ` · ${source.say}` : null}
+          {source.say ? <span className="text-muted" data-source-say="">{` · ${source.say}`}</span> : null}
           {source.note ? <> {noteWithSyriac(source.note)}</> : null}
         </p>
       ))}

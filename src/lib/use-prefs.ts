@@ -110,6 +110,12 @@ function patch(partial: Partial<Prefs>) {
   emit();
 }
 
+declare global {
+  interface Window {
+    __prefsWatch?: boolean;
+  }
+}
+
 function watchStorage() {
   if (storageWatch || typeof window === "undefined") return;
   storageWatch = true;

@@ -417,6 +417,21 @@ test("names study guide: English line, Read, and finding", { timeout: 420000 }, 
         assert.ok(broken.scroll <= 1, `horizontal scroll ${broken.scroll} at ${width} ${theme}`);
         assert.ok(broken.readH + 0.5 >= 44 && broken.readW + 0.5 >= 44, `Read ${broken.readW}x${broken.readH} at ${width}`);
       }
+      const say = await page.evaluate(() => {
+        const card = document.querySelector("#aleksandros");
+        if (card) card.style.contentVisibility = "visible";
+        const node = document.querySelector("#aleksandros [data-source-say]");
+        if (!node) return null;
+        const probe = document.createElement("span");
+        probe.style.color = "var(--muted)";
+        document.body.appendChild(probe);
+        const want = getComputedStyle(probe).color;
+        probe.remove();
+        return { got: getComputedStyle(node).color, want, text: (node.textContent || "").trim() };
+      });
+      assert.ok(say, `source pronunciation missing on ${theme}`);
+      assert.equal(say.got, say.want, `source say ${say.got} is not --muted ${say.want} on ${theme}`);
+      assert.match(say.text, /Alexandros/);
     }
     const dayTitle = page.getByRole("button", { name: "Day theme" });
     if ((await dayTitle.count()) > 0) await dayTitle.click();
