@@ -75,6 +75,7 @@ for (const width of [320, 390]) {
       let opened = 0;
       for (const path of PATHS) {
         await page.goto(`${server.url}${path}`, { waitUntil: "load", timeout: 30000 });
+        await page.waitForFunction(() => window.__prefsWatch === true);
         opened += await openMarks(page, width, path);
         if (path === "/") {
           await page.getByRole("button", { name: "Search" }).first().click();
