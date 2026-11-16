@@ -219,6 +219,11 @@
       ],
       "known": "Adam",
       "say": "Adam",
+      "root": {
+        "text": "Adam",
+        "lang": "Hebrew",
+        "source": "Strong’s G76 Ἀδάμ: “of Hebrew origin (H121)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "pron": {
         "root": {
           "respell": "ah-dam"
@@ -505,6 +510,11 @@
       ],
       "known": "Gomorrah",
       "say": "Amura",
+      "root": {
+        "text": "Amora",
+        "lang": "Hebrew",
+        "source": "Strong’s G1116 Γόμοῤῥα: “of Hebrew origin (H6017)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "pron": {
         "root": {
           "respell": "ah-moo-ra"
@@ -531,6 +541,11 @@
       ],
       "known": "Amos",
       "say": "Amus",
+      "root": {
+        "text": "Amots",
+        "lang": "Hebrew",
+        "source": "Strong’s G301 Ἀμώς: “of Hebrew origin (H531)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "pron": {
         "root": {
           "respell": "ah-moos"
@@ -657,6 +672,11 @@
       ],
       "known": "Aeneas",
       "say": "Anis",
+      "root": {
+        "text": "Anis",
+        "lang": "Aramaic",
+        "source": "No dictionary source names the origin language (Strong’s G132 Αἰνέας: “of uncertain derivation”); the label follows the Syriac verse form."
+      },
       "pron": {
         "root": {
           "respell": "ah-nees"
@@ -693,6 +713,11 @@
       ],
       "known": "Antioch",
       "say": "anṭyukyā",
+      "root": {
+        "text": "Antiokia",
+        "lang": "Aramaic",
+        "source": "No dictionary source names the origin language (Strong’s G490 Ἀντιόχεια: “from (a Syrian king)”); the label follows the Syriac verse form."
+      },
       "pron": {
         "root": {
           "respell": "ant-yook-ya"
@@ -782,6 +807,11 @@
       ],
       "known": "Apollos",
       "say": "Aplo",
+      "root": {
+        "text": "Apolos",
+        "lang": "Greek",
+        "source": "Strong’s G625 Ἀπολλῶς: “probably from the same as G624 (Ἀπολλωνία)”; Strong’s G624 Ἀπολλωνία: “from the pagan deity (i.e. the sun” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "pron": {
         "root": {
           "respell": "ap-lo"
@@ -884,6 +914,11 @@
       ],
       "known": "Reu",
       "say": "Ar'u",
+      "root": {
+        "text": "Ar'u",
+        "lang": "Hebrew",
+        "source": "Strong’s G4466 Ῥαγαῦ: “of Hebrew origin (H7466)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "pron": {
         "root": {
           "respell": "ar-oo"
@@ -1421,6 +1456,11 @@
       ],
       "known": "Beelzebub",
       "say": "Be'elzebub",
+      "root": {
+        "text": "Baalzebub",
+        "lang": "Aramaic",
+        "source": "Strong’s G954 Βεελζεβούλ: “of Chaldee origin (by parody on H1176)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "pron": {
         "root": {
           "respell": "beh-el-zeh-boob"
@@ -1578,6 +1618,11 @@
       ],
       "known": "Bartholomew",
       "say": "Tulmay",
+      "root": {
+        "text": "Bar-Tulmay",
+        "lang": "Aramaic",
+        "source": "Strong’s G918 Βαρθολομαῖος: “of Chaldee origin (H1247 and H8526)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "pron": {
         "root": {
           "respell": "tool-my"
@@ -1644,6 +1689,11 @@
       ],
       "known": "Barsabbas",
       "say": "bar-šabba",
+      "root": {
+        "text": "Barshaba",
+        "lang": "Aramaic",
+        "source": "Strong’s G923 Βαρσαβᾶς: “of Chaldee origin (H1247 and probably H6634)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "pron": {
         "root": {
           "respell": "bar-shab-ba"
@@ -1672,6 +1722,11 @@
       ],
       "known": "Babylon",
       "say": "Bavel",
+      "root": {
+        "text": "Bavel",
+        "lang": "Hebrew",
+        "source": "Strong’s G897 Βαβυλών: “of Hebrew origin (H894)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "pron": {
         "root": {
           "respell": "bah-vel"
@@ -2122,6 +2177,11 @@
       ],
       "known": "Ananias",
       "say": "Chananya",
+      "root": {
+        "text": "Chananya",
+        "lang": "Hebrew",
+        "source": "Strong’s G367 Ἀνανίας: “of Hebrew origin (H2608)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "pron": {
         "root": {
           "respell": "kha-nan-ya"
@@ -2155,6 +2215,11 @@
       ],
       "known": "Enoch",
       "say": "Chanok",
+      "root": {
+        "text": "Chanok",
+        "lang": "Hebrew",
+        "source": "Strong’s G1802 Ἐνώχ: “of Hebrew origin (H2585)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "pron": {
         "root": {
           "respell": "kha-nok"
@@ -2205,6 +2270,11 @@
       ],
       "known": "Esli",
       "say": "Chasli",
+      "root": {
+        "text": "Chasli",
+        "lang": "Hebrew",
+        "source": "Strong’s G2069 Ἐσλί: “of Hebrew origin (probably for H454)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "pron": {
         "root": {
           "respell": "khas-lee"
@@ -2780,6 +2850,11 @@
       ],
       "known": "Eliezer",
       "say": "eliʿazar",
+      "root": {
+        "text": "Eleazar",
+        "lang": "Hebrew",
+        "source": "Strong’s G1648 Ἐλεάζαρ: “of Hebrew origin (H499)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "pron": {
         "root": {
           "respell": "eh-lee-ah-zar"
@@ -2832,6 +2907,11 @@
       ],
       "known": "Elisha",
       "say": "Elisha",
+      "root": {
+        "text": "Elisha",
+        "lang": "Hebrew",
+        "source": "Strong’s G1666 Ἐλισσαῖος: “of Hebrew origin (H477)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "pron": {
         "root": {
           "respell": "eh-lee-sha"
@@ -2851,6 +2931,11 @@
       ],
       "known": "Elizabeth",
       "say": "Elishba",
+      "root": {
+        "text": "Elishaba",
+        "lang": "Hebrew",
+        "source": "Strong’s G1665 Ἐλισάβετ: “of Hebrew origin (H472)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "pron": {
         "root": {
           "respell": "eh-lish-ba"
@@ -2967,6 +3052,11 @@
       ],
       "known": "Emmaus",
       "say": "Emmaus",
+      "root": {
+        "text": "Emmaus",
+        "lang": "Hebrew",
+        "source": "Strong’s G1695 Ἐμμαούς: “probably of Hebrew origin (compare H3222)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "pron": {
         "root": {
           "respell": "em-ma-oos"
@@ -3156,6 +3246,11 @@
       ],
       "known": "Stephen",
       "say": "Estepanos",
+      "root": {
+        "text": "Estepanos",
+        "lang": "Greek",
+        "source": "Strong’s G4736 Στέφανος: “the same as G4735 (στέφανος)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "pron": {
         "root": {
           "respell": "es-teh-pa-nos"
@@ -3697,6 +3792,11 @@
       ],
       "known": "Gaza",
       "say": "Gaza",
+      "root": {
+        "text": "Gaza",
+        "lang": "Hebrew",
+        "source": "Strong’s G1048 Γάζα: “of Hebrew origin (H5804)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "pron": {
         "root": {
           "respell": "ga-za"
@@ -3770,6 +3870,11 @@
       ],
       "known": "Gideon",
       "say": "Gad'on",
+      "root": {
+        "text": "Gid'on",
+        "lang": "Hebrew",
+        "source": "Strong’s G1066 Γεδεών: “of Hebrew origin (H1439)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "pron": {
         "root": {
           "respell": "gad-on"
@@ -3899,6 +4004,11 @@
       ],
       "known": "Eve",
       "say": "ḥawa",
+      "root": {
+        "text": "Hawwa",
+        "lang": "Hebrew",
+        "source": "Strong’s G2096 Εὖα: “of Hebrew origin (H2332)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "pron": {
         "root": {
           "respell": "kha-wa"
@@ -4027,6 +4137,11 @@
       ],
       "known": "Hymenaeus",
       "say": "Humenayos",
+      "root": {
+        "text": "Humenayos",
+        "lang": "Aramaic",
+        "source": "No dictionary source names the origin language (Strong’s G5211 Ὑμεναῖος: “from (the god of weddings)”); the label follows the Syriac verse form."
+      },
       "pron": {
         "root": {
           "respell": "hoo-meh-nah-yos"
@@ -4051,6 +4166,11 @@
       ],
       "known": "Iconium",
       "say": "Iqanon",
+      "root": {
+        "text": "Iqnon",
+        "lang": "Greek",
+        "source": "Strong’s G2430 Ἰκόνιον: “perhaps from G1504 (εἰκών)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "pron": {
         "root": {
           "respell": "ee-ka-non"
@@ -4077,6 +4197,11 @@
       ],
       "known": "Er",
       "say": "ʿīr",
+      "root": {
+        "text": "Ir",
+        "lang": "Hebrew",
+        "source": "Strong’s G2262 Ἤρ: “of Hebrew origin (H6147)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "pron": {
         "root": {
           "respell": "eer"
@@ -4466,6 +4591,11 @@
       ],
       "known": "Chuza",
       "say": "Kuza",
+      "root": {
+        "text": "Kuza",
+        "lang": "Aramaic",
+        "source": "No dictionary source names the origin language (Strong’s G5529 Χουζᾶς: “of uncertain origin”); the label follows the Syriac verse form."
+      },
       "pron": {
         "root": {
           "respell": "koo-za"
@@ -4487,6 +4617,11 @@
       ],
       "known": "Laodicea",
       "say": "Ladiqiya",
+      "root": {
+        "text": "Ladiqiya",
+        "lang": "Greek",
+        "source": "Strong’s G2993 Λαοδίκεια: “from a compound of G2992 (λαός) and G1349 (δίκη)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "pron": {
         "root": {
           "respell": "la-dee-kee-ya"
@@ -4988,6 +5123,11 @@
       ],
       "known": "Magadan",
       "say": "megdū",
+      "root": {
+        "text": "Magdu",
+        "lang": "Aramaic",
+        "source": "Strong’s G3093 Μαγδαλά: “of Chaldee origin (compare H4026)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "pron": {
         "root": {
           "respell": "meg-doo"
@@ -5007,6 +5147,11 @@
       ],
       "known": "Megiddo, Armageddon",
       "say": "megdū",
+      "root": {
+        "text": "Megdo",
+        "lang": "Hebrew",
+        "source": "Strong’s G717 Ἀρμαγεδδών: “of Hebrew origin (H2022 and H4023)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "pron": {
         "root": {
           "respell": "meg-doo"
@@ -5123,6 +5268,11 @@
       ],
       "known": "Melchizedek",
       "say": "Malkizdaq",
+      "root": {
+        "text": "Malkizedeq",
+        "lang": "Hebrew",
+        "source": "Strong’s G3198 Μελχισεδέκ: “of Hebrew origin (H4442)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "pron": {
         "root": {
           "respell": "mal-keez-dak"
@@ -5468,6 +5618,11 @@
       ],
       "known": "Michael",
       "say": "Mika'il",
+      "root": {
+        "text": "Mikael",
+        "lang": "Hebrew",
+        "source": "Strong’s G3413 Μιχαήλ: “of Hebrew origin (H4317)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "pron": {
         "root": {
           "respell": "mee-ka-eel"
@@ -5551,6 +5706,11 @@
       ],
       "known": "Mnason",
       "say": "Mnason",
+      "root": {
+        "text": "Mnason",
+        "lang": "Aramaic",
+        "source": "No dictionary source names the origin language (Strong’s G3416 Μνάσων: “of uncertain origin”); the label follows the Syriac verse form."
+      },
       "pron": {
         "root": {
           "respell": "mna-son"
@@ -5700,6 +5860,11 @@
       ],
       "known": "Nahum",
       "say": "Nachum",
+      "root": {
+        "text": "Nachum",
+        "lang": "Hebrew",
+        "source": "Strong’s G3486 Ναούμ: “of Hebrew origin (H5151)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "pron": {
         "root": {
           "respell": "na-khoom"
@@ -5970,6 +6135,11 @@
       ],
       "known": "Noah",
       "say": "Nuch",
+      "root": {
+        "text": "Noach",
+        "lang": "Hebrew",
+        "source": "Strong’s G3575 Νῶε: “of Hebrew origin (H5146)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "pron": {
         "root": {
           "respell": "nookh"
@@ -6178,6 +6348,11 @@
       ],
       "known": "Patmos",
       "say": "Patmos",
+      "root": {
+        "text": "Patmos",
+        "lang": "Aramaic",
+        "source": "No dictionary source names the origin language (Strong’s G3963 Πάτμος: “of uncertain derivation”); the label follows the Syriac verse form."
+      },
       "pron": {
         "root": {
           "respell": "pat-mos"
@@ -6460,6 +6635,11 @@
       ],
       "known": "Phoenix",
       "say": "Ponkas",
+      "root": {
+        "text": "Phonkas",
+        "lang": "Greek",
+        "source": "Strong’s G5405 Φοῖνιξ: “probably the same as G5404 (φοῖνιξ)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "pron": {
         "root": {
           "respell": "pon-kas"
@@ -6640,6 +6820,11 @@
       ],
       "known": "Euphrates",
       "say": "Prath",
+      "root": {
+        "text": "Prath",
+        "lang": "Aramaic",
+        "source": "No dictionary source names the origin language (Strong’s G2166 Εὐφράτης: “of foreign origin (compare H6578)”); the label follows the Syriac verse form."
+      },
       "pron": {
         "root": {
           "respell": "prath"
@@ -6664,6 +6849,11 @@
       ],
       "known": "Priscilla",
       "say": "Prisqilla",
+      "root": {
+        "text": "Prisqila",
+        "lang": "Latin",
+        "source": "Strong’s G4252 Πρίσκιλλα: “diminutive of G4251 (Πρίσκα)”; Strong’s G4251 Πρίσκα: “of Latin origin” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "pron": {
         "root": {
           "respell": "prees-kil-la"
@@ -6752,6 +6942,11 @@
       ],
       "known": "Cana",
       "say": "Qatna",
+      "root": {
+        "text": "Qatna",
+        "lang": "Hebrew",
+        "source": "Strong’s G2580 Κανᾶ: “of Hebrew origin (compare H7071)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "pron": {
         "root": {
           "respell": "kat-na"
@@ -6899,6 +7094,11 @@
       ],
       "known": "Caesarea",
       "say": "Qesarya",
+      "root": {
+        "text": "Qesarya",
+        "lang": "Latin",
+        "source": "Strong’s G2542 Καισάρεια: “from G2541 (Καῖσαρ)”; Strong’s G2541 Καῖσαρ: “of Latin origin” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "pron": {
         "root": {
           "respell": "keh-sar-ya"
@@ -6927,6 +7127,11 @@
       ],
       "known": "Cilicia",
       "say": "Qiliqiya",
+      "root": {
+        "text": "Qiliqiya",
+        "lang": "Aramaic",
+        "source": "No dictionary source names the origin language (Strong’s G2791 Κιλικία: “probably of foreign origin”); the label follows the Syriac verse form."
+      },
       "pron": {
         "root": {
           "respell": "kee-lee-kee-ya"
@@ -6956,6 +7161,11 @@
       ],
       "known": "Kish",
       "say": "Qish",
+      "root": {
+        "text": "Qish",
+        "lang": "Hebrew",
+        "source": "Strong’s G2797 Κίς: “of Hebrew origin (H7027)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "pron": {
         "root": {
           "respell": "keesh"
@@ -6998,6 +7208,11 @@
       ],
       "known": "Cleopas",
       "say": "Qelyopa",
+      "root": {
+        "text": "Qliyopa",
+        "lang": "Greek",
+        "source": "Strong’s G2810 Κλεόπας: “probably contracted from (compound of G2811 (κλέος) and G3962 (πατήρ))” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "pron": {
         "root": {
           "respell": "kel-yo-pa"
@@ -7049,6 +7264,11 @@
       ],
       "known": "Cornelius",
       "say": "Qornelyos",
+      "root": {
+        "text": "Qorneliyos",
+        "lang": "Latin",
+        "source": "Strong’s G2883 Κορνήλιος: “of Latin origin” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "pron": {
         "root": {
           "respell": "kor-nel-yos"
@@ -7077,6 +7297,11 @@
       ],
       "known": "Crescens",
       "say": "Qresqos",
+      "root": {
+        "text": "Qresqos",
+        "lang": "Latin",
+        "source": "Strong’s G2913 Κρήσκης: “of Latin origin” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "pron": {
         "root": {
           "respell": "kres-kos"
@@ -7096,6 +7321,11 @@
       ],
       "known": "Clauda",
       "say": "Quda",
+      "root": {
+        "text": "Quda",
+        "lang": "Aramaic",
+        "source": "No dictionary source names the origin language (Strong’s G2802 Κλαύδη: “of uncertain derivation”); the label follows the Syriac verse form."
+      },
       "pron": {
         "root": {
           "respell": "koo-da"
@@ -7186,6 +7416,11 @@
       ],
       "known": "Rahab",
       "say": "Rachab",
+      "root": {
+        "text": "Rahab",
+        "lang": "Hebrew",
+        "source": "Strong’s G4460 Ῥαάβ: “of Hebrew origin (G7343)”, a misprint for H7343 רָחָב, “Rachab, a Canaanitess” (Strong’s Dictionaries, 1890, public domain)."
+      },
       "pron": {
         "root": {
           "respell": "ra-khab"
@@ -7210,6 +7445,11 @@
       ],
       "known": "Rachel",
       "say": "Rakhel",
+      "root": {
+        "text": "Rakhyl",
+        "lang": "Hebrew",
+        "source": "Strong’s G4478 Ῥαχήλ: “of Hebrew origin (H7354)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "pron": {
         "root": {
           "respell": "ra-khel"
@@ -7302,6 +7542,11 @@
       ],
       "known": "Rebecca",
       "say": "Repqa",
+      "root": {
+        "text": "Repqa",
+        "lang": "Hebrew",
+        "source": "Strong’s G4479 Ῥεβέκκα: “of Hebrew origin (H7259)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "pron": {
         "root": {
           "respell": "rep-ka"
@@ -7727,6 +7972,11 @@
       ],
       "known": "Shimei",
       "say": "Shma'i",
+      "root": {
+        "text": "Sh'mai",
+        "lang": "Hebrew",
+        "source": "Strong’s G4584 Σεμεΐ: “of Hebrew origin (H8096)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "pron": {
         "root": {
           "respell": "shma-ee"
@@ -7995,6 +8245,11 @@
       ],
       "known": "Silas",
       "say": "Shila",
+      "root": {
+        "text": "Shila",
+        "lang": "Latin",
+        "source": "Strong’s G4609 Σίλας: “contraction for G4610 (Σιλουανός)”; Strong’s G4610 Σιλουανός: “of Latin origin” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "pron": {
         "root": {
           "respell": "shee-la"
@@ -8200,6 +8455,11 @@
       ],
       "known": "Silvanus",
       "say": "Salonos",
+      "root": {
+        "text": "Silwanus",
+        "lang": "Latin",
+        "source": "Strong’s G4610 Σιλουανός: “of Latin origin” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "pron": {
         "root": {
           "respell": "sa-lo-nos"
@@ -8476,6 +8736,11 @@
       ],
       "known": "the Red Sea",
       "say": "Suf",
+      "root": {
+        "text": "Suf",
+        "lang": "Aramaic",
+        "source": "Follows the Syriac verse form (owner decision W-146). Strong’s H5488 סוּף: “probably of Egyptian origin” (Strong’s Dictionaries, 1890, public domain)."
+      },
       "pron": {
         "root": {
           "respell": "soof"
@@ -8659,6 +8924,11 @@
       ],
       "known": "Assos",
       "say": "Tasos",
+      "root": {
+        "text": "Tasus",
+        "lang": "Aramaic",
+        "source": "No dictionary source names the origin language (Strong’s G789 Ἄσσος: “probably of foreign origin”); the label follows the Syriac verse form."
+      },
       "pron": {
         "root": {
           "respell": "ta-sos"
@@ -8751,6 +9021,11 @@
       ],
       "known": "Thessalonica, Thessalonike",
       "say": "Tesaloniqa",
+      "root": {
+        "text": "Tesaloniqa",
+        "lang": "Greek",
+        "source": "Strong’s G2332 Θεσσαλονίκη: “from (a Thessalian) and G3529 (νίκη)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "pron": {
         "root": {
           "respell": "teh-sa-lo-nee-ka"
@@ -8913,6 +9188,11 @@
       ],
       "known": "Timaeus",
       "say": "Taymi",
+      "root": {
+        "text": "Timai",
+        "lang": "Aramaic",
+        "source": "Strong’s G5090 Τιμαῖος: “probably of Chaldee origin (compare H2931)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "pron": {
         "root": {
           "respell": "tie-mee"
@@ -8956,6 +9236,11 @@
       ],
       "known": "Timothy",
       "say": "Timateos",
+      "root": {
+        "text": "Timotheos",
+        "lang": "Greek",
+        "source": "Strong’s G5095 Τιμόθεος: “from G5092 (τιμή) and G2316 (θεός)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "pron": {
         "root": {
           "respell": "tee-ma-teh-os"
@@ -9190,6 +9475,11 @@
       ],
       "known": "Zion",
       "say": "Tsehyon",
+      "root": {
+        "text": "Tsiyon",
+        "lang": "Hebrew",
+        "source": "Strong’s G4622 Σιών: “of Hebrew origin (H6726)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "pron": {
         "root": {
           "respell": "tseh-yon"
@@ -9226,6 +9516,11 @@
       ],
       "known": "Tyre",
       "say": "Tsur",
+      "root": {
+        "text": "Tsur",
+        "lang": "Hebrew",
+        "source": "Strong’s G5184 Τύρος: “of Hebrew origin (H6865): Tyrus (i.e. Tsor), a place in Palestine” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "pron": {
         "root": {
           "respell": "tsoor"
@@ -9498,6 +9793,11 @@
       ],
       "known": "Greeks",
       "say": "yawnāyē",
+      "root": {
+        "text": "Yawnaye",
+        "lang": "Aramaic",
+        "source": "No dictionary source names the origin language; the label follows the Syriac verse form."
+      },
       "pron": {
         "root": {
           "respell": "yow-nah-yeh"
@@ -9644,6 +9944,11 @@
       ],
       "known": "Isaac",
       "say": "Ischaq",
+      "root": {
+        "text": "Yitz'chak",
+        "lang": "Hebrew",
+        "source": "Strong’s G2464 Ἰσαάκ: “of Hebrew origin (H3327)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "pron": {
         "root": {
           "respell": "ees-khak"
@@ -9782,6 +10087,11 @@
       ],
       "known": "Joppa",
       "say": "Yawpa",
+      "root": {
+        "text": "Yopa",
+        "lang": "Hebrew",
+        "source": "Strong’s G2445 Ἰόππη: “of Hebrew origin (H3305)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "pron": {
         "root": {
           "respell": "yow-pa"
