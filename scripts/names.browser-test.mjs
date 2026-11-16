@@ -58,7 +58,7 @@ function assertEnglish(actual) {
   for (const row of NAMES) assert.equal(actual[row.id], row.known, row.id);
 }
 
-async function assertPlaced(page, id) {
+async function assertPlaced(page, id, timeout = 20000) {
   const ready = (name) => {
     const card = document.getElementById(name);
     const head = card?.querySelector("h2");
@@ -89,7 +89,7 @@ async function assertPlaced(page, id) {
     return ok;
   };
   try {
-    await page.waitForFunction(ready, id);
+    await page.waitForFunction(ready, id, { timeout });
   } catch (error) {
     const info = await page.evaluate(() => window.__placeInfo ?? null);
     throw new Error(`${id} not placed ${JSON.stringify(info)}\n${error}`);
@@ -627,7 +627,8 @@ test("names study guide: English line, Read, and finding", { timeout: 420000 }, 
         assert.ok(landed.top >= landed.cover - 1, `${id} at ${width} heading ${Math.round(landed.top)} is under the find bar ${Math.round(landed.cover)} (margin ${landed.margin})`);
         assert.ok(landed.bottom <= landed.height + 1, `${id} at ${width} heading is cut off`);
         holdScripts = false;
-        await assertPlaced(early, id);
+        await early.waitForFunction(() => typeof window.__setReadingLive === "function", undefined, { timeout: 45000 });
+        await assertPlaced(early, id, 20000);
       }
     }
     await early.close();
