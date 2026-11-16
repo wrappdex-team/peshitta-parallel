@@ -218,7 +218,12 @@
         "Adam's"
       ],
       "known": "Adam",
-      "say": "Ādām",
+      "say": "Adam",
+      "pron": {
+        "root": {
+          "respell": "ah-dam"
+        }
+      },
       "kind": "person",
       "count": 7,
       "ref": "luke 3:38",
@@ -499,7 +504,12 @@
         "Amorah"
       ],
       "known": "Gomorrah",
-      "say": "ʿamurā",
+      "say": "Amura",
+      "pron": {
+        "root": {
+          "respell": "ah-moo-ra"
+        }
+      },
       "kind": "place",
       "count": 5,
       "ref": "matthew 10:15",
@@ -520,7 +530,12 @@
         "Amots"
       ],
       "known": "Amos",
-      "say": "ʿamus",
+      "say": "Amus",
+      "pron": {
+        "root": {
+          "respell": "ah-moos"
+        }
+      },
       "kind": "person",
       "count": 1,
       "ref": "luke 3:25",
@@ -641,7 +656,12 @@
         "Anis"
       ],
       "known": "Aeneas",
-      "say": "ʾanīs",
+      "say": "Anis",
+      "pron": {
+        "root": {
+          "respell": "ah-nees"
+        }
+      },
       "kind": "person",
       "count": 1,
       "ref": "acts 9:33",
@@ -673,6 +693,11 @@
       ],
       "known": "Antioch",
       "say": "anṭyukyā",
+      "pron": {
+        "root": {
+          "respell": "ant-yook-ya"
+        }
+      },
       "kind": "place",
       "count": 18,
       "ref": "acts 11:19",
@@ -756,7 +781,12 @@
         "Apolos"
       ],
       "known": "Apollos",
-      "say": "ʾaplo",
+      "say": "Aplo",
+      "pron": {
+        "root": {
+          "respell": "ap-lo"
+        }
+      },
       "kind": "person",
       "count": 10,
       "ref": "acts 18:24",
@@ -853,7 +883,12 @@
         "Ar'u"
       ],
       "known": "Reu",
-      "say": "arʿu",
+      "say": "Ar'u",
+      "pron": {
+        "root": {
+          "respell": "ar-oo"
+        }
+      },
       "kind": "person",
       "count": 1,
       "ref": "luke 3:35",
@@ -1072,7 +1107,7 @@
         "Artemis"
       ],
       "known": "Artemis",
-      "say": "arṭamis",
+      "say": "Artamis",
       "root": {
         "text": "Artamis",
         "lang": "Greek",
@@ -1385,7 +1420,12 @@
         "Baalzebub"
       ],
       "known": "Beelzebub",
-      "say": "beʿelzebub",
+      "say": "Be'elzebub",
+      "pron": {
+        "root": {
+          "respell": "beh-el-zeh-boob"
+        }
+      },
       "kind": "person",
       "count": 7,
       "ref": "matthew 10:25",
@@ -1537,7 +1577,12 @@
         "Bar-Tulmai"
       ],
       "known": "Bartholomew",
-      "say": "Tūlmay",
+      "say": "Tulmay",
+      "pron": {
+        "root": {
+          "respell": "tool-my"
+        }
+      },
       "kind": "person",
       "count": 4,
       "ref": "matthew 10:3",
@@ -1599,6 +1644,11 @@
       ],
       "known": "Barsabbas",
       "say": "bar-šabba",
+      "pron": {
+        "root": {
+          "respell": "bar-shab-ba"
+        }
+      },
       "kind": "person",
       "count": 2,
       "ref": "acts 1:23",
@@ -1621,7 +1671,12 @@
         "Bavel"
       ],
       "known": "Babylon",
-      "say": "bābel",
+      "say": "Bavel",
+      "pron": {
+        "root": {
+          "respell": "bah-vel"
+        }
+      },
       "kind": "place",
       "count": 11,
       "ref": "matthew 1:11",
@@ -1688,7 +1743,7 @@
         "Beor"
       ],
       "known": "Beor",
-      "say": "bʿur",
+      "say": "Be'ur",
       "root": {
         "text": "Be'ur",
         "lang": "Hebrew",
@@ -2066,7 +2121,12 @@
         "Chananya"
       ],
       "known": "Ananias",
-      "say": "ḥananyā",
+      "say": "Chananya",
+      "pron": {
+        "root": {
+          "respell": "kha-nan-ya"
+        }
+      },
       "kind": "person",
       "count": 10,
       "ref": "acts 5:1",
@@ -2094,7 +2154,12 @@
         "Enoch"
       ],
       "known": "Enoch",
-      "say": "ḥanok",
+      "say": "Chanok",
+      "pron": {
+        "root": {
+          "respell": "kha-nok"
+        }
+      },
       "kind": "person",
       "count": 3,
       "ref": "luke 3:37",
@@ -2139,7 +2204,12 @@
         "Chasli"
       ],
       "known": "Esli",
-      "say": "ḥasli",
+      "say": "Chasli",
+      "pron": {
+        "root": {
+          "respell": "khas-lee"
+        }
+      },
       "kind": "person",
       "count": 1,
       "ref": "luke 3:25",
@@ -2619,7 +2689,7 @@
         "Diotrephes"
       ],
       "known": "Diotrephes",
-      "say": "diyōṭrepīs",
+      "say": "Diyotrepis",
       "root": {
         "text": "Diyotrepis",
         "lang": "Greek",
@@ -2710,6 +2780,11 @@
       ],
       "known": "Eliezer",
       "say": "eliʿazar",
+      "pron": {
+        "root": {
+          "respell": "eh-lee-ah-zar"
+        }
+      },
       "kind": "person",
       "count": 2,
       "ref": "matthew 1:15",
@@ -2756,7 +2831,12 @@
         "Elisha"
       ],
       "known": "Elisha",
-      "say": "elīshaʿ",
+      "say": "Elisha",
+      "pron": {
+        "root": {
+          "respell": "eh-lee-sha"
+        }
+      },
       "kind": "person",
       "count": 1,
       "ref": "luke 4:27",
@@ -2770,7 +2850,12 @@
         "Elishaba"
       ],
       "known": "Elizabeth",
-      "say": "Elishbaʿ",
+      "say": "Elishba",
+      "pron": {
+        "root": {
+          "respell": "eh-lish-ba"
+        }
+      },
       "kind": "person",
       "count": 9,
       "ref": "luke 1:5",
@@ -2881,7 +2966,12 @@
         "Emmaus"
       ],
       "known": "Emmaus",
-      "say": "ʿemmaus",
+      "say": "Emmaus",
+      "pron": {
+        "root": {
+          "respell": "em-ma-oos"
+        }
+      },
       "kind": "place",
       "count": 1,
       "ref": "luke 24:13",
@@ -2896,7 +2986,7 @@
         "Epaphras"
       ],
       "known": "Epaphras",
-      "say": "eppaprā",
+      "say": "Apapra",
       "root": {
         "text": "Apapra",
         "lang": "Greek",
@@ -2925,7 +3015,7 @@
         "Epaphroditus"
       ],
       "known": "Epaphroditus",
-      "say": "epaprodiṭos",
+      "say": "Epaproditos",
       "root": {
         "text": "Epaproditos",
         "lang": "Greek",
@@ -3065,7 +3155,12 @@
         "Stephen"
       ],
       "known": "Stephen",
-      "say": "ʾesṭep̄anōs",
+      "say": "Estepanos",
+      "pron": {
+        "root": {
+          "respell": "es-teh-pa-nos"
+        }
+      },
       "kind": "person",
       "count": 6,
       "ref": "acts 6:5",
@@ -3125,7 +3220,7 @@
         "Euodia"
       ],
       "known": "Euodia",
-      "say": "ʾuhadya",
+      "say": "Uhadya",
       "root": {
         "text": "Uhadya",
         "lang": "Greek",
@@ -3178,7 +3273,7 @@
         "Felix"
       ],
       "known": "Felix",
-      "say": "pīlaks",
+      "say": "Pilkas",
       "root": {
         "text": "Pilkas",
         "lang": "Latin"
@@ -3445,7 +3540,7 @@
         "Galatya"
       ],
       "known": "Galatia",
-      "say": "galāṭāyā",
+      "say": "Galatya",
       "root": {
         "text": "Galatya",
         "lang": "Aramaic",
@@ -3544,7 +3639,7 @@
         "Gallio"
       ],
       "known": "Gallio",
-      "say": "gālyōn",
+      "say": "Galion",
       "root": {
         "text": "Galion",
         "lang": "Latin",
@@ -3601,7 +3696,12 @@
         "Gaza"
       ],
       "known": "Gaza",
-      "say": "gazā",
+      "say": "Gaza",
+      "pron": {
+        "root": {
+          "respell": "ga-za"
+        }
+      },
       "kind": "place",
       "count": 1,
       "ref": "acts 8:26",
@@ -3669,7 +3769,12 @@
         "Gid'on"
       ],
       "known": "Gideon",
-      "say": "gadʿon",
+      "say": "Gad'on",
+      "pron": {
+        "root": {
+          "respell": "gad-on"
+        }
+      },
       "kind": "person",
       "count": 1,
       "ref": "hebrews 11:32",
@@ -3754,7 +3859,7 @@
         "Hamor"
       ],
       "known": "Hamor",
-      "say": "ḥamur",
+      "say": "Hamur",
       "root": {
         "text": "Hamur",
         "lang": "Hebrew",
@@ -3794,6 +3899,11 @@
       ],
       "known": "Eve",
       "say": "ḥawa",
+      "pron": {
+        "root": {
+          "respell": "kha-wa"
+        }
+      },
       "kind": "person",
       "count": 2,
       "ref": "2corinthians 11:3",
@@ -3916,7 +4026,12 @@
         "Hymeneus"
       ],
       "known": "Hymenaeus",
-      "say": "hūmenāʾōs",
+      "say": "Humenayos",
+      "pron": {
+        "root": {
+          "respell": "hoo-meh-nah-yos"
+        }
+      },
       "kind": "person",
       "count": 2,
       "ref": "1timothy 1:20",
@@ -3935,7 +4050,12 @@
         "Iconium"
       ],
       "known": "Iconium",
-      "say": "īqānōn",
+      "say": "Iqanon",
+      "pron": {
+        "root": {
+          "respell": "ee-ka-non"
+        }
+      },
       "kind": "place",
       "count": 5,
       "ref": "acts 13:51",
@@ -3957,6 +4077,11 @@
       ],
       "known": "Er",
       "say": "ʿīr",
+      "pron": {
+        "root": {
+          "respell": "eer"
+        }
+      },
       "kind": "person",
       "count": 1,
       "ref": "luke 3:28",
@@ -4041,7 +4166,7 @@
         "Italy"
       ],
       "known": "Italy",
-      "say": "iṭaliyā",
+      "say": "Italiya",
       "root": {
         "text": "Italiya",
         "lang": "Aramaic",
@@ -4298,7 +4423,7 @@
         "Kuria"
       ],
       "known": "Kuria",
-      "say": "qūryā",
+      "say": "Qurya",
       "root": {
         "text": "Qurya",
         "lang": "Greek",
@@ -4340,7 +4465,12 @@
         "Kuza"
       ],
       "known": "Chuza",
-      "say": "kūzā",
+      "say": "Kuza",
+      "pron": {
+        "root": {
+          "respell": "koo-za"
+        }
+      },
       "kind": "person",
       "count": 1,
       "ref": "luke 8:3",
@@ -4356,7 +4486,12 @@
         "Laodikeia"
       ],
       "known": "Laodicea",
-      "say": "ladīqīyā",
+      "say": "Ladiqiya",
+      "pron": {
+        "root": {
+          "respell": "la-dee-kee-ya"
+        }
+      },
       "kind": "place",
       "count": 5,
       "ref": "colossians 2:1",
@@ -4436,7 +4571,7 @@
         "Legion"
       ],
       "known": "Legion",
-      "say": "legyōn",
+      "say": "Legyon",
       "root": {
         "text": "Legyon",
         "lang": "Latin",
@@ -4853,6 +4988,11 @@
       ],
       "known": "Magadan",
       "say": "megdū",
+      "pron": {
+        "root": {
+          "respell": "meg-doo"
+        }
+      },
       "kind": "place",
       "count": 1,
       "ref": "matthew 15:39",
@@ -4867,6 +5007,11 @@
       ],
       "known": "Megiddo, Armageddon",
       "say": "megdū",
+      "pron": {
+        "root": {
+          "respell": "meg-doo"
+        }
+      },
       "kind": "place",
       "count": 1,
       "ref": "revelation 16:16",
@@ -4977,7 +5122,12 @@
         "Malki-Zedek"
       ],
       "known": "Melchizedek",
-      "say": "malkīzdaq",
+      "say": "Malkizdaq",
+      "pron": {
+        "root": {
+          "respell": "mal-keez-dak"
+        }
+      },
       "kind": "person",
       "count": 10,
       "ref": "hebrews 5:6",
@@ -5245,7 +5395,7 @@
         "Matthat"
       ],
       "known": "Matthat",
-      "say": "maṭṭat",
+      "say": "Mattat",
       "root": {
         "text": "Mattat",
         "lang": "Hebrew",
@@ -5317,7 +5467,12 @@
         "Mikha'el"
       ],
       "known": "Michael",
-      "say": "mikāʾil",
+      "say": "Mika'il",
+      "pron": {
+        "root": {
+          "respell": "mee-ka-eel"
+        }
+      },
       "kind": "person",
       "count": 2,
       "ref": "jude 1:9",
@@ -5344,7 +5499,7 @@
         "Miletus"
       ],
       "known": "Miletus",
-      "say": "mīlīṭōs",
+      "say": "Militos",
       "root": {
         "text": "Militos",
         "lang": "Aramaic",
@@ -5395,7 +5550,12 @@
         "Mnason"
       ],
       "known": "Mnason",
-      "say": "mnāsōn",
+      "say": "Mnason",
+      "pron": {
+        "root": {
+          "respell": "mna-son"
+        }
+      },
       "kind": "person",
       "count": 1,
       "ref": "acts 21:16",
@@ -5431,7 +5591,7 @@
         "Myra"
       ],
       "known": "Myra",
-      "say": "murā",
+      "say": "Mura",
       "root": {
         "text": "Mura",
         "lang": "Aramaic",
@@ -5483,7 +5643,7 @@
         "Naaman"
       ],
       "known": "Naaman",
-      "say": "naʿmān",
+      "say": "Na'man",
       "root": {
         "text": "Na'man",
         "lang": "Hebrew",
@@ -5539,7 +5699,12 @@
         "Nachum"
       ],
       "known": "Nahum",
-      "say": "naḥum",
+      "say": "Nachum",
+      "pron": {
+        "root": {
+          "respell": "na-khoom"
+        }
+      },
       "kind": "person",
       "count": 1,
       "ref": "luke 3:25",
@@ -5581,7 +5746,7 @@
         "Nain"
       ],
       "known": "Nain",
-      "say": "nāyn",
+      "say": "Nayn",
       "root": {
         "text": "Nayn",
         "lang": "Hebrew",
@@ -5804,7 +5969,12 @@
         "Noach"
       ],
       "known": "Noah",
-      "say": "nuḥ",
+      "say": "Nuch",
+      "pron": {
+        "root": {
+          "respell": "nookh"
+        }
+      },
       "kind": "person",
       "count": 8,
       "ref": "matthew 24:37",
@@ -6007,7 +6177,12 @@
         "Patmos"
       ],
       "known": "Patmos",
-      "say": "paṭmōs",
+      "say": "Patmos",
+      "pron": {
+        "root": {
+          "respell": "pat-mos"
+        }
+      },
       "kind": "place",
       "count": 1,
       "ref": "revelation 1:9",
@@ -6113,7 +6288,7 @@
         "Pharaoh"
       ],
       "known": "Pharaoh",
-      "say": "Parʿon",
+      "say": "Par'on",
       "root": {
         "text": "Par'on",
         "lang": "Aramaic",
@@ -6284,7 +6459,12 @@
         "Phonkas"
       ],
       "known": "Phoenix",
-      "say": "pōnkas",
+      "say": "Ponkas",
+      "pron": {
+        "root": {
+          "respell": "pon-kas"
+        }
+      },
       "kind": "place",
       "count": 1,
       "ref": "acts 27:12",
@@ -6378,7 +6558,7 @@
         "Pontius"
       ],
       "known": "Pontius",
-      "say": "panṭiyos",
+      "say": "Pantiyos",
       "root": {
         "text": "Pantiyos",
         "lang": "Latin",
@@ -6406,7 +6586,7 @@
         "Pontus"
       ],
       "known": "Pontus",
-      "say": "panṭus",
+      "say": "Pantus",
       "root": {
         "text": "Pantus",
         "lang": "Latin",
@@ -6459,7 +6639,12 @@
         "Prath"
       ],
       "known": "Euphrates",
-      "say": "prāṯ",
+      "say": "Prath",
+      "pron": {
+        "root": {
+          "respell": "prath"
+        }
+      },
       "kind": "place",
       "count": 2,
       "ref": "revelation 9:14",
@@ -6478,7 +6663,12 @@
         "Prisqla"
       ],
       "known": "Priscilla",
-      "say": "prīsqillā",
+      "say": "Prisqilla",
+      "pron": {
+        "root": {
+          "respell": "prees-kil-la"
+        }
+      },
       "kind": "person",
       "count": 7,
       "ref": "acts 18:2",
@@ -6501,7 +6691,7 @@
         "Publius"
       ],
       "known": "Publius",
-      "say": "pūplīyūs",
+      "say": "Pupliyus",
       "root": {
         "text": "Pupliyus",
         "lang": "Latin",
@@ -6561,7 +6751,12 @@
         "Qatna"
       ],
       "known": "Cana",
-      "say": "qaṭna",
+      "say": "Qatna",
+      "pron": {
+        "root": {
+          "respell": "kat-na"
+        }
+      },
       "kind": "place",
       "count": 4,
       "ref": "john 2:1",
@@ -6703,7 +6898,12 @@
         "Caesarea"
       ],
       "known": "Caesarea",
-      "say": "qesaryā",
+      "say": "Qesarya",
+      "pron": {
+        "root": {
+          "respell": "keh-sar-ya"
+        }
+      },
       "kind": "place",
       "count": 17,
       "ref": "matthew 16:13",
@@ -6726,7 +6926,12 @@
         "Cilicia"
       ],
       "known": "Cilicia",
-      "say": "qīlīqīyā",
+      "say": "Qiliqiya",
+      "pron": {
+        "root": {
+          "respell": "kee-lee-kee-ya"
+        }
+      },
       "kind": "place",
       "count": 8,
       "ref": "acts 6:9",
@@ -6750,7 +6955,12 @@
         "Qish"
       ],
       "known": "Kish",
-      "say": "qiš",
+      "say": "Qish",
+      "pron": {
+        "root": {
+          "respell": "keesh"
+        }
+      },
       "kind": "person",
       "count": 1,
       "ref": "acts 13:21",
@@ -6787,7 +6997,12 @@
         "Cleopas"
       ],
       "known": "Cleopas",
-      "say": "qelyōpā",
+      "say": "Qelyopa",
+      "pron": {
+        "root": {
+          "respell": "kel-yo-pa"
+        }
+      },
       "kind": "person",
       "count": 2,
       "ref": "luke 24:18",
@@ -6833,7 +7048,12 @@
         "Qorneliyos"
       ],
       "known": "Cornelius",
-      "say": "qornēlyōs",
+      "say": "Qornelyos",
+      "pron": {
+        "root": {
+          "respell": "kor-nel-yos"
+        }
+      },
       "kind": "person",
       "count": 7,
       "ref": "acts 10:1",
@@ -6856,7 +7076,12 @@
         "Qresqos"
       ],
       "known": "Crescens",
-      "say": "qresqōs",
+      "say": "Qresqos",
+      "pron": {
+        "root": {
+          "respell": "kres-kos"
+        }
+      },
       "kind": "person",
       "count": 1,
       "ref": "2timothy 4:10",
@@ -6870,7 +7095,12 @@
         "Quda"
       ],
       "known": "Clauda",
-      "say": "qudā",
+      "say": "Quda",
+      "pron": {
+        "root": {
+          "respell": "koo-da"
+        }
+      },
       "kind": "place",
       "count": 1,
       "ref": "acts 27:16",
@@ -6955,7 +7185,12 @@
         "Rachab"
       ],
       "known": "Rahab",
-      "say": "raḥab",
+      "say": "Rachab",
+      "pron": {
+        "root": {
+          "respell": "ra-khab"
+        }
+      },
       "kind": "person",
       "count": 3,
       "ref": "matthew 1:5",
@@ -6974,7 +7209,12 @@
         "Rakhyl"
       ],
       "known": "Rachel",
-      "say": "rāḥēl",
+      "say": "Rakhel",
+      "pron": {
+        "root": {
+          "respell": "ra-khel"
+        }
+      },
       "kind": "person",
       "count": 1,
       "ref": "matthew 2:18",
@@ -7037,7 +7277,7 @@
         "Regshi"
       ],
       "known": "Regshi",
-      "say": "regšay",
+      "say": "Regshay",
       "root": {
         "text": "Regshay",
         "lang": "Aramaic",
@@ -7061,7 +7301,12 @@
         "Repqa"
       ],
       "known": "Rebecca",
-      "say": "repqā",
+      "say": "Repqa",
+      "pron": {
+        "root": {
+          "respell": "rep-ka"
+        }
+      },
       "kind": "person",
       "count": 1,
       "ref": "romans 9:10",
@@ -7075,7 +7320,7 @@
         "Rhoda"
       ],
       "known": "Rhoda",
-      "say": "rōdā",
+      "say": "Roda",
       "root": {
         "text": "Roda",
         "lang": "Greek",
@@ -7481,7 +7726,12 @@
         "Sh'mai"
       ],
       "known": "Shimei",
-      "say": "shmaʿi",
+      "say": "Shma'i",
+      "pron": {
+        "root": {
+          "respell": "shma-ee"
+        }
+      },
       "kind": "person",
       "count": 1,
       "ref": "luke 3:26",
@@ -7744,7 +7994,12 @@
         "Shila"
       ],
       "known": "Silas",
-      "say": "šīlā",
+      "say": "Shila",
+      "pron": {
+        "root": {
+          "respell": "shee-la"
+        }
+      },
       "kind": "person",
       "count": 13,
       "ref": "acts 15:22",
@@ -7944,7 +8199,12 @@
         "Silwanus"
       ],
       "known": "Silvanus",
-      "say": "sālōnōs",
+      "say": "Salonos",
+      "pron": {
+        "root": {
+          "respell": "sa-lo-nos"
+        }
+      },
       "kind": "person",
       "count": 4,
       "ref": "2corinthians 1:19",
@@ -7964,7 +8224,7 @@
         "Sinai"
       ],
       "known": "Sinai",
-      "say": "sīnay",
+      "say": "Sinay",
       "root": {
         "text": "Sinay",
         "lang": "Hebrew"
@@ -8182,7 +8442,7 @@
       "root": {
         "text": "Estepana",
         "lang": "Greek",
-        "source": "Strong’s G4734 Στεφανᾶς: “probably contraction for (crowned” (Strong’s Greek Dictionary, 1890, public domain)."
+        "source": "Strong’s G4734 Στεφανᾶς: “probably contraction for … (crowned; from G4737 (στεφανόω))” (Strong’s Greek Dictionary, 1890, public domain)."
       },
       "pron": {
         "root": {
@@ -8215,7 +8475,12 @@
         "Suf"
       ],
       "known": "the Red Sea",
-      "say": "sūp",
+      "say": "Suf",
+      "pron": {
+        "root": {
+          "respell": "soof"
+        }
+      },
       "kind": "place",
       "count": 2,
       "ref": "acts 7:36",
@@ -8393,7 +8658,12 @@
         "Tasus"
       ],
       "known": "Assos",
-      "say": "tāsōs",
+      "say": "Tasos",
+      "pron": {
+        "root": {
+          "respell": "ta-sos"
+        }
+      },
       "kind": "place",
       "count": 2,
       "ref": "acts 20:13",
@@ -8452,7 +8722,7 @@
         "Tertullus"
       ],
       "known": "Tertullus",
-      "say": "ṭarṭallōs",
+      "say": "Tartallos",
       "root": {
         "text": "Tartallos",
         "lang": "Latin",
@@ -8480,7 +8750,12 @@
         "Tesaloniqa"
       ],
       "known": "Thessalonica, Thessalonike",
-      "say": "tesalonīqa",
+      "say": "Tesaloniqa",
+      "pron": {
+        "root": {
+          "respell": "teh-sa-lo-nee-ka"
+        }
+      },
       "kind": "place",
       "count": 6,
       "ref": "acts 17:1",
@@ -8577,7 +8852,7 @@
         "Tiberias"
       ],
       "known": "Tiberias",
-      "say": "ṭabaryōs",
+      "say": "Tabaryos",
       "root": {
         "text": "Tabaryos",
         "lang": "Latin",
@@ -8637,7 +8912,12 @@
         "Timai"
       ],
       "known": "Timaeus",
-      "say": "ṭaymi",
+      "say": "Taymi",
+      "pron": {
+        "root": {
+          "respell": "tie-mee"
+        }
+      },
       "kind": "person",
       "count": 1,
       "ref": "mark 10:46",
@@ -8675,7 +8955,12 @@
         "Timotheos"
       ],
       "known": "Timothy",
-      "say": "ṭimaṯeʾos",
+      "say": "Timateos",
+      "pron": {
+        "root": {
+          "respell": "tee-ma-teh-os"
+        }
+      },
       "kind": "person",
       "count": 22,
       "ref": "acts 16:1",
@@ -8697,7 +8982,7 @@
         "Titus"
       ],
       "known": "Titus",
-      "say": "ṭeṭos",
+      "say": "Tetos",
       "root": {
         "text": "Tetos",
         "lang": "Greek"
@@ -8789,7 +9074,7 @@
         "Troas"
       ],
       "known": "Troas",
-      "say": "ṭrwas",
+      "say": "Troas",
       "root": {
         "text": "Troas",
         "lang": "Greek",
@@ -8904,7 +9189,12 @@
         "Tsiyon"
       ],
       "known": "Zion",
-      "say": "ṣehyon",
+      "say": "Tsehyon",
+      "pron": {
+        "root": {
+          "respell": "tseh-yon"
+        }
+      },
       "kind": "place",
       "count": 7,
       "ref": "matthew 21:5",
@@ -8935,7 +9225,12 @@
         "Tsur"
       ],
       "known": "Tyre",
-      "say": "ṣur",
+      "say": "Tsur",
+      "pron": {
+        "root": {
+          "respell": "tsoor"
+        }
+      },
       "kind": "place",
       "count": 11,
       "ref": "matthew 11:21",
@@ -8993,7 +9288,7 @@
         "Tyrannus"
       ],
       "known": "Tyrannus",
-      "say": "ṭuranos",
+      "say": "Turanos",
       "root": {
         "text": "Turanos",
         "lang": "Greek",
@@ -9203,6 +9498,11 @@
       ],
       "known": "Greeks",
       "say": "yawnāyē",
+      "pron": {
+        "root": {
+          "respell": "yow-nah-yeh"
+        }
+      },
       "kind": "people",
       "count": 2,
       "ref": "acts 17:4",
@@ -9343,7 +9643,12 @@
         "Yitz'chak"
       ],
       "known": "Isaac",
-      "say": "isḥaq",
+      "say": "Ischaq",
+      "pron": {
+        "root": {
+          "respell": "ees-khak"
+        }
+      },
       "kind": "person",
       "count": 18,
       "ref": "matthew 1:2",
@@ -9476,7 +9781,12 @@
         "Yoppa"
       ],
       "known": "Joppa",
-      "say": "yawpā",
+      "say": "Yawpa",
+      "pron": {
+        "root": {
+          "respell": "yow-pa"
+        }
+      },
       "kind": "place",
       "count": 9,
       "ref": "acts 9:36",
