@@ -1,13 +1,11 @@
-import { WordStudySheet } from "@/components/word-study";
 import { Modal } from "@/components/modal";
 import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { Studio } from "@/components/studio";
 import { BookTitle, bookLabel } from "@/components/book-name";
 import { BookLinks } from "@/components/book-links";
 import { HelpSwitch } from "@/components/info-mark";
-import { VerseView } from "@/components/verse-view";
 import { SiteHeader } from "@/components/site-header";
 import { BOOKS, SECTIONS, bookMeta } from "@/data/edition";
 import { languageById } from "@/lib/languages";
@@ -32,6 +30,9 @@ import { scrollLineToTop } from "@/lib/scroll-line";
 import { useBindReadingSurface } from "@/lib/reading-surface";
 import { ReadingTongue } from "@/components/reading-tongue";
 import { ReadingSheet, readingLabel } from "@/components/reading-sheet";
+
+const VerseView = lazy(() => import("@/components/verse-view").then((mod) => ({ default: mod.VerseView })));
+const WordStudySheet = lazy(() => import("@/components/word-study").then((mod) => ({ default: mod.WordStudySheet })));
 
 export const Route = createFileRoute("/read/$book/$chapter")({
   loader: async ({ params }) => {
@@ -224,7 +225,7 @@ function Reader() {
     setSheet({ title: note.title, roman: "", body: note.body });
   }
 
-  useBindReadingSurface({
+  useBindReadingSurface(verses ? {
     book,
     chapter: chapterNo,
     voice: prefs.voice === "rex" ? "rex" : "ara",
@@ -238,7 +239,7 @@ function Reader() {
     onVerse: setHeard,
     onAdvance: (place) => go(place),
     onChapter: (place) => noteChapter(place.book, place.chapter),
-  });
+  } : null);
 
   return (
     <div className="min-h-app bg-paper text-ink">
@@ -286,6 +287,7 @@ function Reader() {
           </p>
         ) : null}
 
+        <Suspense fallback={null}>
         {verses?.map((verse, verseIndex) => {
           const copied = offline?.verses.find((row) => row.v === verse.v)?.text ?? "";
           const copied2 = offline2?.verses.find((row) => row.v === verse.v)?.text ?? "";
@@ -320,6 +322,7 @@ function Reader() {
           />
           );
         })}
+        </Suspense>
 
         {prefs.notes && chapterNo === 1 && meta?.blurb && (
           <p className="mt-6 text-sm leading-relaxed text-muted">{meta.blurb}</p>
@@ -413,11 +416,13 @@ function Reader() {
           >
             <div className="mx-auto max-w-3xl">
               {"study" in sheet ? (
+                <Suspense fallback={null}>
                 <WordStudySheet
                   study={sheet.study}
                   langs={[languageById(prefs.lang).id, ...(prefs.lang2 !== "none" ? [languageById(prefs.lang2).id] : [])]}
                   onPick={(surface) => setSheet({ study: studyWord(surface) })}
                 />
+                </Suspense>
               ) : (
                 <>
                   <p

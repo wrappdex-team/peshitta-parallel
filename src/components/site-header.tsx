@@ -72,11 +72,11 @@ export function SiteHeader({
               <Menu className="size-5" />
             </Link>
           )}
-          <div className="min-w-0 px-2 text-center">
-            <h1 className="flex items-center justify-center gap-1 truncate font-serif text-lg leading-tight">
-              {title}
+          <div className="site-title min-w-0 flex-1 px-1 text-center">
+            <div className="flex min-w-0 items-center justify-center">
+              <h1 className="min-w-0 truncate font-serif text-base leading-tight min-[360px]:text-lg">{title}</h1>
               {mark ? <InfoMark id={mark} /> : null}
-            </h1>
+            </div>
             {subtitle ? <span className="block truncate text-xs text-gold">{subtitle}</span> : null}
           </div>
           <div className="flex">

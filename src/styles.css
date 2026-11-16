@@ -181,6 +181,7 @@ html[data-help="off"] .info-mark {
   --syriac: #3d241c;
   --scrim: rgb(28 22 18 / 0.4);
   --jesus: #9b2335;
+  --names-scroll: 20rem;
 }
 
 [data-theme="night"] {
@@ -751,44 +752,85 @@ dialog[open] > div {
 }
 .name-card {
   content-visibility: auto;
-  contain-intrinsic-size: auto 300px;
+  contain-intrinsic-size: auto 220px;
   overflow-anchor: none;
+}
+main li[id] {
+  scroll-margin-top: var(--names-scroll, 20rem);
+}
+.name-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+.name-syriac {
+  margin-left: auto;
+  max-width: 100%;
+  white-space: nowrap;
+  word-break: keep-all;
+  overflow-wrap: normal;
+  font-size: clamp(1.25rem, 6.2vw, 2.25rem);
+  line-height: 1.15;
+}
+.name-syriac-word,
+[data-note-syriac] {
+  white-space: nowrap;
+  word-break: keep-all;
+  overflow-wrap: normal;
+}
+.name-spellings {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.35rem 0.75rem;
+}
+@media (max-width: 420px) {
+  .name-syriac {
+    flex-basis: 100%;
+    margin-left: 0;
+  }
+}
+.name-link::before,
+.name-read::before {
+  content: "";
+  width: 0.95rem;
+  height: 0.95rem;
+  flex: none;
+  background: currentColor;
+}
+.name-read::before {
+  mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.7'><path d='M4 10h3l4-3v10l-4-3H4z'/><path d='M16.5 9.2a3.8 3.8 0 0 1 0 5.6' stroke-linecap='round'/></svg>") center / contain no-repeat;
+  -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.7'><path d='M4 10h3l4-3v10l-4-3H4z'/><path d='M16.5 9.2a3.8 3.8 0 0 1 0 5.6' stroke-linecap='round'/></svg>") center / contain no-repeat;
+}
+.name-link::before {
+  mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M10 13a5 5 0 0 0 7.07 0l1.41-1.41a5 5 0 0 0-7.07-7.07L10 5.6'/><path d='M14 11a5 5 0 0 0-7.07 0L5.52 12.4a5 5 0 0 0 7.07 7.07L14 18.4'/></svg>") center / contain no-repeat;
+  -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M10 13a5 5 0 0 0 7.07 0l1.41-1.41a5 5 0 0 0-7.07-7.07L10 5.6'/><path d='M14 11a5 5 0 0 0-7.07 0L5.52 12.4a5 5 0 0 0 7.07 7.07L14 18.4'/></svg>") center / contain no-repeat;
+}
+@media (max-width: 280px) {
+  .names-page .site-title h1 {
+    font-size: 0.875rem;
+  }
+}
+@media (max-width: 240px) {
+  .names-page header > div.flex {
+    flex-wrap: wrap;
+  }
+  .names-page .site-title {
+    flex: 1 0 100%;
+    order: 3;
+  }
 }
 .name-verses {
   display: flex;
   flex-wrap: wrap;
+  align-items: baseline;
   gap: 0.25rem 0.75rem;
 }
 .name-verses a {
   max-width: 100%;
   min-width: 0;
-  overflow-wrap: anywhere;
-}
-.name-verse-book {
-  display: contents;
-}
-.name-verse-book-label {
-  display: none;
-}
-@media (min-width: 800px) {
-  .name-verses {
-    flex-direction: column;
-    flex-wrap: nowrap;
-    gap: 0.5rem;
-  }
-  .name-verse-book {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: 0.25rem 0.75rem;
-  }
-  .name-verse-book-label {
-    display: inline;
-    flex-basis: 100%;
-    font-size: 0.75rem;
-    letter-spacing: 0.04em;
-    color: var(--muted);
-  }
 }
 .name-spoken[aria-current="true"] {
   text-decoration-line: underline;

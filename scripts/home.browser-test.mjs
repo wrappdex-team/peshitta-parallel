@@ -5,8 +5,8 @@ import { test } from "node:test";
 import { chromium } from "playwright";
 import { startBuiltServer } from "./serve-built.mjs";
 
-// Home script transfer on main 0fdc48d was 1,440,788 bytes. The cap is main + 6 KB.
-const HOME_JS_CAP = 1_440_788 + 6 * 1024;
+// Home script transfer after the names list left this graph (cycle 022). Cap is that measurement + 6 KB.
+const HOME_JS_CAP = 1_231_096 + 6 * 1024;
 const SIZES = [
   { width: 390, height: 844, columns: 2 },
   { width: 206, height: 457, columns: 2 },
@@ -528,7 +528,7 @@ test("the home page keeps a manuscript interaction system", { timeout: 240000 },
     const page = await context.newPage();
     page.setDefaultTimeout(15000);
     await seed(page, basePrefs({ last: { book: "mark", chapter: 4, verse: 12 } }));
-    await page.goto(`${server.url}/`, { waitUntil: "networkidle" });
+    await page.goto(`${server.url}/`, { waitUntil: "load" });
     const card = page.locator(".continue-card");
     await card.getByText("verse 12 of 41").waitFor();
     await page.waitForTimeout(400);
@@ -605,12 +605,20 @@ test("the home page keeps a manuscript interaction system", { timeout: 240000 },
     const touchPage = await phone.newPage();
     touchPage.setDefaultTimeout(15000);
     await seed(touchPage, basePrefs({ last: { book: "mark", chapter: 4, verse: 12 } }));
-    await touchPage.goto(`${server.url}/`, { waitUntil: "networkidle" });
+    await touchPage.goto(`${server.url}/`, { waitUntil: "load" });
     await touchPage.locator(".continue-card").getByText("verse 12 of 41").waitFor();
     await assertScrollLock(touchPage, 390, true);
     await assertInfoSheet(touchPage, 390, 844, true);
     await phone.close();
 
+    const namesHits = await page.evaluate(() =>
+      performance
+        .getEntriesByType("resource")
+        .map((entry) => new URL(entry.name).pathname)
+        .filter((path) => /names|name-verse/i.test(path)),
+    );
+    console.log(`home names resources ${JSON.stringify(namesHits)}`);
+    assert.deepEqual(namesHits, []);
     const bytes = await page.evaluate(() =>
       performance.getEntriesByType("resource")
         .filter((entry) => /\.m?js(\?|$)/.test(new URL(entry.name).pathname))
@@ -624,14 +632,14 @@ test("the home page keeps a manuscript interaction system", { timeout: 240000 },
     const plain = await browser.newContext({ viewport: { width: 390, height: 844 }, serviceWorkers: "block" });
     const freshCard = await plain.newPage();
     await seed(freshCard, basePrefs());
-    await freshCard.goto(`${server.url}/`, { waitUntil: "networkidle" });
+    await freshCard.goto(`${server.url}/`, { waitUntil: "load" });
     await freshCard.getByText("Begin with John").waitFor();
     assert.match(await freshCard.locator(".continue-card").getAttribute("aria-label"), /Open John/);
     await plain.close();
 
     const visitor = await browser.newContext({ viewport: { width: 390, height: 844 }, serviceWorkers: "block" });
     const first = await visitor.newPage();
-    await first.goto(`${server.url}/`, { waitUntil: "networkidle" });
+    await first.goto(`${server.url}/`, { waitUntil: "load" });
     const intro = first.getByRole("dialog", { name: "How would you like to read?" });
     await intro.waitFor();
     const quick = intro.getByRole("button", { name: "Quick start (English)" });
@@ -653,7 +661,7 @@ test("the home page keeps a manuscript interaction system", { timeout: 240000 },
     });
     const still = await quiet.newPage();
     await seed(still, basePrefs({ last: { book: "mark", chapter: 4, verse: 12 } }));
-    await still.goto(`${server.url}/`, { waitUntil: "networkidle" });
+    await still.goto(`${server.url}/`, { waitUntil: "load" });
     await still.locator(".continue-card").waitFor();
     await press(still, still.locator(".continue-card"), true);
     await press(still, still.locator("[data-study]").getByRole("link", { name: /Saved/ }), true);

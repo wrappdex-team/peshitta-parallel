@@ -33,15 +33,39 @@ self.addEventListener("fetch", (event) => {
 async function install() {
   const cache = await caches.open(SHELL);
   await cache.addAll(["/", "/offline", "/offline-shell.html"]);
-  await keepAssets(cache, "/");
-  await keepAssets(cache, "/offline");
+  const shell = [];
+  for (const path of ["/", "/offline"]) shell.push(...(await keepAssets(cache, path)));
+  await keepImports(cache, shell);
   await keepReader(cache);
 }
 
 async function keepAssets(cache, path) {
   const cached = await cache.match(path);
-  if (!cached) return;
-  await addAssets(cache, assetUrls(await cached.text()));
+  if (!cached) return [];
+  const urls = assetUrls(await cached.text());
+  await addAssets(cache, urls);
+  return urls;
+}
+
+async function keepImports(cache, urls) {
+  const seen = new Set();
+  const pending = urls.filter((url) => url.endsWith(".js"));
+  while (pending.length) {
+    const path = pending.pop();
+    if (!path || seen.has(path)) continue;
+    seen.add(path);
+    const hit = await cache.match(path);
+    if (!hit) continue;
+    const code = await hit.text();
+    const next = [];
+    for (const match of code.matchAll(/(?:from|import)\s*"\.\/([^"]+\.js)"/g)) {
+      const url = `/assets/${match[1]}`;
+      if (!seen.has(url)) next.push(url);
+    }
+    if (!next.length) continue;
+    await addAssets(cache, next);
+    pending.push(...next);
+  }
 }
 
 async function keepReader(cache) {

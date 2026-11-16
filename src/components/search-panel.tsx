@@ -1,6 +1,6 @@
 import { Modal } from "@/components/modal";
 import { InfoMark } from "@/components/info-mark";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { usePrefs } from "@/lib/use-prefs";
 import {
@@ -12,12 +12,15 @@ import {
   foreignScript,
   loadIndex,
   lookupNames,
+  namesCatalogReady,
   plainLabel,
   prepareSearch,
   readReference,
   referenceNote,
+  requestNamesCatalog,
   resultFace,
   resultNote,
+  subscribeNamesCatalog,
   type Placed,
 } from "@/lib/search";
 
@@ -54,7 +57,8 @@ export function SearchPanel({ open, onClose, book }: { open: boolean; onClose: (
   const minChars = syriacLetters ? 1 : 2;
   const wantsIndex = !offer && !fault && q.trim().length >= minChars;
   const loading = wantsIndex && !rows && !failed;
-  const earlyNames = q.trim().length >= 2 ? lookupNames(q) : [];
+  const namesReady = useSyncExternalStore(subscribeNamesCatalog, namesCatalogReady, () => false);
+  const earlyNames = namesReady && q.trim().length >= 2 ? lookupNames(q) : [];
   const prepared = rows && wantsIndex ? prepareSearch(rows, q, used, scopeNow, book) : null;
   const hits = prepared?.hits.slice(0, shown) ?? [];
   const total = prepared?.hits.length ?? 0;
@@ -74,6 +78,10 @@ export function SearchPanel({ open, onClose, book }: { open: boolean; onClose: (
     named: aliases.length > 0,
   });
   const face = resultFace(used);
+
+  useEffect(() => {
+    if (q.trim().length >= 2) requestNamesCatalog();
+  }, [q]);
 
   useEffect(() => {
     memory.q = q;
