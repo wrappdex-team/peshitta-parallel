@@ -142,6 +142,29 @@ function authPopupPlugin(): Plugin {
   };
 }
 
+function stripNameRootSources(): Plugin {
+  const virtual = "\0names-without-root-source";
+  return {
+    name: "strip-name-root-sources",
+    enforce: "pre",
+    resolveId(source) {
+      const clean = source.split("?")[0] ?? source;
+      if (!clean.endsWith("/data/names.json") && !clean.endsWith("\\data\\names.json")) return null;
+      return virtual;
+    },
+    load(id) {
+      if (id !== virtual) return null;
+      const data = JSON.parse(readFileSync(join(process.cwd(), "src/data/names.json"), "utf8")) as {
+        names?: { root?: { source?: string } }[];
+      };
+      for (const row of data.names ?? []) {
+        if (row.root && "source" in row.root) delete row.root.source;
+      }
+      return `export default ${JSON.stringify(data)}`;
+    },
+  };
+}
+
 function stampShellPlugin(): Plugin {
   return {
     name: "injeel-shell-stamp",
@@ -176,6 +199,7 @@ export default defineConfig(({ command, isPreview }) => ({
   },
   resolve: { tsconfigPaths: true },
   plugins: [
+    stripNameRootSources(),
     pgliteBootstrapPlugin(),
     // Before tanstackStart so /auth/popup never falls through to the SPA.
     authPopupPlugin(),
