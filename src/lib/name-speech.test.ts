@@ -79,3 +79,16 @@ test("name speech stays on the device", () => {
     assert.equal(source.includes("process.env"), false);
   }
 });
+
+test("readLabel says the name once when the heading and English match", async () => {
+  const { readLabel } = await import("./name-speech.ts");
+  assert.equal(readLabel("Alexandria", "Alexandria"), "Read Alexandria (Syriac, then English)");
+  assert.equal(readLabel("Abba", "abba"), "Read Abba (Syriac, then English)");
+  assert.equal(readLabel("Keefa", "Peter"), "Read Keefa then Peter");
+  assert.equal(readLabel("Ya'akov", "James"), "Read Ya'akov then James");
+  assert.equal(readLabel("Ya'akov", "Ya’akov"), "Read Ya'akov (Syriac, then English)");
+  for (const row of names) {
+    const label = readLabel(row.root?.text ?? row.en, nameUtterances(row)[1].text);
+    assert.doesNotMatch(label, /^Read (.+) then \1$/i, row.id);
+  }
+});

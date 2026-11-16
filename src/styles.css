@@ -838,3 +838,17 @@ main li[id] {
   text-underline-offset: 0.2em;
   text-decoration-thickness: 1px;
 }
+
+/* W-129: a verse opened from a /names card. Rubric-style mark: garnet on gold-soft, ≥ 4.5:1 day and night. */
+article[data-name-target] {
+  box-shadow: inset 3px 0 0 var(--gold);
+  background-color: color-mix(in srgb, var(--gold-soft) 55%, transparent);
+}
+
+[data-name-target] [data-name-mark] {
+  background-color: var(--gold-soft);
+  color: var(--garnet);
+  text-decoration-line: underline;
+  text-decoration-style: double;
+  text-decoration-color: var(--garnet);
+}

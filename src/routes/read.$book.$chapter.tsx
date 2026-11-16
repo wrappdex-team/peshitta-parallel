@@ -34,7 +34,14 @@ import { ReadingSheet, readingLabel } from "@/components/reading-sheet";
 const VerseView = lazy(() => import("@/components/verse-view").then((mod) => ({ default: mod.VerseView })));
 const WordStudySheet = lazy(() => import("@/components/word-study").then((mod) => ({ default: mod.WordStudySheet })));
 
+/** `?name=keefa` comes from a /names verse link: mark that card in the #v-N verse. */
+function readSearch(search: Record<string, unknown>): { name?: string } {
+  const name = typeof search.name === "string" && /^[a-z0-9-]{1,48}$/.test(search.name) ? search.name : undefined;
+  return name ? { name } : {};
+}
+
 export const Route = createFileRoute("/read/$book/$chapter")({
+  validateSearch: readSearch,
   loader: async ({ params }) => {
     if (parseReaderChapter(params.chapter, chapterCount(params.book)) === null) {
       throw notFound();
@@ -85,6 +92,8 @@ function ReaderNotFound() {
 
 function Reader() {
   const { book, chapter } = Route.useParams();
+  // The root route passes raw params through, so check the value here too.
+  const markId = readSearch(Route.useSearch()).name;
   const chapterNo = Number(chapter);
   const navigate = useNavigate();
   const { prefs, patch } = usePrefs();
@@ -109,6 +118,7 @@ function Reader() {
   const [picked, setPicked] = useState("");
   const [focus, setFocus] = useState(1);
   const [reading, setReading] = useState(false);
+  const [target, setTarget] = useState<number | null>(null);
 
   useEffect(() => {
     if (!meta || !Number.isFinite(chapterNo) || chapterNo < 1) return;
@@ -121,6 +131,30 @@ function Reader() {
     const marked = window.location.hash.match(/^#v-(\d+)$/);
     setFocus(marked ? Number(marked[1]) : 1);
   }, [book, chapterNo]);
+
+  useEffect(() => {
+    const marked = markId ? window.location.hash.match(/^#v-(\d+)$/) : null;
+    setTarget(marked ? Number(marked[1]) : null);
+  }, [book, chapterNo, markId]);
+
+  useEffect(() => {
+    if (target == null || !verses) return;
+    let cancel = false;
+    let frame = 0;
+    const place = (left: number) => {
+      if (cancel) return;
+      const el = document.getElementById(`v-${target}`);
+      if (el) scrollLineToTop(el);
+      else if (left > 0) frame = window.requestAnimationFrame(() => place(left - 1));
+    };
+    // After the plain #v-N jump below, so the verse lands under the sticky header and tongue.
+    frame = window.requestAnimationFrame(() => place(120));
+    void document.fonts.ready.then(() => window.requestAnimationFrame(() => place(0)));
+    return () => {
+      cancel = true;
+      window.cancelAnimationFrame(frame);
+    };
+  }, [target, verses]);
 
   useEffect(() => {
     if (heard == null) return;
@@ -319,6 +353,7 @@ function Reader() {
             lang2={prefs.lang2}
             parallel2={prefs.lang2 === "none" ? "" : prefs.lang2 === "en" ? verse.en : net2 || copied2}
             pending2={prefs.lang2 !== "none" && prefs.lang2 !== "en" && secondary.pending && !copied2}
+            nameMark={target === verse.v ? markId : undefined}
           />
           );
         })}
