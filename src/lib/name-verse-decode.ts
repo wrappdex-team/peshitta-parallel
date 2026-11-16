@@ -43,10 +43,26 @@ export function parseRef(ref: string): StudyLink | null {
   return { ref, book, chapter, verse, href: `/read/${book}/${chapter}#v-${verse}`, label: labelOf(book, chapter, verse) };
 }
 
+const BOOK_ORDER = new Map(BOOKS.map((book, index) => [book.id, index]));
+
+/** Canon book order, then chapter, then verse; a repeated place is kept once. */
+export function canonVerses<T extends { book: string; chapter: number; verse: number }>(list: readonly T[]): T[] {
+  const seen = new Set<string>();
+  const out: T[] = [];
+  for (const item of list) {
+    const key = `${item.book} ${item.chapter}:${item.verse}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(item);
+  }
+  const at = (book: string) => BOOK_ORDER.get(book) ?? BOOKS.length;
+  return out.sort((a, b) => at(a.book) - at(b.book) || a.chapter - b.chapter || a.verse - b.verse);
+}
+
 export function studyPeople(row: NameEntry) {
   return (row.people ?? []).map((person) => ({
     label: person.label,
-    links: person.refs.map((ref) => parseRef(ref)).filter((link): link is StudyLink => link !== null),
+    links: canonVerses(person.refs.map((ref) => parseRef(ref)).filter((link): link is StudyLink => link !== null)),
   }));
 }
 
@@ -65,10 +81,10 @@ function fromRefs(row: NameEntry): NameVerse[] {
     const place = parseRef(ref);
     if (place) out.push(place);
   }
-  return out;
+  return canonVerses(out);
 }
 
-/** Every verse nameRuns links to this card, in canon order. An unknown id falls back to refs. */
+/** Every verse nameRuns links to this card, in canon order (canonVerses). An unknown id falls back to refs. */
 export function nameVersesFrom(pack: string, row: NameEntry, catalog: readonly NameEntry[] = NAMES): NameVerse[] {
   const listed = catalog.find((item) => item.id === row.id) ?? row;
   const ordinals = listsFor(pack).get(listed.id) ?? [];
@@ -78,5 +94,5 @@ export function nameVersesFrom(pack: string, row: NameEntry, catalog: readonly N
     const place = places[at];
     if (place) out.push({ ...place, label: labelOf(place.book, place.chapter, place.verse) });
   }
-  return out.length ? out : fromRefs(row);
+  return out.length ? canonVerses(out) : fromRefs(row);
 }

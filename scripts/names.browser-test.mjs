@@ -310,7 +310,7 @@ test("names study guide: English line, Read, and finding", { timeout: 420000 }, 
     const labels = await page.locator("#keefa [data-name-verse]").allTextContents();
     assert.equal(labels[0].trim(), "Matthew 4:18");
     for (const label of labels) assert.match(label.trim(), /^[A-Z0-9]/);
-    assert.match(await page.locator("#keefa [data-name-verse]").first().getAttribute("href") || "", /\/read\/matthew\/4#v-18$/);
+    assert.match(await page.locator("#keefa [data-name-verse]").first().getAttribute("href") || "", /\/read\/matthew\/4\?name=keefa#v-18$/);
     assert.equal(await page.locator("[data-name-see-line]").count(), 0);
 
     await open(page,`${server.url}/names#alap`, true);

@@ -28,3 +28,12 @@ export function nameUtterances(row: NameEntry): NameUtterance[] {
     { part: "en", text: english, lang: "en-US", rate: 0.9 },
   ];
 }
+
+function sameName(value: string) {
+  return value.normalize("NFC").replace(/[’ʼ]/g, "'").replace(/\s+/g, " ").trim().toLowerCase();
+}
+
+/** Read button label. When the heading and the English are the same text, the name is said once. */
+export function readLabel(root: string, english: string) {
+  return sameName(root) === sameName(english) ? `Read ${root} (Syriac, then English)` : `Read ${root} then ${english}`;
+}

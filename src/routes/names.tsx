@@ -1,6 +1,6 @@
 import { memo, useCallback, useDeferredValue, useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore, type KeyboardEvent } from "react";
 import { createFileRoute, Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { nameUtterances } from "@/lib/name-speech";
+import { nameUtterances, readLabel } from "@/lib/name-speech";
 import {
   NAME_KIND_FILTERS,
   filterNames,
@@ -453,7 +453,7 @@ const NameCard = memo(function NameCard({
         type="button"
         data-name-read
         className="name-read ink-icon mt-2 inline-flex h-11 min-w-11 shrink-0 items-center justify-center gap-1 px-3 text-sm"
-        aria-label={`Read ${root} then ${spoken[1].text}`}
+        aria-label={readLabel(root, spoken[1].text)}
         aria-pressed={part ? "true" : "false"}
         disabled={blocked || !canSpeak}
         title={canSpeak ? undefined : "This device can't read aloud"}
@@ -480,6 +480,7 @@ const NameCard = memo(function NameCard({
               key={link.ref}
               to="/read/$book/$chapter"
               params={{ book: link.book, chapter: String(link.chapter) }}
+              search={{ name: row.id }}
               hash={`v-${link.verse}`}
               className="ink-link inline-flex min-h-6 min-w-0 max-w-full items-center px-1.5 text-garnet"
             >
@@ -545,6 +546,7 @@ function VerseList({ row, pack }: { row: NameEntry; pack: string }) {
             key={`${verse.book}-${verse.chapter}-${verse.verse}`}
             to="/read/$book/$chapter"
             params={{ book: verse.book, chapter: String(verse.chapter) }}
+            search={{ name: row.id }}
             hash={`v-${verse.verse}`}
             data-name-verse=""
             className="ink-link inline-flex min-h-6 min-w-0 max-w-full items-center px-1.5 text-garnet"

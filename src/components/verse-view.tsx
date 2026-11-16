@@ -3,7 +3,7 @@ import { NOTES } from "@/data/edition";
 import { englishPhrases, foreignAt, rangeHits, speechOf, speechRanges, speechSpans, syriacPhrases } from "@/lib/jesus";
 import { languageById, type LangId } from "@/lib/languages";
 import { SITE_ORIGIN } from "@/lib/site";
-import { NAME_CLASS, nameOfSyriac, nameRuns } from "@/lib/names";
+import { NAME_CLASS, NAMES, nameOfSyriac, nameRuns, rootDisplay, type NameEntry } from "@/lib/names";
 import { shareCard, verseShare } from "@/lib/share";
 import glossOverrides from "@/data/gloss-overrides.json";
 import {
@@ -18,12 +18,15 @@ import {
   type WordPlace,
 } from "@/lib/scripture";
 
-import { useEffect, useRef, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { InfoMark } from "@/components/info-mark";
 
 import type { Annotation, Highlight } from "@/lib/annotations";
 
 registerGlossOverrides(glossOverrides as Record<string, string>);
+
+/** The /names card whose name is marked in this verse (W-129). */
+const NameMark = createContext<NameEntry | null>(null);
 
 const MARK_NAME: Record<Highlight, string> = { gold: "Gold", garnet: "Garnet", ink: "Ink" };
 
@@ -59,6 +62,8 @@ type Props = {
   cite?: string;
   guideMark?: boolean;
   markSpeech?: boolean;
+  /** Card id from a /names verse link: highlight this verse and mark the name in it. */
+  nameMark?: string;
 };
 
 const SY = ["text-lg", "text-xl", "text-2xl", "text-3xl", "text-4xl"] as const;
@@ -99,7 +104,9 @@ export function VerseView({
   cite,
   guideMark,
   markSpeech = true,
+  nameMark,
 }: Props) {
+  const markRow = nameMark ? (NAMES.find((row) => row.id === nameMark) ?? null) : null;
   const [copied, setCopied] = useState("");
   const articleRef = useRef<HTMLElement>(null);
   const [wordsReady, setWordsReady] = useState(false);
@@ -176,11 +183,13 @@ export function VerseView({
   const highlight = annotation?.highlight;
 
   return (
+    <NameMark.Provider value={markRow}>
     <article
       ref={articleRef}
       id={anchor ?? `v-${verse.v}`}
       data-saying={saying}
       data-listening={listening ? "" : undefined}
+      data-name-target={markRow ? "" : undefined}
       className={`group scroll-mt-44 border-b border-line py-6 ${listening ? "bg-gold-soft -mx-4 px-4" : ""} ${highlight ? HIGHLIGHT[highlight] : ""}`}
     >
       <div className="flex gap-3">
@@ -202,6 +211,18 @@ export function VerseView({
         )}
         <div className="min-w-0 flex-1">
           <div className="mb-1 flex min-h-8 items-center justify-end">
+            {markRow ? (
+              <Link
+                to="/names"
+                hash={markRow.id}
+                resetScroll={false}
+                hashScrollIntoView={false}
+                data-name-back=""
+                className="ink-link mr-auto inline-flex min-h-11 items-center px-1.5 text-sm text-garnet"
+              >
+                ← Back to {rootDisplay(markRow)}
+              </Link>
+            ) : null}
             {(guideMark ?? verse.v === 1) ? <InfoMark id="marks" align="end" /> : null}
           </div>
           {noteOpen && (
@@ -241,6 +262,7 @@ export function VerseView({
                           hash={named.id}
                           resetScroll={false}
                           hashScrollIntoView={false}
+                          data-name-mark={markRow && (named.id === markRow.id || named.sy === markRow.sy) ? "" : undefined}
                           className={`${NAME_CLASS} font-syriac ${hot ? "text-jesus" : ""}`}
                         >
                           {piece.text}
@@ -373,10 +395,12 @@ export function VerseView({
         </div>
       </div>
     </article>
+    </NameMark.Provider>
   );
 }
 
 function EnglishBits({ text, onTerm }: { text: string; onTerm: (key: string) => void }) {
+  const mark = useContext(NameMark);
   return englishRuns(text).map((run, i) =>
     run.kind === "term" ? (
       <button key={i} type="button" className="font-semibold text-garnet underline decoration-gold/40" onClick={() => onTerm(run.key)}>
@@ -387,7 +411,15 @@ function EnglishBits({ text, onTerm }: { text: string; onTerm: (key: string) => 
     ) : (
       nameRuns(run.text).map((part, j) =>
         part.kind === "name" ? (
-          <Link key={`${i}-${j}`} to="/names" hash={part.id} resetScroll={false} hashScrollIntoView={false} className={NAME_CLASS}>
+          <Link
+            key={`${i}-${j}`}
+            to="/names"
+            hash={part.id}
+            resetScroll={false}
+            hashScrollIntoView={false}
+            data-name-mark={mark && (part.id === mark.id || mark.forms?.includes(part.text)) ? "" : undefined}
+            className={NAME_CLASS}
+          >
             {part.text}
           </Link>
         ) : (
