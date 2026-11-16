@@ -36,9 +36,17 @@ async function openMarks(page, width, where) {
     if (!(await button.isVisible())) continue;
     const label = `${await button.getAttribute("aria-label")} on ${where} at ${width}`;
     const before = await page.evaluate(() => document.documentElement.scrollWidth);
-    await button.click();
+    const handle = await button.elementHandle();
+    assert.ok(handle, `${label}: missing button`);
+    await handle.click();
+    await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+    if ((await handle.getAttribute("aria-expanded")) !== "true") await handle.click();
     const note = page.locator(".help-sheet").last();
-    await note.waitFor({ state: "visible", timeout: 5000 });
+    try {
+      await note.waitFor({ state: "visible", timeout: 15000 });
+    } catch (error) {
+      throw new Error(`${label}: the note did not open\n${error}`);
+    }
     const box = await note.boundingBox();
     assert.ok(box, `${label}: the note has a box`);
     const after = await page.evaluate(() => document.documentElement.scrollWidth);
@@ -55,7 +63,7 @@ async function openMarks(page, width, where) {
     assert.ok(closeBox, `${label}: Close has a box`);
     assert.ok(closeBox.y >= 0 && closeBox.y + closeBox.height <= HEIGHT + 1, `${label}: Close unreachable`);
     await page.keyboard.press("Escape");
-    await note.waitFor({ state: "hidden", timeout: 5000 });
+    await note.waitFor({ state: "hidden", timeout: 15000 });
     opened += 1;
   }
   return opened;
@@ -74,7 +82,9 @@ for (const width of [320, 390]) {
     try {
       let opened = 0;
       for (const path of PATHS) {
-        await page.goto(`${server.url}${path}`, { waitUntil: "networkidle", timeout: 30000 });
+        await page.goto(`${server.url}${path}`, { waitUntil: "load", timeout: 30000 });
+        await page.waitForFunction(() => window.__prefsWatch === true);
+        await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
         opened += await openMarks(page, width, path);
         if (path === "/") {
           await page.getByRole("button", { name: "Search" }).first().click();

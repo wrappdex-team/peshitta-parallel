@@ -81,7 +81,7 @@ test("book titles stay readable at 320 and at 200% zoom", { timeout: 120000 }, a
     ]) {
       await page.setViewportSize(size);
       const tag = `${size.width}`;
-      await page.goto(`${base}/`, { waitUntil: "networkidle" });
+      await page.goto(`${base}/`, { waitUntil: "load" });
       await page
         .getByRole("link", { name: "Continue 2 Thessalonians, Syriac title Tesaloniqa, 3:18" })
         .waitFor();
@@ -100,7 +100,7 @@ test("book titles stay readable at 320 and at 200% zoom", { timeout: 120000 }, a
       await audit(page, `drawer ${tag}`);
       await page.getByRole("button", { name: "Close" }).click();
 
-      await page.goto(`${base}/read/john/3`, { waitUntil: "networkidle" });
+      await page.goto(`${base}/read/john/3`, { waitUntil: "load" });
       await page.getByRole("button", { name: "Books" }).click();
       const menu = page.getByRole("navigation", { name: "Books" });
       await menu.waitFor();

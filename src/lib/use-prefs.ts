@@ -110,9 +110,16 @@ function patch(partial: Partial<Prefs>) {
   emit();
 }
 
+declare global {
+  interface Window {
+    __prefsWatch?: boolean;
+  }
+}
+
 function watchStorage() {
   if (storageWatch || typeof window === "undefined") return;
   storageWatch = true;
+  window.__prefsWatch = true;
   window.addEventListener("storage", (event) => {
     if (event.key !== null && event.key !== KEY) return;
     const raw = localStorage.getItem(KEY);

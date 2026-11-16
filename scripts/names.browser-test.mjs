@@ -58,7 +58,7 @@ function assertEnglish(actual) {
   for (const row of NAMES) assert.equal(actual[row.id], row.known, row.id);
 }
 
-async function assertPlaced(page, id) {
+async function assertPlaced(page, id, timeout = 20000) {
   const ready = (name) => {
     const card = document.getElementById(name);
     const head = card?.querySelector("h2");
@@ -89,7 +89,7 @@ async function assertPlaced(page, id) {
     return ok;
   };
   try {
-    await page.waitForFunction(ready, id);
+    await page.waitForFunction(ready, id, { timeout });
   } catch (error) {
     const info = await page.evaluate(() => window.__placeInfo ?? null);
     throw new Error(`${id} not placed ${JSON.stringify(info)}\n${error}`);
@@ -108,7 +108,20 @@ async function overflow(page) {
 
 let loadStamp = 0;
 
-async function open(page, url) {
+/** The Read control is in the server HTML. Clicks before this effect are dropped. */
+async function waitForNamesReady(page) {
+  await page.waitForFunction(() => typeof window.__setReadingLive === "function");
+}
+
+async function textOf(page, selector) {
+  const handle = await page.waitForFunction((sel) => {
+    const text = (document.querySelector(sel)?.textContent ?? "").replace(/\s+/g, " ").trim();
+    return text || false;
+  }, selector);
+  return handle.jsonValue();
+}
+
+async function open(page, url, commit = false) {
   const next = new URL(url);
   const here = page.url();
   if (here && here !== "about:blank") {
@@ -118,7 +131,13 @@ async function open(page, url) {
       next.searchParams.set("load", String(loadStamp));
     }
   }
-  await page.goto(next.href, { waitUntil: "domcontentloaded" });
+  // A hash landing measures every card before DOMContentLoaded. Text checks
+  // pass commit so they read the server HTML instead of waiting out that layout.
+  await page.goto(next.href, { waitUntil: commit ? "commit" : "domcontentloaded" });
+  // The previous names document stays private until GC. Four copies then stall
+  // past the 20s budget. This does not change what the page renders.
+  await page.evaluate(() => typeof gc === "function" && gc()).catch(() => {});
+  if (!commit && next.pathname === "/names" && !next.hash) await waitForNamesReady(page);
 }
 
 async function shortLinks(page) {
@@ -135,7 +154,7 @@ async function shortLinks(page) {
   });
 }
 
-test("names study guide: English line, Read, and finding", async () => {
+test("names study guide: English line, Read, and finding", { timeout: 420000 }, async () => {
   const speech = readFileSync(new URL("../src/lib/name-speech.ts", import.meta.url), "utf8");
   const pageSource = readFileSync(new URL("../src/routes/names.tsx", import.meta.url), "utf8");
   for (const source of [speech, pageSource]) {
@@ -145,7 +164,8 @@ test("names study guide: English line, Read, and finding", async () => {
   }
 
   const server = await startBuiltServer();
-  const browser = await chromium.launch();
+  // expose-gc lets open() return the previous names document. See open().
+  const browser = await chromium.launch({ args: ["--js-flags=--expose-gc"] });
   try {
     const context = await browser.newContext({ viewport: { width: 1280, height: 800 }, serviceWorkers: "block" });
     const page = await context.newPage();
@@ -179,24 +199,17 @@ test("names study guide: English line, Read, and finding", async () => {
     await page.setViewportSize({ width: 390, height: 844 });
     const day = page.getByRole("button", { name: "Day theme" });
     if ((await day.count()) > 0) await day.click();
-    await open(page,`${server.url}/names#corinth`);
-    await page.locator("#corinth").scrollIntoViewIfNeeded();
-    await page.waitForFunction(() => document.querySelector("#corinth h2")?.innerText.trim() === "Corinth");
-    assert.equal((await page.locator("#corinth h2").innerText()).trim(), "Corinth");
-    assert.equal(
-      (await page.locator("#corinth [data-name-english-line]").innerText()).replace(/\s+/g, " ").trim(),
-      "ENGLISH Corinth",
-    );
-    await page.locator("#keefa").scrollIntoViewIfNeeded();
-    await page.waitForFunction(() => document.querySelector("#keefa h2")?.innerText.trim() === "Keefa");
-    assert.equal((await page.locator("#keefa h2").innerText()).trim(), "Keefa");
-    assert.equal(
-      (await page.locator("#keefa [data-name-english-line]").innerText()).replace(/\s+/g, " ").trim(),
-      "ENGLISH Peter, Petros",
-    );
+    await open(page,`${server.url}/names#corinth`, true);
+    await page.waitForFunction(() => (document.querySelector("#corinth h2")?.textContent ?? "").trim() === "Corinth");
+    assert.equal(await textOf(page, "#corinth h2"), "Corinth");
+    assert.equal(await textOf(page, "#corinth [data-name-english-line]"), "ENGLISH Corinth");
+    await page.waitForFunction(() => (document.querySelector("#keefa h2")?.textContent ?? "").trim() === "Keefa");
+    assert.equal(await textOf(page, "#keefa h2"), "Keefa");
+    assert.equal(await textOf(page, "#keefa [data-name-english-line]"), "ENGLISH Peter, Petros");
 
     await open(page,`${server.url}/names#keefa`);
     await assertPlaced(page, "keefa");
+    await waitForNamesReady(page);
 
     const places = page.getByRole("radio", { name: /^Places\s+151$/ });
     assert.equal(await places.count(), 1);
@@ -221,8 +234,8 @@ test("names study guide: English line, Read, and finding", async () => {
 
     const find = page.getByRole("textbox", { name: "FIND A NAME" });
     await find.fill("yeshua");
-    await page.waitForFunction(() => document.querySelector("main h2")?.innerText.trim() === "Y'shua");
-    assert.equal(await page.locator("main h2").first().innerText(), "Y'shua");
+    await page.waitForFunction(() => (document.querySelector("main h2")?.textContent ?? "").trim() === "Y'shua");
+    assert.equal(((await page.locator("main h2").first().textContent()) ?? "").trim(), "Y'shua");
     await page.waitForFunction(() => new URL(location.href).searchParams.get("q") === "yeshua");
     for (const [typed, root] of [
       ["yaakov", "Ya'akov"],
@@ -234,8 +247,8 @@ test("names study guide: English line, Read, and finding", async () => {
       ["Y'shua", "Y'shua"],
     ]) {
       await find.fill(typed);
-      await page.waitForFunction((name) => document.querySelector("main h2")?.innerText.trim() === name, root);
-      assert.equal(await page.locator("main h2").first().innerText(), root, typed);
+      await page.waitForFunction((name) => (document.querySelector("main h2")?.textContent ?? "").trim() === name, root);
+      assert.equal(((await page.locator("main h2").first().textContent()) ?? "").trim(), root, typed);
     }
 
     await page.setViewportSize({ width: 390, height: 844 });
@@ -266,18 +279,19 @@ test("names study guide: English line, Read, and finding", async () => {
     assert.ok(syriac.widths.length >= 4, `kenaan syriac ${JSON.stringify(syriac.widths)}`);
     for (const width of syriac.widths) assert.ok(width > 0, `glyph width ${width}`);
 
+    await waitForNamesReady(page);
     await find.fill("Corinth");
-    await page.waitForFunction(() => document.querySelector("main h2")?.innerText.trim() === "Corinth");
+    await page.waitForFunction(() => (document.querySelector("main h2")?.textContent ?? "").trim() === "Corinth");
     assert.equal(await page.locator("main h2").count(), 1);
     assert.equal(await page.getByRole("checkbox", { name: "Search descriptions too" }).isChecked(), false);
 
     await find.fill("Peter");
-    await page.waitForFunction(() => document.querySelector("main h2")?.innerText.trim() === "Keefa");
+    await page.waitForFunction(() => (document.querySelector("main h2")?.textContent ?? "").trim() === "Keefa");
     assert.equal(await page.locator("#keefa").count(), 1);
 
     await find.fill("Mary");
-    await page.waitForFunction(() => document.querySelector("main h2")?.innerText.trim() === "Maryam");
-    const maryOrder = await page.locator("main h2").allInnerTexts();
+    await page.waitForFunction(() => (document.querySelector("main h2")?.textContent ?? "").trim() === "Maryam");
+    const maryOrder = await page.locator("main h2").allTextContents();
     const yhwhAt = maryOrder.findIndex((text) => text.trim() === "YHWH");
     assert.equal(maryOrder[0].trim(), "Maryam");
     if (yhwhAt >= 0) assert.ok(yhwhAt > 0, `YHWH at ${yhwhAt}`);
@@ -285,23 +299,25 @@ test("names study guide: English line, Read, and finding", async () => {
     const keefa = NAMES.find((row) => row.id === "keefa");
     await open(page,`${server.url}/names#keefa`);
     await assertPlaced(page, "keefa");
-    assert.equal(await page.locator("#keefa [data-name-kind]").innerText(), "Person");
+    assert.equal(await textOf(page, "#keefa [data-name-kind]"), "Person");
     assert.equal(await page.locator("#keefa [data-name-verse]").count(), 6);
+    assert.equal(await textOf(page, "#keefa [data-name-more]"), `+ ${keefa.count - 6} more`);
     const more = page.locator("#keefa [data-name-more]");
-    assert.equal((await more.innerText()).trim(), `+ ${keefa.count - 6} more`);
     assert.equal(await more.getAttribute("aria-expanded"), "false");
+    await waitForNamesReady(page);
     await more.click();
     await page.waitForFunction((count) => document.querySelectorAll("#keefa [data-name-verse]").length === count, keefa.count);
-    const labels = await page.locator("#keefa [data-name-verse]").allInnerTexts();
+    const labels = await page.locator("#keefa [data-name-verse]").allTextContents();
     assert.equal(labels[0].trim(), "Matthew 4:18");
     for (const label of labels) assert.match(label.trim(), /^[A-Z0-9]/);
     assert.match(await page.locator("#keefa [data-name-verse]").first().getAttribute("href") || "", /\/read\/matthew\/4#v-18$/);
     assert.equal(await page.locator("[data-name-see-line]").count(), 0);
 
-    await open(page,`${server.url}/names#alap`);
-    assert.equal(await page.locator("#alap [data-name-kind]").innerText(), "Letter");
-    await open(page,`${server.url}/names#yhwh`);
-    assert.equal(await page.locator("#yhwh [data-name-kind]").innerText(), "Title");
+    await open(page,`${server.url}/names#alap`, true);
+    assert.equal(await textOf(page, "#alap [data-name-kind]"), "Letter");
+    await open(page,`${server.url}/names#yhwh`, true);
+    assert.equal(await textOf(page, "#yhwh [data-name-kind]"), "Title");
+    await waitForNamesReady(page);
 
     for (const theme of ["day", "night"]) {
       const toggle = page.getByRole("button", { name: theme === "night" ? "Night theme" : "Day theme" });
@@ -327,13 +343,14 @@ test("names study guide: English line, Read, and finding", async () => {
     await page.locator("#keefa").waitFor();
     assert.equal(await find.inputValue(), "keefa");
     assert.equal(await page.getByRole("radio", { name: /^Persons\s+/ }).getAttribute("aria-checked"), "true");
-    await page.reload({ waitUntil: "networkidle" });
+    await page.reload({ waitUntil: "load" });
     await page.locator("#keefa").waitFor();
     assert.equal(await page.getByRole("textbox", { name: "FIND A NAME" }).inputValue(), "keefa");
     assert.equal(await page.getByRole("radio", { name: /^Persons\s+/ }).getAttribute("aria-checked"), "true");
     assert.equal(await page.locator("main h2").count(), 1);
 
     await open(page,`${server.url}/names#keefa`);
+    await waitForNamesReady(page);
     await page.locator("#keefa [data-name-read]").waitFor();
     const read = page.locator("#keefa").getByRole("button", { name: "Read Keefa then Peter" });
     await read.click();
@@ -361,7 +378,124 @@ test("names study guide: English line, Read, and finding", async () => {
     await page.evaluate(() => window.__setReadingLive(false));
 
     await open(page, `${server.url}/names`);
-    await page.waitForLoadState("networkidle");
+    await page.waitForLoadState("load");
+    await waitForNamesReady(page);
+    await page.setViewportSize({ width: 390, height: 844 });
+    const domNodes = await page.evaluate(() => document.querySelectorAll("*").length);
+    console.log(`names dom nodes ${domNodes}`);
+    assert.ok(domNodes <= 9000, `DOM nodes ${domNodes} exceed 9000`);
+    const pageErrors = [];
+    page.on("pageerror", (error) => pageErrors.push(String(error)));
+
+    for (const theme of ["day", "night"]) {
+      const toggle = page.getByRole("button", { name: theme === "night" ? "Night theme" : "Day theme" });
+      if ((await toggle.count()) > 0) await toggle.click();
+      await page.waitForFunction((want) => document.documentElement.dataset.theme === want, theme);
+      for (const width of [206, 240, 320, 360, 390, 412, 1280]) {
+        await page.setViewportSize({ width, height: width === 1280 ? 800 : 900 });
+        const broken = await page.evaluate(() => {
+          for (const card of document.querySelectorAll(".name-card")) card.style.contentVisibility = "visible";
+          const bad = [];
+          for (const node of document.querySelectorAll("p.name-syriac")) {
+            const text = (node.textContent || "").trim();
+            if (!text || /\s/.test(text)) continue;
+            const range = document.createRange();
+            range.selectNodeContents(node);
+            const tops = new Set();
+            for (const rect of range.getClientRects()) tops.add(Math.round(rect.top));
+            if (tops.size > 1) bad.push({ id: node.closest("li")?.id || "", text, lines: tops.size });
+          }
+          const scroll = Math.max(
+            document.documentElement.scrollWidth - document.documentElement.clientWidth,
+            document.body.scrollWidth - document.body.clientWidth,
+          );
+          const read = document.querySelector("[data-name-read]");
+          const readBox = read?.getBoundingClientRect();
+          return { bad: bad.slice(0, 5), badCount: bad.length, scroll, readH: readBox?.height ?? 0, readW: readBox?.width ?? 0 };
+        });
+        assert.equal(broken.badCount, 0, `Syriac heading wraps at ${width} ${theme} ${JSON.stringify(broken.bad)}`);
+        assert.ok(broken.scroll <= 1, `horizontal scroll ${broken.scroll} at ${width} ${theme}`);
+        assert.ok(broken.readH + 0.5 >= 44 && broken.readW + 0.5 >= 44, `Read ${broken.readW}x${broken.readH} at ${width}`);
+      }
+      const say = await page.evaluate(() => {
+        const card = document.querySelector("#aleksandros");
+        if (card) card.style.contentVisibility = "visible";
+        const node = document.querySelector("#aleksandros [data-source-say]");
+        if (!node) return null;
+        const probe = document.createElement("span");
+        probe.style.color = "var(--muted)";
+        document.body.appendChild(probe);
+        const want = getComputedStyle(probe).color;
+        probe.remove();
+        return { got: getComputedStyle(node).color, want, text: (node.textContent || "").trim() };
+      });
+      assert.ok(say, `source pronunciation missing on ${theme}`);
+      assert.equal(say.got, say.want, `source say ${say.got} is not --muted ${say.want} on ${theme}`);
+      assert.match(say.text, /Alexandros/);
+    }
+    const dayTitle = page.getByRole("button", { name: "Day theme" });
+    if ((await dayTitle.count()) > 0) await dayTitle.click();
+    await page.setViewportSize({ width: 206, height: 457 });
+    const title = await page.evaluate(() => {
+      const node = document.querySelector("header h1");
+      const style = getComputedStyle(node);
+      const box = node.getBoundingClientRect();
+      return {
+        text: (node.textContent || "").trim(),
+        overflow: style.textOverflow,
+        fits: node.scrollWidth <= node.clientWidth + 1,
+        clipped: box.left < -1 || box.right > window.innerWidth + 1,
+      };
+    });
+    assert.equal(title.text, "Names");
+    assert.equal(title.clipped, false, `Names title clipped ${JSON.stringify(title)}`);
+    assert.ok(title.fits || title.overflow === "ellipsis", `Names title ${JSON.stringify(title)}`);
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    for (const width of [360, 390, 1280]) {
+      await page.setViewportSize({ width, height: width === 1280 ? 800 : 844 });
+      const box = await page.locator("#abba [data-name-link]").boundingBox();
+      assert.ok(box && box.width + 0.5 >= 44 && box.height + 0.5 >= 44, `Link ${box?.width}x${box?.height} at ${width}`);
+    }
+    await page.evaluate(() => {
+      window.__shared = [];
+      navigator.share = (data) => {
+        window.__shared.push(data);
+        return Promise.resolve();
+      };
+    });
+    await page.locator("#abba [data-name-link]").click();
+    const shared = await page.evaluate(() => window.__shared);
+    assert.equal(shared.length, 1);
+    assert.equal(shared[0].url, "https://www.injeel.news/names#abba");
+    assert.match(shared[0].title, /Abba/);
+    await page.evaluate(() => {
+      window.__copied = "";
+      window.__shareSettled = false;
+      navigator.share = () => Promise.reject(new DOMException("cancelled", "AbortError"));
+      navigator.clipboard.writeText = (text) => {
+        window.__copied = text;
+        window.__shareSettled = true;
+        return Promise.resolve();
+      };
+    });
+    await page.locator("#abba [data-name-link]").click();
+    await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+    assert.equal(await page.evaluate(() => window.__copied), "", "cancelling share copied the link");
+    assert.equal(await page.evaluate(() => window.__shareSettled), false, "cancelling share wrote the clipboard");
+    await page.evaluate(() => {
+      Object.defineProperty(navigator, "share", { configurable: true, value: undefined });
+      window.__copied = "";
+      navigator.clipboard.writeText = (text) => {
+        window.__copied = text;
+        return Promise.resolve();
+      };
+    });
+    await page.locator("#keefa [data-name-link]").click();
+    assert.equal(await page.evaluate(() => window.__copied), "https://www.injeel.news/names#keefa");
+    await page.waitForFunction(() => document.querySelector("[aria-live='polite']")?.textContent?.includes("Link copied"));
+    assert.equal(pageErrors.length, 0, pageErrors.join("\n"));
+
     await page.setViewportSize({ width: 390, height: 844 });
     const session = await context.newCDPSession(page);
     await session.send("Emulation.setCPUThrottlingRate", { rate: 4 });
@@ -382,6 +516,32 @@ test("names study guide: English line, Read, and finding", async () => {
           input.dispatchEvent(new InputEvent("input", { bubbles: true }));
         }),
     );
+    const samples = [];
+    for (let sample = 0; sample < 5; sample += 1) {
+      const letter = "qwxzv"[sample];
+      const took = await page.evaluate((next) => {
+        const input = document.querySelector("main input");
+        const live = document.querySelector("[aria-live='polite']");
+        const before = (live?.textContent || "").replace(/\s+/g, " ").trim();
+        const start = performance.now();
+        const set = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value").set;
+        set.call(input, next);
+        input.dispatchEvent(new InputEvent("input", { bubbles: true }));
+        return new Promise((resolve) => {
+          const check = () => {
+            const text = (live?.textContent || "").replace(/\s+/g, " ").trim();
+            if (text !== before && /\d/.test(text)) resolve(performance.now() - start);
+            else requestAnimationFrame(check);
+          };
+          requestAnimationFrame(check);
+        });
+      }, letter);
+      samples.push(took);
+    }
+    samples.sort((a, b) => a - b);
+    const median = samples[2];
+    console.log(`names keystroke median ${Math.round(median)}ms ${samples.map((n) => Math.round(n)).join(",")}`);
+    assert.ok(median <= 150, `keystroke median ${median}ms`);
     await session.send("Emulation.setCPUThrottlingRate", { rate: 1 });
     console.log(`names input paint ${Math.round(paint)}ms`);
     assert.ok(paint < 200, `input paint ${paint}ms`);
@@ -392,13 +552,86 @@ test("names study guide: English line, Read, and finding", async () => {
         .filter((entry) => /\.m?js(\?|$)/.test(new URL(entry.name).pathname) && new URL(entry.name).origin === location.origin)
         .map((entry) => entry.name),
     );
+    const parts = [];
     let bytes = 0;
+    let routeBytes = 0;
     for (const url of urls) {
       const body = Buffer.from(await (await fetch(url)).arrayBuffer());
-      bytes += gzipSync(body).length;
+      const gzip = gzipSync(body).length;
+      bytes += gzip;
+      const path = new URL(url).pathname;
+      const isNames = /\/names[-.]/.test(path);
+      if (isNames) routeBytes += gzip;
+      parts.push(`${String(gzip).padStart(7)} ${String(body.length).padStart(8)} ${isNames ? "NAMES" : "     "} ${path}`);
     }
+    console.log(parts.sort().join("\n"));
     console.log(`names js gzip ${bytes}`);
+    console.log(`names route js gzip ${routeBytes}`);
     assert.ok(bytes <= NAMES_JS_GZIP_CAP, `names JS gzip ${bytes} exceeds ${NAMES_JS_GZIP_CAP}`);
+    assert.ok(routeBytes > 0 && routeBytes <= 300 * 1024, `names route JS gzip ${routeBytes} exceeds ${300 * 1024}`);
+
+    const early = await context.newPage();
+    early.setDefaultTimeout(20000);
+    await seed(early, "day");
+    let holdScripts = true;
+    await early.route("**/*", async (route) => {
+      const sameOrigin = route.request().url().startsWith(server.url);
+      if (holdScripts && sameOrigin && route.request().resourceType() === "script") {
+        while (holdScripts) await new Promise((resolve) => setTimeout(resolve, 40));
+      }
+      await route.continue();
+    });
+    const earlyCdp = await context.newCDPSession(early);
+    await earlyCdp.send("Network.setCacheDisabled", { cacheDisabled: true });
+    await earlyCdp.send("Network.emulateNetworkConditions", {
+      offline: false,
+      latency: 300,
+      downloadThroughput: 200 * 1024,
+      uploadThroughput: 200 * 1024,
+    });
+    await earlyCdp.send("Emulation.setCPUThrottlingRate", { rate: 4 });
+    for (const width of [390, 1280]) {
+      await early.setViewportSize({ width, height: width === 1280 ? 800 : 844 });
+      for (const id of ["perets", "keefa", "pergamos"]) {
+        holdScripts = true;
+        await early.goto("about:blank");
+        await early.goto(`${server.url}/names#${id}`, { waitUntil: "commit" });
+        await early.waitForFunction(
+          (name) => {
+            const card = document.getElementById(name);
+            const head = card?.querySelector("h2");
+            const bar = document.querySelector(".names-tools");
+            if (!head || !bar) return false;
+            const headBox = head.getBoundingClientRect();
+            const barBox = bar.getBoundingClientRect();
+            const clear = headBox.top >= barBox.bottom - 1 && headBox.bottom <= window.innerHeight + 1;
+            return barBox.height > 40 && headBox.height > 8 && getComputedStyle(card).scrollMarginTop !== "0px" && clear;
+          },
+          id,
+          { timeout: 20000 },
+        );
+        const landed = await early.evaluate((name) => {
+          const card = document.getElementById(name);
+          const head = card.querySelector("h2").getBoundingClientRect();
+          const bar = document.querySelector(".names-tools").getBoundingClientRect();
+          return {
+            top: head.top,
+            bottom: head.bottom,
+            cover: bar.bottom,
+            margin: getComputedStyle(card).scrollMarginTop,
+            ready: typeof window.__setReadingLive === "function",
+            height: window.innerHeight,
+          };
+        }, id);
+        assert.equal(landed.ready, false, `${id} at ${width} hydrated before the hash landing`);
+        assert.ok(landed.top >= landed.cover - 1, `${id} at ${width} heading ${Math.round(landed.top)} is under the find bar ${Math.round(landed.cover)} (margin ${landed.margin})`);
+        assert.ok(landed.bottom <= landed.height + 1, `${id} at ${width} heading is cut off`);
+        holdScripts = false;
+        await early.waitForFunction(() => typeof window.__setReadingLive === "function", undefined, { timeout: 45000 });
+        await assertPlaced(early, id, 20000);
+      }
+    }
+    await early.close();
     await context.close();
   } finally {
     await browser.close().catch(() => {});

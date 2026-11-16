@@ -8,5 +8,6 @@ export function getRouter() {
     routeTree,
     rewrite: previewPathRewrite(),
     defaultErrorComponent: AppErrorComponent,
+    defaultPreload: false,
   });
 }

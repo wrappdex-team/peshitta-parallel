@@ -21,7 +21,7 @@ function searchFixture() {
   runInNewContext(compile("src/components/search-panel.tsx"), { exports,
     window: { addEventListener(name, fn) { listeners.set(name, fn); }, removeEventListener(name) { listeners.delete(name); } },
     require(name) {
-      if (name === "react") return { useState: (initial) => [initial, () => {}], useMemo: (factory) => factory(), useEffect: (effect) => effects.push(effect), useRef: (initial) => ({ current: initial }) };
+      if (name === "react") return { useState: (initial) => [initial, () => {}], useMemo: (factory) => factory(), useEffect: (effect) => effects.push(effect), useRef: (initial) => ({ current: initial }), useSyncExternalStore: (_s, get) => get() };
       if (name === "react/jsx-runtime") return jsxRuntime;
       if (name === "@/components/modal") return { Modal };
       if (name === "@tanstack/react-router") return { useNavigate: () => () => {}, Link: (props) => jsxRuntime.jsx("a", props) };
@@ -38,12 +38,15 @@ function searchFixture() {
         foreignScript: () => null,
         loadIndex: async () => [],
         lookupNames: () => [],
+        namesCatalogReady: () => false,
         plainLabel: () => "English",
         prepareSearch: () => ({ hits: [], reference: null, referenceHit: null, aliases: [], direct: [] }),
         readReference: () => null,
         referenceNote: () => "",
+        requestNamesCatalog: () => {},
         resultFace: () => ({ className: "", dir: "ltr", lang: "en" }),
         resultNote: () => "",
+        subscribeNamesCatalog: () => () => {},
       };
       throw new Error(`Unexpected modal-search test import: ${name}`);
     },

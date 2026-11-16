@@ -53,7 +53,7 @@ test("a first visit can choose a layout, quick start, or leave", { timeout: 1800
   const browser = await chromium.launch({ headless: true, timeout: 30000 });
   try {
     const fresh = await openFresh(browser);
-    await fresh.page.goto(`${server.url}/`, { waitUntil: "networkidle" });
+    await fresh.page.goto(`${server.url}/`, { waitUntil: "load" });
     const card = dialog(fresh.page);
     await card.waitFor();
     const named = await card.evaluate((node) => ({
@@ -67,6 +67,7 @@ test("a first visit can choose a layout, quick start, or leave", { timeout: 1800
     assert.equal(named.label, NAME);
     assert.equal(named.focused, true);
 
+    await fresh.page.waitForFunction(() => localStorage.getItem("injeel-annotations") !== null);
     const before = await fresh.page.evaluate(() => Object.keys(localStorage).sort());
     await card.getByRole("button", { name: "Quick start (English)" }).click();
     await card.waitFor({ state: "hidden" });
@@ -83,18 +84,18 @@ test("a first visit can choose a layout, quick start, or leave", { timeout: 1800
       return !!main && (main === document.activeElement || main.contains(document.activeElement));
     });
 
-    await fresh.page.goto(`${server.url}/read/john/1`, { waitUntil: "networkidle" });
+    await fresh.page.goto(`${server.url}/read/john/1`, { waitUntil: "load" });
     await dialog(fresh.page).waitFor({ state: "hidden" });
     const english = await verseFace(fresh.page);
     assert.match(english.text, /In the beginning was the Word/);
     assert.equal(english.syriac, 0);
-    await fresh.page.reload({ waitUntil: "networkidle" });
+    await fresh.page.reload({ waitUntil: "load" });
     await fresh.page.locator("#v-1").waitFor();
     assert.equal(await dialog(fresh.page).count(), 0);
     await fresh.context.close();
 
     const spanish = await openFresh(browser);
-    await spanish.page.goto(`${server.url}/`, { waitUntil: "networkidle" });
+    await spanish.page.goto(`${server.url}/`, { waitUntil: "load" });
     const choice = dialog(spanish.page);
     await choice.waitFor();
     await choice.getByRole("radio", { name: "Syriac side by side" }).check();
@@ -105,19 +106,21 @@ test("a first visit can choose a layout, quick start, or leave", { timeout: 1800
     assert.equal(chosen.face, "both");
     assert.equal(chosen.lang, "es");
     assert.equal(chosen.intro, 1);
-    await spanish.page.goto(`${server.url}/read/john/1`, { waitUntil: "networkidle" });
+    await spanish.page.goto(`${server.url}/read/john/1`, { waitUntil: "load" });
+    await spanish.page.getByText("En el principio era la Palabra").waitFor({ timeout: 20000 });
     const both = await verseFace(spanish.page);
     assert.match(both.text, /En el principio era la Palabra/);
     assert.doesNotMatch(both.text, /Elohim/);
     assert.ok(both.syriac > 0, "Syriac column is missing");
-    await spanish.page.reload({ waitUntil: "networkidle" });
+    await spanish.page.reload({ waitUntil: "load" });
     await spanish.page.locator("#v-1").waitFor();
     assert.equal(await dialog(spanish.page).count(), 0);
     await spanish.context.close();
 
     const escape = await openFresh(browser);
-    await escape.page.goto(`${server.url}/`, { waitUntil: "networkidle" });
+    await escape.page.goto(`${server.url}/`, { waitUntil: "load" });
     await dialog(escape.page).waitFor();
+    await escape.page.waitForFunction(() => localStorage.getItem("injeel-annotations") !== null);
     const keysBefore = await escape.page.evaluate(() => Object.keys(localStorage).sort());
     await escape.page.keyboard.press("Escape");
     await dialog(escape.page).waitFor({ state: "hidden" });
@@ -138,7 +141,7 @@ test("a first visit can choose a layout, quick start, or leave", { timeout: 1800
         JSON.stringify({ theme: "day", lang: "fr", face: "both", lang2: "none" }),
       );
     });
-    await returning.page.goto(`${server.url}/`, { waitUntil: "networkidle" });
+    await returning.page.goto(`${server.url}/`, { waitUntil: "load" });
     await returning.page.getByRole("link", { name: /Open John/ }).waitFor();
     assert.equal(await dialog(returning.page).count(), 0);
     await returning.context.close();
@@ -166,7 +169,7 @@ test("the card stays up until the visitor answers", { timeout: 180000 }, async (
   const browser = await chromium.launch({ headless: true, timeout: 30000 });
   try {
     const fresh = await openFresh(browser);
-    await fresh.page.goto(`${server.url}/read/john/3`, { waitUntil: "networkidle" });
+    await fresh.page.goto(`${server.url}/read/john/3`, { waitUntil: "load" });
     await dialog(fresh.page).waitFor();
     await fresh.page.waitForTimeout(2000);
     const pending = await prefsOf(fresh.page);
@@ -178,9 +181,9 @@ test("the card stays up until the visitor answers", { timeout: 180000 }, async (
       keys.filter((key) => !KNOWN_KEYS.includes(key)),
       [],
     );
-    await fresh.page.reload({ waitUntil: "networkidle" });
+    await fresh.page.reload({ waitUntil: "load" });
     await dialog(fresh.page).waitFor();
-    await fresh.page.goto(`${server.url}/`, { waitUntil: "networkidle" });
+    await fresh.page.goto(`${server.url}/`, { waitUntil: "load" });
     await dialog(fresh.page).waitFor();
     assert.equal((await prefsOf(fresh.page)).intro, 0);
     await fresh.context.close();
@@ -190,10 +193,12 @@ test("the card stays up until the visitor answers", { timeout: 180000 }, async (
     const tabB = await both.newPage();
     tabA.setDefaultTimeout(15000);
     tabB.setDefaultTimeout(15000);
-    await tabA.goto(`${server.url}/read/john/1`, { waitUntil: "networkidle" });
-    await tabB.goto(`${server.url}/read/john/1`, { waitUntil: "networkidle" });
+    await tabA.goto(`${server.url}/read/john/1`, { waitUntil: "load" });
+    await tabB.goto(`${server.url}/read/john/1`, { waitUntil: "load" });
     await dialog(tabA).waitFor();
     await dialog(tabB).waitFor();
+    await tabA.waitForFunction(() => window.__prefsWatch === true);
+    await tabB.waitForFunction(() => window.__prefsWatch === true);
     await dialog(tabA).getByRole("button", { name: "Quick start (English)" }).click();
     await dialog(tabA).waitFor({ state: "hidden" });
     await dialog(tabB).waitFor({ state: "hidden" });
@@ -224,7 +229,7 @@ test("the buttons stay on screen and the card is centred", { timeout: 180000 }, 
       const context = await browser.newContext({ viewport, reducedMotion: "reduce" });
       const page = await context.newPage();
       page.setDefaultTimeout(15000);
-      await page.goto(`${server.url}/`, { waitUntil: "networkidle" });
+      await page.goto(`${server.url}/`, { waitUntil: "load" });
       const card = dialog(page);
       await card.waitFor();
       await page.evaluate(() => window.scrollTo(0, 0));
@@ -335,11 +340,11 @@ async function reopenReading(browser, url) {
   const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
   const page = await context.newPage();
   page.setDefaultTimeout(15000);
-  await page.goto(`${url}/`, { waitUntil: "networkidle" });
+  await page.goto(`${url}/`, { waitUntil: "load" });
   await page.evaluate((stored) => {
     localStorage.setItem("peshitta-parallel", stored);
   }, RETURNING);
-  await page.reload({ waitUntil: "networkidle" });
+  await page.reload({ waitUntil: "load" });
   await page.getByRole("link", { name: /Open John/ }).waitFor();
   assert.equal(await dialog(page).count(), 0);
   await page.getByRole("button", { name: "Books" }).click();
@@ -385,8 +390,9 @@ async function assertStillSpanish(page, before) {
 }
 
 async function assertSpanishVerse(page) {
-  await page.goto(`${new URL(page.url()).origin}/read/john/1`, { waitUntil: "networkidle" });
+  await page.goto(`${new URL(page.url()).origin}/read/john/1`, { waitUntil: "load" });
   await dialog(page).waitFor({ state: "hidden" });
+  await page.getByText("En el principio era la Palabra").waitFor({ timeout: 20000 });
   const verse = await verseFace(page);
   assert.match(verse.text, /En el principio era la Palabra/);
   assert.ok(verse.syriac > 0, "Syriac column is missing");
@@ -445,7 +451,8 @@ test("reopening the card leaves a returning visitor's reading alone", { timeout:
     assert.equal(deutsch.lang, "de");
     assert.equal(deutsch.face, "tr");
     assert.equal(deutsch.intro, 1);
-    await chosen.page.goto(`${server.url}/read/john/1`, { waitUntil: "networkidle" });
+    await chosen.page.goto(`${server.url}/read/john/1`, { waitUntil: "load" });
+    await chosen.page.getByText("Im Anfang war das Wort").waitFor({ timeout: 20000 });
     const verse = await verseFace(chosen.page);
     assert.match(verse.text, /Im Anfang war das Wort/);
     assert.equal(verse.syriac, 0);

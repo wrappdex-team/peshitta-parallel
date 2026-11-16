@@ -7,6 +7,10 @@ export const APP_SHARE = {
   url: `${SHARE_ORIGIN}/`,
 };
 
+export function nameLink(id: string, title: string) {
+  return { title, url: `${SHARE_ORIGIN}/names#${encodeURIComponent(id)}` };
+}
+
 export function verseShare(input: { bookName: string; book: string; chapter: number; verse: number; lines: string[] }) {
   const ref = `${input.bookName} ${input.chapter}:${input.verse}`;
   const lines = input.lines.map((line) => line.trim()).filter(Boolean);
