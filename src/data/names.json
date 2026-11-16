@@ -80,11 +80,21 @@
         "Abilene"
       ],
       "known": "Abilene",
-      "say": "Abilene",
+      "say": "Abilina",
+      "root": {
+        "text": "Abilina",
+        "lang": "Aramaic",
+        "source": "No dictionary source names the origin language (Strong’s G9 Ἀβιληνή: “of foreign origin (compare H58)”); the label follows the Syriac verse form."
+      },
+      "pron": {
+        "root": {
+          "respell": "ah-bee-lee-na"
+        }
+      },
       "kind": "place",
       "count": 1,
       "ref": "luke 3:1",
-      "note": "The Peshitta writes this place ܐܒܝܠܝܢܐ. This book prints Abilene. Read from the Syriac letters: Abilene.",
+      "note": "The Peshitta writes this place ܐܒܝܠܝܢܐ. This book prints Abilene. Read from the Syriac letters: Abilina.",
       "id": "abilene"
     },
     {
@@ -145,11 +155,21 @@
         "Achaicus"
       ],
       "known": "Achaicus",
-      "say": "Achaicus",
+      "say": "Akayqos",
+      "root": {
+        "text": "Akayqos",
+        "lang": "Greek",
+        "source": "Strong’s G883 Ἀχαϊκός: “from G882 (Ἀχαΐα)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
+      "pron": {
+        "root": {
+          "respell": "ah-kye-kos"
+        }
+      },
       "kind": "person",
       "count": 1,
       "ref": "1corinthians 16:17",
-      "note": "The Peshitta writes this person ܐܟܐܝܩܘܣ. This book prints Achaicus. Read from the Syriac letters: Achaicus.",
+      "note": "The Peshitta writes this person ܐܟܐܝܩܘܣ. This book prints Achaicus. Read from the Syriac letters: Akayqos.",
       "id": "achaicus"
     },
     {
@@ -597,11 +617,21 @@
         "Andronicus"
       ],
       "known": "Andronicus",
-      "say": "Andronicus",
+      "say": "Androniqos",
+      "root": {
+        "text": "Androniqos",
+        "lang": "Greek",
+        "source": "Strong’s G408 Ἀνδρόνικος: “from G435 (ἀνήρ) and G3534 (νῖκος)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
+      "pron": {
+        "root": {
+          "respell": "an-dro-nee-kos"
+        }
+      },
       "kind": "person",
       "count": 1,
       "ref": "romans 16:7",
-      "note": "The Peshitta writes this person ܐܢܕܪܘܢܝܩܘܣ. This book prints Andronicus. Read from the Syriac letters: Andronicus.",
+      "note": "The Peshitta writes this person ܐܢܕܪܘܢܝܩܘܣ. This book prints Andronicus. Read from the Syriac letters: Androniqos.",
       "id": "andronicus"
     },
     {
@@ -752,11 +782,21 @@
         "Apphia"
       ],
       "known": "Apphia",
-      "say": "Apphia",
+      "say": "Apia",
+      "root": {
+        "text": "Apia",
+        "lang": "Aramaic",
+        "source": "No dictionary source names the origin language (Strong’s G682 Ἀπφία: “probably of foreign origin”); the label follows the Syriac verse form."
+      },
+      "pron": {
+        "root": {
+          "respell": "ah-pee-ya"
+        }
+      },
       "kind": "person",
       "count": 1,
       "ref": "philemon 1:2",
-      "note": "The Peshitta writes this person ܐܦܝܐ. This book prints Apphia. Read from the Syriac letters: Apphia.",
+      "note": "The Peshitta writes this person ܐܦܝܐ. This book prints Apphia. Read from the Syriac letters: Apia.",
       "id": "apphia"
     },
     {
@@ -827,11 +867,21 @@
         "Arabia"
       ],
       "known": "Arabia",
-      "say": "Arabia",
+      "say": "Arabiya",
+      "root": {
+        "text": "Arabiya",
+        "lang": "Hebrew",
+        "source": "Strong’s G688 Ἀραβία: “of Hebrew origin (H6152)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
+      "pron": {
+        "root": {
+          "respell": "ah-ra-bee-ya"
+        }
+      },
       "kind": "place",
       "count": 2,
       "ref": "galatians 1:17",
-      "note": "The Peshitta writes this place ܐܪܒܝܐ. This book prints Arabia. Read from the Syriac letters: Arabia.",
+      "note": "The Peshitta writes this place ܐܪܒܝܐ. This book prints Arabia. Read from the Syriac letters: Arabiya.",
       "id": "arabia",
       "refs": [
         "galatians 1:17",
@@ -898,11 +948,21 @@
         "Archelaus"
       ],
       "known": "Archelaus",
-      "say": "Archelaus",
+      "say": "Arkelaos",
+      "root": {
+        "text": "Arkelaos",
+        "lang": "Greek",
+        "source": "Strong’s G745 Ἀρχέλαος: “from G757 (ἄρχω) and G2994 (Λαοδικεύς)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
+      "pron": {
+        "root": {
+          "respell": "ar-keh-la-os"
+        }
+      },
       "kind": "person",
       "count": 1,
       "ref": "matthew 2:22",
-      "note": "The Peshitta writes this person ܐܪܟܠܐܘܣ. This book prints Archelaus. Read from the Syriac letters: Archelaus.",
+      "note": "The Peshitta writes this person ܐܪܟܠܐܘܣ. This book prints Archelaus. Read from the Syriac letters: Arkelaos.",
       "id": "archelaus"
     },
     {
@@ -1276,11 +1336,21 @@
         "Azotus"
       ],
       "known": "Azotus",
-      "say": "Azotus",
+      "say": "Azotos",
+      "root": {
+        "text": "Azotos",
+        "lang": "Hebrew",
+        "source": "Strong’s G108 Ἄζωτος: “of Hebrew origin (H795)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
+      "pron": {
+        "root": {
+          "respell": "ah-zo-tos"
+        }
+      },
       "kind": "place",
       "count": 1,
       "ref": "acts 8:40",
-      "note": "The Peshitta writes this place ܐܙܘܛܘܣ. This book prints Azotus. Read from the Syriac letters: Azotus.",
+      "note": "The Peshitta writes this place ܐܙܘܛܘܣ. This book prints Azotus. Read from the Syriac letters: Azotos.",
       "id": "azotus"
     },
     {
@@ -1338,11 +1408,21 @@
         "Balaam"
       ],
       "known": "Balaam",
-      "say": "Balaam",
+      "say": "Bal'am",
+      "root": {
+        "text": "Bal'am",
+        "lang": "Hebrew",
+        "source": "Strong’s G903 Βαλαάμ: “of Hebrew origin (H1109)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
+      "pron": {
+        "root": {
+          "respell": "bal-am"
+        }
+      },
       "kind": "person",
       "count": 3,
       "ref": "2peter 2:15",
-      "note": "The later Syriac text writes this person ܒܠܥܡ. This book prints Balaam. Read from the Syriac letters: Balaam.",
+      "note": "The later Syriac text writes this person ܒܠܥܡ. This book prints Balaam. Read from the Syriac letters: Bal'am.",
       "id": "balaam",
       "refs": [
         "2peter 2:15",
@@ -1357,11 +1437,21 @@
         "Balak"
       ],
       "known": "Balak",
-      "say": "Balak",
+      "say": "Balaq",
+      "root": {
+        "text": "Balaq",
+        "lang": "Hebrew",
+        "source": "Strong’s G904 Βαλάκ: “of Hebrew origin (H1111)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
+      "pron": {
+        "root": {
+          "respell": "ba-lak"
+        }
+      },
       "kind": "person",
       "count": 1,
       "ref": "revelation 2:14",
-      "note": "The later Syriac text writes this person ܒܠܩ. This book prints Balak. Read from the Syriac letters: Balak.",
+      "note": "The later Syriac text writes this person ܒܠܩ. This book prints Balak. Read from the Syriac letters: Balaq.",
       "id": "balak"
     },
     {
@@ -1776,11 +1866,21 @@
         "Bithynia"
       ],
       "known": "Bithynia",
-      "say": "Bithynia",
+      "say": "Bitunya",
+      "root": {
+        "text": "Bitunya",
+        "lang": "Aramaic",
+        "source": "No dictionary source names the origin language (Strong’s G978 Βιθυνία: “of uncertain derivation”); the label follows the Syriac verse form."
+      },
+      "pron": {
+        "root": {
+          "respell": "bee-toon-ya"
+        }
+      },
       "kind": "place",
       "count": 2,
       "ref": "acts 16:7",
-      "note": "The Peshitta writes this place ܒܝܬܘܢܝܐ. This book prints Bithynia. Read from the Syriac letters: Bithynia.",
+      "note": "The Peshitta writes this place ܒܝܬܘܢܝܐ. This book prints Bithynia. Read from the Syriac letters: Bitunya.",
       "id": "bithynia",
       "refs": [
         "acts 16:7",
@@ -1794,11 +1894,21 @@
         "Blastus"
       ],
       "known": "Blastus",
-      "say": "Blastus",
+      "say": "Blastos",
+      "root": {
+        "text": "Blastos",
+        "lang": "Greek",
+        "source": "Strong’s G986 Βλάστος: “perhaps the same as the base of G985 (βλαστάνω)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
+      "pron": {
+        "root": {
+          "respell": "blas-tos"
+        }
+      },
       "kind": "person",
       "count": 1,
       "ref": "acts 12:20",
-      "note": "The Peshitta writes this person ܒܠܣܛܘܣ. This book prints Blastus. Read from the Syriac letters: Blastus.",
+      "note": "The Peshitta writes this person ܒܠܣܛܘܣ. This book prints Blastus. Read from the Syriac letters: Blastos.",
       "id": "blastus"
     },
     {
@@ -2131,11 +2241,21 @@
         "Clement"
       ],
       "known": "Clement",
-      "say": "Clement",
+      "say": "Qlemis",
+      "root": {
+        "text": "Qlemis",
+        "lang": "Latin",
+        "source": "Strong’s G2815 Κλήμης: “of Latin origin” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
+      "pron": {
+        "root": {
+          "respell": "kleh-mees"
+        }
+      },
       "kind": "person",
       "count": 1,
       "ref": "philippians 4:3",
-      "note": "The Peshitta writes this person ܩܠܡܝܣ. This book prints Clement. Read from the Syriac letters: Clement.",
+      "note": "The Peshitta writes this person ܩܠܡܝܣ. This book prints Clement. Read from the Syriac letters: Qlemis.",
       "id": "clement"
     },
     {
@@ -2146,11 +2266,21 @@
         "Qorinthos"
       ],
       "known": "Corinth",
-      "say": "Corinth",
+      "say": "Qorinthos",
+      "root": {
+        "text": "Qorinthos",
+        "lang": "Aramaic",
+        "source": "No dictionary source names the origin language (Strong’s G2882 Κόρινθος: “of uncertain derivation”); the label follows the Syriac verse form."
+      },
+      "pron": {
+        "root": {
+          "respell": "ko-rin-thos"
+        }
+      },
       "kind": "place",
       "count": 7,
       "ref": "acts 18:1",
-      "note": "The Peshitta writes this place ܩܘܪܢܬܘܣ. This book prints Corinth. Read from the Syriac letters: Corinth.",
+      "note": "The Peshitta writes this place ܩܘܪܢܬܘܣ. This book prints Corinth. Read from the Syriac letters: Qorinthos.",
       "id": "corinth",
       "refs": [
         "acts 18:1",
@@ -2288,10 +2418,20 @@
       ],
       "known": "Damaris",
       "say": "Damaris",
+      "root": {
+        "text": "Damaris",
+        "lang": "Greek",
+        "source": "Strong’s G1152 Δάμαρις: “probably from the base of G1150 (δαμάζω)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
+      "pron": {
+        "root": {
+          "respell": "da-ma-ris"
+        }
+      },
       "kind": "person",
       "count": 1,
       "ref": "acts 17:34",
-      "note": "The Peshitta writes this person ܕܡܪܝܣ. This book prints Damaris. Read from the Syriac letters: d-maris.",
+      "note": "The Peshitta writes this person ܕܡܪܝܣ. This book prints Damaris. Read from the Syriac letters: Damaris.",
       "id": "damaris"
     },
     {
@@ -2425,11 +2565,21 @@
         "Darba"
       ],
       "known": "Derbe",
-      "say": "Derbe",
+      "say": "Darba",
+      "root": {
+        "text": "Darba",
+        "lang": "Aramaic",
+        "source": "No dictionary source names the origin language (Strong’s G1191 Δέρβη: “of foreign origin”); the label follows the Syriac verse form."
+      },
+      "pron": {
+        "root": {
+          "respell": "dar-ba"
+        }
+      },
       "kind": "place",
       "count": 4,
       "ref": "acts 14:6",
-      "note": "The Peshitta writes this place ܕܪܒܐ. This book prints Derbe. Read from the Syriac letters: Derbe.",
+      "note": "The Peshitta writes this place ܕܪܒܐ. This book prints Derbe. Read from the Syriac letters: Darba.",
       "id": "derbe",
       "refs": [
         "acts 14:6",
@@ -3097,11 +3247,21 @@
         "Fortunatus"
       ],
       "known": "Fortunatus",
-      "say": "Fortunatus",
+      "say": "Partunatos",
+      "root": {
+        "text": "Partunatos",
+        "lang": "Latin",
+        "source": "Strong’s G5415 Φορτουνᾶτος: “of Latin origin” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
+      "pron": {
+        "root": {
+          "respell": "par-too-na-tos"
+        }
+      },
       "kind": "person",
       "count": 1,
       "ref": "1corinthians 16:17",
-      "note": "The Peshitta writes this person ܦܪܛܘܢܛܘܣ. This book prints Fortunatus. Read from the Syriac letters: Fortunatus.",
+      "note": "The Peshitta writes this person ܦܪܛܘܢܛܘܣ. This book prints Fortunatus. Read from the Syriac letters: Partunatos.",
       "id": "fortunatus"
     },
     {
@@ -3152,6 +3312,16 @@
       ],
       "known": "Gad",
       "say": "Gad",
+      "root": {
+        "text": "Gad",
+        "lang": "Hebrew",
+        "source": "Strong’s G1045 Γάδ: “of Hebrew origin (H1410)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
+      "pron": {
+        "root": {
+          "respell": "gad"
+        }
+      },
       "kind": "person",
       "count": 1,
       "ref": "revelation 7:5",
@@ -3165,11 +3335,21 @@
         "Gadarenes"
       ],
       "known": "Gadarenes",
-      "say": "Gadarenes",
+      "say": "Gadraye",
+      "root": {
+        "text": "Gadraye",
+        "lang": "Aramaic",
+        "source": "No dictionary source names the origin language (Strong’s G1046 Γαδαρηνός: “from (a town east of the Jordan)”); the label follows the Syriac verse form."
+      },
+      "pron": {
+        "root": {
+          "respell": "gad-rah-yeh"
+        }
+      },
       "kind": "place",
       "count": 4,
       "ref": "matthew 8:28",
-      "note": "The Peshitta writes this place ܓܕܪܝܐ. This book prints Gadarenes. Read from the Syriac letters: Gadarenes.",
+      "note": "The Peshitta writes this place ܓܕܪܝܐ. This book prints Gadarenes. Read from the Syriac letters: Gadraye.",
       "sources": [
         {
           "script": "Greek",
@@ -3322,7 +3502,17 @@
         "Galilayan"
       ],
       "known": "Galileans",
-      "say": "Galileans",
+      "say": "Galilaye",
+      "root": {
+        "text": "Galilaye",
+        "lang": "Hebrew",
+        "source": "Strong’s G1057 Γαλιλαῖος: “from G1056 (Γαλιλαία)”; Strong’s G1056 Γαλιλαία: “of Hebrew origin (H1551)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
+      "pron": {
+        "root": {
+          "respell": "ga-lee-lah-yeh"
+        }
+      },
       "kind": "people",
       "count": 7,
       "ref": "luke 13:1",
@@ -3494,6 +3684,16 @@
       ],
       "known": "Gog",
       "say": "Gog",
+      "root": {
+        "text": "Gog",
+        "lang": "Hebrew",
+        "source": "Strong’s G1136 Γώγ: “of Hebrew origin (H1463)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
+      "pron": {
+        "root": {
+          "respell": "gog"
+        }
+      },
       "kind": "person",
       "count": 1,
       "ref": "revelation 20:8",
@@ -3872,11 +4072,21 @@
         "Ituraea"
       ],
       "known": "Ituraea",
-      "say": "Ituraea",
+      "say": "Ituriya",
+      "root": {
+        "text": "Ituriya",
+        "lang": "Hebrew",
+        "source": "Strong’s G2484 Ἰτουραΐα: “of Hebrew origin (H3195)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
+      "pron": {
+        "root": {
+          "respell": "ee-too-ree-ya"
+        }
+      },
       "kind": "place",
       "count": 1,
       "ref": "luke 3:1",
-      "note": "The Peshitta writes this place ܐܝܛܘܪܝܐ. This book prints Ituraea. Read from the Syriac letters: Ituraea.",
+      "note": "The Peshitta writes this place ܐܝܛܘܪܝܐ. This book prints Ituraea. Read from the Syriac letters: Ituriya.",
       "id": "ituraea"
     },
     {
@@ -3936,11 +4146,21 @@
         "Julia"
       ],
       "known": "Julia",
-      "say": "Julia",
+      "say": "Yulya",
+      "root": {
+        "text": "Yulya",
+        "lang": "Latin",
+        "source": "Strong’s G2456 Ἰουλία: “feminine of the same as G2457 (Ἰούλιος)”; Strong’s G2457 Ἰούλιος: “of Latin origin” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
+      "pron": {
+        "root": {
+          "respell": "yool-ya"
+        }
+      },
       "kind": "person",
       "count": 1,
       "ref": "romans 16:15",
-      "note": "The Peshitta writes this person ܝܘܠܝܐ. This book prints Julia. Read from the Syriac letters: Julia.",
+      "note": "The Peshitta writes this person ܝܘܠܝܐ. This book prints Julia. Read from the Syriac letters: Yulya.",
       "id": "julia"
     },
     {
@@ -4244,11 +4464,21 @@
         "Levi"
       ],
       "known": "Levi",
-      "say": "Levi",
+      "say": "Lewi",
+      "root": {
+        "text": "Lewi",
+        "lang": "Hebrew",
+        "source": "Strong’s G3017 Λευΐ: “of Hebrew origin (H3878)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
+      "pron": {
+        "root": {
+          "respell": "leh-wee"
+        }
+      },
       "kind": "person",
       "count": 8,
       "ref": "mark 2:14",
-      "note": "The Peshitta writes this person ܠܘܝ. This book prints Levi. Read from the Syriac letters: Levi.",
+      "note": "The Peshitta writes this person ܠܘܝ. This book prints Levi. Read from the Syriac letters: Lewi.",
       "sources": [
         {
           "script": "Hebrew",
@@ -4276,11 +4506,21 @@
         "Libya"
       ],
       "known": "Libya",
-      "say": "Libya",
+      "say": "Luba",
+      "root": {
+        "text": "Luba",
+        "lang": "Greek",
+        "source": "Strong’s G3033 Λιβύη: “probably from G3047 (λίψ)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
+      "pron": {
+        "root": {
+          "respell": "loo-ba"
+        }
+      },
       "kind": "place",
       "count": 1,
       "ref": "acts 2:10",
-      "note": "The Peshitta writes this place ܠܘܒܐ. This book prints Libya. Read from the Syriac letters: Libya.",
+      "note": "The Peshitta writes this place ܠܘܒܐ. This book prints Libya. Read from the Syriac letters: Luba.",
       "id": "libya"
     },
     {
@@ -4478,11 +4718,21 @@
         "Lysanias"
       ],
       "known": "Lysanias",
-      "say": "Lysanias",
+      "say": "Lusanya",
+      "root": {
+        "text": "Lusanya",
+        "lang": "Greek",
+        "source": "Strong’s G3078 Λυσανίας: “from G3080 (λύσις) and (trouble)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
+      "pron": {
+        "root": {
+          "respell": "loo-san-ya"
+        }
+      },
       "kind": "person",
       "count": 1,
       "ref": "luke 3:1",
-      "note": "The Peshitta writes this person ܠܘܣܢܝܐ. This book prints Lysanias. Read from the Syriac letters: Lysanias.",
+      "note": "The Peshitta writes this person ܠܘܣܢܝܐ. This book prints Lysanias. Read from the Syriac letters: Lusanya.",
       "id": "lysanias"
     },
     {
@@ -4639,11 +4889,21 @@
         "Magushi"
       ],
       "known": "Magi",
-      "say": "Magi",
+      "say": "Magushi",
+      "root": {
+        "text": "Magushi",
+        "lang": "Aramaic",
+        "source": "No dictionary source names the origin language (Strong’s G3097 μάγος: “of foreign origin (H7248)”); the label follows the Syriac verse form."
+      },
+      "pron": {
+        "root": {
+          "respell": "ma-goo-shee"
+        }
+      },
       "kind": "people",
       "count": 3,
       "ref": "matthew 2:1",
-      "note": "The Peshitta writes this people ܡܓܘܫܐ. This book prints Magi. Read from the Syriac letters: Magi.",
+      "note": "The Peshitta writes this people ܡܓܘܫܐ. This book prints Magi. Read from the Syriac letters: Magushi.",
       "id": "magi",
       "refs": [
         "matthew 2:1",
@@ -4659,6 +4919,16 @@
       ],
       "known": "Magog",
       "say": "Magog",
+      "root": {
+        "text": "Magog",
+        "lang": "Hebrew",
+        "source": "Strong’s G3098 Μαγώγ: “of Hebrew origin (H4031)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
+      "pron": {
+        "root": {
+          "respell": "ma-gog"
+        }
+      },
       "kind": "person",
       "count": 1,
       "ref": "revelation 20:8",
@@ -5335,11 +5605,21 @@
         "Naphtali"
       ],
       "known": "Naphtali",
-      "say": "Naphtali",
+      "say": "Naptali",
+      "root": {
+        "text": "Naptali",
+        "lang": "Hebrew",
+        "source": "Strong’s G3508 Νεφθαλείμ: “of Hebrew origin (H5321)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
+      "pron": {
+        "root": {
+          "respell": "nap-ta-lee"
+        }
+      },
       "kind": "person",
       "count": 3,
       "ref": "matthew 4:13",
-      "note": "The Peshitta writes this person ܢܦܬܠܝ. This book prints Naphtali. Read from the Syriac letters: Naphtali.",
+      "note": "The Peshitta writes this person ܢܦܬܠܝ. This book prints Naphtali. Read from the Syriac letters: Naptali.",
       "id": "naphtali",
       "refs": [
         "matthew 4:13",
@@ -5654,7 +5934,17 @@
         "Pampuliya"
       ],
       "known": "Pamphylia",
-      "say": "Pamphylia",
+      "say": "Pampuliya",
+      "root": {
+        "text": "Pampuliya",
+        "lang": "Greek",
+        "source": "Strong’s G3828 Παμφυλία: “from a compound of G3956 (πᾶς) and G4443 (πυρά)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
+      "pron": {
+        "root": {
+          "respell": "pam-poo-lee-ya"
+        }
+      },
       "kind": "place",
       "count": 5,
       "ref": "acts 2:10",
@@ -5694,6 +5984,16 @@
       ],
       "known": "Patara",
       "say": "Patara",
+      "root": {
+        "text": "Patara",
+        "lang": "Aramaic",
+        "source": "No dictionary source names the origin language (Strong’s G3959 Πάταρα: “probably of foreign origin”); the label follows the Syriac verse form."
+      },
+      "pron": {
+        "root": {
+          "respell": "pa-ta-ra"
+        }
+      },
       "kind": "place",
       "count": 1,
       "ref": "acts 21:1",
@@ -5844,11 +6144,21 @@
         "Philadelphia"
       ],
       "known": "Philadelphia",
-      "say": "Philadelphia",
+      "say": "Piladelpiya",
+      "root": {
+        "text": "Piladelpiya",
+        "lang": "Greek",
+        "source": "Strong’s G5359 Φιλαδέλφεια: “from (the same as G5361 (φιλάδελφος)), a king of Pergamos” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
+      "pron": {
+        "root": {
+          "respell": "pee-la-del-pee-ya"
+        }
+      },
       "kind": "place",
       "count": 2,
       "ref": "revelation 1:11",
-      "note": "The later Syriac text writes this place ܦܝܠܕܠܦܝܐ. This book prints Philadelphia. Read from the Syriac letters: Philadelphia.",
+      "note": "The later Syriac text writes this place ܦܝܠܕܠܦܝܐ. This book prints Philadelphia. Read from the Syriac letters: Piladelpiya.",
       "id": "philadelphia",
       "refs": [
         "revelation 1:11",
@@ -5988,11 +6298,21 @@
         "Phrygia"
       ],
       "known": "Phrygia",
-      "say": "Phrygia",
+      "say": "Prugiya",
+      "root": {
+        "text": "Prugiya",
+        "lang": "Aramaic",
+        "source": "No dictionary source names the origin language (Strong’s G5435 Φρυγία: “probably of foreign origin”); the label follows the Syriac verse form."
+      },
+      "pron": {
+        "root": {
+          "respell": "proo-gee-ya"
+        }
+      },
       "kind": "place",
       "count": 3,
       "ref": "acts 2:10",
-      "note": "The Peshitta writes this place ܦܪܘܓܝܐ. This book prints Phrygia. Read from the Syriac letters: Phrygia.",
+      "note": "The Peshitta writes this place ܦܪܘܓܝܐ. This book prints Phrygia. Read from the Syriac letters: Prugiya.",
       "id": "phrygia",
       "refs": [
         "acts 2:10",
@@ -6030,11 +6350,21 @@
         "Pisidiya"
       ],
       "known": "Pisidia",
-      "say": "Pisidia",
+      "say": "Pisidiya",
+      "root": {
+        "text": "Pisidiya",
+        "lang": "Aramaic",
+        "source": "No dictionary source names the origin language (Strong’s G4099 Πισιδία: “probably of foreign origin”); the label follows the Syriac verse form."
+      },
+      "pron": {
+        "root": {
+          "respell": "pee-see-dee-ya"
+        }
+      },
       "kind": "place",
       "count": 2,
       "ref": "acts 13:14",
-      "note": "The Peshitta writes this place ܦܝܣܝܕܝܐ. This book prints Pisidia. Read from the Syriac letters: Pisidia.",
+      "note": "The Peshitta writes this place ܦܝܣܝܕܝܐ. This book prints Pisidia. Read from the Syriac letters: Pisidiya.",
       "id": "pisidia",
       "refs": [
         "acts 13:14",
@@ -6554,11 +6884,21 @@
         "Quirinius"
       ],
       "known": "Quirinius",
-      "say": "Quirinius",
+      "say": "Qurinos",
+      "root": {
+        "text": "Qurinos",
+        "lang": "Latin",
+        "source": "Strong’s G2958 Κυρήνιος: “of Latin origin” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
+      "pron": {
+        "root": {
+          "respell": "koo-ree-nos"
+        }
+      },
       "kind": "person",
       "count": 1,
       "ref": "luke 2:2",
-      "note": "The Peshitta writes this person ܩܘܪܝܢܘܣ. This book prints Quirinius. Read from the Syriac letters: Quirinius.",
+      "note": "The Peshitta writes this person ܩܘܪܝܢܘܣ. This book prints Quirinius. Read from the Syriac letters: Qurinos.",
       "id": "quirinius"
     },
     {
@@ -6820,11 +7160,21 @@
         "Rufus"
       ],
       "known": "Rufus",
-      "say": "Rufus",
+      "say": "Rupos",
+      "root": {
+        "text": "Rupos",
+        "lang": "Latin",
+        "source": "Strong’s G4504 Ῥοῦφος: “of Latin origin” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
+      "pron": {
+        "root": {
+          "respell": "roo-pos"
+        }
+      },
       "kind": "person",
       "count": 1,
       "ref": "mark 15:21",
-      "note": "The Peshitta writes this person ܪܘܦܘܣ. This book prints Rufus. Read from the Syriac letters: Rufus.",
+      "note": "The Peshitta writes this person ܪܘܦܘܣ. This book prints Rufus. Read from the Syriac letters: Rupos.",
       "sources": [
         {
           "script": "Greek",
@@ -6843,7 +7193,17 @@
         "Zaduqaye"
       ],
       "known": "Sadducees",
-      "say": "Sadducees",
+      "say": "Zaduqaye",
+      "root": {
+        "text": "Zaduqaye",
+        "lang": "Hebrew",
+        "source": "Strong’s G4523 Σαδδουκαῖος: “probably from G4524 (Σαδώκ)”; Strong’s G4524 Σαδώκ: “of Hebrew origin (H6659)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
+      "pron": {
+        "root": {
+          "respell": "za-doo-kah-yeh"
+        }
+      },
       "kind": "people",
       "count": 14,
       "ref": "matthew 3:7",
@@ -6911,7 +7271,17 @@
         "Shomraya"
       ],
       "known": "Samaritans",
-      "say": "Samaritans",
+      "say": "Shomraye",
+      "root": {
+        "text": "Shomraye",
+        "lang": "Hebrew",
+        "source": "Strong’s G4541 Σαμαρείτης: “from G4540 (Σαμάρεια)”; Strong’s G4540 Σαμάρεια: “of Hebrew origin (H8111)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
+      "pron": {
+        "root": {
+          "respell": "shom-rah-yeh"
+        }
+      },
       "kind": "people",
       "count": 18,
       "ref": "matthew 10:5",
@@ -6963,6 +7333,16 @@
       ],
       "known": "Sardis",
       "say": "Sardis",
+      "root": {
+        "text": "Sardis",
+        "lang": "Aramaic",
+        "source": "No dictionary source names the origin language (Strong’s G4554 Σάρδεις: “plural of uncertain derivation”); the label follows the Syriac verse form."
+      },
+      "pron": {
+        "root": {
+          "respell": "sar-dees"
+        }
+      },
       "kind": "place",
       "count": 3,
       "ref": "revelation 1:11",
@@ -7651,11 +8031,21 @@
         "Zmurna"
       ],
       "known": "Smyrna",
-      "say": "Smyrna",
+      "say": "Zmurna",
+      "root": {
+        "text": "Zmurna",
+        "lang": "Greek",
+        "source": "Strong’s G4667 Σμύρνα: “the same as G4666 (σμύρνα)”; Strong’s G4666 σμύρνα: “apparently strengthened for G3464 (μύρον)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
+      "pron": {
+        "root": {
+          "respell": "zmoor-na"
+        }
+      },
       "kind": "place",
       "count": 2,
       "ref": "revelation 1:11",
-      "note": "The later Syriac text writes this place ܙܡܘܪܢܐ. This book prints Smyrna. Read from the Syriac letters: Smyrna.",
+      "note": "The later Syriac text writes this place ܙܡܘܪܢܐ. This book prints Smyrna. Read from the Syriac letters: Zmurna.",
       "id": "smyrna",
       "refs": [
         "revelation 1:11",
@@ -7728,11 +8118,21 @@
         "Sosthenes"
       ],
       "known": "Sosthenes",
-      "say": "Sosthenes",
+      "say": "Sostenes",
+      "root": {
+        "text": "Sostenes",
+        "lang": "Greek",
+        "source": "Strong’s G4988 Σωσθένης: “from the base of G4982 (σώζω) and that of G4599 (σθενόω)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
+      "pron": {
+        "root": {
+          "respell": "sos-teh-nes"
+        }
+      },
       "kind": "person",
       "count": 1,
       "ref": "1corinthians 1:1",
-      "note": "The Peshitta writes this person ܣܘܣܬܢܣ. This book prints Sosthenes. Read from the Syriac letters: Sosthenes.",
+      "note": "The Peshitta writes this person ܣܘܣܬܢܣ. This book prints Sosthenes. Read from the Syriac letters: Sostenes.",
       "sources": [
         {
           "script": "Greek",
@@ -7750,11 +8150,21 @@
         "Spain"
       ],
       "known": "Spain",
-      "say": "Spain",
+      "say": "Aspanya",
+      "root": {
+        "text": "Aspanya",
+        "lang": "Aramaic",
+        "source": "No dictionary source names the origin language (Strong’s G4681 Σπανία: “probably of foreign origin”); the label follows the Syriac verse form."
+      },
+      "pron": {
+        "root": {
+          "respell": "as-pan-ya"
+        }
+      },
       "kind": "place",
       "count": 2,
       "ref": "romans 15:24",
-      "note": "The Peshitta writes this place ܐܣܦܢܝܐ. This book prints Spain. Read from the Syriac letters: Spain.",
+      "note": "The Peshitta writes this place ܐܣܦܢܝܐ. This book prints Spain. Read from the Syriac letters: Aspanya.",
       "id": "spain",
       "refs": [
         "romans 15:24",
@@ -7768,11 +8178,21 @@
         "Stephanas"
       ],
       "known": "Stephanas",
-      "say": "Stephanas",
+      "say": "Estepana",
+      "root": {
+        "text": "Estepana",
+        "lang": "Greek",
+        "source": "Strong’s G4734 Στεφανᾶς: “probably contraction for (crowned” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
+      "pron": {
+        "root": {
+          "respell": "es-teh-pa-na"
+        }
+      },
       "kind": "person",
       "count": 3,
       "ref": "1corinthians 1:16",
-      "note": "The Peshitta writes this person ܐܣܛܦܢܐ. This book prints Stephanas. Read from the Syriac letters: Stephanas.",
+      "note": "The Peshitta writes this person ܐܣܛܦܢܐ. This book prints Stephanas. Read from the Syriac letters: Estepana.",
       "sources": [
         {
           "script": "Greek",
@@ -8193,11 +8613,21 @@
         "Tiberius"
       ],
       "known": "Tiberius",
-      "say": "Tiberius",
+      "say": "Tibaryos",
+      "root": {
+        "text": "Tibaryos",
+        "lang": "Latin",
+        "source": "Strong’s G5086 Τιβέριος: “of Latin origin” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
+      "pron": {
+        "root": {
+          "respell": "tee-bar-yos"
+        }
+      },
       "kind": "person",
       "count": 1,
       "ref": "luke 3:1",
-      "note": "The Peshitta writes this person ܛܝܒܪܝܘܣ. This book prints Tiberius. Read from the Syriac letters: Tiberius.",
+      "note": "The Peshitta writes this person ܛܝܒܪܝܘܣ. This book prints Tiberius. Read from the Syriac letters: Tibaryos.",
       "id": "tiberius"
     },
     {
@@ -8222,6 +8652,16 @@
       ],
       "known": "Timon",
       "say": "Timon",
+      "root": {
+        "text": "Timon",
+        "lang": "Greek",
+        "source": "Strong’s G5096 Τίμων: “from G5092 (τιμή)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
+      "pron": {
+        "root": {
+          "respell": "tee-mon"
+        }
+      },
       "kind": "person",
       "count": 1,
       "ref": "acts 6:5",
@@ -8325,11 +8765,21 @@
         "Trachonitis"
       ],
       "known": "Trachonitis",
-      "say": "Trachonitis",
+      "say": "Trakona",
+      "root": {
+        "text": "Trakona",
+        "lang": "Greek",
+        "source": "Strong’s G5139 Τραχωνῖτις: “from a derivative of G5138 (τραχύς)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
+      "pron": {
+        "root": {
+          "respell": "tra-ko-na"
+        }
+      },
       "kind": "place",
       "count": 1,
       "ref": "luke 3:1",
-      "note": "The Peshitta writes this place ܛܪܟܘܢܐ. This book prints Trachonitis. Read from the Syriac letters: Trachonitis.",
+      "note": "The Peshitta writes this place ܛܪܟܘܢܐ. This book prints Trachonitis. Read from the Syriac letters: Trakona.",
       "id": "trachonitis"
     },
     {
@@ -9289,11 +9739,21 @@
         "Zebulun"
       ],
       "known": "Zebulun",
-      "say": "Zebulun",
+      "say": "Zabulon",
+      "root": {
+        "text": "Zabulon",
+        "lang": "Hebrew",
+        "source": "Strong’s G2194 Ζαβουλών: “of Hebrew origin (H2074)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
+      "pron": {
+        "root": {
+          "respell": "za-boo-lon"
+        }
+      },
       "kind": "person",
       "count": 3,
       "ref": "matthew 4:13",
-      "note": "The Peshitta writes this person ܙܒܘܠܘܢ. This book prints Zebulun. Read from the Syriac letters: Zebulun.",
+      "note": "The Peshitta writes this person ܙܒܘܠܘܢ. This book prints Zebulun. Read from the Syriac letters: Zabulon.",
       "id": "zebulun",
       "refs": [
         "matthew 4:13",

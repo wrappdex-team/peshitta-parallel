@@ -200,8 +200,8 @@ test("names study guide: English line, Read, and finding", { timeout: 420000 }, 
     const day = page.getByRole("button", { name: "Day theme" });
     if ((await day.count()) > 0) await day.click();
     await open(page,`${server.url}/names#corinth`, true);
-    await page.waitForFunction(() => (document.querySelector("#corinth h2")?.textContent ?? "").trim() === "Corinth");
-    assert.equal(await textOf(page, "#corinth h2"), "Corinth");
+    await page.waitForFunction(() => (document.querySelector("#corinth h2")?.textContent ?? "").trim() === "Qorinthos");
+    assert.equal(await textOf(page, "#corinth h2"), "Qorinthos");
     assert.equal(await textOf(page, "#corinth [data-name-english-line]"), "ENGLISH Corinth");
     await page.waitForFunction(() => (document.querySelector("#keefa h2")?.textContent ?? "").trim() === "Keefa");
     assert.equal(await textOf(page, "#keefa h2"), "Keefa");
@@ -281,7 +281,7 @@ test("names study guide: English line, Read, and finding", { timeout: 420000 }, 
 
     await waitForNamesReady(page);
     await find.fill("Corinth");
-    await page.waitForFunction(() => (document.querySelector("main h2")?.textContent ?? "").trim() === "Corinth");
+    await page.waitForFunction(() => (document.querySelector("main h2")?.textContent ?? "").trim() === "Qorinthos");
     assert.equal(await page.locator("main h2").count(), 1);
     assert.equal(await page.getByRole("checkbox", { name: "Search descriptions too" }).isChecked(), false);
 
