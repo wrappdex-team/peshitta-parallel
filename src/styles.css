@@ -852,3 +852,59 @@ article[data-name-target] {
   text-decoration-style: double;
   text-decoration-color: var(--garnet);
 }
+
+.name-source::after {
+  content: "Source";
+  margin-left: 0.5rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.65rem;
+}
+/* U8: /names study sheet. Ink on paper even when the screen theme is night. */
+@media print {
+  html,
+  body,
+  .names-page,
+  .name-card {
+    background: #f3efe4 !important;
+    color: #1c1612 !important;
+  }
+  .names-page header,
+  .names-tools,
+  .names-page [role="radiogroup"],
+  .names-page main > label,
+  [data-name-read],
+  [data-name-link],
+  [data-name-more],
+  .name-source::after {
+    display: none !important;
+  }
+  .name-source {
+    display: inline !important;
+    height: auto !important;
+    min-height: 0 !important;
+    padding: 0 !important;
+    background: none !important;
+    box-shadow: none !important;
+  }
+  .names-tools,
+  .names-page header {
+    position: static !important;
+  }
+  .name-card {
+    display: block;
+    break-inside: avoid;
+    content-visibility: visible;
+    contain-intrinsic-size: auto;
+  }
+  .name-syriac,
+  .name-syriac-word,
+  [data-note-syriac] {
+    direction: rtl;
+    font-family: "Noto Sans Syriac", serif;
+  }
+  .name-source-text,
+  .name-verses a {
+    color: #1c1612 !important;
+  }
+}

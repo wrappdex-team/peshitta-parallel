@@ -30,7 +30,7 @@ export type NameEntry = {
   people?: { label: string; refs: string[] }[];
   /** Other cards to open. Optional until the names checker fills it. */
   see?: string[];
-  root?: { text: string; lang: NameRootLang };
+  root?: { text: string; lang: NameRootLang; source?: string };
   pron?: { root?: NameSound; en?: NameSound };
 };
 

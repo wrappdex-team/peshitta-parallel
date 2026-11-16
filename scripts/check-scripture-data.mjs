@@ -4,6 +4,7 @@ import { readFileSync, readdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { isMainModule } from "./with-app-env.mjs";
+import { assertNameSourcesFresh } from "./name-sources.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 // Structural coverage declaration only, NOT a linguistic-review or rights certification.
@@ -128,6 +129,16 @@ export function evaluateCli(args, root = ROOT, baselineIssues = null) {
 
 if (isMainModule(import.meta.url)) {
   const { report, exitCode } = evaluateCli(process.argv.slice(2));
+  let sourceExit = 0;
+  try {
+    const names = JSON.parse(readFileSync(join(ROOT, "src/data/names.json"), "utf8")).names;
+    const pack = JSON.parse(readFileSync(join(ROOT, "src/lib/name-source-pack.json"), "utf8"));
+    const ids = JSON.parse(readFileSync(join(ROOT, "src/lib/name-source-ids.json"), "utf8"));
+    assertNameSourcesFresh(pack, ids, names);
+  } catch (error) {
+    sourceExit = 1;
+    console.error(error instanceof Error ? error.message : error);
+  }
   console.log(JSON.stringify(report, null, 2));
-  if (exitCode) process.exitCode = 1;
+  if (exitCode || sourceExit) process.exitCode = 1;
 }

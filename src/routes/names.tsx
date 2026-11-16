@@ -1,4 +1,4 @@
-import { memo, useCallback, useDeferredValue, useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore, type KeyboardEvent } from "react";
+import { memo, useCallback, useDeferredValue, useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore, type KeyboardEvent, type ReactNode } from "react";
 import { createFileRoute, Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { nameUtterances, readLabel } from "@/lib/name-speech";
 import {
@@ -17,9 +17,38 @@ import { readingSessionLive, setReadingLive, subscribeReadingLive } from "@/lib/
 import { SITE_ORIGIN } from "@/lib/site";
 import { nameLink } from "@/lib/share";
 import { SiteHeader } from "@/components/site-header";
+import sourceIds from "@/lib/name-source-ids.json" with { type: "json" };
 
 const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 const COUNTS = nameKindCounts();
+const SOURCE_IDS = new Set(sourceIds);
+
+const URL_RE = /https?:\/\/[^\s<>"']+/g;
+
+let sourcesPromise: Promise<Record<string, string>> | null = null;
+
+function loadNameSources() {
+  sourcesPromise ??= import("@/lib/name-source-pack.json").then((mod) => mod.default as Record<string, string>);
+  return sourcesPromise;
+}
+
+function sourceText(text: string) {
+  const nodes: ReactNode[] = [];
+  let last = 0;
+  for (const match of text.matchAll(URL_RE)) {
+    const index = match.index ?? 0;
+    if (index > last) nodes.push(text.slice(last, index));
+    const url = match[0].replace(/[.,);]+$/g, "");
+    nodes.push(
+      <a key={index} href={url} data-name-source-url="">
+        {url}
+      </a>,
+    );
+    last = index + url.length;
+  }
+  if (last < text.length) nodes.push(text.slice(last));
+  return nodes;
+}
 
 function noteWithSyriac(text: string) {
   return text.split(/([\u0700-\u074F]+)/).map((part, index) =>
@@ -339,6 +368,49 @@ const NameResults = memo(function NameResults({
   );
 });
 
+function LanguageNote({ row, lang }: { row: NameEntry; lang: { text: string; pending: boolean } }) {
+  const [open, setOpen] = useState(false);
+  const [text, setText] = useState<string | null>(null);
+  const sourced = SOURCE_IDS.has(row.id);
+  async function toggle() {
+    if (open) {
+      setOpen(false);
+      return;
+    }
+    const pack = await loadNameSources();
+    const stored = pack[row.id];
+    if (typeof stored !== "string" || !stored) return;
+    setText(stored);
+    setOpen(true);
+  }
+  return (
+    <>
+      {sourced ? (
+        <button
+          type="button"
+          data-name-source=""
+          data-name-lang=""
+          className={`name-source ink-icon inline-flex h-11 min-w-11 items-center px-3 text-xs ${lang.pending ? "text-muted" : "tracking-wide text-gold"}`}
+          aria-expanded={open}
+          aria-label={`Source for ${lang.text}`}
+          onClick={() => void toggle()}
+        >
+          {lang.text}
+        </button>
+      ) : (
+        <span className={`text-xs ${lang.pending ? "text-muted" : "tracking-wide text-gold"}`} data-name-lang="">
+          {lang.text}
+        </span>
+      )}
+      {open && text ? (
+        <p className="name-source-text mt-1 basis-full text-sm leading-relaxed" data-name-source-text="">
+          {sourceText(text)}
+        </p>
+      ) : null}
+    </>
+  );
+}
+
 const NameCard = memo(function NameCard({
   row,
   active,
@@ -428,7 +500,7 @@ const NameCard = memo(function NameCard({
   return (
     <li id={row.id} className={`name-card flex flex-wrap items-baseline gap-x-3 border-b border-line py-4 ${active ? "-mx-3 bg-gold-soft px-3" : ""}`}>
       <h2 tabIndex={-1} className="font-serif text-2xl font-semibold leading-tight outline-none">{root}</h2>
-      <span className={`text-xs ${lang.pending ? "text-muted" : "tracking-wide text-gold"}`}>{lang.text}</span>
+      <LanguageNote row={row} lang={lang} />
       <p className="name-syriac text-end font-syriac text-syriac" lang="syr" dir="rtl">{row.sy}</p>
       <p className="name-spoken basis-full text-sm" data-name-english-line aria-current={part === "en" ? "true" : undefined}>
         ENGLISH <span data-name-english>{row.known}</span>
