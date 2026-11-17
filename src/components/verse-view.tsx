@@ -18,7 +18,7 @@ import {
   type WordGloss,
   type WordPlace,
 } from "@/lib/scripture";
-import { cardAria, loadWordChapter, occurrenceGloss, parseTag, tokenAt, type WordToken } from "@/lib/word-data";
+import { cardAria, loadWordChapter, occurrenceGloss, tokenAt, type WordToken } from "@/lib/word-data";
 
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { InfoMark } from "@/components/info-mark";
@@ -356,15 +356,6 @@ export function VerseView({
                       <span dir="ltr" data-word-gloss="" className={`block max-w-full break-words text-ink ${token ? "text-sm leading-snug" : "max-w-40 text-xs leading-snug"}`}>
                         {gloss || "·"}
                       </span>
-                      {token ? (
-                        <>
-                          <span dir="ltr" data-word-parse="" className="block text-xs text-muted">{parseTag(token.p)}</span>
-                          <span dir="ltr" className="block max-w-full text-[10px] leading-tight text-muted">
-                            {token.prov === "sourced" ? "Sourced" : token.prov === "reviewed" ? "Reviewed" : "Draft"}
-                            <span className="sr-only">{token.prov.startsWith("draft") ? ", not reviewed by a scholar" : ""}</span>
-                          </span>
-                        </>
-                      ) : null}
                     </button>
                   );
                 });
