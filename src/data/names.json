@@ -1543,6 +1543,11 @@
       ],
       "known": "Barabbas",
       "say": "Bar-Abba",
+      "root": {
+        "text": "Bar-Abba",
+        "lang": "Aramaic",
+        "source": "Strong’s G912 Βαραββᾶς: “of Chaldee origin (H1347 and H5)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 10,
       "ref": "matthew 27:16",
@@ -1569,6 +1574,11 @@
       ],
       "known": "Barnabas",
       "say": "barnaba",
+      "root": {
+        "text": "Bar-Naba",
+        "lang": "Aramaic",
+        "source": "Strong’s G921 Βαρνάβας: “of Chaldee origin (H1247 and H5029)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 27,
       "ref": "acts 4:36",
@@ -1674,6 +1684,11 @@
       ],
       "known": "Barak",
       "say": "baraq",
+      "root": {
+        "text": "Baraq",
+        "lang": "Hebrew",
+        "source": "Strong’s G913 Βαράκ: “of Hebrew origin (H1301)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 1,
       "ref": "hebrews 11:32",
@@ -1771,6 +1786,11 @@
       ],
       "known": "Benjamin",
       "say": "Benyamin",
+      "root": {
+        "text": "Benyamin",
+        "lang": "Hebrew",
+        "source": "Strong’s G958 Βενιαμίν: “of Hebrew origin (H1144)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 4,
       "ref": "acts 13:21",
@@ -1851,6 +1871,11 @@
       ],
       "known": "Berea",
       "say": "beroa",
+      "root": {
+        "text": "Berua",
+        "lang": "Greek",
+        "source": "Strong’s G960 Βέροια: “perhaps a provincial from a derivative of G4008 (πέραν) (Perœa, i.e. the region beyond the coast-line)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "place",
       "count": 3,
       "ref": "acts 17:10",
@@ -1870,6 +1895,11 @@
       ],
       "known": "Bethany",
       "say": "anya",
+      "root": {
+        "text": "Beth-Anya",
+        "lang": "Aramaic",
+        "source": "Strong’s G963 Βηθανία: “of Chaldee origin” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "place",
       "count": 13,
       "ref": "matthew 21:17",
@@ -1884,6 +1914,11 @@
       ],
       "known": "Bethlehem",
       "say": "Beth-Lekhem",
+      "root": {
+        "text": "Beth-Lekhem",
+        "lang": "Hebrew",
+        "source": "Strong’s G965 Βηθλεέμ: “of Hebrew origin (H1036)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "place",
       "count": 8,
       "ref": "matthew 2:1",
@@ -1934,6 +1969,11 @@
       ],
       "known": "Bethphage",
       "say": "Beth-Paga",
+      "root": {
+        "text": "Beth-Paga",
+        "lang": "Aramaic",
+        "source": "Strong’s G967 Βηθφαγή: “of Chaldee origin (compare H1004 and H6291)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "place",
       "count": 3,
       "ref": "matthew 21:1",
@@ -1954,6 +1994,11 @@
       ],
       "known": "Bethsaida",
       "say": "Beth-Tsayda",
+      "root": {
+        "text": "Beth-Tsayda",
+        "lang": "Aramaic",
+        "source": "Strong’s G966 Βηθσαϊδά: “of Chaldee origin (compare H1004 and H6719)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "place",
       "count": 7,
       "ref": "matthew 11:21",
@@ -2544,6 +2589,11 @@
       ],
       "known": "Dalmatia",
       "say": "Dalmatya",
+      "root": {
+        "text": "Dalmatya",
+        "lang": "Aramaic",
+        "source": "No dictionary source names the origin language (Strong’s G1149 Δαλματία: “probably of foreign derivation”); the label follows the Syriac verse form."
+      },
       "kind": "place",
       "count": 1,
       "ref": "2timothy 4:10",
@@ -2582,6 +2632,11 @@
       ],
       "known": "Daniel",
       "say": "Daniyel",
+      "root": {
+        "text": "Daniyel",
+        "lang": "Hebrew",
+        "source": "Strong’s G1158 Δανιήλ: “of Hebrew origin (H1840)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 2,
       "ref": "matthew 24:15",
@@ -2600,6 +2655,11 @@
       ],
       "known": "Damascus",
       "say": "Darmasuq",
+      "root": {
+        "text": "Darmasuq",
+        "lang": "Hebrew",
+        "source": "Strong’s G1154 Δαμασκός: “of Hebrew origin (H1834)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "place",
       "count": 15,
       "ref": "acts 9:2",
@@ -2622,6 +2682,11 @@
       ],
       "known": "David",
       "say": "Dawid",
+      "root": {
+        "text": "Dawid",
+        "lang": "Hebrew",
+        "source": "Strong’s G1138 Δαβίδ: “of Hebrew origin (H1732)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 55,
       "ref": "matthew 1:1",
@@ -2645,6 +2710,11 @@
       ],
       "known": "Demas",
       "say": "dma",
+      "root": {
+        "text": "Dema",
+        "lang": "Aramaic",
+        "source": "No dictionary source names the origin language (Strong’s G1214 Δημᾶς: “probably for G1216 (Δημήτριος)”; Strong’s G1216 Δημήτριος: “from (Ceres)”); the label follows the Syriac verse form."
+      },
       "kind": "person",
       "count": 3,
       "ref": "colossians 4:14",
@@ -2784,6 +2854,11 @@
       ],
       "known": "Drusilla",
       "say": "Dursila",
+      "root": {
+        "text": "Dursila",
+        "lang": "Latin",
+        "source": "Strong’s G1409 Δρούσιλλα: “a feminine diminutive of Drusus (a Roman name)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 1,
       "ref": "acts 24:24",
@@ -3278,6 +3353,11 @@
       ],
       "known": "Eubulus",
       "say": "Eubulos",
+      "root": {
+        "text": "Eubulos",
+        "lang": "Greek",
+        "source": "Strong’s G2103 Εὔβουλος: “from G2095 (εὖ) and G1014 (βούλομαι)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 1,
       "ref": "2timothy 4:21",
@@ -3340,6 +3420,11 @@
       ],
       "known": "Eutychus",
       "say": "utikus",
+      "root": {
+        "text": "Eutykos",
+        "lang": "Greek",
+        "source": "Strong’s G2161 Εὔτυχος: “from G2095 (εὖ) and a derivative of G5177 (τυγχάνω)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 1,
       "ref": "acts 20:9",
@@ -3354,6 +3439,11 @@
       ],
       "known": "Phanuel",
       "say": "Fanu'el",
+      "root": {
+        "text": "Fanu'el",
+        "lang": "Hebrew",
+        "source": "Strong’s G5323 Φανουήλ: “of Hebrew origin (H6439)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 1,
       "ref": "luke 2:36",
@@ -3476,6 +3566,11 @@
       ],
       "known": "Gabriel",
       "say": "Gabri'el",
+      "root": {
+        "text": "Gabriyel",
+        "lang": "Hebrew",
+        "source": "Strong’s G1043 Γαβριήλ: “of Hebrew origin (H1403)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 2,
       "ref": "luke 1:19",
@@ -3565,6 +3660,11 @@
       ],
       "known": "Gethsemane",
       "say": "gadseman",
+      "root": {
+        "text": "Gadsaman",
+        "lang": "Aramaic",
+        "source": "Strong’s G1068 Γεθσημανῆ: “of Chaldee origin (compare H1660 and H8081)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "place",
       "count": 2,
       "ref": "matthew 26:36",
@@ -3584,6 +3684,11 @@
       ],
       "known": "Golgotha",
       "say": "gaggulta",
+      "root": {
+        "text": "Gagulta",
+        "lang": "Aramaic",
+        "source": "Strong’s G1115 Γολγοθᾶ: “of Chaldee origin (compare H1538)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "place",
       "count": 3,
       "ref": "matthew 27:33",
@@ -3668,6 +3773,11 @@
       ],
       "known": "Galilee",
       "say": "Galila",
+      "root": {
+        "text": "Galila",
+        "lang": "Hebrew",
+        "source": "Strong’s G1056 Γαλιλαία: “of Hebrew origin (H1551)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "place",
       "count": 62,
       "ref": "matthew 2:22",
@@ -3851,6 +3961,11 @@
       ],
       "known": "Gennesaret",
       "say": "Gennesar",
+      "root": {
+        "text": "Gennesar",
+        "lang": "Hebrew",
+        "source": "Strong’s G1082 Γεννησαρέτ: “of Hebrew origin (compare H3672)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "place",
       "count": 3,
       "ref": "matthew 14:34",
@@ -4490,6 +4605,11 @@
       ],
       "known": "Capernaum",
       "say": "Kfar-Nachum",
+      "root": {
+        "text": "Kfar-Nachum",
+        "lang": "Hebrew",
+        "source": "Strong’s G2584 Καπερναούμ: “of Hebrew origin (probably H3723 and H5151)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "place",
       "count": 16,
       "ref": "matthew 4:13",
@@ -4513,6 +4633,11 @@
       ],
       "known": "Chorazin",
       "say": "kurzin",
+      "root": {
+        "text": "Korazin",
+        "lang": "Aramaic",
+        "source": "No dictionary source names the origin language (Strong’s G5523 Χοραζίν: “of uncertain derivation”); the label follows the Syriac verse form."
+      },
       "kind": "place",
       "count": 2,
       "ref": "matthew 11:21",
@@ -4531,6 +4656,11 @@
       ],
       "known": "Crispus",
       "say": "lkrispus",
+      "root": {
+        "text": "Krispos",
+        "lang": "Latin",
+        "source": "Strong’s G2921 Κρίσπος: “of Latin origin” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 2,
       "ref": "acts 18:8",
@@ -4648,6 +4778,11 @@
       ],
       "known": "Lamech",
       "say": "Lamek",
+      "root": {
+        "text": "Lamek",
+        "lang": "Hebrew",
+        "source": "Strong’s G2984 Λάμεχ: “of Hebrew origin (H3929)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 1,
       "ref": "luke 3:36",
@@ -4685,6 +4820,11 @@
       ],
       "known": "Lazarus",
       "say": "El'azar",
+      "root": {
+        "text": "Lazar",
+        "lang": "Hebrew",
+        "source": "Strong’s G2976 Λάζαρος: “probably of Hebrew origin (H499)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 15,
       "ref": "luke 16:20",
@@ -4801,6 +4941,11 @@
       ],
       "known": "Linus",
       "say": "Linos",
+      "root": {
+        "text": "Linos",
+        "lang": "Greek",
+        "source": "Strong’s G3044 Λίνος: “perhaps from G3043 (λίνον)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 1,
       "ref": "2timothy 4:21",
@@ -4847,6 +4992,11 @@
       ],
       "known": "Lydda",
       "say": "Lud",
+      "root": {
+        "text": "Lud",
+        "lang": "Hebrew",
+        "source": "Strong’s G3069 Λύδδα: “of Hebrew origin (H3850)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "place",
       "count": 3,
       "ref": "acts 9:32",
@@ -4866,6 +5016,11 @@
       ],
       "known": "Luke",
       "say": "Luqa",
+      "root": {
+        "text": "Luqa",
+        "lang": "Latin",
+        "source": "Strong’s G3065 Λουκᾶς: “contracted from Latin Lucanus” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 3,
       "ref": "colossians 4:14",
@@ -4893,6 +5048,11 @@
       ],
       "known": "Lucius",
       "say": "Luqius",
+      "root": {
+        "text": "Luqius",
+        "lang": "Latin",
+        "source": "Strong’s G3066 Λούκιος: “of Latin origin” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 1,
       "ref": "acts 13:1",
@@ -4916,6 +5076,11 @@
       ],
       "known": "Lystra",
       "say": "lustara",
+      "root": {
+        "text": "Lustra",
+        "lang": "Aramaic",
+        "source": "No dictionary source names the origin language (Strong’s G3082 Λύστρα: “of uncertain origin”); the label follows the Syriac verse form."
+      },
       "kind": "place",
       "count": 7,
       "ref": "acts 14:6",
@@ -4941,6 +5106,11 @@
       ],
       "known": "Lot",
       "say": "lut",
+      "root": {
+        "text": "Lut",
+        "lang": "Hebrew",
+        "source": "Strong’s G3091 Λώτ: “of Hebrew origin (H3876)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 4,
       "ref": "luke 17:28",
@@ -5088,6 +5258,11 @@
       ],
       "known": "Magdalene",
       "say": "Magdalitha",
+      "root": {
+        "text": "Magdalitha",
+        "lang": "Aramaic",
+        "source": "Strong’s G3094 Μαγδαληνή: “feminine of a derivative of G3093 (Μαγδαλά)”; Strong’s G3093 Μαγδαλά: “of Chaldee origin (compare H4026)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 11,
       "ref": "matthew 27:56",
@@ -5248,6 +5423,11 @@
       ],
       "known": "Melchi",
       "say": "malki",
+      "root": {
+        "text": "Malki",
+        "lang": "Hebrew",
+        "source": "Strong’s G3197 Μελχί: “of Hebrew origin (H4428 with pronominal suffix, my king)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 2,
       "ref": "luke 3:24",
@@ -5312,6 +5492,11 @@
       ],
       "known": "Moloch",
       "say": "Malkum",
+      "root": {
+        "text": "Malkum",
+        "lang": "Hebrew",
+        "source": "Strong’s G3434 Μολόχ: “of Hebrew origin (H4432)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 1,
       "ref": "acts 7:43",
@@ -5334,6 +5519,11 @@
       ],
       "known": "Mark",
       "say": "Marqos",
+      "root": {
+        "text": "Marqos",
+        "lang": "Latin",
+        "source": "Strong’s G3138 Μάρκος: “of Latin origin” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 8,
       "ref": "acts 12:12",
@@ -5411,6 +5601,11 @@
       ],
       "known": "Mary",
       "say": "Maryam",
+      "root": {
+        "text": "Maryam",
+        "lang": "Hebrew",
+        "source": "Strong’s G3137 Μαρία: “of Hebrew origin (H4813)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 48,
       "ref": "matthew 1:16",
@@ -5462,6 +5657,11 @@
       ],
       "known": "Matthias",
       "say": "Mathiya",
+      "root": {
+        "text": "Mathiya",
+        "lang": "Hebrew",
+        "source": "Strong’s G3159 Ματθίας: “apparently a shortened form of G3161 (Ματταθίας)”; Strong’s G3161 Ματταθίας: “of Hebrew origin (H4993)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 2,
       "ref": "acts 1:23",
@@ -5508,6 +5708,11 @@
       ],
       "known": "Mattatha",
       "say": "mattatha",
+      "root": {
+        "text": "Mattatha",
+        "lang": "Hebrew",
+        "source": "Strong’s G3160 Ματταθά: “probably a shortened form of G3161 (Ματταθίας) (compare G4992 (σωτήριον))”; Strong’s G3161 Ματταθίας: “of Hebrew origin (H4993)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 1,
       "ref": "luke 3:31",
@@ -5570,6 +5775,11 @@
       ],
       "known": "Malta",
       "say": "Melita",
+      "root": {
+        "text": "Melita",
+        "lang": "Aramaic",
+        "source": "No dictionary source names the origin language (Strong’s G3194 Μελίτη: “of uncertain origin”); the label follows the Syriac verse form."
+      },
       "kind": "place",
       "count": 1,
       "ref": "acts 28:1",
@@ -5730,6 +5940,11 @@
       ],
       "known": "Moses",
       "say": "Moshe",
+      "root": {
+        "text": "Moshe",
+        "lang": "Hebrew",
+        "source": "Strong’s G3475 Μωσεύς: “of Hebrew origin; (H4872)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 79,
       "ref": "matthew 8:4",
@@ -5828,6 +6043,11 @@
       ],
       "known": "Nahor",
       "say": "nahur",
+      "root": {
+        "text": "Nachor",
+        "lang": "Hebrew",
+        "source": "Strong’s G3493 Ναχώρ: “of Hebrew origin (H5152)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 1,
       "ref": "luke 3:34",
@@ -5965,6 +6185,11 @@
       ],
       "known": "Nathanael",
       "say": "Natanail",
+      "root": {
+        "text": "Nataniel",
+        "lang": "Hebrew",
+        "source": "Strong’s G3482 Ναθαναήλ: “of Hebrew origin (H5417)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 6,
       "ref": "john 1:45",
@@ -5987,6 +6212,11 @@
       ],
       "known": "Nathan",
       "say": "nathan",
+      "root": {
+        "text": "Nathan",
+        "lang": "Hebrew",
+        "source": "Strong’s G3481 Ναθάν: “of Hebrew origin (H5416)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 1,
       "ref": "luke 3:31",
@@ -6046,6 +6276,11 @@
       ],
       "known": "Neri",
       "say": "neri",
+      "root": {
+        "text": "Neri",
+        "lang": "Hebrew",
+        "source": "Strong’s G3518 Νηρί: “of Hebrew origin (H5374)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 1,
       "ref": "luke 3:27",
@@ -6078,6 +6313,11 @@
       ],
       "known": "Niger",
       "say": "niger",
+      "root": {
+        "text": "Niger",
+        "lang": "Latin",
+        "source": "Strong’s G3526 Νίγερ: “of Latin origin” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 1,
       "ref": "acts 13:1",
@@ -6113,6 +6353,11 @@
       ],
       "known": "Nicodemus",
       "say": "niqdemos",
+      "root": {
+        "text": "Niqodemus",
+        "lang": "Greek",
+        "source": "Strong’s G3530 Νικόδημος: “from G3534 (νῖκος) and G1218 (δῆμος)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 5,
       "ref": "john 3:1",
@@ -6306,6 +6551,11 @@
       ],
       "known": "Paphos",
       "say": "paphos",
+      "root": {
+        "text": "Paphos",
+        "lang": "Aramaic",
+        "source": "No dictionary source names the origin language (Strong’s G3974 Πάφος: “of uncertain derivation”); the label follows the Syriac verse form."
+      },
       "kind": "place",
       "count": 2,
       "ref": "acts 13:6",
@@ -6373,6 +6623,11 @@
       ],
       "known": "Paul",
       "say": "Paulos",
+      "root": {
+        "text": "Paulos",
+        "lang": "Latin",
+        "source": "Strong’s G3972 Παῦλος: “of Latin origin” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 164,
       "ref": "acts 13:7",
@@ -6414,6 +6669,11 @@
       ],
       "known": "Perga",
       "say": "perga",
+      "root": {
+        "text": "Perga",
+        "lang": "Greek",
+        "source": "Strong’s G4011 Πέργη: “probably from the same as G4010 (Πέργαμος)”; Strong’s G4010 Πέργαμος: “from G4444 (πύργος)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "place",
       "count": 3,
       "ref": "acts 13:13",
@@ -6434,6 +6694,11 @@
       ],
       "known": "Pergamum",
       "say": "Pergamos",
+      "root": {
+        "text": "Pergamos",
+        "lang": "Greek",
+        "source": "Strong’s G4010 Πέργαμος: “from G4444 (πύργος)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "place",
       "count": 2,
       "ref": "revelation 1:11",
@@ -6523,6 +6788,11 @@
       ],
       "known": "Philemon",
       "say": "Philimon",
+      "root": {
+        "text": "Philimon",
+        "lang": "Greek",
+        "source": "Strong’s G5371 Φιλήμων: “from G5368 (φιλέω)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 1,
       "ref": "philemon 1:1",
@@ -6546,6 +6816,11 @@
       ],
       "known": "Philip",
       "say": "Philipos",
+      "root": {
+        "text": "Philipos",
+        "lang": "Greek",
+        "source": "Strong’s G5376 Φίλιππος: “from G5384 (φίλος) and G2462 (ἵππος)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 35,
       "ref": "matthew 10:3",
@@ -6688,6 +6963,11 @@
       ],
       "known": "Pilate",
       "say": "Pilatos",
+      "root": {
+        "text": "Pilatos",
+        "lang": "Latin",
+        "source": "Strong’s G4091 Πιλᾶτος: “of Latin origin” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 56,
       "ref": "matthew 27:2",
@@ -6910,6 +7190,11 @@
       ],
       "known": "Phygellus",
       "say": "puglus",
+      "root": {
+        "text": "Puglos",
+        "lang": "Greek",
+        "source": "Strong’s G5436 Φύγελλος: “probably from G5343 (φεύγω)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 1,
       "ref": "2timothy 1:15",
@@ -6974,6 +7259,11 @@
       ],
       "known": "Caiaphas",
       "say": "qayapa",
+      "root": {
+        "text": "Qayapa",
+        "lang": "Aramaic",
+        "source": "Strong’s G2533 Καϊάφας: “of Chaldee origin” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 10,
       "ref": "matthew 26:3",
@@ -7000,6 +7290,11 @@
       ],
       "known": "Cain",
       "say": "qayin",
+      "root": {
+        "text": "Qayin",
+        "lang": "Hebrew",
+        "source": "Strong’s G2535 Κάϊν: “of Hebrew origin (H7014)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 3,
       "ref": "hebrews 11:4",
@@ -7028,6 +7323,11 @@
       ],
       "known": "Cainan",
       "say": "qaynan",
+      "root": {
+        "text": "Qaynan",
+        "lang": "Hebrew",
+        "source": "Strong’s G2536 Καϊνάν: “of Hebrew origin (H7018)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 2,
       "ref": "luke 3:36",
@@ -7185,6 +7485,11 @@
       ],
       "known": "Claudia",
       "say": "Qlaudia",
+      "root": {
+        "text": "Qlaudia",
+        "lang": "Latin",
+        "source": "Strong’s G2803 Κλαυδία: “feminine of G2804 (Κλαύδιος)”; Strong’s G2804 Κλαύδιος: “of Latin origin” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 1,
       "ref": "2timothy 4:21",
@@ -7236,6 +7541,11 @@
       ],
       "known": "Cnidus",
       "say": "qnidos",
+      "root": {
+        "text": "Qnidus",
+        "lang": "Aramaic",
+        "source": "No dictionary source names the origin language (Strong’s G2834 Κνίδος: “probably of foreign origin”); the label follows the Syriac verse form."
+      },
       "kind": "place",
       "count": 1,
       "ref": "acts 27:7",
@@ -7387,6 +7697,11 @@
       ],
       "known": "Cosam",
       "say": "qosam",
+      "root": {
+        "text": "Qusam",
+        "lang": "Hebrew",
+        "source": "Strong’s G2973 Κωσάμ: “of Hebrew origin (compare H7081)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 1,
       "ref": "luke 3:28",
@@ -7716,6 +8031,11 @@
       ],
       "known": "Salmon",
       "say": "salmon",
+      "root": {
+        "text": "Salmon",
+        "lang": "Hebrew",
+        "source": "Strong’s G4533 Σαλμών: “of Hebrew origin (H8012)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 3,
       "ref": "matthew 1:4",
@@ -7795,6 +8115,11 @@
       ],
       "known": "Sarah",
       "say": "sara",
+      "root": {
+        "text": "Sara",
+        "lang": "Hebrew",
+        "source": "Strong’s G4564 Σάῤῥα: “of Hebrew origin (H8283)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 4,
       "ref": "romans 4:19",
@@ -7896,6 +8221,11 @@
       ],
       "known": "Seleucia",
       "say": "Seluqia",
+      "root": {
+        "text": "Seluqia",
+        "lang": "Aramaic",
+        "source": "No dictionary source names the origin language (Strong’s G4581 Σελεύκεια: “from (Seleucus, a Syrian king)”); the label follows the Syriac verse form."
+      },
       "kind": "place",
       "count": 1,
       "ref": "acts 13:4",
@@ -7910,6 +8240,11 @@
       ],
       "known": "Sceva",
       "say": "saqwa",
+      "root": {
+        "text": "Seqwa",
+        "lang": "Latin",
+        "source": "Strong’s G4630 Σκευᾶς: “apparently of Latin origin” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 1,
       "ref": "acts 19:14",
@@ -8010,6 +8345,11 @@
       ],
       "known": "Salem",
       "say": "shlim",
+      "root": {
+        "text": "Shalem",
+        "lang": "Hebrew",
+        "source": "Strong’s G4532 Σαλήμ: “of Hebrew origin (H8004)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "place",
       "count": 2,
       "ref": "hebrews 7:1",
@@ -8042,6 +8382,11 @@
       ],
       "known": "Salome",
       "say": "Shalom",
+      "root": {
+        "text": "Shalom",
+        "lang": "Hebrew",
+        "source": "Strong’s G4539 Σαλώμη: “probably of Hebrew origin (feminine from H7965)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 2,
       "ref": "mark 15:40",
@@ -8082,6 +8427,11 @@
       ],
       "known": "Samaria",
       "say": "Shamrayin",
+      "root": {
+        "text": "Shamrin",
+        "lang": "Hebrew",
+        "source": "Strong’s G4540 Σαμάρεια: “of Hebrew origin (H8111)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "place",
       "count": 2,
       "ref": "john 4:7",
@@ -8137,6 +8487,11 @@
       ],
       "known": "Saul",
       "say": "Shaul",
+      "root": {
+        "text": "Shaul",
+        "lang": "Hebrew",
+        "source": "Strong’s G4549 Σαούλ: “of Hebrew origin (H7586)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 21,
       "ref": "acts 7:58",
@@ -8269,6 +8624,11 @@
       ],
       "known": "Siloam",
       "say": "Shiloach",
+      "root": {
+        "text": "Shiloach",
+        "lang": "Hebrew",
+        "source": "Strong’s G4611 Σιλωάμ: “of Hebrew origin (H7975)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "place",
       "count": 3,
       "ref": "luke 13:4",
@@ -8303,6 +8663,11 @@
       ],
       "known": "Simon",
       "say": "Shimon",
+      "root": {
+        "text": "Shimon",
+        "lang": "Hebrew",
+        "source": "Strong’s G4613 Σίμων: “of Hebrew origin (H8095)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 161,
       "ref": "matthew 4:18",
@@ -8329,6 +8694,11 @@
       ],
       "known": "Samson",
       "say": "shamshun",
+      "root": {
+        "text": "Shimshon",
+        "lang": "Hebrew",
+        "source": "Strong’s G4546 Σαμψών: “of Hebrew origin (H8123)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 1,
       "ref": "hebrews 11:32",
@@ -8343,6 +8713,11 @@
       ],
       "known": "Seth",
       "say": "shith",
+      "root": {
+        "text": "Shith",
+        "lang": "Hebrew",
+        "source": "Strong’s G4589 Σήθ: “of Hebrew origin (H8352)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 1,
       "ref": "luke 3:38",
@@ -8365,6 +8740,11 @@
       ],
       "known": "Sychar",
       "say": "shkar",
+      "root": {
+        "text": "Shkar",
+        "lang": "Hebrew",
+        "source": "Strong’s G4965 Συχάρ: “of Hebrew origin (H7941)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "place",
       "count": 1,
       "ref": "john 4:5",
@@ -8379,6 +8759,11 @@
       ],
       "known": "Solomon",
       "say": "shlimun",
+      "root": {
+        "text": "Shlemun",
+        "lang": "Hebrew",
+        "source": "Strong’s G4672 Σολομών: “of Hebrew origin (H8010)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 10,
       "ref": "matthew 1:6",
@@ -8413,6 +8798,11 @@
       ],
       "known": "Samuel",
       "say": "shmuel",
+      "root": {
+        "text": "Shmuel",
+        "lang": "Hebrew",
+        "source": "Strong’s G4545 Σαμουήλ: “of Hebrew origin (H8050)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 3,
       "ref": "acts 3:24",
@@ -8432,6 +8822,11 @@
       ],
       "known": "Susanna",
       "say": "Shushan",
+      "root": {
+        "text": "Shushan",
+        "lang": "Hebrew",
+        "source": "Strong’s G4677 Σουσάννα: “of Hebrew origin (H7799 feminine)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 1,
       "ref": "luke 8:3",
@@ -8910,6 +9305,11 @@
       ],
       "known": "Tertius",
       "say": "tertios",
+      "root": {
+        "text": "Tartiyos",
+        "lang": "Latin",
+        "source": "Strong’s G5060 Τέρτιος: “of Latin origin” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 1,
       "ref": "romans 16:22",
@@ -9301,6 +9701,11 @@
       ],
       "known": "Thomas",
       "say": "Toma",
+      "root": {
+        "text": "Toma",
+        "lang": "Aramaic",
+        "source": "Strong’s G2381 Θωμᾶς: “of Chaldee origin (compare H8380)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 11,
       "ref": "matthew 10:3",
@@ -9439,6 +9844,11 @@
       ],
       "known": "Sidon",
       "say": "Tsidon",
+      "root": {
+        "text": "Tsidon",
+        "lang": "Hebrew",
+        "source": "Strong’s G4605 Σιδών: “of Hebrew origin (H6721)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "place",
       "count": 11,
       "ref": "matthew 11:21",
@@ -9563,6 +9973,11 @@
       ],
       "known": "Tychicus",
       "say": "tukikos",
+      "root": {
+        "text": "Tukikos",
+        "lang": "Greek",
+        "source": "Strong’s G5190 Τυχικός: “from a derivative of G5177 (τυγχάνω)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 5,
       "ref": "acts 20:4",
@@ -10259,6 +10674,11 @@
       ],
       "known": "Zebedee",
       "say": "zabday",
+      "root": {
+        "text": "Zabdai",
+        "lang": "Hebrew",
+        "source": "Strong’s G2199 Ζεβεδαῖος: “of Hebrew origin (compare H2067)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 11,
       "ref": "matthew 4:21",
@@ -10326,6 +10746,11 @@
       ],
       "known": "Zacchaeus",
       "say": "Zakkay",
+      "root": {
+        "text": "Zakki",
+        "lang": "Hebrew",
+        "source": "Strong’s G2195 Ζακχαῖος: “of Hebrew origin (compare H2140)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 4,
       "ref": "luke 19:2",
@@ -10456,6 +10881,11 @@
       ],
       "known": "Urbanus",
       "say": "urbanus",
+      "root": {
+        "text": "Urbanus",
+        "lang": "Latin",
+        "source": "Strong’s G3773 Οὐρβανός: “of Latin origin” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 1,
       "ref": "romans 16:9",
@@ -10478,6 +10908,11 @@
       ],
       "known": "Stachys",
       "say": "stachys",
+      "root": {
+        "text": "Stachys",
+        "lang": "Greek",
+        "source": "Strong’s G4720 Στάχυς: “the same as G4719 (στάχυς)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 1,
       "ref": "romans 16:9",
@@ -10588,6 +11023,11 @@
       ],
       "known": "Tryphena",
       "say": "tryphena",
+      "root": {
+        "text": "Tryphena",
+        "lang": "Greek",
+        "source": "Strong’s G5170 Τρύφαινα: “from G5172 (τρυφή)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 1,
       "ref": "romans 16:12",
@@ -10610,6 +11050,11 @@
       ],
       "known": "Tryphosa",
       "say": "tryphosa",
+      "root": {
+        "text": "Tryphosa",
+        "lang": "Greek",
+        "source": "Strong’s G5173 Τρυφῶσα: “from G5172 (τρυφή)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 1,
       "ref": "romans 16:12",
@@ -10676,6 +11121,11 @@
       ],
       "known": "Phlegon",
       "say": "phlegon",
+      "root": {
+        "text": "Phlegon",
+        "lang": "Greek",
+        "source": "Strong’s G5393 Φλέγων: “active participle of the base of G5395 (φλόξ)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 1,
       "ref": "romans 16:14",
@@ -10720,6 +11170,11 @@
       ],
       "known": "Patrobas",
       "say": "patrobas",
+      "root": {
+        "text": "Patrobas",
+        "lang": "Greek",
+        "source": "Strong’s G3969 Πατροβᾶς: “perhaps a contraction for (a compound of G3962 (πατήρ) and G979 (βίος))” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 1,
       "ref": "romans 16:14",
@@ -10742,6 +11197,11 @@
       ],
       "known": "Philologus",
       "say": "philologus",
+      "root": {
+        "text": "Philologus",
+        "lang": "Greek",
+        "source": "Strong’s G5378 Φιλόλογος: “from G5384 (φίλος) and G3056 (λόγος)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 1,
       "ref": "romans 16:15",
@@ -10764,6 +11224,11 @@
       ],
       "known": "Nereus",
       "say": "nereus",
+      "root": {
+        "text": "Nereus",
+        "lang": "Greek",
+        "source": "Strong’s G3517 Νηρεύς: “apparently from a derivative of the base of G3491 (ναῦς) (meaning wet)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 1,
       "ref": "romans 16:15",
@@ -10808,6 +11273,11 @@
       ],
       "known": "Lucius",
       "say": "luqiyos",
+      "root": {
+        "text": "Luqiyos",
+        "lang": "Latin",
+        "source": "Strong’s G3066 Λούκιος: “of Latin origin” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 1,
       "ref": "romans 16:21",
@@ -10852,6 +11322,11 @@
       ],
       "known": "Quartus",
       "say": "quwartos",
+      "root": {
+        "text": "Quwartos",
+        "lang": "Latin",
+        "source": "Strong’s G2890 Κούαρτος: “of Latin origin (fourth)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 1,
       "ref": "romans 16:23",
@@ -10874,6 +11349,11 @@
       ],
       "known": "Malchus",
       "say": "malek",
+      "root": {
+        "text": "Malek",
+        "lang": "Hebrew",
+        "source": "Strong’s G3124 Μάλχος: “of Hebrew origin (H4429)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 1,
       "ref": "john 18:10",
@@ -10922,6 +11402,11 @@
       ],
       "known": "Nicopolis",
       "say": "nikopolis",
+      "root": {
+        "text": "Nikopolis",
+        "lang": "Greek",
+        "source": "Strong’s G3533 Νικόπολις: “from G3534 (νῖκος) and G4172 (πόλις)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "place",
       "count": 1,
       "ref": "titus 3:12",
@@ -11010,6 +11495,11 @@
       ],
       "known": "Prochorus",
       "say": "prokoros",
+      "root": {
+        "text": "Prokoros",
+        "lang": "Greek",
+        "source": "Strong’s G4402 Πρόχορος: “from G4253 (πρό) and G5525 (χορός)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 1,
       "ref": "acts 6:5",
@@ -11032,6 +11522,11 @@
       ],
       "known": "Nicanor",
       "say": "nicanor",
+      "root": {
+        "text": "Nicanor",
+        "lang": "Greek",
+        "source": "Strong’s G3527 Νικάνωρ: “probably from G3528 (νικάω)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 1,
       "ref": "acts 6:5",
@@ -11054,6 +11549,11 @@
       ],
       "known": "Parmenas",
       "say": "parmena",
+      "root": {
+        "text": "Parmena",
+        "lang": "Greek",
+        "source": "Strong’s G3937 Παρμενᾶς: “probably by contraction for (a derivative of a compound of G3844 (παρά) and G3306 (μένω))” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 1,
       "ref": "acts 6:5",
@@ -11120,6 +11620,11 @@
       ],
       "known": "Secundus",
       "say": "sequndos",
+      "root": {
+        "text": "Sequndos",
+        "lang": "Latin",
+        "source": "Strong’s G4580 Σεκοῦνδος: “of Latin origin” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 1,
       "ref": "acts 20:4",
@@ -11164,6 +11669,11 @@
       ],
       "known": "Philetus",
       "say": "philetus",
+      "root": {
+        "text": "Philetus",
+        "lang": "Greek",
+        "source": "Strong’s G5372 Φίλητος: “from G5368 (φιλέω)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 1,
       "ref": "2timothy 2:17",
@@ -11230,6 +11740,11 @@
       ],
       "known": "Pudens",
       "say": "pudens",
+      "root": {
+        "text": "Pudens",
+        "lang": "Latin",
+        "source": "Strong’s G4227 Πούδης: “of Latin origin” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 1,
       "ref": "2timothy 4:21",
@@ -11252,6 +11767,11 @@
       ],
       "known": "Maath",
       "say": "maath",
+      "root": {
+        "text": "Maath",
+        "lang": "Hebrew",
+        "source": "Strong’s G3092 Μαάθ: “probably of Hebrew origin” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 1,
       "ref": "luke 3:26",
@@ -11602,6 +12122,11 @@
       ],
       "known": "Aenon",
       "say": "ein yon",
+      "root": {
+        "text": "Ein-Yon",
+        "lang": "Hebrew",
+        "source": "Strong’s G137 Αἰνών: “of Hebrew origin (a derivative of G5869, place of springs)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "place",
       "count": 1,
       "ref": "john 3:23",
@@ -11624,6 +12149,11 @@
       ],
       "known": "Bethesda",
       "say": "beth chesda",
+      "root": {
+        "text": "Beth-Chesda",
+        "lang": "Aramaic",
+        "source": "Strong’s G964 Βηθεσδά: “of Chaldee origin (compare H1004 and H2617)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "place",
       "count": 1,
       "ref": "john 5:2",
@@ -11688,6 +12218,11 @@
       ],
       "known": "Dalmanutha",
       "say": "dalmanutha",
+      "root": {
+        "text": "Dalmanutha",
+        "lang": "Aramaic",
+        "source": "Strong’s G1148 Δαλμανουθά: “probably of Chaldee origin” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "place",
       "count": 1,
       "ref": "mark 8:10",
@@ -11710,6 +12245,11 @@
       ],
       "known": "Salamis",
       "say": "salmina",
+      "root": {
+        "text": "Salmina",
+        "lang": "Greek",
+        "source": "Strong’s G4529 Σαλαμίς: “probably from G4535 (σάλος) (from the surge on the shore)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "place",
       "count": 1,
       "ref": "acts 13:5",
@@ -11732,6 +12272,11 @@
       ],
       "known": "Sharon",
       "say": "saron",
+      "root": {
+        "text": "Saron",
+        "lang": "Hebrew",
+        "source": "Strong’s G4565 Σάρων: “of Hebrew origin (H8289)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "place",
       "count": 1,
       "ref": "acts 9:35",
@@ -11760,6 +12305,11 @@
       ],
       "known": "Lycaonia",
       "say": "lycaonia",
+      "root": {
+        "text": "Lycaonia",
+        "lang": "Greek",
+        "source": "Strong’s G3071 Λυκαονία: “perhaps remotely from G3074 (λύκος)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "place",
       "count": 1,
       "ref": "acts 14:6",
@@ -11826,6 +12376,11 @@
       ],
       "known": "Neapolis",
       "say": "neapolis",
+      "root": {
+        "text": "Neapolis",
+        "lang": "Greek",
+        "source": "Strong’s G3496 Νεάπολις: “from G3501 (νέος) and G4172 (πόλις)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "place",
       "count": 1,
       "ref": "acts 16:11",
@@ -12096,6 +12651,11 @@
       ],
       "known": "Lycia",
       "say": "lycia",
+      "root": {
+        "text": "Lycia",
+        "lang": "Greek",
+        "source": "Strong’s G3073 Λυκία: “probably remotely from G3074 (λύκος)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "place",
       "count": 1,
       "ref": "acts 27:5",
@@ -12162,6 +12722,11 @@
       ],
       "known": "Puteoli",
       "say": "putiyalis",
+      "root": {
+        "text": "Putiyalis",
+        "lang": "Latin",
+        "source": "Strong’s G4223 Ποτίολοι: “of Latin origin” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "place",
       "count": 1,
       "ref": "acts 28:13",
