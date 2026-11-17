@@ -1309,7 +1309,7 @@
       "root": {
         "text": "Artus",
         "lang": "Aramaic",
-        "source": "No dictionary source names the origin language (Strong’s G702 Ἀρέτας: “of foreign origin”); the label follows the Syriac verse form. The Greek writing on this card is a spelling of the name, not its origin."
+        "source": "Strong’s G702 Ἀρέτας: “of foreign origin”; no specific language is named, so the label follows the Syriac verse form. The Greek writing on this card is a spelling of the name, not its origin. (Strong’s Greek Dictionary, 1890, public domain)."
       },
       "kind": "person",
       "count": 1,
@@ -3402,7 +3402,7 @@
       "root": {
         "text": "Ephesos",
         "lang": "Aramaic",
-        "source": "No dictionary source names the origin language (Strong’s G2181 Ἔφεσος: “probably of foreign origin”); the label follows the Syriac verse form. The Greek writing on this card is a spelling of the name, not its origin."
+        "source": "Strong’s G2181 Ἔφεσος: “probably of foreign origin”; no specific language is named, so the label follows the Syriac verse form. The Greek writing on this card is a spelling of the name, not its origin. (Strong’s Greek Dictionary, 1890, public domain)."
       },
       "kind": "place",
       "count": 16,
@@ -4990,7 +4990,7 @@
       "root": {
         "text": "Kush",
         "lang": "Aramaic",
-        "source": "No dictionary source names the origin language (Strong’s H3568 כּוּשׁ: “probably of foreign origin”); the label follows the Syriac verse form."
+        "source": "Strong’s H3568 כּוּשׁ: “probably of foreign origin”; no specific language is named, so the label follows the Syriac verse form. (Strong’s Dictionaries, 1890, public domain)."
       },
       "kind": "person",
       "count": 1,
@@ -6797,7 +6797,7 @@
       "root": {
         "text": "Nun",
         "lang": "Hebrew",
-        "source": "Strong’s H5126 נוּן: “or נוֹן; (1 Chronicles 7:27), from H5125 (נוּן); perpetuity,” (Strong’s Hebrew Dictionary, 1890, public domain)."
+        "source": "Strong’s H5126 נוּן: “or נוֹן; (1 Chronicles 7:27), from H5125 (נוּן); perpetuity,” (Strong’s Dictionaries, 1890, public domain)."
       },
       "kind": "person",
       "count": 1,
@@ -7268,8 +7268,8 @@
       "say": "Phoibe",
       "root": {
         "text": "Phoibe",
-        "lang": "Aramaic",
-        "source": "No dictionary source names the origin language (Strong’s G5402 Φοίβη: “feminine of (bright”); the label follows the Syriac verse form."
+        "lang": "Greek",
+        "source": "Strong’s G5402 Φοίβη: “feminine of (bright; probably akin to the base of G5457 (φῶς)); Phœbe, a Christian woman” (Strong’s Greek Dictionary, 1890, public domain)."
       },
       "kind": "person",
       "count": 1,
@@ -10576,7 +10576,7 @@
       "root": {
         "text": "Y'shua",
         "lang": "Aramaic",
-        "source": "Owner decision (2026-11-17): Aramaic, following the Syriac verse form. Note: Strong’s G2424 Ἰησοῦς: “of Hebrew origin (H3091)” (Strong’s Greek Dictionary, 1890, public domain) gives a Hebrew origin."
+        "source": "Aramaic, following the Syriac verse form. Note: Strong’s G2424 Ἰησοῦς: “of Hebrew origin (H3091)” (Strong’s Greek Dictionary, 1890, public domain) gives a Hebrew origin."
       },
       "kind": "person",
       "count": 1070,
@@ -10856,7 +10856,7 @@
       "root": {
         "text": "YHWH",
         "lang": "Hebrew",
-        "source": "Strong’s H3068 יְהֹוָה: “from H1961 (הָיָה); (the) self-Existent or Eternal” (Strong’s Hebrew Dictionary, 1890, public domain)."
+        "source": "Strong’s H3068 יְהֹוָה: “from H1961 (הָיָה); (the) self-Existent or Eternal” (Strong’s Dictionaries, 1890, public domain)."
       },
       "kind": "title",
       "count": 204,
@@ -12264,7 +12264,7 @@
       "root": {
         "text": "Nikolaos",
         "lang": "Greek",
-        "source": "Strong’s G3532 Νικόλαος: “from G3534 (νῖκος) and G2994 (Λαοδικεύς)” (Strong’s Greek Dictionary, 1890, public domain)."
+        "source": "Open-data Strong’s G3532 Νικόλαος: “from G3534 (νῖκος) and G2994 (Λαοδικεύς)”. A printed Strong’s reads G2992 (λαός, “people”), not G2994. This card follows the open-data reading as Greek; flagged for a scholar. (Strong’s Greek Dictionary, 1890, public domain)."
       },
       "kind": "person",
       "count": 1,
@@ -12399,7 +12399,7 @@
       "root": {
         "text": "Yannes",
         "lang": "Aramaic",
-        "source": "No dictionary source names the origin language (Strong’s G2389 Ἰαννῆς: “of Egyptian origin”); the label follows the Syriac verse form. The Greek writing on this card is a spelling of the name, not its origin."
+        "source": "Strong’s G2389 Ἰαννῆς: “of Egyptian origin”; the label follows the Syriac verse form. The Greek writing on this card is a spelling of the name, not its origin. (Strong’s Greek Dictionary, 1890, public domain)."
       },
       "kind": "person",
       "count": 1,
@@ -12426,7 +12426,7 @@
       "root": {
         "text": "Yambres",
         "lang": "Aramaic",
-        "source": "No dictionary source names the origin language (Strong’s G2387 Ἰαμβρῆς: “of Egyptian origin”); the label follows the Syriac verse form. The Greek writing on this card is a spelling of the name, not its origin."
+        "source": "Strong’s G2387 Ἰαμβρῆς: “of Egyptian origin”; the label follows the Syriac verse form. The Greek writing on this card is a spelling of the name, not its origin. (Strong’s Greek Dictionary, 1890, public domain)."
       },
       "kind": "person",
       "count": 1,
@@ -12655,7 +12655,7 @@
       "root": {
         "text": "Italiqa",
         "lang": "Aramaic",
-        "source": "No dictionary source names the origin language (Strong’s G2483 Ἰταλικός: “from G2482 (Ἰταλία)”; Strong’s G2482 Ἰταλία: “probably of foreign origin”); the label follows the Syriac verse form. The Greek writing on this card is a spelling of the name, not its origin."
+        "source": "Strong’s G2483 Ἰταλικός: “from G2482 (Ἰταλία)”; Strong’s G2482 Ἰταλία: “probably of foreign origin”; no specific language is named, so the label follows the Syriac verse form. The Greek writing on this card is a spelling of the name, not its origin. (Strong’s Greek Dictionary, 1890, public domain)."
       },
       "kind": "people",
       "count": 1,
@@ -12739,8 +12739,8 @@
       "say": "kushites",
       "root": {
         "text": "Kushites",
-        "lang": "Aramaic",
-        "source": "No dictionary source names the origin language (Strong’s G128 Αἰθίοψ: “from (to scorch) and (the face, from G3700 (ὀπτάνομαι))”); the label follows the Syriac verse form. The Greek writing on this card is a spelling of the name, not its origin."
+        "lang": "Greek",
+        "source": "Strong’s G128 Αἰθίοψ: “from (to scorch) and (the face, from G3700 (ὀπτάνομαι))” (Strong’s Greek Dictionary, 1890, public domain)."
       },
       "kind": "people",
       "count": 1,
@@ -12847,7 +12847,7 @@
       "root": {
         "text": "Chaqal Dema",
         "lang": "Aramaic",
-        "source": "Strong’s G184 Ἀκελδαμά: “of Chaldee origin (meaning field of blood” (Strong’s Greek Dictionary, 1890, public domain)."
+        "source": "Strong’s G184 Ἀκελδαμά: “of Chaldee origin (meaning field of blood; corresponding to H2506 and H1818); Akeldama, a place near Jerusalem” (Strong’s Greek Dictionary, 1890, public domain)."
       },
       "kind": "place",
       "count": 1,
@@ -13116,8 +13116,8 @@
       "say": "samothrace",
       "root": {
         "text": "Samothrace",
-        "lang": "Aramaic",
-        "source": "No dictionary source names the origin language (Strong’s G4543 Σαμοθρᾴκη: “from G4544 (Σάμος) and (Thrace)”); the label follows the Syriac verse form. The Greek writing on this card is a spelling of the name, not its origin."
+        "lang": "Greek",
+        "source": "Strong’s G4543 Σαμοθρᾴκη: “from G4544 (Σάμος) and (Thrace)” (Strong’s Greek Dictionary, 1890, public domain)."
       },
       "kind": "place",
       "count": 1,
@@ -13441,8 +13441,8 @@
       "say": "adramyttium",
       "root": {
         "text": "Adramyttium",
-        "lang": "Aramaic",
-        "source": "No dictionary source names the origin language (Strong’s G98 Ἀδραμυττηνός: “from (a place in Asia Minor)”); the label follows the Syriac verse form. The Greek writing on this card is a spelling of the name, not its origin."
+        "lang": "Greek",
+        "source": "Strong’s G98 Ἀδραμυττηνός: “from (a place in Asia Minor)” (Strong’s Greek Dictionary, 1890, public domain)."
       },
       "kind": "place",
       "count": 1,
@@ -13495,8 +13495,8 @@
       "say": "adriatic",
       "root": {
         "text": "Adriatic",
-        "lang": "Aramaic",
-        "source": "No dictionary source names the origin language (Strong’s G99 Ἀδρίας: “from (a place near its shore)”); the label follows the Syriac verse form. The Greek writing on this card is a spelling of the name, not its origin."
+        "lang": "Greek",
+        "source": "Strong’s G99 Ἀδρίας: “from (a place near its shore)” (Strong’s Greek Dictionary, 1890, public domain)."
       },
       "kind": "place",
       "count": 1,
