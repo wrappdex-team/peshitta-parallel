@@ -18,7 +18,7 @@ import {
   type WordGloss,
   type WordPlace,
 } from "@/lib/scripture";
-import { cardAria, loadWordChapter, parseTag, resolveGloss, tokenAt, type WordToken } from "@/lib/word-data";
+import { cardAria, loadWordChapter, occurrenceGloss, parseTag, tokenAt, type WordToken } from "@/lib/word-data";
 
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { InfoMark } from "@/components/info-mark";
@@ -332,10 +332,11 @@ export function VerseView({
             <div dir="rtl" className="mt-3 flex flex-wrap gap-1.5">
               {(() => {
                 let from = 0;
-                return syriacWords(verse.sy).map((word, i) => {
+                const list = syriacWords(verse.sy);
+                return list.map((word, i) => {
                   const token = tokenAt(tokenList, wordsInVerse, i, verseKey);
                   const hit = glossWord(word, place);
-                  const gloss = resolveGloss({ token: token?.g, fallback: hit?.gloss });
+                  const gloss = occurrenceGloss({ word, next: list[i + 1], token, fallback: hit?.gloss });
                   const at = verse.sy.indexOf(word, from);
                   const start = at < 0 ? from : at;
                   from = start + word.length;
@@ -345,7 +346,7 @@ export function VerseView({
                       key={`${word}-${i}`}
                       type="button"
                       data-word-card=""
-                      aria-label={token ? cardAria(token) : undefined}
+                      aria-label={token ? cardAria(token, gloss) : undefined}
                       onClick={() => onWord(hit, word, place, token ?? undefined)}
                       className="inline-flex max-w-full min-h-11 min-w-11 flex-col items-center gap-1 rounded-md border border-line bg-raised px-2.5 py-2 text-center"
                     >
