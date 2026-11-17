@@ -1,0 +1,23 @@
+[
+{"id":"ܢܦܠ#1","sy":"ܢܦܠ","pos":"V","gloss":"to fall","say":"nfal","tr":"nfal","src":[],"prov":"draft-loop","root":"ܢܦܠ"},
+{"id":"ܡܐܐ#1","sy":"ܡܐܐ","pos":"NUM","gloss":"hundred","say":"ma'a","tr":"māʾā","src":[],"prov":"draft-loop"},
+{"id":"ܝܗܒ#1","sy":"ܝܗܒ","pos":"V","gloss":"to give","say":"yaheb","tr":"yaḇ","src":[],"prov":"draft-loop","root":"ܝܗܒ"},
+{"id":"ܛܒܐ#1","sy":"ܛܒܐ","pos":"ADJ","gloss":"good","say":"tava","tr":"ṭāḇā","src":[],"prov":"draft-loop"},
+{"id":"ܗܢܘܢ#1","sy":"ܗܢܘܢ","pos":"PRON","gloss":"those, they (masc.)","say":"hanon","tr":"hānōn","src":[],"prov":"draft-loop"},
+{"id":"ܐܚܪܢܐ#1","sy":"ܐܚܪܢܐ","pos":"ADJ","gloss":"other, another","say":"ḥrana","tr":"ḥrānā","src":[],"prov":"draft-loop"},
+{"id":"ܪܒܐ#1","sy":"ܪܒܐ","pos":"V","gloss":"to grow, become great","say":"rba","tr":"rḇā","src":[],"prov":"draft-loop","root":"ܪܒܐ"},
+{"id":"ܙܪܥ#1","sy":"ܙܪܥ","pos":"V","gloss":"to sow; Ethpeel, to be sown","say":"zra'","tr":"zraʿ","src":[],"prov":"draft-loop","root":"ܙܪܥ"},
+{"id":"ܫܡܥ#1","sy":"ܫܡܥ","pos":"V","gloss":"to hear","say":"shma'","tr":"šmaʿ","src":[],"prov":"draft-loop","root":"ܫܡܥ"},
+{"id":"ܡܠܬܐ#1","sy":"ܡܠܬܐ","pos":"N","gloss":"word, speech, matter","say":"meltha","tr":"melṯā","src":[],"prov":"draft-loop","root":"ܡܠܠ","gen":"f"},
+{"id":"ܣܠܩ#1","sy":"ܣܠܩ","pos":"V","gloss":"to go up, come up","say":"sleq","tr":"sleq","src":[],"prov":"draft-loop","root":"ܣܠܩ"},
+{"id":"ܩܒܠ#1","sy":"ܩܒܠ","pos":"V","gloss":"to receive (Pael)","say":"qabbel","tr":"qabbel","src":[],"prov":"draft-loop","root":"ܩܒܠ"},
+{"id":"ܥܠ#1","sy":"ܥܠ","pos":"PREP","gloss":"upon, on","say":"al","tr":"ʿal","src":[],"prov":"draft-loop"},
+{"id":"ܐܪܥܐ#1","sy":"ܐܪܥܐ","pos":"N","gloss":"earth, ground","say":"ar'a","tr":"ʾarʿā","src":[],"prov":"draft-loop","gen":"f"},
+{"id":"ܫܬܝܢ#1","sy":"ܫܬܝܢ","pos":"NUM","gloss":"sixty","say":"shtin","tr":"šettīn","src":["jennings-1926","payne-smith-1903","murdock"],"prov":"draft-loop","flag":"needs-scholar: Eastern learner vowels (shtin / shettin / eshtin)"},
+{"id":"ܗܠܝܢ#1","sy":"ܗܠܝܢ","pos":"PRON","gloss":"these","say":"halen","tr":"hālēn","src":[],"prov":"draft-loop"},
+{"id":"ܕܝܢ#1","sy":"ܕܝܢ","pos":"CONJ","gloss":"but, now","say":"den","tr":"dēn","src":[],"prov":"draft-loop"},
+{"id":"ܐܢܘܢ#1","sy":"ܐܢܘܢ","pos":"PRON","gloss":"they (masc.)","say":"enun","tr":"ʾennōn","src":[],"prov":"draft-loop"},
+{"id":"ܦܐܪܐ#1","sy":"ܦܐܪܐ","pos":"N","gloss":"fruit","say":"pe'ra","tr":"peʾrā","src":[],"prov":"draft-loop","gen":"m"},
+{"id":"ܐܝܬ#1","sy":"ܐܝܬ","pos":"PART","gloss":"there is; with a pronoun suffix, 'is'","say":"ith","tr":"ʾīṯ","src":[],"prov":"draft-loop"},
+{"id":"ܬܠܬܝܢ#1","sy":"ܬܠܬܝܢ","pos":"NUM","gloss":"thirty","say":"tlatin","tr":"tlāṯīn","src":[],"prov":"draft-loop"}
+]

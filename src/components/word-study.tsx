@@ -180,8 +180,25 @@ function speakLine(line: Line, rate: number) {
   });
 }
 
+function studyForToken(study: WordStudy, token?: WordToken): WordStudy {
+  if (!token) return study;
+  const number = token.p.split(".")[0] === "NUM";
+  return {
+    ...study,
+    gloss: token.g,
+    roman: token.say || study.roman,
+    note: token.n || study.note,
+    root: number ? [] : study.root,
+    rootKind: number ? "skeleton" : study.rootKind,
+    rootNote: number
+      ? "This is a number. The letters are the spelling, not a verb root."
+      : study.rootNote,
+    kin: number ? [] : study.kin,
+  };
+}
+
 export function WordStudySheet({
-  study,
+  study: rawStudy,
   langs,
   onPick,
   word,
@@ -192,6 +209,7 @@ export function WordStudySheet({
   word?: { token: WordToken; book: string };
 }) {
   const token = word?.token;
+  const study = studyForToken(rawStudy, token);
   const pronounced = token?.say || syriacSay(study);
   const reading = hebrewReading(study);
   const lines = linesFor(study, langs).map((line) =>

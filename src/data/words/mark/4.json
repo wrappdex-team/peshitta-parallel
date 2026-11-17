@@ -1,0 +1,33 @@
+{"book":"mark","ch":4,"v":{"8":[
+{"w":"ܐܚܪܢܐ","l":"ܐܚܪܢܐ#1","p":"ADJ.m.sg.abs","g":"other","say":"ḥrana","tr":"ḥrānā","prov":"draft-loop"},
+{"w":"ܕܝܢ","l":"ܕܝܢ#1","p":"CONJ","g":"but","say":"den","tr":"dēn","prov":"draft-loop"},
+{"w":"ܢܦܠ","l":"ܢܦܠ#1","p":"V.pe.pf.3ms","g":"fell","say":"nfal","tr":"nfal","prov":"draft-loop"},
+{"w":"ܥܠ","l":"ܥܠ#1","p":"PREP","g":"upon","say":"al","tr":"ʿal","prov":"draft-loop"},
+{"w":"ܐܪܥܐ","l":"ܐܪܥܐ#1","p":"N.f.sg.emph","g":"earth","say":"ar'a","tr":"ʾarʿā","prov":"draft-loop"},
+{"w":"ܛܒܬܐ","l":"ܛܒܐ#1","p":"ADJ.f.sg.emph","g":"good","say":"tabta","tr":"ṭāḇtā","prov":"draft-loop","n":"Adjective 'good' agreeing with 'earth', not the noun 'a good thing'."},
+{"w":"ܘܣܠܩ","l":"ܣܠܩ#1","p":"V.pe.pf.3ms","g":"and came up","say":"w'sleq","tr":"w-sleq","prov":"draft-loop","pre":"ܘ","prf":["and"]},
+{"w":"ܘܪܒܐ","l":"ܪܒܐ#1","p":"V.pe.pf.3ms","g":"and grew","say":"w'rba","tr":"w-rḇā","prov":"draft-loop","pre":"ܘ","prf":["and"],"n":"The verb 'grew' here, not the adjective 'great'."},
+{"w":"ܘܝܗܒ","l":"ܝܗܒ#1","p":"V.pe.pf.3ms","g":"and gave","say":"w'yahb","tr":"w-yaḇ","prov":"draft-loop","pre":"ܘ","prf":["and"]},
+{"w":"ܦܐܪܐ","l":"ܦܐܪܐ#1","p":"N.m.pl.abs","g":"fruit","say":"pe'ra","tr":"peʾrē","prov":"draft-loop"},
+{"w":"ܐܝܬ","l":"ܐܝܬ#1","p":"PART","g":"there is","say":"ith","tr":"ʾīṯ","prov":"draft-loop","ctx":"some"},
+{"w":"ܕܬܠܬܝܢ","l":"ܬܠܬܝܢ#1","p":"NUM","g":"of thirty","say":"d'tlatin","tr":"d-tlāṯīn","prov":"draft-loop","pre":"ܕ","prf":["of"],"ctx":"thirty"},
+{"w":"ܘܐܝܬ","l":"ܐܝܬ#1","p":"PART","g":"and there is","say":"w'ith","tr":"w-ʾīṯ","prov":"draft-loop","pre":"ܘ","prf":["and"],"ctx":"and some"},
+{"w":"ܕܫܬܝܢ","l":"ܫܬܝܢ#1","p":"NUM","g":"of sixty","say":"d'shtin","tr":"d-šettīn","prov":"draft-loop","pre":"ܕ","prf":["of"],"ctx":"sixty","flag":"needs-scholar: Eastern learner vowels (shtin / shettin / eshtin)"},
+{"w":"ܘܐܝܬ","l":"ܐܝܬ#1","p":"PART","g":"and there is","say":"w'ith","tr":"w-ʾīṯ","prov":"draft-loop","pre":"ܘ","prf":["and"],"ctx":"and some"},
+{"w":"ܕܡܐܐ","l":"ܡܐܐ#1","p":"NUM","g":"of a hundred","say":"d'ma'a","tr":"d-māʾā","prov":"draft-loop","pre":"ܕ","prf":["of"],"ctx":"a hundred"}
+],"20":[
+{"w":"ܘܗܢܘܢ","l":"ܗܢܘܢ#1","p":"PRON.3mp","g":"and those","say":"w'hanon","tr":"w-hānōn","prov":"draft-loop","pre":"ܘ","prf":["and"]},
+{"w":"ܕܒܐܪܥܐ","l":"ܐܪܥܐ#1","p":"N.f.sg.emph","g":"that on the earth","say":"d'bar'a","tr":"d-b-ʾarʿā","prov":"draft-loop","pre":"ܕܒ","prf":["that","on"],"ctx":"on the ground"},
+{"w":"ܛܒܬܐ","l":"ܛܒܐ#1","p":"ADJ.f.sg.emph","g":"good","say":"tabta","tr":"ṭāḇtā","prov":"draft-loop"},
+{"w":"ܐܙܕܪܥܘ","l":"ܙܪܥ#1","p":"V.ethpe.pf.3mp","g":"they were sown","say":"ezdar'u","tr":"ezdarʿū","prov":"draft-loop"},
+{"w":"ܗܠܝܢ","l":"ܗܠܝܢ#1","p":"PRON","g":"these","say":"halen","tr":"hālēn","prov":"draft-loop"},
+{"w":"ܐܢܘܢ","l":"ܐܢܘܢ#1","p":"PRON.3mp","g":"they","say":"enun","tr":"ʾennōn","prov":"draft-loop"},
+{"w":"ܕܫܡܥܝܢ","l":"ܫܡܥ#1","p":"V.pe.ptc.3mp","g":"who hear","say":"d'shamyin","tr":"d-šāmʿīn","prov":"draft-loop","pre":"ܕ","prf":["who"]},
+{"w":"ܡܠܬܐ","l":"ܡܠܬܐ#1","p":"N.f.sg.emph","g":"the word","say":"meltha","tr":"melṯā","prov":"draft-loop"},
+{"w":"ܘܡܩܒܠܝܢ","l":"ܩܒܠ#1","p":"V.pa.ptc.3mp","g":"and receive","say":"w'mqablin","tr":"w-mqabblīn","prov":"draft-loop","pre":"ܘ","prf":["and"]},
+{"w":"ܘܝܗܒܝܢ","l":"ܝܗܒ#1","p":"V.pe.ptc.3mp","g":"and give","say":"w'yahbin","tr":"w-yāhḇīn","prov":"draft-loop","pre":"ܘ","prf":["and"]},
+{"w":"ܦܐܪܐ","l":"ܦܐܪܐ#1","p":"N.m.pl.abs","g":"fruit","say":"pe'ra","tr":"peʾrē","prov":"draft-loop"},
+{"w":"ܒܬܠܬܝܢ","l":"ܬܠܬܝܢ#1","p":"NUM","g":"by thirty","say":"b'tlatin","tr":"ba-tlāṯīn","prov":"draft-loop","pre":"ܒ","prf":["by"]},
+{"w":"ܘܒܫܬܝܢ","l":"ܫܬܝܢ#1","p":"NUM","g":"and by sixty","say":"w'bashtin","tr":"w-ba-šettīn","prov":"draft-loop","pre":"ܘܒ","prf":["and","by"],"flag":"needs-scholar: Eastern vowels, and whether b is spirantized here"},
+{"w":"ܘܒܡܐܐ","l":"ܡܐܐ#1","p":"NUM","g":"and by a hundred","say":"w'bama'a","tr":"w-ba-māʾā","prov":"draft-loop","pre":"ܘܒ","prf":["and","by"]}
+]}}
