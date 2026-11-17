@@ -4561,6 +4561,11 @@
       ],
       "known": "Peter, Petros",
       "say": "Keefa",
+      "root": {
+        "text": "Keefa",
+        "lang": "Aramaic",
+        "source": "Strong’s G2786 Κηφᾶς: “of Chaldee origin (compare H3710)” (Strong’s Greek Dictionary, 1890, public domain)."
+      },
       "kind": "person",
       "count": 92,
       "ref": "matthew 4:18",
@@ -4797,6 +4802,11 @@
       ],
       "known": "Lasea",
       "say": "Lasa",
+      "root": {
+        "text": "Lasa",
+        "lang": "Aramaic",
+        "source": "No dictionary source names the origin language (Strong’s G2996 Λασαία: “of uncertain origin”); the label follows the Syriac verse form. The Greek writing on this card is a spelling of the name, not its origin."
+      },
       "kind": "place",
       "count": 1,
       "ref": "acts 27:8",
@@ -5894,6 +5904,11 @@
       ],
       "known": "Egypt",
       "say": "Mitsrayin",
+      "root": {
+        "text": "Mitsrayin",
+        "lang": "Aramaic",
+        "source": "No dictionary source names the origin language (Strong’s G125 Αἴγυπτος: “of uncertain derivation”); the label follows the Syriac verse form. The Hebrew writing on this card is a spelling of the name, not its origin."
+      },
       "kind": "place",
       "count": 23,
       "ref": "matthew 2:13",
@@ -6231,6 +6246,11 @@
       ],
       "known": "Nazareth",
       "say": "Natsrath",
+      "root": {
+        "text": "Natsrath",
+        "lang": "Aramaic",
+        "source": "No dictionary source names the origin language (Strong’s G3478 Ναζαρέθ: “of uncertain derivation”); the label follows the Syriac verse form. The Hebrew writing on this card is a spelling of the name, not its origin."
+      },
       "kind": "place",
       "count": 13,
       "ref": "matthew 2:23",
@@ -6254,6 +6274,11 @@
       ],
       "known": "Nazarene",
       "say": "Natsraya",
+      "root": {
+        "text": "Natsraya",
+        "lang": "Aramaic",
+        "source": "No dictionary source names the origin language (Strong’s G3480 Ναζωραῖος: “from G3478 (Ναζαρέθ)”; Strong’s G3478 Ναζαρέθ: “of uncertain derivation”); the label follows the Syriac verse form. The Greek writing on this card is a spelling of the name, not its origin."
+      },
       "kind": "people",
       "count": 21,
       "ref": "matthew 2:23",
@@ -8177,6 +8202,11 @@
       ],
       "known": "Syracuse",
       "say": "Sarqusa",
+      "root": {
+        "text": "Sarqusa",
+        "lang": "Aramaic",
+        "source": "No dictionary source names the origin language (Strong’s G4946 Συράκουσαι: “plural of uncertain derivation”); the label follows the Syriac verse form. The Greek writing on this card is a spelling of the name, not its origin."
+      },
       "kind": "place",
       "count": 1,
       "ref": "acts 28:12",
@@ -11001,6 +11031,11 @@
       ],
       "known": "Narcissus",
       "say": "narcissus",
+      "root": {
+        "text": "Narcissus",
+        "lang": "Aramaic",
+        "source": "No dictionary source names the origin language (Strong’s G3488 Νάρκισσος: “a flower of the same name” (the open-data text drops the Greek word it derives from)); the label follows the Syriac verse form. The Greek writing on this card is a spelling of the name, not its origin."
+      },
       "kind": "person",
       "count": 1,
       "ref": "romans 16:11",
@@ -11077,6 +11112,11 @@
       ],
       "known": "Persis",
       "say": "persis",
+      "root": {
+        "text": "Persis",
+        "lang": "Aramaic",
+        "source": "No dictionary source names the origin language (Strong’s G4069 Περσίς gives no derivation; it defines the name as “a Persian woman; Persis, a Christian female”); the label follows the Syriac verse form. The Greek writing on this card is a spelling of the name, not its origin."
+      },
       "kind": "person",
       "count": 1,
       "ref": "romans 16:12",
@@ -11473,6 +11513,11 @@
       ],
       "known": "Theudas",
       "say": "theudas",
+      "root": {
+        "text": "Theudas",
+        "lang": "Aramaic",
+        "source": "No dictionary source names the origin language (Strong’s G2333 Θευδᾶς: “of uncertain origin”); the label follows the Syriac verse form. The Greek writing on this card is a spelling of the name, not its origin."
+      },
       "kind": "person",
       "count": 1,
       "ref": "acts 5:36",
@@ -11598,6 +11643,11 @@
       ],
       "known": "Manaen",
       "say": "manael",
+      "root": {
+        "text": "Manael",
+        "lang": "Aramaic",
+        "source": "No dictionary source names the origin language (Strong’s G3127 Μαναήν: “of uncertain origin”); the label follows the Syriac verse form. The Greek writing on this card is a spelling of the name, not its origin."
+      },
       "kind": "person",
       "count": 1,
       "ref": "acts 13:1",
@@ -12447,6 +12497,11 @@
       ],
       "known": "Mytilene",
       "say": "mitylene",
+      "root": {
+        "text": "Mitylene",
+        "lang": "Aramaic",
+        "source": "No dictionary source names the origin language (Strong’s G3412 Μιτυλήνη: “… (abounding in shellfish)” (the open-data text drops the Greek word it derives from)); the label follows the Syriac verse form. The Greek writing on this card is a spelling of the name, not its origin."
+      },
       "kind": "place",
       "count": 1,
       "ref": "acts 20:14",
@@ -12469,6 +12524,11 @@
       ],
       "known": "Chios",
       "say": "chios",
+      "root": {
+        "text": "Chios",
+        "lang": "Aramaic",
+        "source": "No dictionary source names the origin language (Strong’s G5508 Χίος: “of uncertain derivation”); the label follows the Syriac verse form. The Greek writing on this card is a spelling of the name, not its origin."
+      },
       "kind": "place",
       "count": 1,
       "ref": "acts 20:15",
@@ -12491,6 +12551,11 @@
       ],
       "known": "Samos",
       "say": "samos",
+      "root": {
+        "text": "Samos",
+        "lang": "Aramaic",
+        "source": "No dictionary source names the origin language (Strong’s G4544 Σάμος: “of uncertain affinity”); the label follows the Syriac verse form. The Greek writing on this card is a spelling of the name, not its origin."
+      },
       "kind": "place",
       "count": 1,
       "ref": "acts 20:15",
@@ -12513,6 +12578,11 @@
       ],
       "known": "Trogyllium",
       "say": "trogyllium",
+      "root": {
+        "text": "Trogyllium",
+        "lang": "Aramaic",
+        "source": "No dictionary source names the origin language (Strong’s G5175 Τρωγύλλιον: “of uncertain derivation”); the label follows the Syriac verse form. The Greek writing on this card is a spelling of the name, not its origin."
+      },
       "kind": "place",
       "count": 1,
       "ref": "acts 20:15",
@@ -12535,6 +12605,11 @@
       ],
       "known": "Cos",
       "say": "qo",
+      "root": {
+        "text": "Qo",
+        "lang": "Aramaic",
+        "source": "No dictionary source names the origin language (Strong’s G2972 Κώς: “of uncertain origin”); the label follows the Syriac verse form. The Greek writing on this card is a spelling of the name, not its origin."
+      },
       "kind": "place",
       "count": 1,
       "ref": "acts 21:1",

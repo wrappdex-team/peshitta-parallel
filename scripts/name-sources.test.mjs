@@ -26,7 +26,9 @@ test("committed sources match names.json", () => {
   assertNameSourcesFresh(pack, ids, NAMES);
   const junia = NAMES.find((row) => row.id === "junia");
   assert.equal(pack.junia, junia.root.source);
-  assert.equal(pack.keefa, undefined);
+  const keefa = NAMES.find((row) => row.id === "keefa");
+  assert.equal(pack.keefa, keefa.root.source);
+  assert.match(pack.keefa, /G2786/);
 });
 
 test("editing a source in names.json without regenerating fails the check", () => {
