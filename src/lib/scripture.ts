@@ -1,5 +1,4 @@
 import catalog from "@/data/catalog.json";
-import lexicon from "@/data/lexicon.json";
 
 export type Verse = {
   v: number;
@@ -17,7 +16,19 @@ export type BookFile = {
 
 export type LexEntry = { g: string; r: string; n: string };
 
-const lex = lexicon as Record<string, LexEntry>;
+let lex: Record<string, LexEntry> = {};
+let lexiconTask: Promise<void> | null = null;
+
+/** Lexicon stays out of the entry chunk. Callers on /read and /words await this. */
+export function loadLexicon() {
+  lexiconTask ??= (async () => {
+    const mod = await import("@/data/lexicon.json");
+    lex = mod.default as Record<string, LexEntry>;
+    rootIndex = null;
+    applyOverrides();
+  })();
+  return lexiconTask;
+}
 
 const loaders = import.meta.glob("../data/nt/*.json", {
   import: "default",
@@ -370,13 +381,21 @@ export type WordPlace = { book: string; chapter: number; verse: number };
  */
 /** Per-verse gloss overrides registered from src/data/gloss-overrides.json (reader only). */
 const EXTRA_SENSE: Record<string, LexEntry> = {};
+let overrideSource: Record<string, string> | null = null;
 
-export function registerGlossOverrides(map: Record<string, string>) {
-  for (const [key, gloss] of Object.entries(map)) {
+function applyOverrides() {
+  for (const key of Object.keys(EXTRA_SENSE)) delete EXTRA_SENSE[key];
+  if (!overrideSource) return;
+  for (const [key, gloss] of Object.entries(overrideSource)) {
     const word = key.slice(key.lastIndexOf(":") + 1);
     const base = lex[word];
     EXTRA_SENSE[key] = { g: gloss, r: base?.r ?? "", n: base?.n ?? "" };
   }
+}
+
+export function registerGlossOverrides(map: Record<string, string>) {
+  overrideSource = map;
+  applyOverrides();
 }
 
 const SENSE_AT: Record<string, LexEntry> = {

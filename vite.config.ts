@@ -198,6 +198,19 @@ export default defineConfig(({ command, isPreview }) => ({
     strictPort: true,
   },
   resolve: { tsconfigPaths: true },
+  build: {
+    rollupOptions: {
+      output: {
+        chunkFileNames(info) {
+          const modules = info.moduleIds;
+          const list = Array.isArray(modules) ? modules.join("\n") : modules ? [...modules].join("\n") : "";
+          const ids = `${info.facadeModuleId ?? ""}\n${list}`;
+          if (ids.includes("/data/words/") || ids.includes("word-files")) return "assets/words/[name]-[hash].js";
+          return "assets/[name]-[hash].js";
+        },
+      },
+    },
+  },
   plugins: [
     stripNameRootSources(),
     pgliteBootstrapPlugin(),

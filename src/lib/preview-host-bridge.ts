@@ -5,7 +5,6 @@
  * Top-level runs (download/export, local `npm run dev`, deployed sites) noop.
  */
 
-import { z } from "zod";
 import { CONNECTOR_TOKEN_READY_EVENT } from "./app-data/types";
 import { resolveParentEmbedderOrigin } from "./preview-embedder-origin";
 
@@ -18,29 +17,32 @@ export {
 export const PREVIEW_BRIDGE_CHANNEL = "grok-preview-bridge" as const;
 export const PREVIEW_BRIDGE_VERSION = 1 as const;
 
-const EnvelopeSchema = z.object({
-  channel: z.literal(PREVIEW_BRIDGE_CHANNEL),
-  version: z.number().int().positive(),
-  type: z.string().min(1),
-});
+let schemaTask: ReturnType<typeof buildSchemas> | null = null;
 
-const HelloSchema = EnvelopeSchema.extend({
-  type: z.literal("hello"),
-});
+function buildSchemas() {
+  return import("zod").then(({ z }) => {
+    const EnvelopeSchema = z.object({
+      channel: z.literal(PREVIEW_BRIDGE_CHANNEL),
+      version: z.number().int().positive(),
+      type: z.string().min(1),
+    });
+    return {
+      EnvelopeSchema,
+      HelloSchema: EnvelopeSchema.extend({ type: z.literal("hello") }),
+      NavigateSchema: EnvelopeSchema.extend({ type: z.literal("navigate"), path: z.string().min(1) }),
+      HistorySchema: EnvelopeSchema.extend({
+        type: z.literal("history"),
+        delta: z.union([z.literal(-1), z.literal(1)]),
+      }),
+      ConnectorTokenReadySchema: EnvelopeSchema.extend({ type: z.literal("connector-token-ready") }),
+    };
+  });
+}
 
-const NavigateSchema = EnvelopeSchema.extend({
-  type: z.literal("navigate"),
-  path: z.string().min(1),
-});
-
-const HistorySchema = EnvelopeSchema.extend({
-  type: z.literal("history"),
-  delta: z.union([z.literal(-1), z.literal(1)]),
-});
-
-const ConnectorTokenReadySchema = EnvelopeSchema.extend({
-  type: z.literal("connector-token-ready"),
-});
+function bridgeSchemas() {
+  schemaTask ??= buildSchemas();
+  return schemaTask;
+}
 
 export type PreviewHostBridgeOptions = {
   /** Prefer the app router when available; falls back to history.pushState. */
@@ -182,12 +184,14 @@ export function installPreviewHostBridge(
 
   // Host re-handshake: it may have (re)mounted after our install-time
   // announce, or asked before we hydrated. Announce again.
-  const onHello = (data: unknown) => {
+  const onHello = async (data: unknown) => {
+    const { HelloSchema } = await bridgeSchemas();
     if (!HelloSchema.safeParse(data).success) return;
     announce();
   };
 
-  const onNavigate = (data: unknown) => {
+  const onNavigate = async (data: unknown) => {
+    const { NavigateSchema } = await bridgeSchemas();
     const parsed = NavigateSchema.safeParse(data);
     if (!parsed.success) return;
     navigate(parsed.data.path);
@@ -195,7 +199,8 @@ export function installPreviewHostBridge(
     queueMicrotask(reportLocation);
   };
 
-  const onHistory = (data: unknown) => {
+  const onHistory = async (data: unknown) => {
+    const { HistorySchema } = await bridgeSchemas();
     const parsed = HistorySchema.safeParse(data);
     if (!parsed.success) return;
     // Do not history.go(-1) off the first entry — that leaves the preview.
@@ -204,7 +209,8 @@ export function installPreviewHostBridge(
     window.history.go(parsed.data.delta);
   };
 
-  const onConnectorTokenReady = (data: unknown) => {
+  const onConnectorTokenReady = async (data: unknown) => {
+    const { ConnectorTokenReadySchema } = await bridgeSchemas();
     if (!ConnectorTokenReadySchema.safeParse(data).success) return;
     window.dispatchEvent(new Event(CONNECTOR_TOKEN_READY_EVENT));
   };
@@ -216,10 +222,11 @@ export function installPreviewHostBridge(
     ["connector-token-ready", onConnectorTokenReady],
   ]);
 
-  const onMessage = (event: MessageEvent) => {
+  const onMessage = async (event: MessageEvent) => {
     if (event.source !== window.parent) return;
     if (event.origin !== parentOrigin) return;
 
+    const { EnvelopeSchema } = await bridgeSchemas();
     const envelope = EnvelopeSchema.safeParse(event.data);
     if (!envelope.success || envelope.data.version !== PREVIEW_BRIDGE_VERSION) return;
     hostMessageHandlers.get(envelope.data.type)?.(event.data);

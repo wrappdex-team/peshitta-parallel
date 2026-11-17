@@ -13,11 +13,13 @@ import {
   TERM_NOTES,
   chapterCount,
   loadBook,
+  loadLexicon,
   studyWord,
   type WordGloss,
   type WordPlace,
   type WordStudy,
 } from "@/lib/scripture";
+import type { WordToken } from "@/lib/word-data";
 import { useOfflineChapter } from "@/lib/use-offline";
 import { versesFromDevice } from "@/lib/offline";
 import { requestReadingIntro, usePrefs } from "@/lib/use-prefs";
@@ -47,7 +49,7 @@ export const Route = createFileRoute("/read/$book/$chapter")({
       throw notFound();
     }
     try {
-      const doc = await loadBook(params.book);
+      const [doc] = await Promise.all([loadBook(params.book), loadLexicon()]);
       return { verses: doc.chapters[Number(params.chapter) - 1] ?? [] };
     } catch {
       return { verses: null };
@@ -112,7 +114,7 @@ function Reader() {
   const parallel = primary.rows;
   const parallel2 = secondary.rows;
   const [menu, setMenu] = useState(false);
-  const [sheet, setSheet] = useState<{ title: string; roman: string; body: string } | { study: WordStudy } | null>(null);
+  const [sheet, setSheet] = useState<{ title: string; roman: string; body: string } | { study: WordStudy; word?: { token: WordToken; book: string } } | null>(null);
   const [heard, setHeard] = useState<number | null>(null);
   const [studio, setStudio] = useState(false);
   const [picked, setPicked] = useState("");
@@ -249,8 +251,11 @@ function Reader() {
     window.scrollTo(0, 0);
   }
 
-  function onWord(_info: WordGloss | null, surface: string, place?: WordPlace) {
-    setSheet({ study: studyWord(surface, place) });
+  function onWord(_info: WordGloss | null, surface: string, place?: WordPlace, token?: WordToken) {
+    setSheet({
+      study: studyWord(surface, place),
+      ...(token && place ? { word: { token, book: place.book } } : {}),
+    });
   }
 
   function onTerm(key: string) {
@@ -454,6 +459,7 @@ function Reader() {
                 <Suspense fallback={null}>
                 <WordStudySheet
                   study={sheet.study}
+                  word={sheet.word}
                   langs={[languageById(prefs.lang).id, ...(prefs.lang2 !== "none" ? [languageById(prefs.lang2).id] : [])]}
                   onPick={(surface) => setSheet({ study: studyWord(surface) })}
                 />
