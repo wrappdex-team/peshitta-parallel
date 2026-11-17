@@ -42,7 +42,7 @@ test("sources stay out of the route bundle until opened, and the sheet prints", 
     console.log(`names dom before sources ${domBefore}`);
     assert.ok(domBefore <= 9000, `DOM ${domBefore}`);
     assert.equal(await page.locator("#keefa [data-name-source]").count(), 1);
-    assert.equal(await page.locator("#yochanan [data-name-source]").count(), 0);
+    assert.equal(await page.locator("#eliyahu [data-name-source]").count(), 0);
     assert.equal(await page.locator("[data-name-source-text]").count(), 0);
 
     const earlyJs = await page.evaluate(() =>
