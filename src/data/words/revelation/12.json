@@ -1,0 +1,19 @@
+{"book":"revelation","ch":12,"v":{"6":[
+{"w":"ܘܐܢܬܬܐ","l":"ܐܢܬܬܐ#1","p":"N.f.sg.emph","g":"and the woman","say":"w'atteta","tr":"w-ʾattəṯā","prov":"draft-loop","pre":"ܘ","prf":["and"]},
+{"w":"ܥܪܩܬ","l":"ܥܪܩ#1","p":"V.pe.pf.3fs","g":"she fled","say":"ʿraqat","tr":"ʿraqat","prov":"draft-loop"},
+{"w":"ܠܚܘܪܒܐ","l":"ܚܘܪܒܐ#1","p":"N.m.sg.emph","g":"to the wilderness","say":"l'ḥurba","tr":"l-ḥurbā","prov":"draft-loop","pre":"ܠ","prf":["to"]},
+{"w":"ܐܬܪ","l":"ܐܬܪ#1","p":"ADV","g":"where","say":"atar","tr":"aṯar","prov":"draft-loop"},
+{"w":"ܕܐܝܬ","l":"ܐܝܬ#1","p":"PART","g":"which is","say":"d'ith","tr":"d-ʾīṯ","prov":"draft-loop","pre":"ܕ","prf":["which"],"ctx":"where there was"},
+{"w":"ܗܘܐ","l":"ܗܘܐ#1","p":"V.pe.pf.3ms","g":"was","say":"hwa","tr":"hwā","prov":"draft-loop"},
+{"w":"ܠܗ","l":"ܠ#1","p":"PREP","g":"to her","say":"lah","tr":"lāh","prov":"draft-loop","pre":"ܠ","prf":["to"],"suf":"ܗ","sfn":"her (3rd fem. sg.)","n":"The woman is feminine; not 'to him'."},
+{"w":"ܬܡܢ","l":"ܬܡܢ#1","p":"ADV","g":"there","say":"tamen","tr":"tammān","prov":"draft-loop"},
+{"w":"ܕܘܟܬܐ","l":"ܕܘܟܬܐ#1","p":"N.f.sg.emph","g":"a place","say":"dukkta","tr":"dukktā","prov":"draft-loop"},
+{"w":"ܕܡܛܝܒܐ","l":"ܛܝܒ#1","p":"V.pa.ptcp.3fs","g":"that is prepared","say":"d'mtayba","tr":"d-mṭayyḇā","prov":"draft-loop","pre":"ܕ","prf":["that"]},
+{"w":"ܡܢ","l":"ܡܢ#1","p":"PREP","g":"from","say":"men","tr":"men","prov":"draft-loop","ctx":"by"},
+{"w":"ܐܠܗܐ","l":"ܐܠܗܐ#1","p":"N.m.sg.emph","g":"Elohim","say":"Alaha","tr":"ʾalāhā","prov":"draft-loop","n":"The Syriac word is Alaha; this edition's English prints Elohim."},
+{"w":"ܕܢܬܪܣܘܢܗ","l":"ܪܣܐ#1","p":"V.pe.impf.3mp","g":"that they nourish her","say":"d'netarsunah","tr":"d-neṯarsūnāh","prov":"draft-loop","pre":"ܕ","prf":["that"],"suf":"ܗ","sfn":"her (3rd fem. sg.)"},
+{"w":"ܝܘܡܝܢ","l":"ܝܘܡܐ#1","p":"N.m.pl.abs","g":"days","say":"yawmin","tr":"yawmīn","prov":"draft-loop"},
+{"w":"ܐܠܦ","l":"ܐܠܦ#1","p":"NUM","g":"thousand","say":"alap","tr":"alp","prov":"draft-loop"},
+{"w":"ܘܡܐܬܝܢ","l":"ܡܐܬܝܢ#1","p":"NUM","g":"and two hundred","say":"w'matyen","tr":"w-māṯyēn","prov":"draft-loop","pre":"ܘ","prf":["and"]},
+{"w":"ܘܫܬܝܢ","l":"ܫܬܝܢ#1","p":"NUM","g":"and sixty","say":"w'shtin","tr":"w-šettīn","prov":"draft-loop","pre":"ܘ","prf":["and"],"flag":"needs-scholar: Eastern learner vowels (shtin / shettin / eshtin)"}
+]}}

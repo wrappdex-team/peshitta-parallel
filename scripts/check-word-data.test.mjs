@@ -79,7 +79,7 @@ test("a feminine 3rd person glossed he fails", () => {
 
 test("who or that glossed of fails", () => {
   has(issuesOf((copy) => {
-    const chapter = copy.chapters.find((row) => row.book === "matthew");
+    const chapter = copy.chapters.find((row) => row.book === "matthew" && row.ch === 6);
     chapter.body.v["9"][5].g = "of heaven";
   }), "of-gloss");
 });

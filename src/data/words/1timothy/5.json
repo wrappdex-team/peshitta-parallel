@@ -1,0 +1,17 @@
+{"book":"1timothy","ch":5,"v":{"9":[
+{"w":"ܗܘܝܬ","l":"ܗܘܐ#1","p":"V.pe.pf.2ms","g":"be","say":"hwit","tr":"hwīt","prov":"draft-loop","ctx":"elect","n":"2nd person: 'be (you)', used with the next verb as 'elect'. Not 1cs 'I was'.","flag":"needs-scholar: 2ms 'be' (elect) vs 1cs 'I was'"},
+{"w":"ܗܟܝܠ","l":"ܗܟܝܠ#1","p":"CONJ","g":"therefore","say":"hakhel","tr":"hāḵēl","prov":"draft-loop"},
+{"w":"ܓܒܐ","l":"ܓܒܐ#1","p":"V.pe.impv.2ms","g":"choose","say":"gbi","tr":"gḇī","prov":"draft-loop","ctx":"elect"},
+{"w":"ܐܪܡܠܬܐ","l":"ܐܪܡܠܬܐ#1","p":"N.f.sg.emph","g":"the widow","say":"armalta","tr":"armaltā","prov":"draft-loop"},
+{"w":"ܐܝܕܐ","l":"ܐܝܕܐ#1","p":"PRON","g":"who","say":"ayda","tr":"ʾaydā","prov":"draft-loop","n":"Here the relative 'who/which', not the noun 'hand' (same letters)."},
+{"w":"ܕܠܐ","l":"ܠܐ#1","p":"PART","g":"who not","say":"d'la","tr":"d-lā","prov":"draft-loop","pre":"ܕ","prf":["who"],"ctx":"who is not"},
+{"w":"ܒܨܝܪܐ","l":"ܒܨܝܪܐ#1","p":"ADJ.m.sg.abs","g":"less","say":"bṣira","tr":"bṣīrā","prov":"draft-loop"},
+{"w":"ܡܢ","l":"ܡܢ#1","p":"PREP","g":"from","say":"men","tr":"men","prov":"draft-loop","ctx":"than"},
+{"w":"ܫܬܝܢ","l":"ܫܬܝܢ#1","p":"NUM","g":"sixty","say":"shtin","tr":"šettīn","prov":"draft-loop","flag":"needs-scholar: Eastern learner vowels (shtin / shettin / eshtin)"},
+{"w":"ܫܢܝܢ","l":"ܫܢܬܐ#1","p":"N.f.pl.abs","g":"years","say":"shnin","tr":"šnīn","prov":"draft-loop"},
+{"w":"ܐܝܕܐ","l":"ܐܝܕܐ#1","p":"PRON","g":"who","say":"ayda","tr":"ʾaydā","prov":"draft-loop","n":"Again the relative 'who', not 'hand'."},
+{"w":"ܕܠܚܕ","l":"ܚܕ#1","p":"NUM","g":"who of one","say":"d'lḥad","tr":"d-l-ḥaḏ","prov":"draft-loop","pre":"ܕܠ","prf":["who","of"],"ctx":"of one"},
+{"w":"ܗܘ","l":"ܗܘ#1","p":"PRON.3ms","g":"that","say":"hu","tr":"hū","prov":"draft-loop"},
+{"w":"ܓܒܪܐ","l":"ܓܒܪܐ#1","p":"N.m.sg.emph","g":"man","say":"gabra","tr":"gaḇrā","prov":"draft-loop"},
+{"w":"ܗܘܬ","l":"ܗܘܐ#1","p":"V.pe.pf.3fs","g":"she was","say":"hwat","tr":"hwāt","prov":"draft-loop"}
+]}}

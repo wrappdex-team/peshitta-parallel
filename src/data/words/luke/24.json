@@ -1,0 +1,17 @@
+{"book":"luke","ch":24,"v":{"13":[
+{"w":"ܘܗܐ","l":"ܗܐ#1","p":"PART","g":"and behold","say":"w'ha","tr":"w-hā","prov":"draft-loop","pre":"ܘ","prf":["and"]},
+{"w":"ܬܪܝܢ","l":"ܬܪܝܢ#1","p":"NUM","g":"two","say":"tren","tr":"trēn","prov":"draft-loop"},
+{"w":"ܡܢܗܘܢ","l":"ܡܢ#1","p":"PREP","g":"from them","say":"menhon","tr":"menhon","prov":"draft-loop","suf":"ܗܘܢ","sfn":"them (masc. pl.)"},
+{"w":"ܒܗ","l":"ܗ#1","p":"PRON.3ms","g":"on it","say":"beh","tr":"beh","prov":"draft-loop","pre":"ܒ","prf":["on"],"suf":"ܗ","sfn":"it (3rd masc. sg.)","ctx":"on that"},
+{"w":"ܒܝܘܡܐ","l":"ܝܘܡܐ#1","p":"N.m.sg.emph","g":"on the day","say":"b'yawma","tr":"b-yawmā","prov":"draft-loop","pre":"ܒ","prf":["on"]},
+{"w":"ܐܙܠܝܢ","l":"ܐܙܠ#1","p":"V.pe.ptc.3mp","g":"going","say":"azlin","tr":"ʾāzlīn","prov":"draft-loop"},
+{"w":"ܗܘܘ","l":"ܗܘܐ#1","p":"V.pe.pf.3mp","g":"they were","say":"hwaw","tr":"hwaw","prov":"draft-loop"},
+{"w":"ܠܩܪܝܬܐ","l":"ܩܪܝܬܐ#1","p":"N.f.sg.emph","g":"to a village","say":"l'qrita","tr":"l-qritā","prov":"draft-loop","pre":"ܠ","prf":["to"],"n":"The village (Emmaus), not 'the field'. The lexicon's fixed gloss 'the field' is wrong here."},
+{"w":"ܕܫܡܗ","l":"ܫܡܐ#1","p":"N.m.sg","g":"whose name","say":"d'shmeh","tr":"d-šmeh","prov":"draft-loop","pre":"ܕ","prf":["of"],"suf":"ܗ","sfn":"its (3rd masc. sg.)"},
+{"w":"ܥܡܐܘܣ","l":"ܥܡܐܘܣ#1","p":"NAME","g":"Emmaus","say":"Emmaus","tr":"ʿemmāwus","prov":"draft-loop"},
+{"w":"ܘܦܪܝܩܐ","l":"ܦܪܝܩܐ#1","p":"ADJ.m.sg.abs","g":"and distant","say":"w'priqa","tr":"w-prīqā","prov":"draft-loop","pre":"ܘ","prf":["and"]},
+{"w":"ܡܢ","l":"ܡܢ#1","p":"PREP","g":"from","say":"men","tr":"men","prov":"draft-loop"},
+{"w":"ܐܘܪܫܠܡ","l":"ܐܘܪܫܠܡ#1","p":"NAME","g":"Urishlim","say":"Urishlim","tr":"urišlem","prov":"draft-loop"},
+{"w":"ܐܣܛܕܘܬܐ","l":"ܐܣܛܕܘܬܐ#1","p":"N.f.pl.emph","g":"stadia","say":"estadwata","tr":"esṭadwāṯā","prov":"draft-loop"},
+{"w":"ܫܬܝܢ","l":"ܫܬܝܢ#1","p":"NUM","g":"sixty","say":"shtin","tr":"šettīn","prov":"draft-loop","flag":"needs-scholar: Eastern learner vowels (shtin / shettin / eshtin)"}
+]}}

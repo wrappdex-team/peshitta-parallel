@@ -1,0 +1,16 @@
+[
+{"id":"ܦܪܝܩܐ#1","sy":"ܦܪܝܩܐ","pos":"ADJ","gloss":"distant, far","say":"priqa","tr":"prīqā","src":[],"prov":"draft-loop"},
+{"id":"ܗܐ#1","sy":"ܗܐ","pos":"PART","gloss":"behold","say":"ha","tr":"hā","src":[],"prov":"draft-loop"},
+{"id":"ܐܘܪܫܠܡ#1","sy":"ܐܘܪܫܠܡ","pos":"NAME","gloss":"Urishlim, Jerusalem","say":"Urishlim","tr":"urišlem","src":[],"prov":"draft-loop"},
+{"id":"ܐܙܠ#1","sy":"ܐܙܠ","pos":"V","gloss":"to go, walk","say":"ezal","tr":"ʾezal","src":[],"prov":"draft-loop","root":"ܐܙܠ"},
+{"id":"ܥܡܐܘܣ#1","sy":"ܥܡܐܘܣ","pos":"NAME","gloss":"Emmaus","say":"Emmaus","tr":"ʿemmāwus","src":[],"prov":"draft-loop"},
+{"id":"ܡܢ#1","sy":"ܡܢ","pos":"PREP","gloss":"from, than","say":"men","tr":"men","src":[],"prov":"draft-loop"},
+{"id":"ܫܬܝܢ#1","sy":"ܫܬܝܢ","pos":"NUM","gloss":"sixty","say":"shtin","tr":"šettīn","src":["jennings-1926","payne-smith-1903","murdock"],"prov":"draft-loop","flag":"needs-scholar: Eastern learner vowels (shtin / shettin / eshtin)"},
+{"id":"ܫܡܐ#1","sy":"ܫܡܐ","pos":"N","gloss":"name","say":"shma","tr":"šmā","src":[],"prov":"draft-loop","gen":"m"},
+{"id":"ܩܪܝܬܐ#1","sy":"ܩܪܝܬܐ","pos":"N","gloss":"village, town","say":"qrita","tr":"qritā","src":[],"prov":"draft-loop","gen":"f"},
+{"id":"ܗܘܐ#1","sy":"ܗܘܐ","pos":"V","gloss":"to be, become","say":"hwa","tr":"hwā","src":[],"prov":"draft-loop","root":"ܗܘܐ"},
+{"id":"ܬܪܝܢ#1","sy":"ܬܪܝܢ","pos":"NUM","gloss":"two","say":"tren","tr":"trēn","src":[],"prov":"draft-loop"},
+{"id":"ܝܘܡܐ#1","sy":"ܝܘܡܐ","pos":"N","gloss":"day","say":"yawma","tr":"yawmā","src":[],"prov":"draft-loop","gen":"m"},
+{"id":"ܐܣܛܕܘܬܐ#1","sy":"ܐܣܛܕܘܬܐ","pos":"N","gloss":"stadia, furlongs","say":"estadwata","tr":"esṭadwāṯā","src":[],"prov":"draft-loop","gen":"f"},
+{"id":"ܗ#1","sy":"ܗ","pos":"PRON","gloss":"him, it (3ms suffix as a free gloss stem)","say":"eh","tr":"eh","src":[],"prov":"draft-loop"}
+]

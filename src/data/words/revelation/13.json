@@ -1,0 +1,18 @@
+{"book":"revelation","ch":13,"v":{"18":[
+{"w":"ܗܪܟܐ","l":"ܗܪܟܐ#1","p":"ADV","g":"here","say":"harka","tr":"hārkā","prov":"draft-loop"},
+{"w":"ܐܝܬܝܗ","l":"ܐܝܬ#1","p":"PART.3fs","g":"it is","say":"itayh","tr":"ʾīṯayh","prov":"draft-loop","suf":"ܗ","sfn":"it (3rd fem. sg.)"},
+{"w":"ܚܟܡܬܐ","l":"ܚܟܡܬܐ#1","p":"N.f.sg.emph","g":"wisdom","say":"ḥekmta","tr":"ḥekmtā","prov":"draft-loop"},
+{"w":"ܘܕܐܝܬ","l":"ܐܝܬ#1","p":"PART","g":"and who has","say":"w'dith","tr":"w-d-ʾīṯ","prov":"draft-loop","pre":"ܘܕ","prf":["and","who"]},
+{"w":"ܒܗ","l":"ܗ#1","p":"PRON.3ms","g":"in him","say":"beh","tr":"beh","prov":"draft-loop","pre":"ܒ","prf":["in"],"suf":"ܗ","sfn":"him (3rd masc. sg.)"},
+{"w":"ܗܘܢܐ","l":"ܗܘܢܐ#1","p":"N.m.sg.emph","g":"intelligence","say":"huna","tr":"hawnā","prov":"draft-loop","ctx":"understanding"},
+{"w":"ܢܚܫܒܝܘܗܝ","l":"ܚܫܒ#1","p":"V.pe.impf.3ms","g":"let him calculate it","say":"nehshbohi","tr":"neḥšḇōhi","prov":"draft-loop","suf":"ܘܗܝ","sfn":"it (3rd masc. sg.)"},
+{"w":"ܠܡܢܝܢܐ","l":"ܡܢܝܢܐ#1","p":"N.m.sg.emph","g":"to the number","say":"l'menyana","tr":"l-menyānā","prov":"draft-loop","pre":"ܠ","prf":["to"]},
+{"w":"ܕܚܝܘܬܐ","l":"ܚܝܘܬܐ#1","p":"N.f.sg.emph","g":"of the beast","say":"d'ḥayuta","tr":"d-ḥaywṯā","prov":"draft-loop","pre":"ܕ","prf":["of"]},
+{"w":"ܡܢܝܢܐ","l":"ܡܢܝܢܐ#1","p":"N.m.sg.emph","g":"the number","say":"menyana","tr":"menyānā","prov":"draft-loop"},
+{"w":"ܗܘ","l":"ܗܘ#1","p":"PRON.3ms","g":"it is","say":"hu","tr":"hū","prov":"draft-loop"},
+{"w":"ܓܝܪ","l":"ܓܝܪ#1","p":"CONJ","g":"for","say":"gir","tr":"gēr","prov":"draft-loop"},
+{"w":"ܕܒܪܢܫܐ","l":"ܒܪܢܫܐ#1","p":"N.m.sg.emph","g":"of a man","say":"d'barnasha","tr":"d-barnāšā","prov":"draft-loop","pre":"ܕ","prf":["of"]},
+{"w":"ܫܬܡܐܐ","l":"ܫܬܡܐܐ#1","p":"NUM","g":"six hundred","say":"shtama'a","tr":"šeṯmāʾā","prov":"draft-loop"},
+{"w":"ܘܫܬܝܢ","l":"ܫܬܝܢ#1","p":"NUM","g":"and sixty","say":"w'shtin","tr":"w-šettīn","prov":"draft-loop","pre":"ܘ","prf":["and"],"flag":"needs-scholar: Eastern learner vowels (shtin / shettin / eshtin)"},
+{"w":"ܘܫܬ","l":"ܫܬ#1","p":"NUM","g":"and six","say":"w'sheth","tr":"w-šeṯ","prov":"draft-loop","pre":"ܘ","prf":["and"]}
+]}}
