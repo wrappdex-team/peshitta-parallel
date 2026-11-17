@@ -247,7 +247,7 @@
       "kind": "person",
       "count": 7,
       "ref": "luke 3:38",
-      "note": "The Peshitta writes this person ܐܕܡ. This book prints Adam. Read from the Syriac letters: Ādām.",
+      "note": "Luke's genealogy ends with \"the son of Adam, who is from Elohim\" (Luke 3:38), and 1 Timothy 2:13 says Adam was formed first, and then Hawwa. Paulos writes, \"as in Adam all the sons of men die, so also in the Mashiyach all live\" (1 Corinthians 15:22). Romans 5:14 says death reigned from Adam until Moshe, and calls Adam the type of him who was to come.",
       "sources": [
         {
           "script": "Hebrew",
@@ -349,7 +349,7 @@
       "kind": "person",
       "count": 14,
       "ref": "acts 12:1",
-      "note": "The Peshitta writes this person ܐܓܪܦܘܣ. This book prints Agrippa. Read from the Syriac letters: agrappos. The Peshitta also spells this name ܐܓܪܦܐ.",
+      "note": "The king who came down to Qesarya with Bernice to greet Festus (Acts 25:13) and let Paulos speak in his own defense (Acts 26:1). He told Paulos, \"In a little you persuade me to become a Christian\" (Acts 26:28). He told Festus that the man could have been released if he had not called on Caesar (Acts 26:32).",
       "id": "agrippa-agrappos",
       "spellings": [
         "ܐܓܪܦܘܣ",
@@ -680,7 +680,7 @@
       "kind": "person",
       "count": 12,
       "ref": "matthew 4:18",
-      "note": "The Peshitta writes this person ܐܢܕܪܐܘܣ. This book prints Andrawos. The familiar English is Andrew. Read from the Syriac letters: Andrawos.",
+      "note": "A fisherman, the brother of Shimon Keefa (Matthew 4:18). He heard Yochanan and followed Y'shua, then told his brother, \"We have found the Mashiyach\" (John 1:40–41). John 1:44 calls Beth-Tsayda the city of Andrawos and of Shimon.",
       "sources": [
         {
           "script": "Greek",
@@ -895,7 +895,7 @@
       "kind": "person",
       "count": 10,
       "ref": "acts 18:24",
-      "note": "The Peshitta writes this person ܐܦܠܘ. This book prints Apolos. The familiar English is Apollos. Read from the Syriac letters: ʾaplo.",
+      "note": "A Yehudi from Alexandria, trained in speech and skilled in the scriptures, who came to Ephesos (Acts 18:24) and was later in Corinth (Acts 19:1). Paulos writes, \"I planted, and Apolos watered, but Elohim made it grow\" (1 Corinthians 3:6), and some there said, \"I am of Apolos\" (1 Corinthians 1:12). Titus 3:13 asks that Zenas the scribe and Apolos be sent on their way well.",
       "id": "apolos",
       "refs": [
         "acts 18:24",
@@ -1392,7 +1392,7 @@
       "kind": "place",
       "count": 18,
       "ref": "acts 2:9",
-      "note": "The Peshitta writes this place ܐܣܝܐ. This book prints Asia. Read from the Syriac letters: asya. The same letters are also the ordinary word “physician.”",
+      "note": "The Ruach haKodesh forbade Paulos and those with him to speak the word in Asia (Acts 16:6); later, over two years, all who dwell in Asia heard the word (Acts 19:10). Revelation is addressed to the seven assemblies that are in Asia (Revelation 1:4). The same letters are also the ordinary word “physician.”",
       "sources": [
         {
           "script": "Greek",
@@ -1505,7 +1505,7 @@
       "kind": "person",
       "count": 71,
       "ref": "matthew 1:1",
-      "note": "The Peshitta writes this person ܐܒܪܗܡ. This book prints Avraham. The familiar English is Abraham. Read from the Syriac letters: Avraham.",
+      "note": "Avraham believed Elohim, and it was counted to him for righteousness (Romans 4:3; Galatians 3:6), and he was called the friend of Elohim (James 2:23). By faith he went out not knowing where he was going, and in his trial he offered up Yitz'chak (Hebrews 11:8, 11:17). Matthew 1:1 calls Y'shua the son of Dawid, the son of Avraham.",
       "sources": [
         {
           "script": "Hebrew",
@@ -1722,7 +1722,7 @@
       "kind": "person",
       "count": 27,
       "ref": "acts 4:36",
-      "note": "The Peshitta writes this person ܒܪܢܒܐ. This book prints Bar-Naba. The familiar English is Barnabas. Read from the Syriac letters: barnaba.",
+      "note": "Yosip, a Levite from Cyprus whom the apostles surnamed Bar-Naba, \"Son of Consolation\"; he sold a field and laid the price at the apostles' feet (Acts 4:36–37). Sent by the assembly in Urishlim to Antiokia, he went to Tarsos to seek Shaul, and they taught there a whole year (Acts 11:22, 11:25–26). After a contention with Paulos, Bar-Naba took Marqos and sailed to Qupros (Acts 15:39).",
       "sources": [
         {
           "script": "Greek",
@@ -1900,7 +1900,7 @@
       "kind": "place",
       "count": 11,
       "ref": "matthew 1:11",
-      "note": "The Peshitta writes this place ܒܒܝܠ. This book prints Bavel. The familiar English is Babylon. Read from the Syriac letters: bābel. The Peshitta also spells this name ܒܒܠ.",
+      "note": "Matthew counts fourteen generations from Dawid to the captivity of Bavel, and fourteen from the captivity to the Mashiyach (Matthew 1:17). 1 Peter 5:13 sends greetings from the chosen church that is in Bavel. Revelation names \"Babil the great, the mother of harlots\" and announces her fall (Revelation 17:5; 18:2).",
       "sources": [
         {
           "script": "Hebrew",
@@ -2072,7 +2072,7 @@
       "kind": "place",
       "count": 8,
       "ref": "matthew 2:1",
-      "note": "The Peshitta writes this place ܒܝܬ ܠܚܡ. This book prints Beth-Lekhem. The familiar English is Bethlehem. Read from the Syriac letters: Beth-Lekhem.",
+      "note": "Y'shua was born in Beth-Lekhem of Yehuda in the days of Herodes the king (Matthew 2:1), the city of Dawid to which Yosip went up from Natsrath (Luke 2:4). Herodes killed all the boys in Beth-Lekhem and in all its borders, from two years old and under (Matthew 2:16). John 7:42 recalls the writing that the Mashiyach comes from Beth-Lekhem, the town of Dawid.",
       "sources": [
         {
           "script": "Hebrew",
@@ -2265,7 +2265,7 @@
       "kind": "person",
       "count": 28,
       "ref": "matthew 22:17",
-      "note": "The Peshitta writes this person ܩܣܪ. This book prints Caesar. Read from the Syriac letters: Qesar.",
+      "note": "The title of the Roman ruler: Luke names Augustus Caesar (Luke 2:1) and Tiberius Caesar (Luke 3:1), and Acts 11:28 dates a famine to the days of Claudius Caesar. Y'shua said, \"Give then what is Caesar's to Caesar, and what is Elohim's to Elohim\" (Matthew 22:21). Before Festus, Paulos said, \"I call on Caesar\" (Acts 25:9–11).",
       "sources": [
         {
           "script": "Latin",
@@ -2640,7 +2640,7 @@
       "kind": "place",
       "count": 7,
       "ref": "acts 18:1",
-      "note": "The Peshitta writes this place ܩܘܪܢܬܘܣ. This book prints Corinth. Read from the Syriac letters: Qorinthos.",
+      "note": "Paulos came to Corinth from Athens and stayed one year and six months, teaching the word of Elohim (Acts 18:1, 18:11). He wrote to the assembly of Elohim that is at Corinth (1 Corinthians 1:2; 2 Corinthians 1:1). Apolos was there while Paulos went to Ephesos (Acts 19:1), and Erastos stayed there (2 Timothy 4:20).",
       "id": "corinth",
       "refs": [
         "acts 18:1",
@@ -2673,7 +2673,7 @@
       "kind": "place",
       "count": 7,
       "ref": "acts 2:11",
-      "note": "The Peshitta writes this place ܩܪܛܐ. This book prints Crete. Read from the Syriac letters: qreta.",
+      "note": "The island the ship sailed around on Paulos's voyage to Italy; he told the men they should not have sailed from Crete (Acts 27:1, 27:7, 27:21). Paulos left Titus in Crete to appoint elders in every city (Titus 1:5). Acts 2:11 lists people from Crete among those who heard the wonders of Elohim in their own languages.",
       "id": "crete",
       "refs": [
         "acts 2:11",
@@ -2706,7 +2706,7 @@
       "kind": "place",
       "count": 7,
       "ref": "acts 11:19",
-      "note": "The Peshitta writes this place ܩܘܦܪܘܣ. This book prints Cyprus. The familiar English is Cyprus. Read from the Syriac letters: qupros.",
+      "note": "Yosip Bar-Naba was a Levite from Cyprus (Acts 4:36). Sent out by the Ruach haKodesh, Bar-Naba and Shaul went by sea to Qupros (Acts 13:2, 13:4), and after parting from Paulos, Bar-Naba took Marqos and sailed there (Acts 15:39). Men from Cyprus and Cyrene spoke to the Greeks in Antiokia about our Master Y'shua (Acts 11:20).",
       "sources": [
         {
           "script": "Greek",
@@ -2838,7 +2838,7 @@
       "kind": "place",
       "count": 15,
       "ref": "acts 9:2",
-      "note": "The Peshitta writes this place ܕܪܡܣܘܩ. This book prints Darmasuq. The familiar English is Damascus. Read from the Syriac letters: Darmasuq.",
+      "note": "Shaul asked the high priest for letters to the assemblies in Darmasuq, to bind any who followed the way (Acts 9:2); near the city a light from heaven flashed upon him, and he was led in unable to see (Acts 9:3, 9:8). A disciple named Chananya lived there (Acts 9:10). Paulos writes that in Darmasuq the chief of the force of Artus the king guarded the city to seize him (2 Corinthians 11:32).",
       "sources": [
         {
           "script": "Hebrew",
@@ -2865,7 +2865,7 @@
       "kind": "person",
       "count": 55,
       "ref": "matthew 1:1",
-      "note": "The Peshitta writes this person ܕܘܝܕ. This book prints Dawid. The familiar English is David. Read from the Syriac letters: Dawid.",
+      "note": "Raised up as king, he is called in Acts 13:22 \"Dawid son of Aishi, a man like my heart.\" Yosip went up to Beth-Lekhem, the city of Dawid, because he was of the house and lineage of Dawid (Luke 2:4), and the Mashiyach is called the son of Dawid (Matthew 1:1; 22:42). Keefa said that Dawid died and was buried, and his tomb was still with them (Acts 2:14, 2:29).",
       "sources": [
         {
           "script": "Hebrew",
@@ -3194,7 +3194,7 @@
       "kind": "person",
       "count": 9,
       "ref": "luke 1:5",
-      "note": "The Peshitta writes this person ܐܠܝܫܒܥ. This book prints Elishaba. The familiar English is Elizabeth. Read from the Syriac letters: Elishbaʿ.",
+      "note": "Wife of the priest Zakharya, of the daughters of Aharon; she was barren and both were advanced in their days (Luke 1:5, 1:7). The messenger told Zakharya that she would bear him a son to be called Yochanan, and she conceived (Luke 1:13, 1:24). When she heard the greeting of Maryam, her kinswoman, the child leaped in her womb and she was filled with Ruach haKodesh (Luke 1:36, 1:41).",
       "sources": [
         {
           "script": "Hebrew",
@@ -3255,7 +3255,7 @@
       "kind": "person",
       "count": 31,
       "ref": "matthew 11:14",
-      "note": "The Peshitta writes this person ܐܠܝܐ. This book prints Eliyahu. The familiar English is Elijah. Read from the Syriac letters: Eliyahu.",
+      "note": "The prophet in whose days the heavens were closed three years and six months, sent to a widow of Tsarfat of Tsidon (Luke 4:25–26). Moshe and Eliyahu appeared speaking with Y'shua (Matthew 17:3). Y'shua said of Yochanan the Immerser, \"this is Eliyahu who was about to come\" (Matthew 11:11, 11:14).",
       "sources": [
         {
           "script": "Hebrew",
@@ -3407,7 +3407,7 @@
       "kind": "place",
       "count": 16,
       "ref": "acts 18:19",
-      "note": "The Peshitta writes this place ܐܦܣܘܣ. This book prints Ephesos. The familiar English is Ephesus. Read from the Syriac letters: epesos.",
+      "note": "Paulos spoke openly in its synagogue for three months (Acts 19:8), and the crowd cried out, \"Great is Artemis of the Ephesians\" (Acts 19:28). From Miletus he sent for the elders of the assembly of Ephesos (Acts 20:17), and his letter is addressed to those who are at Ephesos (Ephesians 1:1). Revelation 2:1 has a message to the church in Ephesos.",
       "sources": [
         {
           "script": "Greek",
@@ -3510,7 +3510,7 @@
       "kind": "person",
       "count": 22,
       "ref": "matthew 3:3",
-      "note": "The Peshitta writes this person ܐܫܥܝܐ. This book prints Eshaya. The familiar English is Isaiah. Read from the Syriac letters: eshaya.",
+      "note": "The prophet whose book was given to Y'shua in the synagogue at Natsrath (Luke 4:16–17), and in whom the officer from Kush was reading on his chariot (Acts 8:27–28). Matthew applies his words \"A voice calling in the wilderness\" to Yochanan the Immerser (Matthew 3:1, 3:3). John 12:41 prints the name Ashaya.",
       "sources": [
         {
           "script": "Hebrew",
@@ -3681,7 +3681,7 @@
       "kind": "person",
       "count": 8,
       "ref": "acts 23:24",
-      "note": "The Peshitta writes this person ܦܝܠܟܣ. This book prints Felix. The familiar English is Felix. Read from the Syriac letters: pīlaks.",
+      "note": "The governor to whom the chiliarch Lysias sent Paulos with a letter (Acts 23:24, 23:26). With his wife Dursila, a Yehuditha, he heard Paulos concerning the faith of the Mashiyach and was filled with fear (Acts 24:24–25). After two years Porcius Festus came into his place, and Felix left Paulos bound to do a favor to the Yehudaye (Acts 24:27).",
       "sources": [
         {
           "script": "Latin",
@@ -3723,7 +3723,7 @@
       "kind": "person",
       "count": 14,
       "ref": "acts 24:27",
-      "note": "The Peshitta writes this person ܦܗܣܛܘܣ. This book prints Festus. Read from the Syriac letters: phestos. The Peshitta also spells this name ܦܗܣܛܣ.",
+      "note": "Porcius Festus came into the place of Felix as governor after two years, while Paulos was left bound (Acts 24:27). When Paulos called on Caesar, Festus answered, \"to Caesar you will go\" (Acts 25:12), and he laid Paulos's case before king Agrippa (Acts 25:13–14). During Paulos's defense he cried out, \"Paulos, you are mad!\" (Acts 26:24).",
       "id": "festus",
       "spellings": [
         "ܦܗܣܛܘܣ",
@@ -3991,7 +3991,7 @@
       "kind": "place",
       "count": 62,
       "ref": "matthew 2:22",
-      "note": "The Peshitta writes this place ܓܠܝܠܐ. This book prints Galila. The familiar English is Galilee. Read from the Syriac letters: Galila.",
+      "note": "The region where Y'shua went about teaching in the synagogues and healing (Matthew 4:23); he came from Natsrath of Galila (Mark 1:9) and did his first sign in Qatna of Galila (John 2:11). Matthew 4:15 calls it \"Galila of the peoples.\" After he rose, the eleven went to the mountain in Galila where he had appointed them (Matthew 28:16).",
       "sources": [
         {
           "script": "Hebrew",
@@ -4893,7 +4893,7 @@
       "kind": "place",
       "count": 16,
       "ref": "matthew 4:13",
-      "note": "The Peshitta writes this place ܟܦܪܢܚܘܡ. This book prints Kfar-Nachum. The familiar English is Capernaum. Read from the Syriac letters: Kfar-Nachum.",
+      "note": "Y'shua left Natsrath and lived in Kfar-Nachum beside the sea (Matthew 4:13), a city of Galila where he taught on the sabbath (Luke 4:31; Mark 1:21). There a centurion came to him (Matthew 8:5). Y'shua said, \"And you, Kfar-Nachum, who were lifted up to heaven, will be brought down to Sheol\" (Matthew 11:23).",
       "sources": [
         {
           "script": "Hebrew",
@@ -5374,7 +5374,7 @@
       "kind": "place",
       "count": 7,
       "ref": "acts 14:6",
-      "note": "The Peshitta writes this place ܠܘܣܛܪܐ. This book prints Lustra. The familiar English is Lystra. Read from the Syriac letters: lustara.",
+      "note": "A city of Lycaonia to which Paulos and Bar-Naba fled, where a man lame from his mother's womb was sitting and where the crowd named Bar-Naba the lord of the gods and Paulos Hermes (Acts 14:6, 14:8, 14:12). Timotheos was a disciple there, and the disciples from Lustra and Iqnon testified about him (Acts 16:1–2). Paulos recalls the persecution he endured in Antiokia, in Iqnon and in Lustra (2 Timothy 3:11).",
       "id": "lustra",
       "refs": [
         "acts 14:6",
@@ -5541,7 +5541,7 @@
       "kind": "place",
       "count": 21,
       "ref": "acts 16:9",
-      "note": "The Peshitta writes this place ܡܩܕܘܢܝܐ. This book prints Macedonia. Read from the Syriac letters: maqedonya.",
+      "note": "Paulos saw in a vision of the night a Macedonian man begging, \"Come to Macedonia and help me\" (Acts 16:9), and Philippi was its head city (Acts 16:12). Later he sent Timotheos and Erastos there (Acts 19:22). Paulos writes that those in Macedonia and in Achaia made a contribution for the poor holy ones in Urishlim (Romans 15:26).",
       "id": "macedonia"
     },
     {
@@ -5561,7 +5561,7 @@
       "kind": "person",
       "count": 11,
       "ref": "matthew 27:56",
-      "note": "The Peshitta writes this person ܡܓܕܠܝܬܐ. This book prints Magdalitha. The familiar English is Magdalene. Read from the Syriac letters: Magdalitha.",
+      "note": "The name by which the book calls Maryam, from whom seven demons went out (Luke 8:2; Mark 16:9). Maryam Magdalitha stood near the cross of Y'shua (John 19:25), and after he rose he appeared first to her (Mark 16:9). She told the disciples that she had seen our Master (John 20:18).",
       "sources": [
         {
           "script": "Greek",
@@ -5761,7 +5761,7 @@
       "kind": "person",
       "count": 10,
       "ref": "hebrews 5:6",
-      "note": "The Peshitta writes this person ܡܠܟܝܙܕܩ. This book prints Malkizedeq. The familiar English is Melchizedek. Read from the Syriac letters: malkīzdaq.",
+      "note": "King of Shalem and priest of Elohim the Most High, who met Avraham returning from the slaughter of the kings and blessed him (Hebrews 7:1). Hebrews applies to Y'shua the words \"You are a priest forever in the likeness of Malkizedeq\" (Hebrews 5:6; 7:17), saying Y'shua has entered for us as such a priest (Hebrews 6:20).",
       "sources": [
         {
           "script": "Hebrew",
@@ -5827,7 +5827,7 @@
       "kind": "person",
       "count": 8,
       "ref": "acts 12:12",
-      "note": "The Peshitta writes this person ܡܪܩܘܣ. This book prints Marqos. The familiar English is Mark. Read from the Syriac letters: Marqos.",
+      "note": "Yochanan who was surnamed Marqos; many were gathered praying at the house of his mother Maryam (Acts 12:12), and Bar-Naba and Shaul took him with them from Urishlim (Acts 12:25). After the contention over him, Bar-Naba took Marqos and sailed to Qupros (Acts 15:37–39), and Colossians 4:10 calls him the son of the uncle of Bar-Naba. Paulos later writes, \"Take Marqos and bring him with you, for he is useful to me for service\" (2 Timothy 4:11).",
       "sources": [
         {
           "script": "Greek",
@@ -5868,7 +5868,7 @@
       "kind": "person",
       "count": 12,
       "ref": "luke 10:38",
-      "note": "The Peshitta writes this person ܡܪܬܐ. This book prints Martha. Read from the Syriac letters: Marta.",
+      "note": "Sister of Maryam and of Lazar of Beth-Anya (John 11:1). She received Y'shua into her house and was occupied with much serving (Luke 10:38, 10:40). After Lazar died she said to Y'shua, \"I believe that you are the Mashiyach, the Son of Elohim, who comes into the world\" (John 11:21, 11:27).",
       "sources": [
         {
           "script": "Aramaic",
@@ -6217,7 +6217,7 @@
       "kind": "place",
       "count": 23,
       "ref": "matthew 2:13",
-      "note": "The Peshitta writes this place ܡܨܪܝܢ. This book prints Mitsrayin. The familiar English is Egypt. Read from the Syriac letters: Mitsrayin.",
+      "note": "Yosip was told in a dream to flee to Mitsrayin with the child and his mother, and they stayed there until the death of Herodes, so that \"From Mitsrayin I have called my son\" was fulfilled (Matthew 2:13, 2:15). Estepanos recalls that the fathers sold Yosip into Mitsrayin, where he was set as head over Mitsrayin before Pharaoh (Acts 7:9–10), and that Moshe was sent there because of the oppression of the people (Acts 7:31, 7:34).",
       "sources": [
         {
           "script": "Hebrew",
@@ -6268,7 +6268,7 @@
       "kind": "person",
       "count": 79,
       "ref": "matthew 8:4",
-      "note": "The Peshitta writes this person ܡܘܫܐ. This book prints Moshe. The familiar English is Moses. Read from the Syriac letters: Moshe.",
+      "note": "Moshe was instructed in all the wisdom of the Egyptians (Acts 7:22) and by faith refused to be called the son of the daughter of Pharaoh (Hebrews 11:24). The law was given by the hand of Moshe (John 1:17), and a messenger appeared to him in a fire burning in a bush in the wilderness of mount Sinai (Acts 7:30). Moshe and Eliyahu appeared speaking with Y'shua (Matthew 17:3).",
       "sources": [
         {
           "script": "Hebrew",
@@ -6574,7 +6574,7 @@
       "kind": "place",
       "count": 13,
       "ref": "matthew 2:23",
-      "note": "The Peshitta writes this place ܢܨܪܬ. This book prints Natsrath. The familiar English is Nazareth. Read from the Syriac letters: Natsrath.",
+      "note": "The city of Galila to which the messenger Gabriyel was sent to Maryam (Luke 1:26–27), and where Y'shua was brought up (Luke 4:16; Matthew 2:23). There those in the synagogue were filled with wrath and thrust him outside the city to throw him down from the cliff (Luke 4:28–29). Nataniel asked, \"Can anything good come from Natsrath?\" (John 1:46).",
       "sources": [
         {
           "script": "Hebrew",
@@ -6738,7 +6738,7 @@
       "kind": "person",
       "count": 8,
       "ref": "matthew 24:37",
-      "note": "The Peshitta writes this person ܢܘܚ. This book prints Noach. The familiar English is Noah. Read from the Syriac letters: nuḥ.",
+      "note": "By faith Noach made an ark for the life of the sons of his house (Hebrews 11:7), and eight souls only entered into it and lived in the waters (1 Peter 3:20). 2 Peter 2:5 calls him \"a preacher of righteousness.\" Y'shua said the coming of the Son of man will be as the days of Noach, when people ate and drank until he entered the ark (Matthew 24:37–38).",
       "sources": [
         {
           "script": "Hebrew",
@@ -6996,7 +6996,7 @@
       "kind": "person",
       "count": 164,
       "ref": "acts 13:7",
-      "note": "The Peshitta writes this person ܦܘܠܘܣ. This book prints Paulos. The familiar English is Paul. Read from the Syriac letters: Paulos.",
+      "note": "Also called Shaul (Acts 13:9), a Yehudi born in Tarsus of Qiliqiya and brought up at the feet of Gamaliel (Acts 22:3), of the tribe of Benyamin and a Pharisee as to the law (Philippians 3:5). He opens his letters as one sent by Y'shua the Mashiyach (Romans 1:1; Galatians 1:1). In Rhoma he stayed two years in a house he hired at his own cost and received all who came to him (Acts 28:16, 28:30).",
       "sources": [
         {
           "script": "Greek",
@@ -7346,7 +7346,7 @@
       "kind": "person",
       "count": 56,
       "ref": "matthew 27:2",
-      "note": "The Peshitta writes this person ܦܝܠܛܘܣ. This book prints Pilatos. The familiar English is Pilate. Read from the Syriac letters: Pilatos.",
+      "note": "Pontius Pilatos was governor in Yehuda in the fifteenth year of Tiberius Caesar (Luke 3:1), and Y'shua was delivered to him bound (Matthew 27:2). He said, \"I find not even one cause in him\" (John 18:38), and washed his hands before the crowd (Matthew 27:24), yet released Bar-Abba and delivered Y'shua to be crucified (Mark 15:15). He wrote the tablet on the cross: \"This is Y'shua the Natsraya, king of the Yehudaye\" (John 19:19).",
       "sources": [
         {
           "script": "Latin",
@@ -7517,7 +7517,7 @@
       "kind": "person",
       "count": 7,
       "ref": "acts 18:2",
-      "note": "The Peshitta writes this person ܦܪܝܣܩܠܐ. This book prints Prisqila. The familiar English is Priscilla. Read from the Syriac letters: prīsqillā.",
+      "note": "Wife of Aqilos; they had come from Italy because Claudius Caesar commanded all the Yehudaye to go out from Rome (Acts 18:2). She sailed with Paulos and was left with Aqilos in Ephesos, where they took Apolos to their house and showed him the way fully (Acts 18:18, 18:21, 18:24–26). Paulos calls Prisqila and Aqlas his fellow-workers, and an assembly met in the house of Aqilos and Prisqila (Romans 16:3; 1 Corinthians 16:19).",
       "id": "prisqila",
       "refs": [
         "acts 18:2",
@@ -7647,7 +7647,7 @@
       "kind": "person",
       "count": 10,
       "ref": "matthew 26:3",
-      "note": "The Peshitta writes this person ܩܝܦܐ. This book prints Qayapa. The familiar English is Caiaphas. Read from the Syriac letters: qayapa.",
+      "note": "The high priest of that year, who had advised that it was profitable for one man to die for the people (John 11:49; 18:14). Chanan was his father-in-law (John 18:13), and Y'shua was led bound to Qayapa, where the scribes and the elders were assembled (John 18:24; Matthew 26:57). From Qayapa they led him to the praetorium in the morning (John 18:28).",
       "id": "qayapa",
       "refs": [
         "matthew 26:3",
@@ -7830,7 +7830,7 @@
       "kind": "place",
       "count": 8,
       "ref": "acts 6:9",
-      "note": "The Peshitta writes this place ܩܝܠܝܩܝܐ. This book prints Qiliqiya. The familiar English is Cilicia. Read from the Syriac letters: qīlīqīyā.",
+      "note": "Paulos was born in Tarsus of Qiliqiya (Acts 22:3; 21:39), and after reading the letter about him, the governor Felix learned that he was from Qiliqiya (Acts 23:26, 23:34). Men from Qiliqiya disputed with Estepanos (Acts 6:9). Paulos traveled through Syria and Qiliqiya strengthening the assemblies (Acts 15:41).",
       "id": "qiliqiya",
       "refs": [
         "acts 6:9",
@@ -7982,7 +7982,7 @@
       "kind": "person",
       "count": 7,
       "ref": "acts 10:1",
-      "note": "The Peshitta writes this person ܩܘܪܢܠܝܘܣ. This book prints Qorneliyos. The familiar English is Cornelius. Read from the Syriac letters: qornēlyōs.",
+      "note": "A centurion in Qesarya from the cohort called Italiqa (Acts 10:1), who saw a messenger of Elohim in a vision telling him to send to Yopa for Shimon who is called Keefa (Acts 10:3, 10:5). His men described him as righteous and fearing Elohim, one to whom all the people of the Yehudaye bear witness (Acts 10:22). When Shimon entered, Qorneliyos met him and fell down at his feet (Acts 10:25).",
       "id": "qorneliyos",
       "refs": [
         "acts 10:1",
@@ -8338,7 +8338,7 @@
       "kind": "place",
       "count": 9,
       "ref": "acts 2:10",
-      "note": "The Peshitta writes this place ܪܗܘܡܐ, and also ܪܗܘܡܝ. This book prints Rome and Rhoma. The familiar English is Rome.",
+      "note": "Paulos said he must also see Rome, and our Master told him at night that he would testify in Rome as he had in Urishlim (Acts 19:21; 23:11). Claudius Caesar had commanded all the Yehudaye to go out from Rome (Acts 18:2). Paulos wrote to all who are in Rome, and when he came there he stayed with the soldier who guarded him (Romans 1:7; Acts 28:16).",
       "sources": [
         {
           "script": "Greek",
@@ -9063,7 +9063,7 @@
       "kind": "person",
       "count": 13,
       "ref": "acts 15:22",
-      "note": "The Peshitta writes this person ܫܝܠܐ. This book prints Shila. The familiar English is Silas. Read from the Syriac letters: šīlā.",
+      "note": "One of the leading men among the brothers and a prophet, sent from Urishlim to Antiokia with Paulos and Bar-Naba (Acts 15:22, 15:32). Paulos chose Shila as his companion (Acts 15:40). At Philippi the two were seized and dragged to the marketplace, and at midnight in prison they were praying and glorifying Elohim (Acts 16:12, 16:19, 16:25).",
       "id": "shila"
     },
     {
@@ -9222,7 +9222,7 @@
       "kind": "person",
       "count": 10,
       "ref": "matthew 1:6",
-      "note": "The Peshitta writes this person ܫܠܝܡܘܢ. This book prints Shlemun. The familiar English is Solomon. Read from the Syriac letters: shlimun.",
+      "note": "Son of Dawid by the wife of Uriya, in Matthew's genealogy (Matthew 1:6–7). Y'shua said that not even Shlemun in all his glory was clothed like the lilies, and that one greater than Shlemun is here (Matthew 6:29; 12:42). Shlemun built a house for the Elohim of Ya'akov (Acts 7:46–47), and a porch in the temple was called by his name (John 10:23; Acts 3:11).",
       "sources": [
         {
           "script": "Hebrew",
@@ -9382,7 +9382,7 @@
       "kind": "person",
       "count": 11,
       "ref": "matthew 10:4",
-      "note": "The Peshitta writes this person ܣܟܪܝܘܛܐ. This book prints Skaryota. The familiar English is Iscariot. Read from the Syriac letters: skaryuta.",
+      "note": "The surname of Yehuda, one of the twelve, who handed Y'shua over (Matthew 10:4; Luke 6:16); John calls him Yehuda son of Shimon Skaryota (John 6:71; 13:26). Satana entered into him, and he went to the chief priests to hand Y'shua over (Luke 22:3–4; Mark 14:10). John 14:22 marks another disciple as \"Yehuda, not Sakaryuta.\"",
       "id": "skaryota",
       "refs": [
         "matthew 10:4",
@@ -9449,7 +9449,7 @@
       "kind": "place",
       "count": 10,
       "ref": "matthew 10:15",
-      "note": "The Peshitta writes this place ܣܕܘܡ. This book prints Sodom. The familiar English is Sodom. Read from the Syriac letters: sdom.",
+      "note": "On the day Lut went out from Sdom, fire and brimstone rained from heaven and destroyed them all (Luke 17:29); 2 Peter 2:6 says Sodom and Amorah were burned and set as a demonstration to the wicked. Y'shua said it would be more comfortable for the land of Sodom in the day of judgment than for a city that would not receive his disciples, or for Kfar-Nachum (Matthew 10:14–15; 11:23–24).",
       "sources": [
         {
           "script": "Hebrew",
@@ -9646,7 +9646,7 @@
       "kind": "place",
       "count": 9,
       "ref": "matthew 4:24",
-      "note": "The Peshitta writes this place ܣܘܪܝܐ. This book prints Syria. The familiar English is Syria. Read from the Syriac letters: surya.",
+      "note": "The fame of Y'shua was heard in all Syria (Matthew 4:24), and Luke 2:2 dates the first enrollment to the governorship of Quirinius in Syria. The apostles and elders wrote to the brothers in Antiokia, Syria and Cilicia (Acts 15:23), and Paulos traveled through Syria and Qiliqiya strengthening the assemblies (Acts 15:41).",
       "sources": [
         {
           "script": "Greek",
@@ -10124,7 +10124,7 @@
       "kind": "person",
       "count": 22,
       "ref": "acts 16:1",
-      "note": "The Peshitta writes this person ܛܝܡܬܐܘܣ. This book prints Timotheos. The familiar English is Timothy. Read from the Syriac letters: ṭimaṯeʾos.",
+      "note": "A disciple at Derbe and Lustra, son of a believing Yehudita and an Aramean father, whom Paulos took with him and circumcised (Acts 16:1, 16:3). His faith first dwelt in his grandmother Lois and his mother Eunice (2 Timothy 1:5), and Paulos calls him \"my true son in the faith\" (1 Timothy 1:2). Paulos sent him to strengthen believers in their faith and to remind them of his ways (1 Thessalonians 3:2; 1 Corinthians 4:17).",
       "sources": [
         {
           "script": "Greek",
@@ -10155,7 +10155,7 @@
       "kind": "person",
       "count": 13,
       "ref": "acts 18:7",
-      "note": "The Peshitta writes this person ܛܛܘܣ. This book prints Titus. Read from the Syriac letters: ṭeṭos.",
+      "note": "Paulos's companion, an Aramean who was not compelled to be circumcised when Paulos took him up to Urishlim with Bar-Naba (Galatians 2:1, 2:3). Paulos calls him \"a true son in the shared faith\" and left him in Crete to appoint elders in every city (Titus 1:4–5). At Corinth, Acts 18:7 names a Titus whose house adjoined the synagogue (Acts 18:1, 18:7); the book does not say they are the same man.",
       "sources": [
         {
           "script": "Greek",
@@ -10184,7 +10184,7 @@
       "kind": "person",
       "count": 11,
       "ref": "matthew 10:3",
-      "note": "The Peshitta writes this person ܬܐܘܡܐ. This book prints Toma. The familiar English is Thomas. Read from the Syriac letters: Toma.",
+      "note": "One of the twelve (Matthew 10:3), who is called the Twin (John 20:24; 21:2). He was not with the disciples when Y'shua came, and eight days later Y'shua told him to reach his finger and see his hands (John 20:24, 20:26–27). Toma answered, \"My Master and my Elohim!\" (John 20:28).",
       "sources": [
         {
           "script": "Aramaic",
@@ -10332,7 +10332,7 @@
       "kind": "place",
       "count": 11,
       "ref": "matthew 11:21",
-      "note": "The Peshitta writes this place ܨܝܕܢ. This book prints Tsidon. The familiar English is Sidon. Read from the Syriac letters: Tsidon.",
+      "note": "Y'shua went to the borders of Tsur and Tsidon (Matthew 15:21; Mark 7:24), and people from there came to him (Mark 3:8; Luke 6:17). He said it would be more comfortable for Tsur and Tsidon in the day of judgment than for Korazin and Beth-Tsayda (Matthew 11:21–22). On Paulos's voyage the ship reached Tsidon, where the centurion let him go to his friends (Acts 27:3).",
       "sources": [
         {
           "script": "Hebrew",
@@ -10419,7 +10419,7 @@
       "kind": "place",
       "count": 11,
       "ref": "matthew 11:21",
-      "note": "The Peshitta writes this place ܨܘܪ. This book prints Tsur. The familiar English is Tyre. Read from the Syriac letters: ṣur.",
+      "note": "Y'shua went to the borders of Tsur and Tsidon (Matthew 15:21; Mark 7:24), and said it would be more comfortable for Tsur and Tsidon in the day of judgment than for Korazin and Beth-Tsayda (Matthew 11:21–22). On Paulos's voyage the ship unloaded its cargo at Tsur, and from there they sailed to Akko (Acts 21:3, 21:7).",
       "sources": [
         {
           "script": "Hebrew",
@@ -10511,7 +10511,7 @@
       "kind": "place",
       "count": 139,
       "ref": "matthew 2:1",
-      "note": "The Peshitta writes this place ܐܘܪܫܠܡ. This book prints Urishlim. The familiar English is Jerusalem. Read from the Syriac letters: Urishlim.",
+      "note": "The city where Y'shua's people went every year at the feast of the Passover (Luke 2:41), and where he said he must go to suffer, be killed and rise on the third day (Matthew 16:21). The proclaiming in his name was to begin from Urishlim (Luke 24:47; Acts 1:8), and the apostles and elders were there when Paulos and Bar-Naba went up about the dispute (Acts 15:2). Revelation 21:2 sees the holy city, new Urishlim, coming down out of heaven from Elohim.",
       "sources": [
         {
           "script": "Hebrew",
@@ -10880,7 +10880,7 @@
       "kind": "people",
       "count": 75,
       "ref": "matthew 2:6",
-      "note": "The Peshitta writes this people ܐܝܣܪܝܠ, and also ܐܝܣܪܐܝܠ and ܝܣܪܝܠ. This book prints Yisrael. The familiar English is Israel.",
+      "note": "Y'shua sent the twelve to the lost sheep of the house of Yisrael and said he was sent only to the sheep that had strayed from it (Matthew 10:6; 15:24). The same name is used for the land in Matthew 2:20, \"go to the land of Yisrael.\" Paulos writes that not all who are from Yisrael are Yisrael, and that all Yisrael will live (Romans 9:6; 11:26).",
       "sources": [
         {
           "script": "Hebrew",
@@ -10917,7 +10917,7 @@
       "kind": "person",
       "count": 18,
       "ref": "matthew 1:2",
-      "note": "The Peshitta writes this person ܐܝܣܚܩ. This book prints Yitz'chak. The familiar English is Isaac. Read from the Syriac letters: isḥaq.",
+      "note": "Son of Avraham, circumcised on the eighth day, and father of Ya'akov (Acts 7:8). Avraham offered him up in his trial (Hebrews 11:17), and by faith Yitz'chak blessed Ya'akov and Esau (Hebrews 11:20). Paulos calls believers children of the promise, \"like Yitz'chak\" (Galatians 4:28).",
       "sources": [
         {
           "script": "Hebrew",
@@ -11085,7 +11085,7 @@
       "kind": "place",
       "count": 9,
       "ref": "acts 9:36",
-      "note": "The Peshitta writes this place ܝܘܦܐ. This book prints Yopa. The familiar English is Joppa. Read from the Syriac letters: yawpā.",
+      "note": "A female disciple rich in good works lived in Yopa (Acts 9:36), and Shimon Keefa stayed there not a few days in the house of Shimon the tanner by the sea (Acts 9:43; 10:32). While praying in Yopa, Keefa saw in a vision a vessel like a linen cloth let down from heaven (Acts 11:5). Qorneliyos was told to send men to Yopa to bring him (Acts 10:5, 10:8).",
       "id": "yopa",
       "refs": [
         "acts 9:36",
@@ -11138,7 +11138,7 @@
       "kind": "place",
       "count": 15,
       "ref": "matthew 3:5",
-      "note": "The Peshitta writes this place ܝܘܪܕܢܢ. This book prints Yordanan. The familiar English is Jordan. Read from the Syriac letters: Yordanan.",
+      "note": "The river where Yochanan immersed people as they confessed their sins (Matthew 3:6; Mark 1:5), and where Y'shua came from Galila to be immersed by him (Matthew 3:13). Later Y'shua went to the other side of the Yordanan, to the place where Yochanan had first been immersing, and stayed there (John 10:40).",
       "sources": [
         {
           "script": "Hebrew",
@@ -11287,7 +11287,7 @@
       "kind": "person",
       "count": 11,
       "ref": "matthew 4:21",
-      "note": "The Peshitta writes this person ܙܒܕܝ. This book prints Zabdai. The familiar English is Zebedee. Read from the Syriac letters: zabday.",
+      "note": "Father of Ya'akov and Yochanan: Y'shua called the brothers while they were mending their nets in the boat with Zabdai their father (Matthew 4:21), and they left him in the boat with the hired servants (Mark 1:20). The mother of the sons of Zabdai was among the women looking on from a distance at the crucifixion (Matthew 27:55–56).",
       "id": "zabdai",
       "refs": [
         "matthew 4:21",
