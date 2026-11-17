@@ -1,0 +1,9 @@
+[
+{"id":"ܪܫܝܬܐ#1","sy":"ܪܫܝܬܐ","pos":"N","gen":"f","gloss":"beginning","say":"reshitha","tr":"rēšīṯā","src":[],"prov":"draft-loop","flag":"needs-scholar: root"},
+{"id":"ܐܝܬ#1","sy":"ܐܝܬ","pos":"PART","gloss":"there is; with a pronoun suffix, 'is'","say":"ith","tr":"ʾīṯ","src":[],"prov":"draft-loop"},
+{"id":"ܗܘܐ#1","sy":"ܗܘܐ","root":"ܗܘܐ","pos":"V","gloss":"to be, become, come to be","say":"hwa","tr":"hwā","src":[],"prov":"draft-loop"},
+{"id":"ܡܠܬܐ#1","sy":"ܡܠܬܐ","root":"ܡܠܠ","pos":"N","gen":"f","gloss":"word, speech, matter","say":"meltha","tr":"melṯā","src":[],"prov":"draft-loop"},
+{"id":"ܗܘ#1","sy":"ܗܘ","pos":"PRON","gloss":"he; that","say":"hu","tr":"hū","src":[],"prov":"draft-loop"},
+{"id":"ܠܘܬ#1","sy":"ܠܘܬ","pos":"PREP","gloss":"toward, with, beside","say":"lwath","tr":"lwāṯ","src":[],"prov":"draft-loop"},
+{"id":"ܐܠܗܐ#1","sy":"ܐܠܗܐ","root":"ܐܠܗ","pos":"N","gen":"m","gloss":"God (this edition's English: Elohim)","say":"Alaha","tr":"ʾalāhā","src":[],"prov":"draft-loop"}
+]

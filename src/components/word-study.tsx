@@ -1,7 +1,10 @@
 import { languageById, type LangId } from "@/lib/languages";
-import { rootRoman, type WordStudy } from "@/lib/scripture";
+import { loadSyriacSearch, rootRoman, syriacWords, type WordStudy } from "@/lib/scripture";
 import { hebrewConsonants, hebrewReading, rootSpeech } from "@/lib/hebrew-root";
 import { COGNATES, sayGloss } from "@/lib/word-say";
+import { loadLemmas, parseLong, provenanceLine, scholarLine, type Lemma, type WordToken } from "@/lib/word-data";
+import { BOOKS } from "@/data/edition";
+import { Link } from "@tanstack/react-router";
 import { Play } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { readingSessionLive } from "@/lib/speech-lock";
@@ -181,18 +184,49 @@ export function WordStudySheet({
   study,
   langs,
   onPick,
+  word,
 }: {
   study: WordStudy;
   langs: LangId[];
   onPick: (surface: string) => void;
+  word?: { token: WordToken; book: string };
 }) {
-  const pronounced = syriacSay(study);
+  const token = word?.token;
+  const pronounced = token?.say || syriacSay(study);
   const reading = hebrewReading(study);
-  const lines = linesFor(study, langs);
+  const lines = linesFor(study, langs).map((line) =>
+    token && line.id === "syr" ? { ...line, text: token.say, speak: token.say } : line,
+  );
+  if (token?.say && !lines.some((line) => line.id === "syr")) {
+    lines.unshift({
+      id: "syr",
+      label: "Classical Syriac",
+      text: token.say,
+      speak: token.say,
+      tts: "en-US",
+      face: "font-serif",
+      dir: "ltr",
+    });
+  }
   const [busy, setBusy] = useState("");
+  const [lemma, setLemma] = useState<Lemma | null>(null);
   const run = useRef(0);
   const cognate = COGNATES[study.root.join("")];
   const chapterReading = readingSessionLive();
+
+  useEffect(() => {
+    if (!word) {
+      setLemma(null);
+      return;
+    }
+    let live = true;
+    void loadLemmas(word.book).then((rows) => {
+      if (live) setLemma(rows.find((row) => row.id === word.token.l) ?? null);
+    });
+    return () => {
+      live = false;
+    };
+  }, [word]);
 
   useEffect(() => {
     return () => {
@@ -226,11 +260,16 @@ export function WordStudySheet({
       <p tabIndex={-1} data-modal-initial className="font-syriac text-4xl text-syriac" lang="syr" dir="rtl">
         {study.word}
       </p>
-      {study.roman && <p className="mt-1 text-sm text-gold">{pronounced || study.roman}</p>}
+      {(pronounced || study.roman) ? <p className="mt-1 text-sm text-gold">{pronounced || study.roman}</p> : null}
+      {token?.tr ? <p className="text-xs text-gold" dir="ltr">{token.tr}</p> : null}
       <p className="mt-2 font-serif text-xl">{study.gloss || "No gloss is settled for this form."}</p>
       <StudyMethod study={study} />
       {study.via && <p className="mt-2 text-sm leading-relaxed text-muted">{study.via}</p>}
       {study.note && <p className="mt-2 text-sm leading-relaxed">{study.note}</p>}
+
+      {token ? <InThisVerse token={token} /> : null}
+      {token ? <Dictionary lemma={lemma} /> : null}
+      {token ? <SpellingPlaces w={token.w} /> : null}
 
       <p className="mt-5 text-xs tracking-widest text-gold">BUILD</p>
       <div className="mt-2 flex flex-wrap gap-2" dir="ltr">
@@ -341,6 +380,102 @@ export function WordStudySheet({
       <p className="mt-3 text-xs leading-relaxed text-muted">
         Syriac is spoken from its romanization. Hebrew is spoken from the pronunciation written under the word, slowly, one syllable at a time, so the vowels are the ones settled here and not a guess by the phone. A cognate is the same root in Hebrew or Arabic, not a second translation of the verse.
       </p>
+      {token ? <p className="mt-4 text-sm">{provenanceLine(token)}</p> : null}
+    </div>
+  );
+}
+
+function InThisVerse({ token }: { token: WordToken }) {
+  const letters = [...(token.pre ?? "")];
+  const note = scholarLine(token.flag);
+  return (
+    <div>
+      <p className="mt-5 text-xs tracking-widest text-gold">IN THIS VERSE</p>
+      <p className="mt-2 text-sm">Literal: {token.g}</p>
+      {token.ctx && token.ctx !== token.g ? <p className="text-sm">In context: {token.ctx}</p> : null}
+      <p className="text-sm">{parseLong(token.p)}</p>
+      <div className="mt-2 flex flex-wrap gap-2">
+        {letters.map((sy, index) => (
+          <span key={`${sy}-${index}`} className="rounded-md border border-line px-2 py-1 text-center">
+            <span className="block font-syriac text-xl text-syriac" lang="syr">{sy}</span>
+            <span className="block text-xs">{token.prf?.[index]}</span>
+          </span>
+        ))}
+        {token.suf ? (
+          <span className="rounded-md border border-line px-2 py-1 text-center">
+            <span className="block font-syriac text-xl text-syriac" lang="syr">{token.suf}</span>
+            <span className="block text-xs">{token.sfn}</span>
+          </span>
+        ) : null}
+      </div>
+      {token.n ? <p className="mt-2 text-sm leading-relaxed">{token.n}</p> : null}
+      {note ? <p className="mt-2 text-sm">{note}</p> : null}
+    </div>
+  );
+}
+
+function Dictionary({ lemma }: { lemma: Lemma | null }) {
+  return (
+    <div>
+      <p className="mt-5 text-xs tracking-widest text-gold">DICTIONARY</p>
+      {lemma ? (
+        <>
+          <p className="mt-2 font-syriac text-2xl text-syriac" lang="syr" dir="rtl">{lemma.sy}</p>
+          <p className="text-sm text-gold" dir="ltr">{lemma.say} · {lemma.tr}</p>
+          {lemma.root ? <p className="text-sm">Root <span className="font-syriac text-lg text-syriac" lang="syr" dir="rtl">{lemma.root}</span></p> : null}
+          <p className="text-sm">{lemma.gloss}</p>
+          <p className="text-sm">{lemma.src.length ? lemma.src.join(", ") : "Source not yet attached."}</p>
+        </>
+      ) : (
+        <p className="mt-2 text-sm">Source not yet attached.</p>
+      )}
+    </div>
+  );
+}
+
+function SpellingPlaces({ w }: { w: string }) {
+  const [rows, setRows] = useState<{ count: number; hits: { book: string; ch: number; v: number; name: string }[] } | null>(null);
+  const [open, setOpen] = useState(false);
+  async function show() {
+    if (rows) return;
+    const found = await loadSyriacSearch();
+    const hits: { book: string; ch: number; v: number; name: string }[] = [];
+    let count = 0;
+    for (const [book, ch, v, sy] of found) {
+      const n = syriacWords(sy).filter((word) => word === w).length;
+      if (!n) continue;
+      count += n;
+      hits.push({ book, ch, v, name: BOOKS.find((item) => item.id === book)?.name ?? book });
+    }
+    setRows({ count, hits });
+  }
+  const shown = rows ? (open ? rows.hits : rows.hits.slice(0, 20)) : [];
+  const more = rows ? Math.max(0, rows.hits.length - 20) : 0;
+  return (
+    <div>
+      <p className="mt-5 text-xs tracking-widest text-gold">EVERY OCCURRENCE (same spelling)</p>
+      <button type="button" className="mt-2 min-h-11 text-left text-garnet" onClick={() => void show()}>
+        Show every place this spelling occurs
+      </button>
+      {rows ? (
+        <>
+          <p className="mt-2 text-sm">{rows.count} · same spelling</p>
+          <ul>
+            {shown.map((hit) => (
+              <li key={`${hit.book}:${hit.ch}:${hit.v}`}>
+                <Link to="/read/$book/$chapter" params={{ book: hit.book, chapter: String(hit.ch) }} hash={`v-${hit.v}`} className="inline-flex min-h-11 items-center text-garnet">
+                  {hit.name} {hit.ch}:{hit.v}
+                </Link>
+              </li>
+            ))}
+          </ul>
+          {more > 0 ? (
+            <button type="button" className="min-h-11" aria-expanded={open} onClick={() => setOpen((value) => !value)}>
+              {open ? "Show fewer" : `+ ${more} more`}
+            </button>
+          ) : null}
+        </>
+      ) : null}
     </div>
   );
 }

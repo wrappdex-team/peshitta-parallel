@@ -1,0 +1,10 @@
+[
+{"id":"ܗܟܢܐ#1","sy":"ܗܟܢܐ","pos":"ADV","gloss":"thus, in this way","say":"hakhanna","tr":"hāḵannā","src":[],"prov":"draft-loop"},
+{"id":"ܗܟܝܠ#1","sy":"ܗܟܝܠ","pos":"CONJ","gloss":"therefore, then","say":"hakhel","tr":"hāḵēl","src":[],"prov":"draft-loop"},
+{"id":"ܨܠܐ#1","sy":"ܨܠܐ","root":"ܨܠܐ","pos":"V","gloss":"to pray (Pael)","say":"salli","tr":"ṣallī","src":[],"prov":"draft-loop"},
+{"id":"ܐܢܬܘܢ#1","sy":"ܐܢܬܘܢ","pos":"PRON","gloss":"you (masc. plural)","say":"anton","tr":"ʾantōn","src":[],"prov":"draft-loop"},
+{"id":"ܐܒܐ#1","sy":"ܐܒܐ","pos":"N","gen":"m","gloss":"father","say":"aba","tr":"ʾaḇā","src":[],"prov":"draft-loop"},
+{"id":"ܫܡܝܐ#1","sy":"ܫܡܝܐ","pos":"N","gen":"m","gloss":"heaven, the heavens (plural form)","say":"shmayya","tr":"šmayyā","src":[],"prov":"draft-loop"},
+{"id":"ܩܕܫ#1","sy":"ܩܕܫ","root":"ܩܕܫ","pos":"V","gloss":"to be holy; Pael, to make holy; Ethpaal, to be hallowed","say":"qdesh","tr":"qdeš","src":[],"prov":"draft-loop"},
+{"id":"ܫܡܐ#1","sy":"ܫܡܐ","pos":"N","gen":"m","gloss":"name","say":"shma","tr":"šmā","src":[],"prov":"draft-loop"}
+]

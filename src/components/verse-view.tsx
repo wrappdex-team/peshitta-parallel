@@ -10,6 +10,7 @@ import {
   TERM_NOTES,
   englishRuns,
   glossWord,
+  loadLexicon,
   registerGlossOverrides,
   syriacPieces,
   syriacWords,
@@ -17,6 +18,7 @@ import {
   type WordGloss,
   type WordPlace,
 } from "@/lib/scripture";
+import { cardAria, loadWordChapter, parseTag, resolveGloss, tokenAt, type WordToken } from "@/lib/word-data";
 
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { InfoMark } from "@/components/info-mark";
@@ -50,7 +52,7 @@ type Props = {
   onHighlight: () => void;
   onNote: (note: string) => void;
   onBookmark: () => void;
-  onWord: (info: WordGloss | null, surface: string, place: WordPlace) => void;
+  onWord: (info: WordGloss | null, surface: string, place: WordPlace, token?: WordToken) => void;
   onTerm: (key: string) => void;
   listening?: boolean;
   chapterEnd?: boolean;
@@ -110,7 +112,12 @@ export function VerseView({
   const [copied, setCopied] = useState("");
   const articleRef = useRef<HTMLElement>(null);
   const [wordsReady, setWordsReady] = useState(false);
+  const [lexReady, setLexReady] = useState(false);
+  const [tokenList, setTokenList] = useState<WordToken[] | null>(null);
+  const [tokensReady, setTokensReady] = useState(false);
   const place: WordPlace = { book, chapter, verse: verse.v };
+  const verseKey = `${book}:${chapter}:${verse.v}`;
+  const wordsInVerse = verse.sy ? syriacWords(verse.sy) : [];
   const study = NOTES[`${book}.${chapter}.${verse.v}`];
   const marks: { kind: "Murdock" | "Study"; text: string }[] = [];
   if (showNotes) {
@@ -159,6 +166,16 @@ export function VerseView({
   }
 
   useEffect(() => {
+    let live = true;
+    void loadLexicon().then(() => {
+      if (live) setLexReady(true);
+    });
+    return () => {
+      live = false;
+    };
+  }, []);
+
+  useEffect(() => {
     if (!words || !verse.sy) {
       setWordsReady(false);
       return;
@@ -177,6 +194,30 @@ export function VerseView({
     observer.observe(el);
     return () => observer.disconnect();
   }, [words, verse.sy, verse.v]);
+
+  useEffect(() => {
+    if (!words || !verse.sy) {
+      setTokenList(null);
+      setTokensReady(false);
+      return;
+    }
+    let live = true;
+    setTokensReady(false);
+    void loadWordChapter(book, chapter, true)
+      .then((doc) => {
+        if (!live) return;
+        setTokenList(doc?.v[String(verse.v)] ?? null);
+        setTokensReady(true);
+      })
+      .catch(() => {
+        if (!live) return;
+        setTokenList(null);
+        setTokensReady(true);
+      });
+    return () => {
+      live = false;
+    };
+  }, [words, book, chapter, verse.sy, verse.v]);
 
   const [noteOpen, setNoteOpen] = useState(false);
   const [draft, setDraft] = useState(annotation?.note ?? "");
@@ -247,11 +288,14 @@ export function VerseView({
                 {(() => {
                   let prev = "";
                   let offset = 0;
+                  let wordIndex = -1;
                   return syriacPieces(verse.sy).map((piece, i) => {
                     const start = offset;
                     offset += piece.text.length;
                     const hot = rangeHits(syRanges, start, offset);
                     if (piece.kind === "space") return <span key={i} className={hot ? "text-jesus" : undefined}>{piece.text}</span>;
+                    wordIndex += 1;
+                    const at = wordIndex;
                     const named = nameOfSyriac(piece.word, verse.en, prev);
                     prev = piece.word;
                     if (named) {
@@ -269,11 +313,12 @@ export function VerseView({
                         </Link>
                       );
                     }
+                    const token = tokenAt(tokenList, wordsInVerse, at, verseKey);
                     return (
                       <button
                         key={i}
                         type="button"
-                        onClick={() => onWord(glossWord(piece.word, place), piece.word, place)}
+                        onClick={() => onWord(glossWord(piece.word, place), piece.word, place, token ?? undefined)}
                         className={`rounded-sm border-0 bg-transparent px-0.5 font-syriac hover:bg-gold-soft ${hot ? "text-jesus" : "text-inherit"}`}
                       >
                         {piece.text}
@@ -283,12 +328,14 @@ export function VerseView({
                 })()}
               </p>
           ) : null}
-          {words && verse.sy && wordsReady && (
+          {words && verse.sy && wordsReady && lexReady && tokensReady && (
             <div dir="rtl" className="mt-3 flex flex-wrap gap-1.5">
               {(() => {
                 let from = 0;
                 return syriacWords(verse.sy).map((word, i) => {
+                  const token = tokenAt(tokenList, wordsInVerse, i, verseKey);
                   const hit = glossWord(word, place);
+                  const gloss = resolveGloss({ token: token?.g, fallback: hit?.gloss });
                   const at = verse.sy.indexOf(word, from);
                   const start = at < 0 ? from : at;
                   from = start + word.length;
@@ -297,15 +344,26 @@ export function VerseView({
                     <button
                       key={`${word}-${i}`}
                       type="button"
-                      onClick={() => onWord(hit, word, place)}
-                      className="inline-flex max-w-full shrink-0 flex-col items-center gap-1 rounded-md border border-line bg-raised px-2.5 py-2 text-center"
+                      data-word-card=""
+                      aria-label={token ? cardAria(token) : undefined}
+                      onClick={() => onWord(hit, word, place, token ?? undefined)}
+                      className="inline-flex max-w-full min-h-11 min-w-11 flex-col items-center gap-1 rounded-md border border-line bg-raised px-2.5 py-2 text-center"
                     >
                       <span lang="syr" dir="rtl" className={`block whitespace-nowrap px-1 font-syriac text-xl leading-normal sm:text-2xl ${hot ? "text-jesus" : "text-syriac"}`}>
                         {word}
                       </span>
-                      <span dir="ltr" className="block max-w-40 text-xs leading-snug text-ink">
-                        {hit ? hit.gloss : "·"}
+                      <span dir="ltr" data-word-gloss="" className={`block max-w-full break-words text-ink ${token ? "text-sm leading-snug" : "max-w-40 text-xs leading-snug"}`}>
+                        {gloss || "·"}
                       </span>
+                      {token ? (
+                        <>
+                          <span dir="ltr" data-word-parse="" className="block text-xs text-muted">{parseTag(token.p)}</span>
+                          <span dir="ltr" className="block max-w-full text-[10px] leading-tight text-muted">
+                            {token.prov === "sourced" ? "Sourced" : token.prov === "reviewed" ? "Reviewed" : "Draft"}
+                            <span className="sr-only">{token.prov.startsWith("draft") ? ", not reviewed by a scholar" : ""}</span>
+                          </span>
+                        </>
+                      ) : null}
                     </button>
                   );
                 });

@@ -1,0 +1,10 @@
+{"book":"matthew","ch":6,"v":{"9":[
+{"w":"ܗܟܢܐ","l":"ܗܟܢܐ#1","p":"ADV","g":"thus","ctx":"in this way","say":"hakhanna","tr":"hāḵannā","prov":"draft-loop"},
+{"w":"ܗܟܝܠ","l":"ܗܟܝܠ#1","p":"CONJ","g":"therefore","say":"hakhel","tr":"hāḵēl","prov":"draft-loop"},
+{"w":"ܨܠܘ","l":"ܨܠܐ#1","p":"V.pa.impv.2mp","g":"pray","ctx":"pray (all of you)","say":"sallaw","tr":"ṣallaw","prov":"draft-loop"},
+{"w":"ܐܢܬܘܢ","l":"ܐܢܬܘܢ#1","p":"PRON.2mp","g":"you (pl.)","ctx":"you","say":"anton","tr":"ʾantōn","prov":"draft-loop"},
+{"w":"ܐܒܘܢ","l":"ܐܒܐ#1","suf":"ܢ","sfn":"our","p":"N.m.sg","g":"our Father","say":"avun","tr":"ʾaḇūn","prov":"draft-loop","flag":"needs-scholar: East Syriac reading of ḇ here (avun / awun / abun)"},
+{"w":"ܕܒܫܡܝܐ","l":"ܫܡܝܐ#1","pre":"ܕܒ","prf":["who","in"],"p":"N.m.pl.emph","g":"who in heaven","ctx":"who is in heaven","say":"d'bashmayya","tr":"d-ba-šmayyā","prov":"draft-loop","flag":"needs-scholar: is b spirantized after d- here (d'bashmayya / d'vashmayya)"},
+{"w":"ܢܬܩܕܫ","l":"ܩܕܫ#1","p":"V.ethpa.impf.3ms","g":"may it be hallowed","ctx":"hallowed be","say":"nethqaddash","tr":"neṯqaddaš","n":"Imperfect used as a wish (jussive).","prov":"draft-loop"},
+{"w":"ܫܡܟ","l":"ܫܡܐ#1","suf":"ܟ","sfn":"your (masc. sg.)","p":"N.m.sg","g":"your name","say":"shmakh","tr":"šmāḵ","prov":"draft-loop"}
+]}}
