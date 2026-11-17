@@ -1,11 +1,23 @@
 // W-153 against the built app: sixty cards vs a drink verse. Needs `npm run build:check`.
 import assert from "node:assert/strict";
 import { mkdirSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import test from "node:test";
 import { chromium } from "playwright";
 import { startBuiltServer } from "./serve-built.mjs";
 
-const SHOTS = "/workspace/injeel-loop/cycles/w153";
+function shotDir() {
+  const preferred = "/workspace/injeel-loop/cycles/w153";
+  try {
+    mkdirSync(preferred, { recursive: true });
+    return preferred;
+  } catch {
+    const fallback = join(tmpdir(), "injeel-w153");
+    mkdirSync(fallback, { recursive: true });
+    return fallback;
+  }
+}
 
 function seed(page, theme) {
   return page.addInitScript((stored) => {
@@ -43,7 +55,7 @@ async function openVerse(page, url, verse, minCards) {
 }
 
 test("W-153: Revelation 13:18 and Luke 24:13 show sixty; Luke 5:30 still drinks", async () => {
-  mkdirSync(SHOTS, { recursive: true });
+  const SHOTS = shotDir();
   const server = await startBuiltServer();
   const browser = await chromium.launch();
   const context = await browser.newContext({ serviceWorkers: "block", viewport: { width: 390, height: 844 } });
