@@ -88,6 +88,48 @@ export function resolveGloss(input: {
   return input.peel ?? null;
 }
 
+/** Existential ܐܝܬ with an optional prefix and pronoun suffix, not the “bring” verbs. */
+export const EXISTENTIAL_ITH = /^(?:ܘ|ܕ|ܒ|ܠ)*ܐܝܬ(?:ܘܗܝ|ܝܗܘܢ|ܝܗܝܢ|ܝܟܘܢ|ܝܟ|ܝܗ|ܝܢ|ܝ)?$/;
+/** Past copula used as the auxiliary in ܐܝܬܘܗܝ ܗܘܐ. */
+export const HWA_AUX = /^(?:ܘ|ܕ)*ܗܘ(?:ܐ|ܬ|ܘ|ܝ)$/;
+
+/**
+ * ܐܝܬܘܗܝ ܗܘܐ (and the same pair with other suffixes/prefixes) is one past
+ * periphrastic “was”. A present “he is” beside “was” is the wrong tense for
+ * this occurrence, so the card gloss is marked as the existential half.
+ */
+export function occurrenceGloss(input: {
+  word: string;
+  next?: string | null;
+  token?: WordToken | null;
+  fallback?: string | null;
+}): string | null {
+  const base = resolveGloss({ token: input.token?.g, fallback: input.fallback });
+  if (!base) return base;
+  if (!input.next || !EXISTENTIAL_ITH.test(input.word) || !HWA_AUX.test(input.next)) return base;
+  return periphrasticAuxGloss(base);
+}
+
+export function periphrasticAuxGloss(gloss: string): string {
+  if (/\(existing\)|\(aux\.?\)|\bwas\b|\bwere\b/i.test(gloss)) return gloss;
+  const rewritten = gloss
+    .replace(/\bthere is\b/gi, "there (existing)")
+    .replace(/\bhe is\b/gi, "he (existing)")
+    .replace(/\bshe is\b/gi, "she (existing)")
+    .replace(/\bit is\b/gi, "it (existing)")
+    .replace(/\bI am\b/g, "I (existing)")
+    .replace(/\bwe are\b/gi, "we (existing)")
+    .replace(/\byou are\b/gi, "you (existing)")
+    .replace(/\bthey are\b/gi, "they (existing)")
+    .replace(/\bwho is\b/gi, "who (existing)")
+    .replace(/\bthat is\b/gi, "that (existing)")
+    .replace(/\bwhich is\b/gi, "which (existing)");
+  if (rewritten !== gloss) return rewritten;
+  if (/\bis\b/i.test(gloss)) return gloss.replace(/\bis\b/i, "(existing)").replace(/\s+/g, " ").trim();
+  if (/\bare\b/i.test(gloss)) return gloss.replace(/\bare\b/i, "(existing)").replace(/\s+/g, " ").trim();
+  return gloss;
+}
+
 export function parseTag(code: string) {
   return code.split(".").join(" · ").toLowerCase();
 }
@@ -111,8 +153,8 @@ export function parseLong(code: string) {
   return out.join(" · ");
 }
 
-export function cardAria(token: WordToken) {
-  const bits = [token.w, token.say, token.g, parseLong(token.p).toLowerCase().replace(/ · /g, " ")];
+export function cardAria(token: WordToken, gloss?: string | null) {
+  const bits = [token.w, token.say, gloss || token.g, parseLong(token.p).toLowerCase().replace(/ · /g, " ")];
   if (token.sfn) bits.push(`with ${token.sfn}`);
   return bits.join(", ");
 }

@@ -1,17 +1,17 @@
 {"book":"john","ch":1,"v":{"1":[
 {"w":"ܒܪܫܝܬ","l":"ܪܫܝܬܐ#1","pre":"ܒ","prf":["in"],"p":"N.f.sg.abs","g":"in the beginning","say":"breshith","tr":"b-rēšīṯ","prov":"draft-loop","flag":"needs-scholar: root of ܪܫܝܬܐ (from ܪܫܐ 'head') to confirm"},
-{"w":"ܐܝܬܘܗܝ","l":"ܐܝܬ#1","suf":"ܘܗܝ","sfn":"he (3rd masc. sg.)","p":"PART.3ms","g":"he is","ctx":"was","say":"ithaw","tr":"ʾīṯaw","n":"With the following ܗܘܐ it makes one past tense: ʾīṯaw hwā, 'he was'.","prov":"draft-loop"},
+{"w":"ܐܝܬܘܗܝ","l":"ܐܝܬ#1","suf":"ܘܗܝ","sfn":"he (3rd masc. sg.)","p":"PART.3ms","g":"he (existing)","ctx":"was","say":"ithaw","tr":"ʾīṯaw","n":"With the following ܗܘܐ it makes one past tense: ʾīṯaw hwā, 'he was'.","prov":"draft-loop"},
 {"w":"ܗܘܐ","l":"ܗܘܐ#1","p":"V.pe.pf.3ms","g":"was","say":"hwa","tr":"hwā","prov":"draft-loop"},
 {"w":"ܡܠܬܐ","l":"ܡܠܬܐ#1","p":"N.f.sg.emph","g":"the Word","say":"meltha","tr":"melṯā","n":"A feminine noun; the verb and pronoun with it in this verse are masculine (ܗܘܐ, ܗܘ).","prov":"draft-loop"},
-{"w":"ܘܗܘ","l":"ܗܘ#1","pre":"ܘ","prf":["and"],"p":"PRON.3ms","g":"and that","ctx":"and that (Word)","say":"w'hu","tr":"w-hū","prov":"draft-loop"},
+{"w":"ܘܗܘ","l":"ܗܘ#1","pre":"ܘ","prf":["and"],"p":"PRON.3ms","g":"and he","ctx":"and he (the Word)","say":"w'hu","tr":"w-hū","n":"Here ܗܘ is the subject pronoun he/it, not the demonstrative “that”.","prov":"draft-loop"},
 {"w":"ܡܠܬܐ","l":"ܡܠܬܐ#1","p":"N.f.sg.emph","g":"Word","ctx":"the Word","say":"meltha","tr":"melṯā","prov":"draft-loop"},
-{"w":"ܐܝܬܘܗܝ","l":"ܐܝܬ#1","suf":"ܘܗܝ","sfn":"he (3rd masc. sg.)","p":"PART.3ms","g":"he is","ctx":"was","say":"ithaw","tr":"ʾīṯaw","prov":"draft-loop"},
+{"w":"ܐܝܬܘܗܝ","l":"ܐܝܬ#1","suf":"ܘܗܝ","sfn":"he (3rd masc. sg.)","p":"PART.3ms","g":"he (existing)","ctx":"was","say":"ithaw","tr":"ʾīṯaw","prov":"draft-loop"},
 {"w":"ܗܘܐ","l":"ܗܘܐ#1","p":"V.pe.pf.3ms","g":"was","say":"hwa","tr":"hwā","prov":"draft-loop"},
 {"w":"ܠܘܬ","l":"ܠܘܬ#1","p":"PREP","g":"toward","ctx":"with","say":"lwath","tr":"lwāṯ","prov":"draft-loop"},
 {"w":"ܐܠܗܐ","l":"ܐܠܗܐ#1","p":"N.m.sg.emph","g":"Elohim","say":"Alaha","tr":"ʾalāhā","n":"The Syriac word is Alaha; this edition's English prints Elohim.","prov":"draft-loop"},
 {"w":"ܘܐܠܗܐ","l":"ܐܠܗܐ#1","pre":"ܘ","prf":["and"],"p":"N.m.sg.emph","g":"and Elohim","say":"w'Alaha","tr":"w-ʾalāhā","prov":"draft-loop"},
-{"w":"ܐܝܬܘܗܝ","l":"ܐܝܬ#1","suf":"ܘܗܝ","sfn":"he (3rd masc. sg.)","p":"PART.3ms","g":"he is","ctx":"was","say":"ithaw","tr":"ʾīṯaw","prov":"draft-loop"},
+{"w":"ܐܝܬܘܗܝ","l":"ܐܝܬ#1","suf":"ܘܗܝ","sfn":"he (3rd masc. sg.)","p":"PART.3ms","g":"he (existing)","ctx":"was","say":"ithaw","tr":"ʾīṯaw","prov":"draft-loop"},
 {"w":"ܗܘܐ","l":"ܗܘܐ#1","p":"V.pe.pf.3ms","g":"was","say":"hwa","tr":"hwā","prov":"draft-loop"},
-{"w":"ܗܘ","l":"ܗܘ#1","p":"PRON.3ms","g":"that","ctx":"that (Word)","say":"hu","tr":"hū","prov":"draft-loop"},
+{"w":"ܗܘ","l":"ܗܘ#1","p":"PRON.3ms","g":"he","ctx":"he (the Word)","say":"hu","tr":"hū","n":"Here ܗܘ is the subject pronoun he/it, not the demonstrative “that”.","prov":"draft-loop"},
 {"w":"ܡܠܬܐ","l":"ܡܠܬܐ#1","p":"N.f.sg.emph","g":"Word","ctx":"the Word","say":"meltha","tr":"melṯā","prov":"draft-loop"}
 ]}}

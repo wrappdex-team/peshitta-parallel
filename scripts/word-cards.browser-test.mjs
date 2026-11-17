@@ -81,8 +81,13 @@ test("word cards use the occurrence gloss and the lexicon stays off the home pag
         await cards.nth(0).scrollIntoViewIfNeeded();
         assert.equal(await cards.count(), 15, `${theme} ${width}`);
         await cards.nth(1).scrollIntoViewIfNeeded();
-        assert.equal(await cards.nth(1).locator("[data-word-gloss]").innerText(), "he is");
+        assert.equal(await cards.nth(1).locator("[data-word-gloss]").innerText(), "he (existing)");
+        assert.notEqual(await cards.nth(1).locator("[data-word-gloss]").innerText(), "he is");
         assert.notEqual(await cards.nth(1).locator("[data-word-gloss]").innerText(), "was");
+        await cards.nth(4).scrollIntoViewIfNeeded();
+        assert.equal(await cards.nth(4).locator("[data-word-gloss]").innerText(), "and he");
+        await cards.nth(13).scrollIntoViewIfNeeded();
+        assert.equal(await cards.nth(13).locator("[data-word-gloss]").innerText(), "he");
         await cards.nth(3).scrollIntoViewIfNeeded();
         assert.equal(await cards.nth(3).locator("[data-word-gloss]").innerText(), "the Word");
         assert.equal(await cards.nth(3).locator("[data-word-parse]").innerText(), "n · f · sg · emph");
@@ -96,6 +101,9 @@ test("word cards use the occurrence gloss and the lexicon stays off the home pag
         const second = page.locator("#v-2 [data-word-card]").nth(0);
         await second.scrollIntoViewIfNeeded();
         assert.equal(await second.locator("[data-word-gloss]").innerText(), "this");
+        const secondIth = page.locator("#v-2 [data-word-card]").nth(1);
+        await secondIth.scrollIntoViewIfNeeded();
+        assert.equal(await secondIth.locator("[data-word-gloss]").innerText(), "he (existing)");
         const box = await cards.nth(3).boundingBox();
         assert.ok(box && box.width >= 44 && box.height >= 44, `${theme} ${width} target ${JSON.stringify(box)}`);
         const overflow = await page.evaluate(() => Math.max(document.documentElement.scrollWidth - document.documentElement.clientWidth, 0));
@@ -127,7 +135,8 @@ test("word cards use the occurrence gloss and the lexicon stays off the home pag
 
     await card(page, 1, 1).click();
     await word.getByText("In context: was").waitFor();
-    assert.equal(await word.getByText("Literal: he is").count(), 1);
+    assert.equal(await word.getByText("Literal: he (existing)").count(), 1);
+    assert.equal(await word.getByText("Literal: he is").count(), 0);
     await page.keyboard.press("Escape");
 
     await page.goto(`${server.url}/read/matthew/6`, { waitUntil: "domcontentloaded" });
