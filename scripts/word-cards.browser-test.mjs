@@ -90,8 +90,8 @@ test("word cards use the occurrence gloss and the lexicon stays off the home pag
         assert.equal(await cards.nth(13).locator("[data-word-gloss]").innerText(), "he");
         await cards.nth(3).scrollIntoViewIfNeeded();
         assert.equal(await cards.nth(3).locator("[data-word-gloss]").innerText(), "the Word");
-        assert.equal(await cards.nth(3).locator("[data-word-parse]").innerText(), "n · f · sg · emph");
-        assert.match(await cards.nth(3).innerText(), /Draft/);
+        assert.equal(await cards.nth(3).locator("[data-word-parse]").count(), 0);
+        assert.doesNotMatch(await cards.nth(3).innerText(), /Draft|Sourced|Reviewed|n · f · sg · emph|part · 3ms|prep/);
         assert.match(await cards.nth(3).getAttribute("aria-label"), /meltha/);
         await cards.nth(5).scrollIntoViewIfNeeded();
         assert.equal(await cards.nth(5).locator("[data-word-gloss]").innerText(), "Word");
