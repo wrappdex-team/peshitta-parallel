@@ -371,6 +371,22 @@ test("names study guide: English line, Read, and finding", { timeout: 420000 }, 
     await page.waitForFunction((before) => window.__nameSpeech.cancels > before, cancels);
     assert.equal(await page.evaluate(() => window.__nameSpeech.utterances.length), 2);
 
+    await open(page, `${server.url}/names#yshua`);
+    await waitForNamesReady(page);
+    await page.locator("#yshua [data-name-read]").waitFor();
+    await page.evaluate(() => {
+      window.__nameSpeech.utterances = [];
+      window.__nameSpeech.cancels = 0;
+    });
+    await page.locator("#yshua").getByRole("button", { name: /Read Y'shua then Jesus/ }).click();
+    await page.waitForFunction(() => window.__nameSpeech.utterances.length >= 2);
+    const yshuaSpoken = await page.evaluate(() => window.__nameSpeech.utterances);
+    assert.deepEqual(
+      yshuaSpoken.map((item) => item.text),
+      ["yeh shoo ah", "Jesus"],
+    );
+    assert.equal(yshuaSpoken.some((item) => item.text === "yshua"), false);
+
     await page.waitForFunction(() => typeof window.__setReadingLive === "function");
     await page.evaluate(() => window.__setReadingLive(true));
     await page.waitForFunction(() => document.querySelectorAll("[data-name-read]:not(:disabled)").length === 0);

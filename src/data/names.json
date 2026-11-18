@@ -10578,10 +10578,15 @@
         "lang": "Aramaic",
         "source": "Aramaic, following the Syriac verse form. Note: Strong’s G2424 Ἰησοῦς: “of Hebrew origin (H3091)” (Strong’s Greek Dictionary, 1890, public domain) gives a Hebrew origin."
       },
+      "pron": {
+        "root": {
+          "respell": "yeh-shoo-ah"
+        }
+      },
       "kind": "person",
       "count": 1070,
       "ref": "matthew 1:1",
-      "note": "Y'shua. Matthew 1:21 ties the name to the root “to make alive”: he will give life to his people.",
+      "note": "Y'shua. Matthew 1:21 ties the name to the root “to make alive”: he will give life to his people. The Church of the East pronounces the name Eesho (Isho); A. J. Maclean, A Dictionary of the Dialects of Vernacular Syriac (Oxford, 1901, public domain), p. 122, records the Eastern form īshū for Jesus and Joshua, “still very commonly used as a man's name.”",
       "sources": [
         {
           "script": "Hebrew",
