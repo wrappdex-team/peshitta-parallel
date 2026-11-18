@@ -42,6 +42,16 @@ test("Keefa is spoken root then English", () => {
   );
 });
 
+test("Y'shua is read as Yeshua, not the raw yshua", () => {
+  const row = names.find((item) => item.id === "yshua");
+  assert.ok(row);
+  assert.equal(row.pron?.root?.respell, "yeh-shoo-ah");
+  const lines = nameUtterances(row);
+  assert.equal(lines.find((line) => line.part === "root")?.text, "yeh shoo ah");
+  assert.notEqual(lines[0].text, "yshua");
+  assert.equal(lines[1].text, "Jesus");
+});
+
 test("aphsiya drops the glottal and the vowel marks", () => {
   const row = names.find((item) => item.id === "aphsiya");
   assert.equal(row?.say, "ʾepsāyā");
