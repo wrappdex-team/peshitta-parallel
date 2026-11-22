@@ -1,4 +1,5 @@
 import { Modal } from "@/components/modal";
+import { Images, Plug } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { CAPABILITIES, provider, type Capability } from "./catalog.ts";
 import { ConnectionsPanel } from "./connections-panel.tsx";
@@ -6,6 +7,8 @@ import { patchStudioPrefs, readStudioPrefs, scopeRef, scopeVerses, type StudioSc
 import { useConnections } from "./use-connections.ts";
 import type { Output } from "./result.tsx";
 import { StillPanel } from "./still-panel.tsx";
+import { saveWork } from "./gallery.ts";
+import { GalleryPanel } from "./gallery-panel.tsx";
 
 export type Tab = "still" | "song" | "film";
 const TABS: { id: Tab; label: string }[] = [
@@ -47,7 +50,8 @@ export default function Workspace({ scope: initial, onClose }: { scope: StudioSc
   const [scope, setScope] = useState(initial);
   const saved = readStudioPrefs().tab;
   const [tab, setTab] = useState<Tab>(saved === "song" || saved === "film" ? saved : "still");
-  const [view, setView] = useState<"make" | "connections">("make");
+  const [view, setView] = useState<"make" | "connections" | "gallery">("make");
+  const [kept, setKept] = useState("");
   const { keys, refresh } = useConnections();
   const verses = scopeVerses(scope);
   const last = scope.verses[scope.verses.length - 1]?.v ?? scope.to;
@@ -55,7 +59,10 @@ export default function Workspace({ scope: initial, onClose }: { scope: StudioSc
     setTab(next);
     patchStudioPrefs({ tab: next });
   };
-  const props: PanelProps = { scope, keys, onConnect: () => setView("connections") };
+  const onMade = (output: Output) => {
+    void saveWork(output).then((ok) => setKept(ok ? "Kept in your gallery on this device." : "This browser would not keep it; use Download."));
+  };
+  const props: PanelProps = { scope, keys, onConnect: () => setView("connections"), onMade };
   const Panel = PANELS[tab];
 
   return (
@@ -67,8 +74,13 @@ export default function Workspace({ scope: initial, onClose }: { scope: StudioSc
             <h2 className="truncate font-serif text-2xl" data-studio-ref="">{scopeRef(scope)}</h2>
           </div>
           <div className="flex shrink-0 items-center pt-2">
-            <button type="button" aria-pressed={view === "connections"} className={`min-h-11 px-2 text-sm ${view === "connections" ? "text-garnet" : "text-muted"}`} onClick={() => setView(view === "connections" ? "make" : "connections")}>
-              {view === "connections" ? "Done" : "Connections"}
+            <button type="button" aria-label={view === "gallery" ? "Back to making" : "Gallery"} aria-pressed={view === "gallery"} className={`inline-flex min-h-11 min-w-11 items-center justify-center gap-1 px-1 text-sm ${view === "gallery" ? "text-garnet" : "text-muted"}`} onClick={() => setView(view === "gallery" ? "make" : "gallery")}>
+              <Images className="size-5 sm:size-4" aria-hidden="true" />
+              <span className="hidden sm:inline">Gallery</span>
+            </button>
+            <button type="button" aria-label={view === "connections" ? "Done" : "Connections"} aria-pressed={view === "connections"} className={`inline-flex min-h-11 min-w-11 items-center justify-center gap-1 px-1 text-sm ${view === "connections" ? "text-garnet" : "text-muted"}`} onClick={() => setView(view === "connections" ? "make" : "connections")}>
+              <Plug className="size-5 sm:size-4" aria-hidden="true" />
+              <span className="hidden sm:inline">{view === "connections" ? "Done" : "Connections"}</span>
             </button>
             <button type="button" className="min-h-11 px-2 text-garnet" onClick={onClose}>Close</button>
           </div>
@@ -76,6 +88,8 @@ export default function Workspace({ scope: initial, onClose }: { scope: StudioSc
         <div className="flex-1 overflow-y-auto px-4 py-4 pb-safe">
           {view === "connections" ? (
             <ConnectionsPanel keys={keys} refresh={refresh} />
+          ) : view === "gallery" ? (
+            <GalleryPanel />
           ) : (
             <>
               <blockquote className="line-clamp-4 border-l-2 border-gold pl-3 font-serif leading-relaxed text-ink" data-studio-passage="">
@@ -108,6 +122,7 @@ export default function Workspace({ scope: initial, onClose }: { scope: StudioSc
               <div role="tabpanel" className="pt-4">
                 {Panel ? Panel(props) : <Placeholder tab={tab} {...props} />}
               </div>
+              {kept && <p role="status" className="mt-2 text-sm text-muted">{kept}</p>}
               <p className="mt-6 text-xs leading-relaxed text-muted">Everything made here is labelled AI-generated, with the provider, model and verse. It is never reviewed by INjeel and is not made directly from the Syriac.</p>
             </>
           )}
