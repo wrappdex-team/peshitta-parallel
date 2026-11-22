@@ -2,7 +2,7 @@
 // Serve the local production build (.vercel/output) on 127.0.0.1 for browser checks.
 // Mirrors .vercel/output/config.json: static files first, then the SSR function.
 // No credentials, no network beyond loopback, no dev compiler, so start-up is instant.
-import { createReadStream, existsSync, statSync } from "node:fs";
+import { createReadStream, existsSync, readFileSync, statSync } from "node:fs";
 import { createServer } from "node:http";
 import { extname, join, normalize, sep } from "node:path";
 import { Readable } from "node:stream";
@@ -45,6 +45,21 @@ function staticFile(pathname) {
   }
 }
 
+/**
+ * Production sends the CSP from vercel.json; send the same one here so browser
+ * tests catch anything it would block. Only `upgrade-insecure-requests` is
+ * dropped, because the test server is plain http on localhost.
+ */
+const CSP = (() => {
+  try {
+    const config = JSON.parse(readFileSync(new URL("../vercel.json", import.meta.url), "utf8"));
+    const row = config.headers?.flatMap((entry) => entry.headers ?? []).find((header) => header.key === "Content-Security-Policy");
+    return row ? row.value.replace(/;?\s*upgrade-insecure-requests/, "") : "";
+  } catch {
+    return "";
+  }
+})();
+
 /** Start the built app. Resolves to { url, close }. Throws if there is no build. */
 export async function startBuiltServer({ port = 0 } = {}) {
   if (!existsSync(SERVER)) {
@@ -56,7 +71,7 @@ export async function startBuiltServer({ port = 0 } = {}) {
       const url = new URL(req.url ?? "/", "http://127.0.0.1");
       const file = req.method === "GET" || req.method === "HEAD" ? staticFile(url.pathname) : null;
       if (file) {
-        res.writeHead(200, { "content-type": TYPES[extname(file)] ?? "application/octet-stream" });
+        res.writeHead(200, { "content-type": TYPES[extname(file)] ?? "application/octet-stream", ...(CSP ? { "content-security-policy": CSP } : {}) });
         if (req.method === "HEAD") return res.end();
         return createReadStream(file).pipe(res);
       }
@@ -75,6 +90,7 @@ export async function startBuiltServer({ port = 0 } = {}) {
       });
       const cookies = response.headers.getSetCookie?.() ?? [];
       if (cookies.length) headers["set-cookie"] = cookies;
+      if (CSP) headers["content-security-policy"] = CSP;
       res.writeHead(response.status, headers);
       if (!response.body || req.method === "HEAD") return res.end();
       Readable.fromWeb(response.body).pipe(res);
