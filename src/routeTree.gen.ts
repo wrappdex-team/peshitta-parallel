@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ConnectedRouteImport } from './routes/connected'
 import { Route as GuideRouteImport } from './routes/guide'
 import { Route as NamesRouteImport } from './routes/names'
 import { Route as OfflineRouteImport } from './routes/offline'
@@ -23,6 +24,11 @@ import { Route as ReadBookChapterRouteImport } from './routes/read.$book.$chapte
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConnectedRoute = ConnectedRouteImport.update({
+  id: '/connected',
+  path: '/connected',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GuideRoute = GuideRouteImport.update({
@@ -73,6 +79,7 @@ const ReadBookChapterRoute = ReadBookChapterRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/connected': typeof ConnectedRoute
   '/guide': typeof GuideRoute
   '/names': typeof NamesRoute
   '/offline': typeof OfflineRoute
@@ -85,6 +92,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/connected': typeof ConnectedRoute
   '/guide': typeof GuideRoute
   '/names': typeof NamesRoute
   '/offline': typeof OfflineRoute
@@ -98,6 +106,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/connected': typeof ConnectedRoute
   '/guide': typeof GuideRoute
   '/names': typeof NamesRoute
   '/offline': typeof OfflineRoute
@@ -112,6 +121,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/connected'
     | '/guide'
     | '/names'
     | '/offline'
@@ -124,6 +134,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/connected'
     | '/guide'
     | '/names'
     | '/offline'
@@ -136,6 +147,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/connected'
     | '/guide'
     | '/names'
     | '/offline'
@@ -149,6 +161,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ConnectedRoute: typeof ConnectedRoute
   GuideRoute: typeof GuideRoute
   NamesRoute: typeof NamesRoute
   OfflineRoute: typeof OfflineRoute
@@ -167,6 +180,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/connected': {
+      id: '/connected'
+      path: '/connected'
+      fullPath: '/connected'
+      preLoaderRoute: typeof ConnectedRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/guide': {
@@ -237,6 +257,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ConnectedRoute: ConnectedRoute,
   GuideRoute: GuideRoute,
   NamesRoute: NamesRoute,
   OfflineRoute: OfflineRoute,
