@@ -51,6 +51,8 @@ test("labels never say reviewed; file names are tidy; abusive asks are caught ki
   assert.equal(fileName("Matthew 5:3–7", "Byzantine mosaic", "png"), "injeel-matthew-5-3-7-byzantine-mosaic.png");
   assert.equal(irreverent("a gentle shepherd at dawn"), false);
   assert.equal(irreverent("make it gory and nude"), true);
+  assert.equal(irreverent(stillPrompt("Matthew 5:3", [v3], styleById("baroque"))), false, "the reverence guard itself never trips the check");
+  assert.equal(irreverent("a calm scene, no gore"), false);
 });
 
 test("director: Claude is called directly with the browser header and returns only the prompt text", async () => {

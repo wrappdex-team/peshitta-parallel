@@ -21,7 +21,9 @@ export function stillPrompt(ref: string, verses: Verse[], style: CenturyStyle) {
 
 /** Light check before a request leaves the tab. Providers keep their own safety systems. */
 export function irreverent(text: string) {
-  return /\b(nude|naked|gore|blood\s*bath|sexy|porn|mock(?:ing|ery)?\s+(?:jesus|christ|god)|satanic\s+ritual)\b/i.test(text);
+  // The guard itself says "no gore, no nudity…": only what the reader asks for counts.
+  const asked = text.split(REVERENCE).join(" ").replace(/\b(?:no|without|avoid)\s+[\w-]+/gi, " ");
+  return /\b(nude|naked|gore|blood\s*bath|sexy|porn|mock(?:ing|ery)?\s+(?:jesus|christ|god)|satanic\s+ritual)\b/i.test(asked);
 }
 
 export type SongLanguage = "english" | "syriac" | "both";
