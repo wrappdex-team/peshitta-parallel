@@ -266,11 +266,6 @@ export function VerseView({
                 ← Back to {rootDisplay(markRow)}
               </Link>
             ) : null}
-            {onStudio ? (
-              <button type="button" className="studio-mark -my-1.5 inline-flex size-11 items-center justify-center text-gold opacity-80 hover:text-garnet hover:opacity-100" onClick={onStudio} aria-label={`Create from verse ${verse.v} in Studio`} title="Create in Studio">
-                <Feather className="size-4" aria-hidden="true" />
-              </button>
-            ) : null}
             {(guideMark ?? verse.v === 1) ? <InfoMark id="marks" align="end" /> : null}
           </div>
           {noteOpen && (
@@ -413,22 +408,27 @@ export function VerseView({
           )}
           {chapterEnd ? <span data-chapter-end="" className="block h-px" aria-hidden="true" /> : null}
           <div className="verse-tools mt-1 flex flex-wrap items-center gap-0.5 text-sm text-muted">
-            <button type="button" className="min-h-11 px-1.5 hover:text-ink" onClick={onHighlight} aria-label={highlight ? MARK_NAME[highlight] : "Mark"}>
+            <button type="button" className="min-h-11 px-1 hover:text-ink" onClick={onHighlight} aria-label={highlight ? MARK_NAME[highlight] : "Mark"}>
               {highlight ? MARK_NAME[highlight] : "Mark"}
             </button>
-            <button type="button" className="min-h-11 px-1.5 hover:text-ink" onClick={onBookmark} aria-label="Bookmark">
+            <button type="button" className="min-h-11 px-1 hover:text-ink" onClick={onBookmark} aria-label="Bookmark">
               {annotation?.bookmark ? "Saved" : "Save"}
             </button>
-            <button type="button" className="min-h-11 px-1.5 hover:text-ink" onClick={() => setNoteOpen((v) => !v)} aria-label="Note">
+            <button type="button" className="min-h-11 px-1 hover:text-ink" onClick={() => setNoteOpen((v) => !v)} aria-label="Note">
               Note
             </button>
-            <button type="button" className="min-h-11 px-1.5 hover:text-garnet" onClick={() => void shareVerse()}>
+            {onStudio ? (
+              <button type="button" className="studio-mark inline-flex min-h-11 items-center justify-center px-1 hover:text-ink" onClick={onStudio} aria-label="Open in AI Studio">
+                <Feather className="size-4" aria-hidden="true" />
+              </button>
+            ) : null}
+            <button type="button" className="min-h-11 px-1 hover:text-garnet" onClick={() => void shareVerse()}>
               {copied === "sent" ? "Sent" : copied === "share" ? "Copied" : "Share"}
             </button>
-            <button type="button" className="min-h-11 px-1.5 hover:text-garnet" onClick={() => copy("text")}>
+            <button type="button" className="min-h-11 px-1 hover:text-garnet" onClick={() => copy("text")}>
               {copied === "text" ? "Copied" : "Copy"}
             </button>
-            <button type="button" className="min-h-11 px-1.5 hover:text-ink" onClick={() => copy("link")}>
+            <button type="button" className="min-h-11 px-1 hover:text-ink" onClick={() => copy("link")}>
               {copied === "link" ? "Copied" : "Link"}
             </button>
           </div>
