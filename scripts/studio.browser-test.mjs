@@ -174,7 +174,7 @@ test("a verse mark opens Studio pre-filled with that verse; range widens to the 
 test("Passage: Book, Chapter, From and To set a range, and the still prompt quotes it", async () => {
   const { context, page, errors } = await setup(browser, server.url, { enabled: true, session: JSON.stringify({ v: 2, keys: { google: `AQ.${"g".repeat(30)}` } }) });
   await reader(page, server.url);
-  await page.getByRole("button", { name: "Create from verse 3 in Studio" }).click();
+  await page.locator("#v-3").getByRole("button", { name: "Open in AI Studio" }).click();
   const dialog = page.getByRole("dialog", { name: "Studio" });
   await dialog.waitFor();
   await dialog.getByLabel("To", { exact: true }).selectOption("4");
@@ -318,7 +318,7 @@ test("Still: century style + aspect shape the verse-aware prompt; the result car
 test("Still: style is a dropdown, palettes are gone, Advanced starts closed, and a custom style is sent in the request", async () => {
   const { context, page, calls, errors } = await setup(browser, server.url, { enabled: true, session: JSON.stringify({ v: 2, keys: { google: GOOGLE } }), replies: [geminiImage] });
   await reader(page, server.url);
-  await page.getByRole("button", { name: "Create from verse 3 in Studio" }).click();
+  await page.locator("#v-3").getByRole("button", { name: "Open in AI Studio" }).click();
   const dialog = page.getByRole("dialog", { name: "Studio" });
   await dialog.waitFor();
   assert.equal(await dialog.getByRole("radiogroup", { name: "Century style" }).count(), 0);
@@ -501,7 +501,7 @@ test("Sermon: the tab writes from the passage, filters bad citations, labels the
   const { context, page, calls, errors } = await setup(browser, server.url, { enabled: true, session: JSON.stringify({ v: 2, keys: { anthropic: CLAUDE } }), replies: [claude] });
   await context.grantPermissions(["clipboard-read", "clipboard-write"]);
   await reader(page, server.url);
-  await page.getByRole("button", { name: "Create from verse 3 in Studio" }).click();
+  await page.locator("#v-3").getByRole("button", { name: "Open in AI Studio" }).click();
   const dialog = page.getByRole("dialog", { name: "Studio" });
   await dialog.waitFor();
   await dialog.getByLabel("Book", { exact: true }).selectOption("john");
