@@ -7,6 +7,7 @@ import { BookLinks } from "@/components/book-links";
 import { HelpSwitch, InfoMark } from "@/components/info-mark";
 import { Modal } from "@/components/modal";
 import { SiteHeader, requestSearch } from "@/components/site-header";
+import { StudioEntry } from "@/components/studio-entry";
 import { useAnnotations } from "@/lib/annotations";
 import { chapterCountLabel } from "@/lib/chapter-label";
 import { summarizeOffline } from "@/lib/offline";
@@ -221,16 +222,9 @@ function Home() {
           </section>
         ))}
 
-        <Link to="/studio" data-studio-entry="home" className="mt-10 block min-w-0 border-t border-line pt-6">
-          <span className="block text-xs tracking-widest text-gold">AI STUDIO</span>
-          <span className="mt-1 block font-serif text-lg">Make a still, a song or a film from a verse</span>
-          <span className="mt-1 block text-sm text-muted">On your own AI account, or with free services. Open it here even if the reader marks are off.</span>
-        </Link>
+        <StudioEntry where="home" />
 
-        <footer className="mt-6 flex flex-wrap gap-x-4 gap-y-2 text-sm">
-          <Link to="/studio" className="ink-link inline-flex min-h-11 items-center text-muted">
-            AI Studio
-          </Link>
+        <footer className="mt-2 flex flex-wrap gap-x-4 gap-y-2 text-sm">
           <Link to="/study" className="ink-link inline-flex min-h-11 items-center text-muted">
             About this Injeel
           </Link>

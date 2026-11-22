@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { StudioEntry } from "@/components/studio-entry";
 import { useState } from "react";
 import { APP_SHARE, shareCard } from "@/lib/share";
 
@@ -29,9 +30,9 @@ export function BookLinks({ onDone }: { onDone?: () => void }) {
       <Link to="/names" onClick={onDone} className="flex min-h-11 items-center text-garnet">
         Name index
       </Link>
-      <Link to="/studio" onClick={onDone} data-studio-entry="menu" className="flex min-h-11 items-center text-garnet">
-        AI Studio
-      </Link>
+      <div className="flex min-h-11 items-center">
+        <StudioEntry where="menu" onDone={onDone} />
+      </div>
       <Link to="/study" onClick={onDone} className="flex min-h-11 items-center text-garnet">
         About this Injeel
       </Link>
