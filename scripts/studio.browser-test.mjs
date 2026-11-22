@@ -109,6 +109,29 @@ test("a verse mark opens Studio pre-filled with that verse; range widens to the 
   await context.close();
 });
 
+test("connections: paste a key, it is recognised, tested with one read, kept only in this tab", async () => {
+  const { context, page, calls } = await setup(browser, server.url, { enabled: true });
+  await reader(page, server.url);
+  await page.getByRole("button", { name: "Studio", exact: true }).click();
+  const dialog = page.getByRole("dialog", { name: "Studio" });
+  await dialog.getByRole("button", { name: "Connections" }).click();
+  assert.equal(await dialog.getByRole("button", { name: "Done" }).getAttribute("aria-pressed"), "true");
+  await dialog.getByLabel("PASTE ANY KEY").fill(FAKE_OPENAI);
+  await dialog.getByRole("button", { name: "Connect OpenAI" }).click();
+  await dialog.getByText("OpenAI connected · 2 models visible.").waitFor();
+  const probe = calls.find((call) => call.url === "https://api.openai.com/v1/models");
+  assert.ok(probe, "one models read");
+  assert.equal(probe.headers.authorization, `Bearer ${FAKE_OPENAI}`);
+  assert.equal(calls.filter((call) => call.method === "POST").length, 0, "testing never makes media");
+  assert.equal(await dialog.getByRole("table", { name: "What your connections can make" }).getByText("OpenAI").count(), 1);
+  const stored = await page.evaluate(() => ({ session: sessionStorage.getItem("injeel-agent"), local: JSON.stringify({ ...localStorage }) }));
+  assert.deepEqual(JSON.parse(stored.session).keys, { openai: FAKE_OPENAI });
+  assert.ok(!stored.local.includes(FAKE_OPENAI), "never in localStorage");
+  await dialog.locator('[data-provider="openai"]').getByRole("button", { name: "Disconnect" }).click();
+  assert.equal(await page.evaluate(() => sessionStorage.getItem("injeel-agent")), null);
+  await context.close();
+});
+
 test("OpenRouter sign-in: PKCE callback exchanges the code once and keeps the key in this tab", async () => {
   const pending = JSON.stringify({ v: 2, keys: {}, pending: { verifier: "v".repeat(43), returnTo: "/read/matthew/5", at: Date.now() } });
   const { context, page, calls } = await setup(browser, server.url, { enabled: true, session: pending });
@@ -134,6 +157,9 @@ for (const theme of ["day", "night"]) {
       await dialog.waitFor();
       assert.ok(await noHorizontalScroll(page), `studio ${width} ${theme}`);
       if (SHOTS && (width === 390 || width === 1280)) await page.screenshot({ path: `${SHOTS}/studio-${theme}-${width}.png` });
+      await dialog.getByRole("button", { name: "Connections" }).click();
+      assert.ok(await noHorizontalScroll(page), `connections ${width} ${theme}`);
+      if (SHOTS && width === 390) await page.screenshot({ path: `${SHOTS}/connections-${theme}-390.png` });
       assert.deepEqual(errors, [], `${width} ${theme}`);
       await context.close();
     }
