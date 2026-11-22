@@ -250,3 +250,28 @@ test("Still: a provider safety stop is shown as one calm line, nothing else", as
   assert.equal(await dialog.locator("[data-studio-output]").count(), 0);
   await context.close();
 });
+
+test("Gallery keeps what was made on this device, labelled, and can delete it", async () => {
+  const { context, page, errors } = await setup(browser, server.url, { enabled: true, session: JSON.stringify({ v: 2, keys: { google: GOOGLE } }), replies: [geminiImage] });
+  await reader(page, server.url);
+  await page.getByRole("button", { name: "Create from verse 3 in Studio" }).click();
+  const dialog = page.getByRole("dialog", { name: "Studio" });
+  await dialog.getByRole("button", { name: "Make the still" }).click();
+  await dialog.getByText("Kept in your gallery on this device.").waitFor();
+  await dialog.getByRole("button", { name: "Close" }).click();
+  await page.reload({ waitUntil: "networkidle" });
+  await page.getByRole("button", { name: "Studio", exact: true }).click();
+  await dialog.getByRole("button", { name: "Gallery" }).click();
+  const works = dialog.locator("[data-studio-gallery] li");
+  await works.first().waitFor();
+  assert.equal(await works.count(), 1);
+  assert.match(await works.first().locator("[data-studio-label]").textContent(), /^AI-generated · Google Gemini · Nano Banana 2\.1 · Matthew 5:3 · not reviewed$/);
+  assert.match(await works.first().locator("img").getAttribute("src"), /^blob:/);
+  if (SHOTS) await page.screenshot({ path: `${SHOTS}/gallery-day-390.png` });
+  const stored = await page.evaluate(() => new Promise((resolve) => { const r = indexedDB.open("injeel-studio-gallery"); r.onsuccess = () => { const all = r.result.transaction("works").objectStore("works").getAll(); all.onsuccess = () => resolve(JSON.stringify(all.result.map(({ blob, ...rest }) => rest))); }; }));
+  assert.ok(!stored.includes(GOOGLE), "no key in the gallery");
+  await works.first().getByRole("button", { name: "Delete from this device" }).click();
+  await dialog.getByText("Nothing here yet.").waitFor();
+  assert.deepEqual(errors, []);
+  await context.close();
+});
