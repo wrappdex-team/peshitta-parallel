@@ -2,7 +2,7 @@ import { SearchPanel } from "@/components/search-panel";
 import { InfoMark } from "@/components/info-mark";
 import { usePrefs } from "@/lib/use-prefs";
 import { Link } from "@tanstack/react-router";
-import { Menu, Moon, Search, Sun } from "lucide-react";
+import { Feather, Menu, Moon, Search, Sun } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 
 let openSearch = () => {};
@@ -19,6 +19,7 @@ export function SiteHeader({
   onBooks,
   mark,
   book,
+  onStudio,
   children,
 }: {
   title: string;
@@ -27,6 +28,8 @@ export function SiteHeader({
   onBooks?: () => void;
   mark?: string;
   book?: string;
+  /** Present only while the reader has Studio turned on. */
+  onStudio?: () => void;
   children?: ReactNode;
 }) {
   const { prefs, patch } = usePrefs();
@@ -80,6 +83,11 @@ export function SiteHeader({
             {subtitle ? <span className="block truncate text-xs text-gold">{subtitle}</span> : null}
           </div>
           <div className="flex">
+            {onStudio ? (
+              <button type="button" className="ink-icon studio-mark flex size-11 items-center justify-center text-gold" aria-label="Studio" onClick={onStudio}>
+                <Feather className="size-5" />
+              </button>
+            ) : null}
             <button type="button" className="ink-icon flex size-11 items-center justify-center" aria-label="Search" aria-keyshortcuts="/ Control+K" onClick={() => setSearch(true)}>
               <Search className="size-5" />
             </button>

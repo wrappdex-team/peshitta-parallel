@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { Feather } from "lucide-react";
 import { NOTES } from "@/data/edition";
 import { englishPhrases, foreignAt, rangeHits, speechOf, speechRanges, speechSpans, syriacPhrases } from "@/lib/jesus";
 import { languageById, type LangId } from "@/lib/languages";
@@ -66,6 +67,8 @@ type Props = {
   markSpeech?: boolean;
   /** Card id from a /names verse link: highlight this verse and mark the name in it. */
   nameMark?: string;
+  /** Present only while the reader has Studio turned on. */
+  onStudio?: () => void;
 };
 
 const SY = ["text-lg", "text-xl", "text-2xl", "text-3xl", "text-4xl"] as const;
@@ -107,6 +110,7 @@ export function VerseView({
   guideMark,
   markSpeech = true,
   nameMark,
+  onStudio,
 }: Props) {
   const markRow = nameMark ? (NAMES.find((row) => row.id === nameMark) ?? null) : null;
   const [copied, setCopied] = useState("");
@@ -263,6 +267,11 @@ export function VerseView({
               >
                 ← Back to {rootDisplay(markRow)}
               </Link>
+            ) : null}
+            {onStudio ? (
+              <button type="button" className="studio-mark -my-1.5 inline-flex size-11 items-center justify-center text-gold opacity-80 hover:text-garnet hover:opacity-100" onClick={onStudio} aria-label={`Create from verse ${verse.v} in Studio`} title="Create in Studio">
+                <Feather className="size-4" aria-hidden="true" />
+              </button>
             ) : null}
             {(guideMark ?? verse.v === 1) ? <InfoMark id="marks" align="end" /> : null}
           </div>

@@ -2,7 +2,8 @@ import { WordStudySheet } from "@/components/word-study";
 import { Modal } from "@/components/modal";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Studio } from "@/components/studio";
+import { StudioHost } from "@/studio/host";
+import { openStudio, useStudioEnabled } from "@/studio/prefs";
 import { SiteHeader } from "@/components/site-header";
 import { VerseView } from "@/components/verse-view";
 import { ReadingSheet, readingLabel } from "@/components/reading-sheet";
@@ -68,10 +69,9 @@ function Words() {
   const [heard, setHeard] = useState<Heard | null>(null);
   const [focusKey, setFocusKey] = useState("");
   const [reading, setReading] = useState(false);
-  const [studio, setStudio] = useState(false);
-  const [picked, setPicked] = useState("");
   const [sheet, setSheet] = useState<{ title: string; roman: string; body: string } | { study: WordStudy; word?: { token: WordToken; book: string } } | null>(null);
   const meta = BOOKS.find((item) => item.id === book);
+  const studioOn = useStudioEnabled();
   const tongue = languageById(prefs.lang);
   const wide = prefs.lang2 !== "none";
 
@@ -184,12 +184,13 @@ function Words() {
     setSheet({ title: note.title, roman: "", body: note.body });
   }
 
-  function openStudio() {
-    const selected = window.getSelection()?.toString().replace(/\s+/g, " ").trim() ?? "";
+  function openWordsStudio() {
     const key = heard && heard.book === book ? `${heard.chapter}:${heard.verse}` : focusKey;
-    setPicked(selected || picked || passageFor(key));
+    const saying = sayings.find((item) => `${item.chapter}:${item.verse.v}` === key) ?? sayings[0];
     setReading(false);
-    setStudio(true);
+    if (!saying) return;
+    const v = saying.verse.v;
+    openStudio({ book, bookName: meta?.name ?? book, chapter: saying.chapter, verses: [{ v, en: passageFor(key) || saying.verse.en, sy: saying.verse.sy || undefined }], from: v, to: v });
   }
 
   return (
@@ -199,6 +200,7 @@ function Words() {
         subtitle={`${meta?.name ?? "Gospel"}${doc ? ` · ${sayings.length}` : ""}`}
         wide={wide}
         mark="red"
+        onStudio={studioOn ? openWordsStudio : undefined}
       >
         <div className="toolbar-scroll flex gap-1 overflow-x-auto px-3 pb-2">
           {RED_BOOKS.map((id) => {
@@ -269,11 +271,11 @@ function Words() {
         })}
       </main>
 
-      <Studio open={studio} passage={picked} onClose={() => setStudio(false)} />
+      <StudioHost />
       <ReadingSheet
         open={reading}
         onClose={() => setReading(false)}
-        onStudio={openStudio}
+        onStudio={openWordsStudio}
         book={book}
         chapter={Number(focusKey.split(":")[0]) || 1}
         bookName={meta?.name ?? book}

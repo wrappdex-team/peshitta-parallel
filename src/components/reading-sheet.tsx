@@ -6,6 +6,7 @@ import { Link } from "@tanstack/react-router";
 import { LANGS, languageById, type LangId } from "@/lib/languages";
 import { chooseLanguage, chooseSecond } from "@/lib/reading-choice";
 import { requestReadingIntro, usePrefs, type Face } from "@/lib/use-prefs";
+import { setStudioEnabled, useStudioEnabled } from "@/studio/prefs";
 
 export function readingLabel(lang: string, lang2: string, face: Face) {
   if (face === "sy") return "Peshitta";
@@ -56,6 +57,7 @@ export function ReadingSheet({
   bookName?: string;
 }) {
   const { prefs, patch } = usePrefs();
+  const studioOn = useStudioEnabled();
   if (!open) return null;
   return (
     <Modal label="Reading" className="fixed inset-0 z-40 flex items-end bg-scrim" onClose={onClose}>
@@ -139,13 +141,28 @@ export function ReadingSheet({
             ))}
           </div>
           {book && bookName ? <OfflineCopy book={book} chapter={chapter} bookName={bookName} /> : null}
-          <p className="mt-6 text-xs tracking-widest text-gold">PREMIUM</p>
-          <div className="mt-1 flex items-center gap-1">
-            <button type="button" className="min-h-11 text-left text-sm text-muted" onClick={onStudio}>
-              Studio · AI voice and images
+          <p className="mt-6 text-xs tracking-widest text-gold">STUDIO</p>
+          <div className="mt-1 flex flex-wrap items-center gap-x-2">
+            <button
+              type="button"
+              role="switch"
+              aria-checked={studioOn}
+              className="flex min-h-11 items-center gap-2 text-left text-sm"
+              onClick={() => setStudioEnabled(!studioOn)}
+            >
+              <span aria-hidden="true" className={`relative inline-block h-5 w-9 border border-line ${studioOn ? "bg-garnet" : "bg-raised"}`}>
+                <span className={`absolute top-0.5 size-3.5 bg-paper transition-[left] ${studioOn ? "left-[18px]" : "left-0.5"}`} />
+              </span>
+              <span className={studioOn ? "text-ink" : "text-muted"}>AI Studio {studioOn ? "on" : "off"}</span>
             </button>
+            {studioOn && (
+              <button type="button" className="min-h-11 text-sm text-garnet" onClick={onStudio}>
+                Open Studio
+              </button>
+            )}
             <InfoMark id="studio" />
           </div>
+          <p className="text-xs text-muted">Make stills, songs and films from a verse with your own AI accounts. When on, a quiet feather appears beside each verse.</p>
           <ReadingKinds />
         </div>
       </div>
