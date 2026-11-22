@@ -26,32 +26,39 @@ function textOf(id: ProviderId, body: unknown): string {
   return b.choices?.[0]?.message?.content ?? "";
 }
 
-function requestFor(id: ProviderId, model: string, key: string, system: string, user: string): [string, RequestInit] | null {
+function requestFor(id: ProviderId, model: string, key: string, system: string, user: string, maxTokens?: number): [string, RequestInit] | null {
   const json = { "Content-Type": "application/json" };
+  const tokens = maxTokens ?? (id === "anthropic" ? 400 : id === "google" ? 1024 : 1200);
   if (id === "anthropic") {
-    return ["https://api.anthropic.com/v1/messages", { method: "POST", headers: { ...json, "x-api-key": key, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" }, body: JSON.stringify({ model, max_tokens: 400, system, messages: [{ role: "user", content: user }] }) }];
+    return ["https://api.anthropic.com/v1/messages", { method: "POST", headers: { ...json, "x-api-key": key, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" }, body: JSON.stringify({ model, max_tokens: tokens, system, messages: [{ role: "user", content: user }] }) }];
   }
   if (id === "google") {
-    return [`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, { method: "POST", headers: { ...json, "x-goog-api-key": key }, body: JSON.stringify({ systemInstruction: { parts: [{ text: system }] }, contents: [{ role: "user", parts: [{ text: user }] }], generationConfig: { temperature: 0.6, maxOutputTokens: 1024 } }) }];
+    return [`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, { method: "POST", headers: { ...json, "x-goog-api-key": key }, body: JSON.stringify({ systemInstruction: { parts: [{ text: system }] }, contents: [{ role: "user", parts: [{ text: user }] }], generationConfig: { temperature: 0.6, maxOutputTokens: tokens } }) }];
   }
   const url = id === "openai" ? "https://api.openai.com/v1/chat/completions" : id === "xai" ? "https://api.x.ai/v1/chat/completions" : id === "openrouter" ? "https://openrouter.ai/api/v1/chat/completions" : "";
   if (!url) return null;
   const headers: Record<string, string> = { ...json, Authorization: `Bearer ${key}` };
   if (id === "openrouter") headers["X-Title"] = "INjeel Studio";
-  return [url, { method: "POST", headers, body: JSON.stringify({ model, temperature: 0.6, max_tokens: 1200, messages: [{ role: "system", content: system }, { role: "user", content: user }] }) }];
+  return [url, { method: "POST", headers, body: JSON.stringify({ model, temperature: 0.6, max_tokens: tokens, messages: [{ role: "system", content: system }, { role: "user", content: user }] }) }];
 }
 
-export async function direct(id: ProviderId, key: string, task: DirectorTask, draft: string, fetcher: Fetch = fetch, signal?: AbortSignal): Promise<Directed> {
+/** A text model on the reader's own account. Keys stay in this tab. */
+export async function complete(id: ProviderId, key: string, system: string, user: string, opts: { maxTokens?: number; maxChars?: number } = {}, fetcher: Fetch = fetch, signal?: AbortSignal): Promise<Directed> {
   const row = provider(id);
   const model = row.caps.director?.[0]?.id;
-  const request = model ? requestFor(id, model, key, SYSTEM[task], draft) : null;
-  if (!model || !request) return { ok: false, error: `${row.name} cannot write prompts here.` };
+  const request = model ? requestFor(id, model, key, system, user, opts.maxTokens) : null;
+  if (!model || !request) return { ok: false, error: `${row.name} cannot write here.` };
   try {
     const res = await fetcher(request[0], { ...request[1], signal });
     if (!res.ok) return await failure(row.name, res, key);
     const text = textOf(id, await res.json()).replace(/^["“]|["”]$/g, "").trim();
-    return text ? { ok: true, text: text.slice(0, 2000) } : { ok: false, error: `${row.name} returned an empty reply. Try again.` };
+    const cap = opts.maxChars ?? 2000;
+    return text ? { ok: true, text: text.slice(0, cap) } : { ok: false, error: `${row.name} returned an empty reply. Try again.` };
   } catch (error) {
     return networkFailure(row.name, error);
   }
+}
+
+export async function direct(id: ProviderId, key: string, task: DirectorTask, draft: string, fetcher: Fetch = fetch, signal?: AbortSignal): Promise<Directed> {
+  return complete(id, key, SYSTEM[task], draft, {}, fetcher, signal);
 }
