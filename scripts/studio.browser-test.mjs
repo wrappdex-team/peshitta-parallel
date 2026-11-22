@@ -64,6 +64,10 @@ async function setup(browser, url, { theme = "day", width = 390, enabled = false
   const page = await context.newPage();
   const errors = [];
   page.on("pageerror", (error) => errors.push(String(error)));
+  // The test server sends production's CSP, so a blocked request shows up here.
+  page.on("console", (message) => {
+    if (/Content Security Policy/i.test(message.text())) errors.push(message.text().slice(0, 240));
+  });
   await page.addInitScript(
     ({ theme, enabled, session }) => {
       if (sessionStorage.getItem("__seeded")) return;

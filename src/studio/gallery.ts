@@ -41,6 +41,8 @@ export async function saveWork(output: Output): Promise<boolean> {
   } catch {
     blob = undefined;
   }
+  // A blob: or data: link dies with this page, so it is not worth keeping on its own.
+  if (!blob && /^(blob|data):/.test(src)) return false;
   const work: Work = { ...meta, id: `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`, createdAt: Date.now(), ...(blob ? { blob } : { url: src }) };
   try {
     await run("readwrite", (store) => store.put(work));
