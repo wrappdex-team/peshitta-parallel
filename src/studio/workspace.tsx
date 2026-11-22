@@ -10,14 +10,16 @@ import type { Output } from "./result.tsx";
 import { StillPanel } from "./still-panel.tsx";
 import { SongPanel } from "./song-panel.tsx";
 import { FilmPanel } from "./film-panel.tsx";
+import { SermonPanel } from "./sermon-panel.tsx";
 import { saveWork } from "./gallery.ts";
 import { GalleryPanel } from "./gallery-panel.tsx";
 
-export type Tab = "still" | "song" | "film";
+export type Tab = "still" | "song" | "film" | "sermon";
 const TABS: { id: Tab; label: string }[] = [
   { id: "still", label: "Still" },
-  { id: "song", label: "Song" },
-  { id: "film", label: "Film" },
+  { id: "song", label: "Voice" },
+  { id: "film", label: "Video" },
+  { id: "sermon", label: "Sermon" },
 ];
 
 export type PanelProps = { scope: StudioScope; keys: ReturnType<typeof useConnections>["keys"]; onConnect: () => void; onMade?: (output: Output) => void };
@@ -38,21 +40,13 @@ export function Engine({ cap, keys, onConnect }: { cap: Capability; keys: PanelP
   return <p className="text-sm text-muted">Uses {first.name} · {first.caps[cap]?.[0]?.label}</p>;
 }
 
-function Placeholder({ tab, ...props }: PanelProps & { tab: Tab }) {
-  return (
-    <div className="grid gap-2">
-      <Engine cap={tab} keys={props.keys} onConnect={props.onConnect} />
-    </div>
-  );
-}
-
-/** Filled by the Still, Song and Film panels. */
-const PANELS: Partial<Record<Tab, (props: PanelProps) => ReactNode>> = { still: (props) => <StillPanel {...props} />, song: (props) => <SongPanel {...props} />, film: (props) => <FilmPanel {...props} /> };
+/** Filled by the Still, Voice, Video and Sermon panels. */
+const PANELS: Partial<Record<Tab, (props: PanelProps) => ReactNode>> = { still: (props) => <StillPanel {...props} />, song: (props) => <SongPanel {...props} />, film: (props) => <FilmPanel {...props} />, sermon: (props) => <SermonPanel {...props} /> };
 
 export default function Workspace({ scope: initial, onClose, asPage }: { scope: StudioScope; onClose: () => void; asPage?: boolean }) {
   const [scope, setScope] = useState(initial);
   const saved = readStudioPrefs().tab;
-  const [tab, setTab] = useState<Tab>(saved === "song" || saved === "film" ? saved : "still");
+  const [tab, setTab] = useState<Tab>(saved === "song" || saved === "film" || saved === "sermon" ? saved : "still");
   const [view, setView] = useState<"make" | "connections" | "gallery">("make");
   const [kept, setKept] = useState("");
   const { keys, refresh } = useConnections();
@@ -99,13 +93,13 @@ export default function Workspace({ scope: initial, onClose, asPage }: { scope: 
               <PassagePicker scope={scope} onChange={setScope} />
               <div role="tablist" aria-label="Make" className="mt-4 flex border-b border-line">
                 {TABS.map((row) => (
-                  <button key={row.id} type="button" role="tab" aria-selected={tab === row.id} onClick={() => choose(row.id)} className={`-mb-px min-h-11 flex-1 border-b-2 font-serif text-lg ${tab === row.id ? "border-garnet text-garnet" : "border-transparent text-muted"}`}>
+                  <button key={row.id} type="button" role="tab" aria-selected={tab === row.id} onClick={() => choose(row.id)} className={`-mb-px min-h-11 flex-1 border-b-2 px-0.5 font-serif text-xs min-[360px]:text-base sm:text-lg ${tab === row.id ? "border-garnet text-garnet" : "border-transparent text-muted"}`}>
                     {row.label}
                   </button>
                 ))}
               </div>
               <div role="tabpanel" className="pt-4">
-                {Panel ? Panel(props) : <Placeholder tab={tab} {...props} />}
+                {Panel ? Panel(props) : null}
               </div>
               {kept && <p role="status" className="mt-2 text-sm text-muted">{kept}</p>}
               <p className="mt-6 text-xs leading-relaxed text-muted">Everything made here is labelled AI-generated, with the provider, model and verse. It is never reviewed by INjeel and is not made directly from the Syriac.</p>

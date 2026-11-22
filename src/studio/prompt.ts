@@ -69,11 +69,12 @@ export function storyboard(bookName: string, chapter: number, verses: Verse[], s
   return shots;
 }
 
-export type Made = { kind: "still" | "song" | "film" | "voice"; provider: string; model: string; ref: string };
+export type Made = { kind: "still" | "song" | "film" | "voice" | "sermon"; provider: string; model: string; ref: string };
 
 /** The line shown with, and stored beside, everything Studio makes. */
 export function labelFor(made: Made) {
-  return `AI-generated · ${made.provider} · ${made.model} · ${made.ref} · not reviewed`;
+  const kind = made.kind === "sermon" ? "AI-generated sermon" : "AI-generated";
+  return `${kind} · ${made.provider} · ${made.model} · ${made.ref} · not reviewed`;
 }
 
 export function fileName(ref: string, detail: string, ext: string) {
