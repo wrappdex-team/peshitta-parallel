@@ -40,6 +40,12 @@ function mockPng(w = 160, h = 200) {
 }
 const PNG = mockPng();
 
+/** Screenshots wait out the 160–200 ms colour transitions so the selected control reads correctly. */
+async function shot(page, path) {
+  await page.waitForTimeout(350);
+  await page.screenshot({ path });
+}
+
 async function setup(browser, url, { theme = "day", width = 390, enabled = false, session = null, replies = [] } = {}) {
   const context = await browser.newContext({ viewport: { width, height: 844 } });
   const calls = [];
@@ -189,20 +195,24 @@ for (const theme of ["day", "night"]) {
       const { context, page, errors } = await setup(browser, server.url, { theme, width, enabled: true, session: JSON.stringify({ v: 2, keys: { google: `AQ.${"g".repeat(30)}`, anthropic: `sk-ant-${"a".repeat(30)}` } }) });
       await reader(page, server.url);
       assert.ok(await noHorizontalScroll(page), `reader ${width} ${theme}`);
-      if (SHOTS && width === 390) await page.screenshot({ path: `${SHOTS}/reader-mark-${theme}-390.png` });
+      if (SHOTS && width === 390) await shot(page, `${SHOTS}/reader-mark-${theme}-390.png`);
       await page.getByRole("button", { name: "Create from verse 3 in Studio" }).click();
       const dialog = page.getByRole("dialog", { name: "Studio" });
       await dialog.waitFor();
       assert.ok(await noHorizontalScroll(page), `studio ${width} ${theme}`);
-      if (SHOTS && (width === 390 || width === 1280)) await page.screenshot({ path: `${SHOTS}/studio-${theme}-${width}.png` });
+      if (SHOTS && (width === 390 || width === 1280)) await shot(page, `${SHOTS}/studio-${theme}-${width}.png`);
       await dialog.getByRole("tab", { name: "Song" }).click();
       await dialog.locator("[data-studio-song]").waitFor();
       assert.ok(await noHorizontalScroll(page), `song ${width} ${theme}`);
-      if (SHOTS && width === 390) await page.screenshot({ path: `${SHOTS}/song-${theme}-390.png` });
+      if (SHOTS && width === 390) await shot(page, `${SHOTS}/song-${theme}-390.png`);
+      await dialog.getByRole("tab", { name: "Film" }).click();
+      await dialog.locator("[data-studio-film]").waitFor();
+      assert.ok(await noHorizontalScroll(page), `film ${width} ${theme}`);
+      if (SHOTS && width === 390) await shot(page, `${SHOTS}/film-${theme}-390.png`);
       await dialog.getByRole("tab", { name: "Still" }).click();
       await dialog.getByRole("button", { name: "Connections" }).click();
       assert.ok(await noHorizontalScroll(page), `connections ${width} ${theme}`);
-      if (SHOTS && width === 390) await page.screenshot({ path: `${SHOTS}/connections-${theme}-390.png` });
+      if (SHOTS && width === 390) await shot(page, `${SHOTS}/connections-${theme}-390.png`);
       assert.deepEqual(errors, [], `${width} ${theme}`);
       await context.close();
     }
@@ -234,7 +244,7 @@ test("Still: century style + aspect shape the verse-aware prompt; the result car
   assert.equal(await dialog.getByRole("link", { name: "Download" }).getAttribute("download"), "injeel-matthew-5-3-rabbula-gospels.png");
   if (SHOTS) {
     await label.scrollIntoViewIfNeeded();
-    await page.screenshot({ path: `${SHOTS}/still-result-day-390.png` });
+    await shot(page, `${SHOTS}/still-result-day-390.png`);
   }
   const prefs = JSON.parse(await page.evaluate(() => localStorage.getItem("injeel-studio")));
   assert.equal(prefs.style, "rabbula");
@@ -249,7 +259,7 @@ test("Still: a provider safety stop is shown as one calm line, nothing else", as
   await reader(page, server.url);
   await page.getByRole("button", { name: "Create from verse 3 in Studio" }).click();
   const dialog = page.getByRole("dialog", { name: "Studio" });
-  if (SHOTS) await page.screenshot({ path: `${SHOTS}/still-panel-night-390.png` });
+  if (SHOTS) await shot(page, `${SHOTS}/still-panel-night-390.png`);
   await dialog.getByRole("button", { name: "Make the still" }).click();
   await dialog.getByText("Google Gemini declined this for safety. Try a gentler, more reverent description.").waitFor();
   assert.equal(await dialog.locator("[data-studio-output]").count(), 0);
@@ -272,7 +282,7 @@ test("Gallery keeps what was made on this device, labelled, and can delete it", 
   assert.equal(await works.count(), 1);
   assert.match(await works.first().locator("[data-studio-label]").textContent(), /^AI-generated · Google Gemini · Nano Banana 2\.1 · Matthew 5:3 · not reviewed$/);
   assert.match(await works.first().locator("img").getAttribute("src"), /^blob:/);
-  if (SHOTS) await page.screenshot({ path: `${SHOTS}/gallery-day-390.png` });
+  if (SHOTS) await shot(page, `${SHOTS}/gallery-day-390.png`);
   const stored = await page.evaluate(() => new Promise((resolve) => { const r = indexedDB.open("injeel-studio-gallery"); r.onsuccess = () => { const all = r.result.transaction("works").objectStore("works").getAll(); all.onsuccess = () => resolve(JSON.stringify(all.result.map(({ blob, ...rest }) => rest))); }; }));
   assert.ok(!stored.includes(GOOGLE), "no key in the gallery");
   await works.first().getByRole("button", { name: "Delete from this device" }).click();
@@ -296,7 +306,7 @@ test("Song: the verse becomes lyrics (English, Syriac or both) and ElevenLabs co
   assert.match(lyrics, /[\u0700-\u074F]/, "Syriac line from the verse");
   assert.match(lyrics, /Blessed are the poor in spirit/);
   await dialog.getByLabel("Genre").selectOption("Byzantine chant");
-  if (SHOTS) await page.screenshot({ path: `${SHOTS}/song-panel-day-390.png` });
+  if (SHOTS) await shot(page, `${SHOTS}/song-panel-day-390.png`);
   await dialog.getByRole("button", { name: "Make the song" }).click();
   const label = dialog.locator("[data-studio-label]");
   await label.waitFor();
@@ -309,6 +319,44 @@ test("Song: the verse becomes lyrics (English, Syriac or both) and ElevenLabs co
   assert.equal(body.music_length_ms, 60000);
   assert.match(body.prompt, /Byzantine chant/);
   assert.ok(body.prompt.includes(lyrics), "scripture lyrics sent exactly");
+  assert.deepEqual(errors, []);
+  await context.close();
+});
+
+test("Film: a passage becomes a storyboard; Gemini Omni makes each shot in turn on the reader's key; they play in order", async () => {
+  let made = 0;
+  const omni = {
+    match: /\/v1beta\/interactions/,
+    reply: (request) => {
+      if (request.method() === "POST") return { body: { id: `int-${++made}`, status: "in_progress" } };
+      return { body: { id: "x", status: "completed", steps: [{ content: [{ type: "video", data: Buffer.from("fake-mp4").toString("base64"), mime_type: "video/mp4" }] }] } };
+    },
+  };
+  const { context, page, calls, errors } = await setup(browser, server.url, { enabled: true, session: JSON.stringify({ v: 2, keys: { google: GOOGLE } }), replies: [omni] });
+  await reader(page, server.url);
+  await page.getByRole("button", { name: "Create from verse 3 in Studio" }).click();
+  const dialog = page.getByRole("dialog", { name: "Studio" });
+  await dialog.getByRole("tab", { name: "Film" }).click();
+  await dialog.locator("[aria-label=Passage] select").nth(1).selectOption("4");
+  await dialog.getByLabel("Film style").selectOption("rublev");
+  await dialog.getByRole("radio", { name: "9:16" }).click();
+  const shots = dialog.getByRole("list", { name: "Storyboard" }).getByRole("listitem");
+  assert.equal(await shots.count(), 2);
+  await dialog.getByLabel("Shot 2 prompt").fill("Rublev icon style: the meek, gently lit, slow push in.");
+  if (SHOTS) await shot(page, `${SHOTS}/film-storyboard-day-390.png`);
+  await dialog.getByRole("button", { name: "Make 2 shots" }).click();
+  await dialog.locator("[data-studio-player]").waitFor({ timeout: 60000 });
+  await page.waitForFunction(() => document.querySelectorAll("[data-studio-shot=done]").length === 2, null, { timeout: 60000 });
+  const posts = calls.filter((call) => call.method === "POST" && call.url.endsWith("/v1beta/interactions"));
+  assert.equal(posts.length, 2, "one request per shot, in turn");
+  assert.ok(posts.every((call) => call.headers["x-goog-api-key"] === GOOGLE));
+  const first = JSON.parse(posts[0].body);
+  assert.equal(first.response_format.aspect_ratio, "9:16");
+  assert.match(first.input, /Matthew 5:3/);
+  assert.equal(JSON.parse(posts[1].body).input, "Rublev icon style: the meek, gently lit, slow push in.");
+  assert.equal(await dialog.locator("[data-studio-label]").textContent(), "AI-generated · Google Gemini · Omni 1.2 Flash · Matthew 5:3–4 · not reviewed");
+  assert.match(await dialog.locator("[data-studio-output=film]").textContent(), /Shot 1 of 2/);
+  if (SHOTS) await shot(page, `${SHOTS}/film-result-day-390.png`);
   assert.deepEqual(errors, []);
   await context.close();
 });
