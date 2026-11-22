@@ -436,18 +436,6 @@ function Reader() {
               </div>
             ))}
             <BookLinks onDone={() => setMenu(false)} />
-            {studioOn && (
-              <button
-                type="button"
-                className="mt-2 block min-h-11 text-left text-sm text-gold"
-                onClick={() => {
-                  setMenu(false);
-                  studioAt(focus, true);
-                }}
-              >
-                Studio
-              </button>
-            )}
           </nav>
         </Modal>
       )}

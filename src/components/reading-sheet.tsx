@@ -155,10 +155,14 @@ export function ReadingSheet({
               </span>
               <span className={studioOn ? "text-ink" : "text-muted"}>AI Studio {studioOn ? "on" : "off"}</span>
             </button>
-            {studioOn && (
+            {studioOn ? (
               <button type="button" className="min-h-11 text-sm text-garnet" onClick={onStudio}>
                 Open Studio
               </button>
+            ) : (
+              <Link to="/studio" className="inline-flex min-h-11 items-center text-sm text-garnet" onClick={onClose}>
+                Open Studio
+              </Link>
             )}
             <InfoMark id="studio" />
           </div>
