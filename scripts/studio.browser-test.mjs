@@ -49,7 +49,7 @@ async function shot(page, path) {
 async function setup(browser, url, { theme = "day", width = 390, enabled = false, session = null, replies = [] } = {}) {
   const context = await browser.newContext({ viewport: { width, height: 844 } });
   const calls = [];
-  await context.route(/^https:\/\/(api\.openai\.com|generativelanguage\.googleapis\.com|api\.anthropic\.com|api\.x\.ai|openrouter\.ai|api\.elevenlabs\.io|queue\.fal\.run|fal\.run|api\.stability\.ai)\//, async (route) => {
+  await context.route(/^https:\/\/(api\.openai\.com|generativelanguage\.googleapis\.com|api\.anthropic\.com|api\.x\.ai|openrouter\.ai|api\.elevenlabs\.io|queue\.fal\.run|fal\.run|api\.stability\.ai|image\.pollinations\.ai|[\w-]+\.hf\.space)\//, async (route) => {
     const request = route.request();
     calls.push({ url: request.url(), method: request.method(), headers: request.headers(), body: request.postData() });
     const href = request.url();
@@ -361,6 +361,33 @@ test("Film: a passage becomes a storyboard; Gemini Omni makes each shot in turn 
   assert.equal(await dialog.locator("[data-studio-label]").textContent(), "AI-generated · Google Gemini · Omni 1.2 Flash · Matthew 5:3–4 · not reviewed");
   assert.match(await dialog.locator("[data-studio-output=film]").textContent(), /Shot 1 of 2/);
   if (SHOTS) await shot(page, `${SHOTS}/film-result-day-390.png`);
+  assert.deepEqual(errors, []);
+  await context.close();
+});
+
+test("Free services: one tap turns them on (no key), the third-party note shows, and a still is made and kept", async () => {
+  const pollinations = { match: /image\.pollinations\.ai\/prompt\//, reply: () => ({ contentType: "image/png", body: Buffer.from(PNG, "base64") }) };
+  const { context, page, calls, errors } = await setup(browser, server.url, { enabled: true, replies: [pollinations] });
+  await reader(page, server.url);
+  await page.getByRole("button", { name: "Create from verse 3 in Studio" }).click();
+  const dialog = page.getByRole("dialog", { name: "Studio" });
+  await dialog.getByRole("button", { name: "Connections" }).click();
+  const row = dialog.locator("[data-provider=free]");
+  assert.match(await row.textContent(), /Third-party/);
+  assert.equal(await row.getByRole("textbox").count(), 0, "no key field for a keyless service");
+  await row.getByRole("button", { name: "Turn on" }).click();
+  assert.deepEqual(JSON.parse(await page.evaluate(() => sessionStorage.getItem("injeel-agent"))), { v: 2, keys: { free: "no-key" } });
+  await dialog.getByRole("button", { name: "Done" }).click();
+  assert.match(await dialog.locator("[data-studio-free]").textContent(), /Free third-party services/);
+  await dialog.getByRole("button", { name: "Make the still" }).click();
+  await dialog.locator("[data-studio-label]").waitFor();
+  assert.equal(await dialog.locator("[data-studio-label]").textContent(), "AI-generated · Free services · Pollinations Sana · Matthew 5:3 · not reviewed");
+  const call = calls.find((c) => c.url.startsWith("https://image.pollinations.ai/"));
+  assert.ok(call, `pollinations call missing: ${calls.map((c) => c.url.slice(0, 60)).join(" ")}`);
+  assert.ok(!call.headers.authorization, "no credentials sent");
+  assert.match(call.url, /private=true/);
+  await dialog.getByRole("button", { name: "Gallery" }).click();
+  await dialog.locator("[data-studio-output=still]").first().waitFor();
   assert.deepEqual(errors, []);
   await context.close();
 });

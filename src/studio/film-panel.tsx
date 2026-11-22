@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { makeShot, type FilmAspect } from "./adapters/film.ts";
-import { provider, type ProviderId } from "./catalog.ts";
+import { FREE_NOTE, provider, type ProviderId } from "./catalog.ts";
 import { patchStudioPrefs, readStudioPrefs, scopeRef, scopeVerses } from "./prefs.ts";
 import { irreverent, labelFor, storyboard } from "./prompt.ts";
 import { STYLES, styleById } from "./styles.ts";
@@ -90,11 +90,12 @@ export function FilmPanel({ scope, keys, onConnect, onMade }: PanelProps) {
           );
         })}
       </ol>
-      <p className="text-xs text-muted">{shots.length} shot{shots.length === 1 ? "" : "s"} × {seconds} s, billed by {engine ? provider(engine).name : "your provider"} to your own account.</p>
+      <p className="text-xs text-muted">{shots.length} shot{shots.length === 1 ? "" : "s"} × {engine === "free" ? "about 2" : seconds} s{engine === "free" ? ", at no charge." : `, billed by ${engine ? provider(engine).name : "your provider"} to your own account.`}</p>
       <div className="flex flex-wrap gap-2">
         <button type="button" disabled={busy || !shots.length || done.length === shots.length} onClick={() => void makeAll()} className="min-h-11 bg-garnet px-5 text-paper disabled:opacity-40">{busy ? "Working…" : done.length === shots.length ? "All shots made" : done.length ? "Make the remaining shots" : shots.length > 1 ? `Make ${shots.length} shots` : "Make the shot"}</button>
         {busy && <button type="button" onClick={() => { stop.current = true; setStatus("Stopping after this shot…"); }} className="min-h-11 border border-garnet px-3 text-garnet">Stop after this shot</button>}
       </div>
+      {engine === "free" && <p className="text-xs leading-relaxed text-muted" data-studio-free="">{FREE_NOTE} Clips are about 2 seconds each.</p>}
       {status && <p role="status" className="text-sm text-muted">{status}</p>}
       {current?.id && board.takes[current.id]?.src && (
         <figure className="border border-line bg-raised" data-studio-output="film">
