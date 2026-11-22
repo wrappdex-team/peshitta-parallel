@@ -4,7 +4,7 @@
  * Nothing here is a credential, and INjeel pays for none of it.
  */
 export type Capability = "still" | "song" | "film" | "voice" | "director";
-export type ProviderId = "google" | "openai" | "anthropic" | "xai" | "openrouter" | "elevenlabs" | "fal" | "stability";
+export type ProviderId = "google" | "openai" | "anthropic" | "xai" | "openrouter" | "elevenlabs" | "fal" | "stability" | "free";
 export type StudioModel = { id: string; label: string };
 export type Provider = {
   id: ProviderId;
@@ -14,6 +14,8 @@ export type Provider = {
   placeholder: string;
   /** One-click sign-in that issues a key to this tab (OAuth PKCE). */
   oauth?: boolean;
+  /** Needs no key: a third-party free service the reader opts into per tab. */
+  keyless?: boolean;
   caps: Partial<Record<Capability, StudioModel[]>>;
 };
 
@@ -111,7 +113,23 @@ export const PROVIDERS: Provider[] = [
     placeholder: "sk-…",
     caps: { still: [{ id: "ultra", label: "Stable Image Ultra" }, { id: "core", label: "Stable Image Core" }] },
   },
+  {
+    id: "free",
+    name: "Free services",
+    blurb: "No key, no account. Pollinations stills; Kokoro recitation and LTX Video on Hugging Face Spaces. Third-party: your prompt goes to them, images may carry a mark, and daily limits are theirs.",
+    keyUrl: "https://pollinations.ai",
+    placeholder: "",
+    keyless: true,
+    caps: {
+      still: [{ id: "sana", label: "Pollinations Sana" }],
+      voice: [{ id: "kokoro", label: "Kokoro 82M" }],
+      film: [{ id: "ltx-video-distilled", label: "LTX Video (distilled)" }],
+    },
+  },
 ];
+
+/** Said wherever the free services are used, so nobody mistakes them for their own account. */
+export const FREE_NOTE = "Free third-party services (no key). Your prompt goes to them, not to an account of yours. Marks, limits and availability are theirs and can change.";
 
 export function provider(id: ProviderId) {
   return PROVIDERS.find((row) => row.id === id) as Provider;

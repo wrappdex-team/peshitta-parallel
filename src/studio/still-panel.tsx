@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { makeStill } from "./adapters/still.ts";
 import { direct } from "./adapters/director.ts";
-import { provider, type ProviderId } from "./catalog.ts";
+import { FREE_NOTE, provider, type ProviderId } from "./catalog.ts";
 import { patchStudioPrefs, readStudioPrefs, scopeRef, scopeVerses } from "./prefs.ts";
 import { ASPECTS, irreverent, stillPrompt, type Aspect } from "./prompt.ts";
 import { ResultCard, type Output } from "./result.tsx";
@@ -140,6 +140,7 @@ export function StillPanel({ scope, keys, onConnect, onMade }: PanelProps) {
         )}
         {edited && <button type="button" className="min-h-11 px-2 text-sm text-muted" onClick={() => { setEdited(false); setPrompt(drafted); }}>Reset prompt</button>}
       </div>
+      {engine === "free" && <p className="text-xs leading-relaxed text-muted" data-studio-free="">{FREE_NOTE}</p>}
       {status && <p role="status" className="text-sm text-muted">{status}</p>}
       {outputs.length > 0 && (
         <div className={`grid gap-3 ${outputs.length > 1 ? "sm:grid-cols-2" : ""}`}>

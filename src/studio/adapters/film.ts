@@ -7,6 +7,7 @@ import { provider, type ProviderId } from "../catalog.ts";
 import { failure, networkFailure, type Failure, type Fetch } from "../http.ts";
 import { inlineMedia } from "./song.ts";
 import { falQueue } from "./fal.ts";
+import { freeClip } from "./free.ts";
 
 export type FilmAspect = "16:9" | "9:16" | "1:1";
 export type ShotAsk = { id: ProviderId; key: string; model: string; prompt: string; seconds: number; aspect: FilmAspect };
@@ -75,6 +76,7 @@ export async function makeShot(ask: ShotAsk, fetcher: Fetch = fetch, poll: Poll 
   try {
     if (ask.id === "google") return await omni(ask, fetcher, poll);
     if (ask.id === "xai") return await grok(ask, fetcher, poll);
+    if (ask.id === "free") return await freeClip(ask.prompt, ask.aspect, fetcher);
     if (ask.id === "fal") {
       const out = await falQueue(ask.model, ask.key, { prompt: ask.prompt.slice(0, 2500), duration: ask.seconds >= 10 ? "10" : "5", aspect_ratio: ask.aspect, negative_prompt: "blur, distortion, text, captions, gore, nudity" }, fetcher, undefined, poll);
       if (!out.ok) return out;

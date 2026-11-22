@@ -125,6 +125,10 @@ export function ConnectionsPanel({ keys, refresh }: Props) {
                       Disconnect
                     </button>
                   </div>
+                ) : row.keyless ? (
+                  <button type="button" className="min-h-11 shrink-0 px-2 text-sm text-garnet" onClick={() => { connect(row.id, "no-key"); refresh(); setStatus((s) => ({ ...s, [row.id]: "On for this tab. Third-party: your prompts go to them." })); }}>
+                    Turn on
+                  </button>
                 ) : (
                   <button type="button" aria-expanded={open === row.id} className="min-h-11 shrink-0 px-2 text-sm text-garnet" onClick={() => { setOpen(open === row.id ? null : row.id); setDraft(""); }}>
                     Connect

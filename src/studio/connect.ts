@@ -22,6 +22,7 @@ function probeRequest(id: ProviderId, key: string): [string, Record<string, stri
     case "stability":
       return ["https://api.stability.ai/v1/user/balance", bearer];
     case "fal":
+    case "free":
       return null;
   }
 }
@@ -38,6 +39,7 @@ function idsOf(body: unknown): string[] {
 
 export async function testConnection(id: ProviderId, key: string, fetcher: Fetch = fetch, signal?: AbortSignal): Promise<Probe> {
   const name = provider(id).name;
+  if (provider(id).keyless) return { ok: true, detail: `${name} are on for this tab. They need no key and nothing was tested; limits are the owners'.`, models: [] };
   const request = probeRequest(id, key);
   // fal has no free read; the first real request checks the key.
   if (!request) return { ok: true, detail: `${name} key saved. fal checks it on your first request.`, models: [] };

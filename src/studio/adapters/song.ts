@@ -6,6 +6,7 @@
 import { provider, type ProviderId } from "../catalog.ts";
 import { failure, networkFailure, type Failure, type Fetch } from "../http.ts";
 import { falQueue } from "./fal.ts";
+import { freeRecitation } from "./free.ts";
 
 export type SongAsk = { id: ProviderId; key: string; model: string; prompt: string; lyrics: string; seconds: number; instrumental: boolean };
 export type SongResult = { ok: true; src: string; mime: string } | Failure;
@@ -61,6 +62,7 @@ export async function makeSong(ask: SongAsk, fetcher: Fetch = fetch, signal?: Ab
       const url = (out.body.audio as { url?: string } | undefined)?.url ?? "";
       return /^https:\/\//.test(url) ? { ok: true, src: url, mime: "audio/mpeg" } : { ok: false, error: "fal returned no audio. Try again." };
     }
+    if (ask.id === "free") return await freeRecitation(plain(ask.lyrics), fetcher, signal);
     if (ask.id === "openai") {
       const res = await fetcher("https://api.openai.com/v1/audio/speech", {
         method: "POST",

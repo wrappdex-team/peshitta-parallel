@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { direct } from "./adapters/director.ts";
 import { makeSong } from "./adapters/song.ts";
-import { provider, type ProviderId } from "./catalog.ts";
+import { FREE_NOTE, provider, type ProviderId } from "./catalog.ts";
 import { patchStudioPrefs, readStudioPrefs, scopeRef, scopeVerses } from "./prefs.ts";
 import { irreverent, lyricsFor, songPrompt, type SongLanguage, type SongShape } from "./prompt.ts";
 import { ResultCard, type Output } from "./result.tsx";
@@ -115,6 +115,7 @@ export function SongPanel({ scope, keys, onConnect, onMade }: PanelProps) {
         {!recite && directors.length > 0 && <button type="button" disabled={busy} onClick={() => void refine()} className="min-h-11 border border-garnet px-3 text-garnet disabled:opacity-40">Arrange with {provider(directors[0]).name.split(" ").pop()}</button>}
       </div>
       {language !== "english" && <p className="text-xs text-muted">Models may not pronounce Classical Syriac correctly. The words are given exactly as written.</p>}
+      {engine === "free" && <p className="text-xs leading-relaxed text-muted" data-studio-free="">{FREE_NOTE}</p>}
       {status && <p role="status" className="text-sm text-muted">{status}</p>}
       {output && <ResultCard output={output} />}
     </div>
