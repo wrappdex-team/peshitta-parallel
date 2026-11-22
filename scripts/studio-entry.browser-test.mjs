@@ -50,7 +50,8 @@ test("home footer and the menu both offer AI Studio while it is off, and both op
   assert.equal(await page.evaluate(() => localStorage.getItem("injeel-studio")), null, "still off");
   const home = page.locator("[data-studio-entry=home]");
   assert.equal(await home.count(), 1);
-  assert.match(await home.textContent(), /AI STUDIO/i);
+  assert.equal((await home.textContent())?.replace(/\s+/g, " ").trim(), "AI Studio");
+  assert.equal(await page.locator("footer").getByRole("link", { name: "AI Studio" }).count(), 0, "no second home link");
   await page.getByRole("button", { name: "Books" }).click();
   const menu = page.getByRole("navigation").getByRole("link", { name: "AI Studio", exact: true });
   await menu.waitFor();
@@ -65,7 +66,7 @@ test("home footer and the menu both offer AI Studio while it is off, and both op
   await context.close();
 });
 
-test("the home footer card opens Studio at the last verse you were reading", async () => {
+test("the home AI Studio button opens Studio at the last verse you were reading", async () => {
   const { context, page } = await openHome(browser, server.url);
   await page.evaluate(() => {
     const raw = JSON.parse(localStorage.getItem("peshitta-parallel") || "{}");
