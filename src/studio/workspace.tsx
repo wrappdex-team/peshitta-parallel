@@ -3,6 +3,7 @@ import { Images, Plug } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { CAPABILITIES, provider, type Capability } from "./catalog.ts";
 import { ConnectionsPanel } from "./connections-panel.tsx";
+import { PassagePicker } from "./passage.tsx";
 import { patchStudioPrefs, readStudioPrefs, scopeRef, scopeVerses, type StudioScope } from "./prefs.ts";
 import { useConnections } from "./use-connections.ts";
 import type { Output } from "./result.tsx";
@@ -56,7 +57,6 @@ export default function Workspace({ scope: initial, onClose, asPage }: { scope: 
   const [kept, setKept] = useState("");
   const { keys, refresh } = useConnections();
   const verses = scopeVerses(scope);
-  const last = scope.verses[scope.verses.length - 1]?.v ?? scope.to;
   const choose = (next: Tab) => {
     setTab(next);
     patchStudioPrefs({ tab: next });
@@ -96,23 +96,7 @@ export default function Workspace({ scope: initial, onClose, asPage }: { scope: 
               <blockquote className="line-clamp-4 border-l-2 border-gold pl-3 font-serif leading-relaxed text-ink" data-studio-passage="">
                 {verses.map((verse) => verse.en).join(" ")}
               </blockquote>
-              {scope.verses.length > 1 && (
-                <div className="mt-2 flex flex-wrap items-center gap-x-1 text-sm text-muted" aria-label="Passage">
-                  <label className="flex items-center gap-1">
-                    From
-                    <select className="min-h-11 bg-transparent text-ink" value={scope.from} onChange={(event) => { const from = Number(event.target.value); setScope({ ...scope, from, to: Math.max(from, scope.to) }); }}>
-                      {scope.verses.map((verse) => <option key={verse.v} value={verse.v}>{verse.v}</option>)}
-                    </select>
-                  </label>
-                  <label className="flex items-center gap-1">
-                    to
-                    <select className="min-h-11 bg-transparent text-ink" value={scope.to} onChange={(event) => { const to = Number(event.target.value); setScope({ ...scope, to, from: Math.min(scope.from, to) }); }}>
-                      {scope.verses.map((verse) => <option key={verse.v} value={verse.v}>{verse.v}</option>)}
-                    </select>
-                  </label>
-                  <button type="button" className="min-h-11 px-2 text-garnet" onClick={() => setScope({ ...scope, from: scope.verses[0].v, to: last })}>Whole chapter</button>
-                </div>
-              )}
+              <PassagePicker scope={scope} onChange={setScope} />
               <div role="tablist" aria-label="Make" className="mt-4 flex border-b border-line">
                 {TABS.map((row) => (
                   <button key={row.id} type="button" role="tab" aria-selected={tab === row.id} onClick={() => choose(row.id)} className={`-mb-px min-h-11 flex-1 border-b-2 font-serif text-lg ${tab === row.id ? "border-garnet text-garnet" : "border-transparent text-muted"}`}>
