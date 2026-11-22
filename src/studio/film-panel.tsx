@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { makeShot, type FilmAspect } from "./adapters/film.ts";
 import { provider, type ProviderId } from "./catalog.ts";
+import { Advanced, CUSTOM_STYLE_ID, StyleSelect } from "./controls.tsx";
 import { patchStudioPrefs, readStudioPrefs, scopeRef, scopeVerses } from "./prefs.ts";
 import { irreverent, labelFor, storyboard } from "./prompt.ts";
 import { STYLES, styleById } from "./styles.ts";
@@ -15,13 +16,16 @@ export function FilmPanel({ scope, keys, onConnect, onMade }: PanelProps) {
   const able = (Object.keys(keys) as ProviderId[]).filter((id) => provider(id).caps.film?.length);
   const [engine, setEngine] = useState<ProviderId | "">(able[0] ?? "");
   const model = engine ? provider(engine).caps.film?.[0] : undefined;
-  const [styleId, setStyleId] = useState(styleById(prefs.style).id);
+  const [styleId, setStyleId] = useState(prefs.style === CUSTOM_STYLE_ID ? CUSTOM_STYLE_ID : styleById(prefs.style).id);
+  const [customStyle, setCustomStyle] = useState(typeof prefs.customStyle === "string" ? prefs.customStyle : "");
   const [aspect, setAspect] = useState<FilmAspect>("16:9");
   const [seconds, setSeconds] = useState(5);
-  const style = styleById(styleId);
+  const stylePrompt = styleId === CUSTOM_STYLE_ID ? customStyle.trim() : styleById(styleId).prompt;
+  const styleName = styleId === CUSTOM_STYLE_ID ? "custom" : styleById(styleId).id;
   const verses = scopeVerses(scope);
-  const shots = storyboard(scope.bookName, scope.chapter, verses, style);
-  const key = `${styleId}|${shots.map((shot) => shot.id).join(",")}`;
+  const shots = storyboard(scope.bookName, scope.chapter, verses, { prompt: stylePrompt });
+  const key = `${styleId}|${stylePrompt}|${shots.map((shot) => shot.id).join(",")}`;
+  const ready = Boolean(shots.length && (styleId !== CUSTOM_STYLE_ID || customStyle.trim()));
   const [prompts, setPrompts] = useState<Record<string, string>>({});
   const [takes, setTakes] = useState<Record<string, Take>>({});
   const board = { prompts, takes };
@@ -40,7 +44,7 @@ export function FilmPanel({ scope, keys, onConnect, onMade }: PanelProps) {
   }, [key]);
 
   async function makeAll() {
-    if (!engine || !model) return;
+    if (!engine || !model || !ready) return;
     stop.current = false;
     setBusy(true);
     for (const [i, shot] of shots.entries()) {
@@ -55,7 +59,7 @@ export function FilmPanel({ scope, keys, onConnect, onMade }: PanelProps) {
       setStatus(`Shot ${i + 1} of ${shots.length} with ${provider(engine).name}. Films take a few minutes…`);
       const out = await makeShot({ id: engine, key: keys[engine] as string, model: model.id, prompt: text, seconds, aspect });
       setTake(shot.id, out.ok ? { state: "done", src: out.src } : { state: "error", note: out.error });
-      if (out.ok) onMade?.({ kind: "film", provider: provider(engine).name, model: model.label, ref: shot.ref, src: out.src, mime: out.mime, detail: `${style.id}-shot-${i + 1}`, prompt: text });
+      if (out.ok) onMade?.({ kind: "film", provider: provider(engine).name, model: model.label, ref: shot.ref, src: out.src, mime: out.mime, detail: `${styleName}-shot-${i + 1}`, prompt: text });
     }
     setBusy(false);
     setStatus(stop.current ? "Stopped. Finished shots are kept." : "Shots ready. Play the film below.");
@@ -68,10 +72,13 @@ export function FilmPanel({ scope, keys, onConnect, onMade }: PanelProps) {
   const current = done[at];
   return (
     <div className="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-4" data-studio-film="">
-      <div className="grid grid-cols-[repeat(2,minmax(0,1fr))] gap-x-3 text-sm text-muted">
-        <label className="grid min-w-0">With<select aria-label="Film provider" disabled={busy} className={select} value={engine} onChange={(event) => setEngine(event.target.value as ProviderId)}>{able.map((id) => <option key={id} value={id}>{provider(id).name} · {provider(id).caps.film?.[0].label}</option>)}</select></label>
-        <label className="grid min-w-0">Style<select aria-label="Film style" disabled={busy} className={select} value={styleId} onChange={(event) => { setStyleId(event.target.value); patchStudioPrefs({ style: event.target.value }); }}>{STYLES.map((row) => <option key={row.id} value={row.id}>{row.name}</option>)}</select></label>
+      <label className="grid min-w-0 text-sm text-muted">With<select aria-label="Film provider" disabled={busy} className={select} value={engine} onChange={(event) => setEngine(event.target.value as ProviderId)}>{able.map((id) => <option key={id} value={id}>{provider(id).name} · {provider(id).caps.film?.[0].label}</option>)}</select></label>
+      <StyleSelect label="Style" value={styleId} options={STYLES.map((row) => ({ id: row.id, label: row.name }))} custom={customStyle} disabled={busy} onChange={(id, custom) => { setStyleId(id); if (custom != null) { setCustomStyle(custom); patchStudioPrefs({ style: id, customStyle: custom }); } else patchStudioPrefs({ style: id }); }} />
+      <div className="flex flex-wrap gap-2">
+        <button type="button" disabled={busy || !ready || done.length === shots.length} onClick={() => void makeAll()} className="min-h-11 bg-garnet px-5 text-paper disabled:opacity-40">{busy ? "Working…" : done.length === shots.length ? "All shots made" : done.length ? "Make the remaining shots" : shots.length > 1 ? `Make ${shots.length} shots` : "Make the shot"}</button>
+        {busy && <button type="button" onClick={() => { stop.current = true; setStatus("Stopping after this shot…"); }} className="min-h-11 border border-garnet px-3 text-garnet">Stop after this shot</button>}
       </div>
+      <Advanced>
       <div className="flex flex-wrap items-center gap-x-3 text-sm">
         <div role="radiogroup" aria-label="Frame" className="flex">{ASPECTS.map((a) => <button key={a} type="button" role="radio" aria-checked={aspect === a} onClick={() => setAspect(a)} className={radio(aspect === a)}>{a}</button>)}</div>
         <div role="radiogroup" aria-label="Seconds per shot" className="flex">{LENGTHS.map((s) => <button key={s} type="button" role="radio" aria-checked={seconds === s} onClick={() => setSeconds(s)} className={radio(seconds === s)}>{s} s</button>)}</div>
@@ -91,10 +98,7 @@ export function FilmPanel({ scope, keys, onConnect, onMade }: PanelProps) {
         })}
       </ol>
       <p className="text-xs text-muted">{shots.length} shot{shots.length === 1 ? "" : "s"} × {seconds} s, billed by {engine ? provider(engine).name : "your provider"} to your own account.</p>
-      <div className="flex flex-wrap gap-2">
-        <button type="button" disabled={busy || !shots.length || done.length === shots.length} onClick={() => void makeAll()} className="min-h-11 bg-garnet px-5 text-paper disabled:opacity-40">{busy ? "Working…" : done.length === shots.length ? "All shots made" : done.length ? "Make the remaining shots" : shots.length > 1 ? `Make ${shots.length} shots` : "Make the shot"}</button>
-        {busy && <button type="button" onClick={() => { stop.current = true; setStatus("Stopping after this shot…"); }} className="min-h-11 border border-garnet px-3 text-garnet">Stop after this shot</button>}
-      </div>
+      </Advanced>
       {status && <p role="status" className="text-sm text-muted">{status}</p>}
       {current?.id && board.takes[current.id]?.src && (
         <figure className="border border-line bg-raised" data-studio-output="film">

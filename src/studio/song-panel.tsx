@@ -3,6 +3,7 @@ import { direct } from "./adapters/director.ts";
 import { makeSong } from "./adapters/song.ts";
 import { FREE_NOTE, provider, type ProviderId } from "./catalog.ts";
 import { patchStudioPrefs, readStudioPrefs, scopeRef, scopeVerses } from "./prefs.ts";
+import { Advanced, CUSTOM_STYLE_ID, StyleSelect } from "./controls.tsx";
 import { irreverent, lyricsFor, songPrompt, type SongLanguage, type SongShape } from "./prompt.ts";
 import { ResultCard, type Output } from "./result.tsx";
 import { Engine, type PanelProps } from "./workspace.tsx";
@@ -28,7 +29,8 @@ export function SongPanel({ scope, keys, onConnect, onMade }: PanelProps) {
   const recite = Boolean(engine) && !provider(engine as ProviderId).caps.song?.length;
   const models = engine ? (provider(engine).caps[recite ? "voice" : "song"] ?? []) : [];
   const [language, setLanguage] = useState<SongLanguage>((["english", "syriac", "both"] as const).includes(prefs.songLanguage as SongLanguage) ? (prefs.songLanguage as SongLanguage) : "english");
-  const [shape, setShape] = useState<Omit<SongShape, "language">>({ genre: typeof prefs.genre === "string" && GENRES.includes(prefs.genre) ? prefs.genre : GENRES[0], mood: "peaceful", bpm: 72, vocal: "choir", seconds: 60 });
+  const [shape, setShape] = useState<Omit<SongShape, "language">>({ genre: prefs.genre === CUSTOM_STYLE_ID || (typeof prefs.genre === "string" && GENRES.includes(prefs.genre)) ? String(prefs.genre) : GENRES[0], mood: "peaceful", bpm: 72, vocal: "choir", seconds: 60 });
+  const [customGenre, setCustomGenre] = useState(typeof prefs.customGenre === "string" ? prefs.customGenre : "");
   const ref = scopeRef(scope);
   const verses = scopeVerses(scope);
   const drafted = lyricsFor(verses, language);
@@ -37,7 +39,9 @@ export function SongPanel({ scope, keys, onConnect, onMade }: PanelProps) {
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState("");
   const [output, setOutput] = useState<Output | null>(null);
-  const autoPrompt = songPrompt(ref, { ...shape, language });
+  const genreText = shape.genre === CUSTOM_STYLE_ID ? customGenre.trim() : shape.genre;
+  const autoPrompt = songPrompt(ref, { ...shape, genre: genreText || "sacred music", language });
+  const ready = Boolean(lyrics.trim() && (shape.genre !== CUSTOM_STYLE_ID || customGenre.trim()));
 
   useEffect(() => setLyrics(drafted), [drafted]);
   useEffect(() => setPrompt(""), [autoPrompt]);
@@ -45,6 +49,13 @@ export function SongPanel({ scope, keys, onConnect, onMade }: PanelProps) {
   const update = (patch: Partial<typeof shape>) => {
     setShape((current) => ({ ...current, ...patch }));
     if (patch.genre) patchStudioPrefs({ genre: patch.genre });
+  };
+  const chooseGenre = (id: string, custom?: string) => {
+    update({ genre: id });
+    if (custom != null) {
+      setCustomGenre(custom);
+      patchStudioPrefs({ genre: id, customGenre: custom });
+    }
   };
 
   async function refine() {
@@ -60,7 +71,7 @@ export function SongPanel({ scope, keys, onConnect, onMade }: PanelProps) {
   }
 
   async function make() {
-    if (!engine) return;
+    if (!engine || !ready) return;
     const finalPrompt = prompt || autoPrompt;
     if (irreverent(finalPrompt)) return setStatus("Studio keeps sacred music reverent. Please describe it more gently.");
     setBusy(true);
@@ -69,7 +80,7 @@ export function SongPanel({ scope, keys, onConnect, onMade }: PanelProps) {
     const out = await makeSong({ id: engine, key: keys[engine] as string, model: models[0]?.id ?? "", prompt: finalPrompt, lyrics, seconds: shape.seconds, instrumental: shape.vocal === "instrumental" }, fetch, undefined, (n) => setStatus(`Still composing… (${(n + 1) * 4} s)`));
     setBusy(false);
     if (!out.ok) return setStatus(out.error);
-    const made: Output = { kind: recite ? "voice" : "song", provider: provider(engine).name, model: models[0]?.label ?? "", ref, src: out.src, mime: out.mime, detail: recite ? "recitation" : shape.genre, prompt: finalPrompt };
+    const made: Output = { kind: recite ? "voice" : "song", provider: provider(engine).name, model: models[0]?.label ?? "", ref, src: out.src, mime: out.mime, detail: recite ? "recitation" : (genreText || "Custom style"), prompt: finalPrompt };
     setOutput(made);
     setStatus(recite ? "Recitation ready." : "Song ready.");
     onMade?.(made);
@@ -86,34 +97,36 @@ export function SongPanel({ scope, keys, onConnect, onMade }: PanelProps) {
         </select>
         <span>· {models[0]?.label}</span>
       </label>
-      <div role="radiogroup" aria-label="Language" className="flex flex-wrap text-sm">
-        {LANGS.map((row) => (
-          <button key={row.id} type="button" role="radio" aria-checked={language === row.id} onClick={() => { setLanguage(row.id); patchStudioPrefs({ songLanguage: row.id }); }} className={`min-h-11 px-2 ${language === row.id ? "text-garnet underline underline-offset-4" : "text-muted"}`}>{row.label}</button>
-        ))}
-      </div>
-      {!recite && (
-        <div className="grid grid-cols-[repeat(2,minmax(0,1fr))] gap-x-3 gap-y-1 text-sm text-muted">
-          <label className="col-span-2 grid">Genre<select className={select} value={shape.genre} onChange={(event) => update({ genre: event.target.value })}>{GENRES.map((g) => <option key={g}>{g}</option>)}</select></label>
-          <label className="grid min-w-0">Mood<select className={select} value={shape.mood} onChange={(event) => update({ mood: event.target.value })}>{MOODS.map((m) => <option key={m}>{m}</option>)}</select></label>
-          <label className="grid min-w-0">Voice<select className={select} value={shape.vocal} onChange={(event) => update({ vocal: event.target.value })}>{VOCALS.map((v) => <option key={v}>{v}</option>)}</select></label>
-          <label className="grid min-w-0">Tempo · {shape.bpm} BPM<input type="range" min={48} max={140} step={2} value={shape.bpm} onChange={(event) => update({ bpm: Number(event.target.value) })} className="min-h-11 w-full min-w-0 accent-garnet" /></label>
-          <label className="grid min-w-0">Length<select className={select} value={shape.seconds} onChange={(event) => update({ seconds: Number(event.target.value) })}>{LENGTHS.map((s) => <option key={s} value={s}>{s < 60 ? `${s} s` : `${s / 60} min`}</option>)}</select></label>
-        </div>
-      )}
-      <label className="grid gap-1">
-        <span className="text-xs tracking-widest text-gold">LYRICS · SCRIPTURE</span>
-        <textarea rows={4} value={lyrics} onChange={(event) => setLyrics(event.target.value)} dir="auto" style={{ fontFamily: '"Newsreader", "Noto Sans Syriac", "Palatino Linotype", Palatino, serif' }} className="w-full whitespace-pre-wrap border border-line bg-raised p-3 leading-relaxed text-ink" />
-      </label>
-      {!recite && (
-        <label className="grid gap-1">
-          <span className="text-xs tracking-widest text-gold">MUSIC PROMPT</span>
-          <textarea rows={3} value={prompt || autoPrompt} onChange={(event) => setPrompt(event.target.value)} className="w-full whitespace-pre-wrap border border-line bg-raised p-3 text-sm leading-relaxed text-ink" />
-        </label>
-      )}
+      {!recite && <StyleSelect label="Style" value={shape.genre} options={GENRES.map((g) => ({ id: g, label: g }))} custom={customGenre} onChange={chooseGenre} />}
       <div className="flex flex-wrap gap-2">
-        <button type="button" disabled={busy || !lyrics.trim()} onClick={() => void make()} className="min-h-11 bg-garnet px-5 text-paper disabled:opacity-40">{busy ? "Working…" : recite ? "Make the recitation" : "Make the song"}</button>
-        {!recite && directors.length > 0 && <button type="button" disabled={busy} onClick={() => void refine()} className="min-h-11 border border-garnet px-3 text-garnet disabled:opacity-40">Arrange with {provider(directors[0]).name.split(" ").pop()}</button>}
+        <button type="button" disabled={busy || !ready} onClick={() => void make()} className="min-h-11 bg-garnet px-5 text-paper disabled:opacity-40">{busy ? "Working…" : recite ? "Make the recitation" : "Make the song"}</button>
       </div>
+      <Advanced>
+        <div role="radiogroup" aria-label="Language" className="flex flex-wrap text-sm">
+          {LANGS.map((row) => (
+            <button key={row.id} type="button" role="radio" aria-checked={language === row.id} onClick={() => { setLanguage(row.id); patchStudioPrefs({ songLanguage: row.id }); }} className={`min-h-11 px-2 ${language === row.id ? "text-garnet underline underline-offset-4" : "text-muted"}`}>{row.label}</button>
+          ))}
+        </div>
+        {!recite && (
+          <div className="grid grid-cols-[repeat(2,minmax(0,1fr))] gap-x-3 gap-y-1 text-sm text-muted">
+            <label className="grid min-w-0">Mood<select className={select} value={shape.mood} onChange={(event) => update({ mood: event.target.value })}>{MOODS.map((m) => <option key={m}>{m}</option>)}</select></label>
+            <label className="grid min-w-0">Voice<select className={select} value={shape.vocal} onChange={(event) => update({ vocal: event.target.value })}>{VOCALS.map((v) => <option key={v}>{v}</option>)}</select></label>
+            <label className="grid min-w-0">Tempo · {shape.bpm} BPM<input type="range" min={48} max={140} step={2} value={shape.bpm} onChange={(event) => update({ bpm: Number(event.target.value) })} className="min-h-11 w-full min-w-0 accent-garnet" /></label>
+            <label className="grid min-w-0">Length<select className={select} value={shape.seconds} onChange={(event) => update({ seconds: Number(event.target.value) })}>{LENGTHS.map((s) => <option key={s} value={s}>{s < 60 ? `${s} s` : `${s / 60} min`}</option>)}</select></label>
+          </div>
+        )}
+        <label className="grid gap-1">
+          <span className="text-xs tracking-widest text-gold">LYRICS · SCRIPTURE</span>
+          <textarea rows={4} value={lyrics} onChange={(event) => setLyrics(event.target.value)} dir="auto" style={{ fontFamily: '"Newsreader", "Noto Sans Syriac", "Palatino Linotype", Palatino, serif' }} className="w-full whitespace-pre-wrap border border-line bg-raised p-3 leading-relaxed text-ink" />
+        </label>
+        {!recite && (
+          <label className="grid gap-1">
+            <span className="text-xs tracking-widest text-gold">MUSIC PROMPT</span>
+            <textarea rows={3} value={prompt || autoPrompt} onChange={(event) => setPrompt(event.target.value)} className="w-full whitespace-pre-wrap border border-line bg-raised p-3 text-sm leading-relaxed text-ink" />
+          </label>
+        )}
+        {!recite && directors.length > 0 && <button type="button" disabled={busy} onClick={() => void refine()} className="min-h-11 border border-garnet px-3 text-garnet disabled:opacity-40">Arrange with {provider(directors[0]).name.split(" ").pop()}</button>}
+      </Advanced>
       {language !== "english" && <p className="text-xs text-muted">Models may not pronounce Classical Syriac correctly. The words are given exactly as written.</p>}
       {engine === "free" && <p className="text-xs leading-relaxed text-muted" data-studio-free="">{FREE_NOTE}</p>}
       {status && <p role="status" className="text-sm text-muted">{status}</p>}
