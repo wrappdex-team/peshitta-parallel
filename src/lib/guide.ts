@@ -209,9 +209,9 @@ export const GUIDE: GuideSection[] = [
   {
     id: "studio",
     title: "Studio",
-    lead: "Optional, and separate from Read. Books, and the Reading sheet, both say “Studio · AI voice and images” or “Studio · premium”.",
+    lead: "Optional, off by default, and separate from Read. Turn it on in the Reading sheet; a small feather then appears beside each verse and in the header.",
     notes: [
-      "Studio sends the passage and a key you supply to a provider. Read does not.",
+      "Studio sends the passage straight from this tab to an AI account you connect, using your own key. Read does not.",
       "The key is held for the tab. It is not a permanent vault. Privacy states what is stored, what may be charged, and what clearing the key does and does not do.",
       "You can read the whole book and never open Studio.",
     ],

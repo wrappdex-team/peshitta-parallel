@@ -284,6 +284,7 @@ test("all six active reader/Words/Search/Studio overlays use the coordinated wra
     ["src/routes/words.tsx", 1],
     ["src/components/search-panel.tsx", 1],
     ["src/components/studio.tsx", 1],
+    ["src/studio/workspace.tsx", 1],
   ]);
   for (const [path, count] of expected) {
     const text = readFileSync(new URL(`../${path}`, import.meta.url), "utf8");

@@ -2,7 +2,8 @@ import { Modal } from "@/components/modal";
 import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { lazy, Suspense, useEffect, useState } from "react";
-import { Studio } from "@/components/studio";
+import { StudioHost } from "@/studio/host";
+import { openStudio, useStudioEnabled } from "@/studio/prefs";
 import { BookTitle, bookLabel } from "@/components/book-name";
 import { BookLinks } from "@/components/book-links";
 import { HelpSwitch } from "@/components/info-mark";
@@ -116,11 +117,16 @@ function Reader() {
   const [menu, setMenu] = useState(false);
   const [sheet, setSheet] = useState<{ title: string; roman: string; body: string } | { study: WordStudy; word?: { token: WordToken; book: string } } | null>(null);
   const [heard, setHeard] = useState<number | null>(null);
-  const [studio, setStudio] = useState(false);
-  const [picked, setPicked] = useState("");
+  const studioOn = useStudioEnabled();
   const [focus, setFocus] = useState(1);
   const [reading, setReading] = useState(false);
   const [target, setTarget] = useState<number | null>(null);
+  const studioAt = (v: number, wholeChapter = false) => {
+    const list = (verses ?? []).map((row) => ({ v: row.v, en: row.en || "", sy: row.sy || undefined }));
+    if (!list.length) return;
+    const last = list[list.length - 1].v;
+    openStudio({ book, bookName: meta?.name ?? book, chapter: chapterNo, verses: list, from: wholeChapter ? list[0].v : v, to: wholeChapter ? last : v });
+  };
 
   useEffect(() => {
     if (!meta || !Number.isFinite(chapterNo) || chapterNo < 1) return;
@@ -288,6 +294,7 @@ function Reader() {
         wide={prefs.lang2 !== "none"}
         onBooks={() => setMenu(true)}
         book={book}
+        onStudio={studioOn ? () => studioAt(focus) : undefined}
       >
         <div className="toolbar-scroll flex gap-1 overflow-x-auto px-3 pb-2">
           {Array.from({ length: total }, (_, i) => {
@@ -359,6 +366,7 @@ function Reader() {
             parallel2={prefs.lang2 === "none" ? "" : prefs.lang2 === "en" ? verse.en : net2 || copied2}
             pending2={prefs.lang2 !== "none" && prefs.lang2 !== "en" && secondary.pending && !copied2}
             nameMark={target === verse.v ? markId : undefined}
+            onStudio={studioOn ? () => studioAt(verse.v) : undefined}
           />
           );
         })}
@@ -384,11 +392,7 @@ function Reader() {
           </button>
         </nav>
       </main>
-      <Studio
-        open={studio}
-        passage={picked}
-        onClose={() => setStudio(false)}
-      />
+      <StudioHost />
 
       {menu && (
         <Modal label="Books" className="fixed inset-0 z-30 flex bg-scrim" onClose={() => setMenu(false)}>
@@ -432,18 +436,18 @@ function Reader() {
               </div>
             ))}
             <BookLinks onDone={() => setMenu(false)} />
-            <button
-              type="button"
-              className="mt-2 block min-h-11 text-left text-sm text-muted"
-              onClick={() => {
-                setMenu(false);
-                const selected = window.getSelection()?.toString().replace(/\s+/g, " ").trim() ?? "";
-                setPicked(selected || picked || verses?.[0]?.en || "");
-                setStudio(true);
-              }}
-            >
-              Studio · premium
-            </button>
+            {studioOn && (
+              <button
+                type="button"
+                className="mt-2 block min-h-11 text-left text-sm text-gold"
+                onClick={() => {
+                  setMenu(false);
+                  studioAt(focus, true);
+                }}
+              >
+                Studio
+              </button>
+            )}
           </nav>
         </Modal>
       )}
@@ -495,9 +499,7 @@ function Reader() {
         bookName={meta?.name ?? book}
         onStudio={() => {
           setReading(false);
-          const selected = window.getSelection()?.toString().replace(/\s+/g, " ").trim() ?? "";
-          setPicked(selected || picked || verses?.[0]?.en || "");
-          setStudio(true);
+          studioAt(focus);
         }}
       />
     </div>
