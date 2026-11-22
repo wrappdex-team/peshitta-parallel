@@ -48,7 +48,7 @@ function Placeholder({ tab, ...props }: PanelProps & { tab: Tab }) {
 /** Filled by the Still, Song and Film panels. */
 const PANELS: Partial<Record<Tab, (props: PanelProps) => ReactNode>> = { still: (props) => <StillPanel {...props} />, song: (props) => <SongPanel {...props} />, film: (props) => <FilmPanel {...props} /> };
 
-export default function Workspace({ scope: initial, onClose }: { scope: StudioScope; onClose: () => void }) {
+export default function Workspace({ scope: initial, onClose, asPage }: { scope: StudioScope; onClose: () => void; asPage?: boolean }) {
   const [scope, setScope] = useState(initial);
   const saved = readStudioPrefs().tab;
   const [tab, setTab] = useState<Tab>(saved === "song" || saved === "film" ? saved : "still");
@@ -67,9 +67,8 @@ export default function Workspace({ scope: initial, onClose }: { scope: StudioSc
   const props: PanelProps = { scope, keys, onConnect: () => setView("connections"), onMade };
   const Panel = PANELS[tab];
 
-  return (
-    <Modal label="Studio" className="fixed inset-0 z-40 flex items-stretch justify-center bg-scrim sm:items-center" onClose={onClose}>
-      <section className="studio flex h-full w-full max-w-2xl flex-col border-line bg-paper sm:h-auto sm:max-h-sheet sm:border" onClick={(event) => event.stopPropagation()}>
+  const body = (
+      <section className={asPage ? "studio flex w-full flex-col bg-paper" : "studio flex h-full w-full max-w-2xl flex-col border-line bg-paper sm:h-auto sm:max-h-sheet sm:border"} onClick={asPage ? undefined : (event) => event.stopPropagation()} data-studio-page={asPage ? "" : undefined}>
         <header className="flex items-start justify-between gap-2 border-b border-line px-4 pb-2 pt-safe">
           <div className="min-w-0 pt-3">
             <p className="text-xs tracking-widest text-gold">STUDIO</p>
@@ -84,7 +83,7 @@ export default function Workspace({ scope: initial, onClose }: { scope: StudioSc
               <Plug className="size-5 sm:size-4" aria-hidden="true" />
               <span className="hidden sm:inline">{view === "connections" ? "Done" : "Connections"}</span>
             </button>
-            <button type="button" className="min-h-11 px-2 text-garnet" onClick={onClose}>Close</button>
+            {asPage ? null : <button type="button" className="min-h-11 px-2 text-garnet" onClick={onClose}>Close</button>}
           </div>
         </header>
         <div className="flex-1 overflow-y-auto px-4 py-4 pb-safe">
@@ -130,6 +129,11 @@ export default function Workspace({ scope: initial, onClose }: { scope: StudioSc
           )}
         </div>
       </section>
+  );
+  if (asPage) return body;
+  return (
+    <Modal label="Studio" className="fixed inset-0 z-40 flex items-stretch justify-center bg-scrim sm:items-center" onClose={onClose}>
+      {body}
     </Modal>
   );
 }

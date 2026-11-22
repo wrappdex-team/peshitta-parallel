@@ -29,6 +29,9 @@ export function BookLinks({ onDone }: { onDone?: () => void }) {
       <Link to="/names" onClick={onDone} className="flex min-h-11 items-center text-garnet">
         Name index
       </Link>
+      <Link to="/studio" onClick={onDone} data-studio-entry="menu" className="flex min-h-11 items-center text-garnet">
+        AI Studio
+      </Link>
       <Link to="/study" onClick={onDone} className="flex min-h-11 items-center text-garnet">
         About this Injeel
       </Link>

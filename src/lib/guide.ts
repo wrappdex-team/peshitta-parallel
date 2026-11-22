@@ -1,6 +1,6 @@
 /** How to use the reader. Labels match the controls on the page. */
 
-export type GuideRow = { term: string; text: string; to?: "/study" | "/privacy" | "/names" | "/words" | "/seal" | "/saved" | "/offline" };
+export type GuideRow = { term: string; text: string; to?: "/study" | "/privacy" | "/names" | "/words" | "/seal" | "/saved" | "/offline" | "/studio" };
 
 export type GuideSection = {
   id: string;
@@ -209,11 +209,14 @@ export const GUIDE: GuideSection[] = [
   {
     id: "studio",
     title: "Studio",
-    lead: "Optional, off by default, and separate from Read. Turn it on in the Reading sheet; a small feather then appears beside each verse and in the header.",
+    lead: "Optional, and off in the reader by default. Open it from the menu, from the bottom of the home page, or from this guide. When you turn it on, a small feather appears beside each verse and in the header.",
     notes: [
       "Studio sends the passage straight from this tab to an AI account you connect, using your own key. Read does not.",
       "The key is held for the tab. It is not a permanent vault. Privacy states what is stored, what may be charged, and what clearing the key does and does not do.",
       "You can read the whole book and never open Studio.",
+    ],
+    rows: [
+      { term: "Open Studio", text: "The menu and the bottom of the home page both open it, even when the reader marks are off. You can turn it on and connect a provider there.", to: "/studio" },
     ],
   },
   {
