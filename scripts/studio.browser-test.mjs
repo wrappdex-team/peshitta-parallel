@@ -49,7 +49,7 @@ async function shot(page, path) {
 async function setup(browser, url, { theme = "day", width = 390, enabled = false, session = null, replies = [] } = {}) {
   const context = await browser.newContext({ viewport: { width, height: 844 } });
   const calls = [];
-  await context.route(/^https:\/\/(api\.openai\.com|generativelanguage\.googleapis\.com|api\.anthropic\.com|api\.x\.ai|openrouter\.ai|api\.elevenlabs\.io|queue\.fal\.run|fal\.run|api\.stability\.ai|image\.pollinations\.ai|[\w-]+\.hf\.space)\//, async (route) => {
+  await context.route(/^https:\/\/(api\.openai\.com|generativelanguage\.googleapis\.com|api\.anthropic\.com|api\.x\.ai|openrouter\.ai|api\.elevenlabs\.io|queue\.fal\.run|fal\.run|api\.stability\.ai|[\w-]+\.hf\.space)\//, async (route) => {
     const request = route.request();
     calls.push({ url: request.url(), method: request.method(), headers: request.headers(), body: request.postData() });
     const href = request.url();
@@ -365,29 +365,39 @@ test("Film: a passage becomes a storyboard; Gemini Omni makes each shot in turn 
   await context.close();
 });
 
-test("Free services: one tap turns them on (no key), the third-party note shows, and a still is made and kept", async () => {
-  const pollinations = { match: /image\.pollinations\.ai\/prompt\//, reply: () => ({ contentType: "image/png", body: Buffer.from(PNG, "base64") }) };
-  const { context, page, calls, errors } = await setup(browser, server.url, { enabled: true, replies: [pollinations] });
+test("Free services: one tap turns them on (no key); recitation works, still and film do not", async () => {
+  const host = "https://remsky-kokoro-tts-zero.hf.space";
+  const replies = [
+    { match: /remsky-kokoro-tts-zero\.hf\.space\/gradio_api\/call\/generate_speech_from_ui$/, reply: () => ({ body: { event_id: "abc123" } }) },
+    { match: /generate_speech_from_ui\/abc123/, reply: () => ({ contentType: "text/event-stream", body: `event: complete\ndata: [{"url":"${host}/gradio_api/file=/tmp/a.wav"}]\n\n` }) },
+    { match: /gradio_api\/file=/, reply: () => ({ contentType: "audio/wav", body: Buffer.from("RIFF....wav") }) },
+  ];
+  const { context, page, calls, errors } = await setup(browser, server.url, { enabled: true, replies });
   await reader(page, server.url);
   await page.getByRole("button", { name: "Create from verse 3 in Studio" }).click();
   const dialog = page.getByRole("dialog", { name: "Studio" });
   await dialog.getByRole("button", { name: "Connections" }).click();
   const row = dialog.locator("[data-provider=free]");
-  assert.match(await row.textContent(), /Third-party/);
+  assert.match(await row.textContent(), /Kokoro recitation/);
+  assert.doesNotMatch(await row.textContent(), /Pollinations|LTX/);
   assert.equal(await row.getByRole("textbox").count(), 0, "no key field for a keyless service");
   await row.getByRole("button", { name: "Turn on" }).click();
   assert.deepEqual(JSON.parse(await page.evaluate(() => sessionStorage.getItem("injeel-agent"))), { v: 2, keys: { free: "no-key" } });
   await dialog.getByRole("button", { name: "Done" }).click();
-  assert.match(await dialog.locator("[data-studio-free]").textContent(), /Free third-party services/);
-  await dialog.getByRole("button", { name: "Make the still" }).click();
-  await dialog.locator("[data-studio-label]").waitFor();
-  assert.equal(await dialog.locator("[data-studio-label]").textContent(), "AI-generated · Free services · Pollinations Sana · Matthew 5:3 · not reviewed");
-  const call = calls.find((c) => c.url.startsWith("https://image.pollinations.ai/"));
-  assert.ok(call, `pollinations call missing: ${calls.map((c) => c.url.slice(0, 60)).join(" ")}`);
-  assert.ok(!call.headers.authorization, "no credentials sent");
-  assert.match(call.url, /private=true/);
+  assert.match(await dialog.textContent(), /None of your connections makes a still yet/);
+  await dialog.getByRole("tab", { name: "Film" }).click();
+  assert.match(await dialog.textContent(), /None of your connections makes a film yet/);
+  await dialog.getByRole("tab", { name: "Song" }).click();
+  assert.match(await dialog.locator("[data-studio-free]").textContent(), /Free third-party recitation/);
+  await dialog.getByRole("button", { name: "Make the recitation" }).click();
+  const label = dialog.locator("[data-studio-label]");
+  await label.waitFor();
+  assert.equal(await label.textContent(), "AI-generated · Free services · Kokoro 82M · Matthew 5:3 · not reviewed");
+  const post = calls.find((c) => c.url === `${host}/gradio_api/call/generate_speech_from_ui`);
+  assert.ok(post, `kokoro call missing: ${calls.map((c) => c.url.slice(0, 80)).join(" ")}`);
+  assert.ok(!post.headers.authorization, "no credentials sent");
   await dialog.getByRole("button", { name: "Gallery" }).click();
-  await dialog.locator("[data-studio-output=still]").first().waitFor();
+  await dialog.locator("[data-studio-output=voice]").first().waitFor();
   assert.deepEqual(errors, []);
   await context.close();
 });

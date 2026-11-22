@@ -17,7 +17,7 @@
         { "key": "X-DNS-Prefetch-Control", "value": "off" },
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'self'; form-action 'self' https:; script-src 'self' 'unsafe-inline' https://grok.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; media-src 'self' blob: https:; connect-src 'self' https://api.x.ai https://*.x.ai https://api.openai.com https://api.anthropic.com https://generativelanguage.googleapis.com https://openrouter.ai https://api.elevenlabs.io https://queue.fal.run https://fal.run https://fal.media https://*.fal.media https://api.stability.ai https://image.pollinations.ai https://remsky-kokoro-tts-zero.hf.space https://lightricks-ltx-video-distilled.hf.space data: blob: https://auth.grok.me https://gate.grok.me https://grok.com; worker-src 'self' blob:; manifest-src 'self'; upgrade-insecure-requests"
+          "value": "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'self'; form-action 'self' https:; script-src 'self' 'unsafe-inline' https://grok.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; media-src 'self' blob: https:; connect-src 'self' https://api.x.ai https://*.x.ai https://api.openai.com https://api.anthropic.com https://generativelanguage.googleapis.com https://openrouter.ai https://api.elevenlabs.io https://queue.fal.run https://fal.run https://fal.media https://*.fal.media https://api.stability.ai https://remsky-kokoro-tts-zero.hf.space data: blob: https://auth.grok.me https://gate.grok.me https://grok.com; worker-src 'self' blob:; manifest-src 'self'; upgrade-insecure-requests"
         }
       ]
     },

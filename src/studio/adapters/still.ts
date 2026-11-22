@@ -6,7 +6,6 @@
 import { provider, type ProviderId } from "../catalog.ts";
 import { failure, networkFailure, type Failure, type Fetch } from "../http.ts";
 import type { Aspect } from "../prompt.ts";
-import { freeStill } from "./free.ts";
 
 export type StillAsk = { id: ProviderId; key: string; model: string; prompt: string; aspect: Aspect; count: number; seed?: number };
 /** `src` is a data: URL or the provider's https URL. */
@@ -59,7 +58,6 @@ export async function makeStill(ask: StillAsk, fetcher: Fetch = fetch, signal?: 
   const json = { "Content-Type": "application/json" };
   try {
     if (ask.id === "google") return await google({ ...ask, count }, fetcher, signal);
-    if (ask.id === "free") return await freeStill(ask.prompt, ask.aspect, Math.min(count, 2), fetcher, signal);
     let res: Response;
     if (ask.id === "openai" || ask.id === "xai") {
       const body = ask.id === "openai" ? { model: ask.model, prompt: ask.prompt, n: count, size: OPENAI_SIZE[ask.aspect], output_format: "png" } : { model: ask.model, prompt: ask.prompt, n: count, aspect_ratio: ask.aspect, response_format: "b64_json" };
