@@ -8,6 +8,7 @@ import { useConnections } from "./use-connections.ts";
 import type { Output } from "./result.tsx";
 import { StillPanel } from "./still-panel.tsx";
 import { SongPanel } from "./song-panel.tsx";
+import { FilmPanel } from "./film-panel.tsx";
 import { saveWork } from "./gallery.ts";
 import { GalleryPanel } from "./gallery-panel.tsx";
 
@@ -45,7 +46,7 @@ function Placeholder({ tab, ...props }: PanelProps & { tab: Tab }) {
 }
 
 /** Filled by the Still, Song and Film panels. */
-const PANELS: Partial<Record<Tab, (props: PanelProps) => ReactNode>> = { still: (props) => <StillPanel {...props} />, song: (props) => <SongPanel {...props} /> };
+const PANELS: Partial<Record<Tab, (props: PanelProps) => ReactNode>> = { still: (props) => <StillPanel {...props} />, song: (props) => <SongPanel {...props} />, film: (props) => <FilmPanel {...props} /> };
 
 export default function Workspace({ scope: initial, onClose }: { scope: StudioScope; onClose: () => void }) {
   const [scope, setScope] = useState(initial);
