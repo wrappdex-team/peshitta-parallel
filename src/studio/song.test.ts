@@ -15,10 +15,12 @@ function mock(reply: (url: string) => Response) {
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status });
 const ask = { prompt: "Byzantine chant, solemn", lyrics: "[Verse]\nBlessed are the poor in spirit", seconds: 60, instrumental: false };
 
+globalThis.URL.createObjectURL = (blob: Blob) => `blob:test/${blob.type}/${blob.size}`;
+
 test("Lyria songs go to generateContent with the reader's key and come back as inline audio", async () => {
   const { seen, fetcher } = mock(() => json({ candidates: [{ content: { parts: [{ text: "ok" }, { inlineData: { mimeType: "audio/mpeg", data: "QUJD" } }] } }] }));
   const out = await makeSong({ ...ask, id: "google", key: "AIzaTest", model: "lyria-3.5" }, fetcher);
-  assert.deepEqual(out, { ok: true, src: "data:audio/mpeg;base64,QUJD", mime: "audio/mpeg" });
+  assert.deepEqual(out, { ok: true, src: "blob:test/audio/mpeg/3", mime: "audio/mpeg" }, "a blob URL, because media-src has no data:");
   assert.equal(seen[0].url, "https://generativelanguage.googleapis.com/v1beta/models/lyria-3.5:generateContent");
   assert.equal((seen[0].init.headers as Record<string, string>)["x-goog-api-key"], "AIzaTest");
   assert.match(String(seen[0].init.body), /Blessed are the poor in spirit/);
@@ -33,7 +35,6 @@ test("Lyria safety blocks become a calm message", async () => {
 
 test("Instrumental ElevenLabs songs drop the lyrics and clamp the length", async () => {
   const { seen, fetcher } = mock(() => new Response(new Blob([new Uint8Array([1, 2, 3])], { type: "audio/mpeg" })));
-  globalThis.URL.createObjectURL ??= () => "blob:test";
   const out = await makeSong({ ...ask, id: "elevenlabs", key: "sk_test", model: "music_v2_5", seconds: 1, instrumental: true }, fetcher);
   assert.equal(out.ok, true);
   const body = JSON.parse(String(seen[0].init.body));

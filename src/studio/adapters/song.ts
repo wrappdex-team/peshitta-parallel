@@ -14,6 +14,14 @@ function plain(lyrics: string) {
   return lyrics.replace(/^\[[^\]]*\]\s*$/gm, "").replace(/\n{2,}/g, "\n").trim();
 }
 
+/** media-src allows blob: but not data:, so inline audio becomes a blob URL. */
+export function inlineMedia(data: string, mime: string) {
+  const raw = atob(data);
+  const buf = new Uint8Array(raw.length);
+  for (let i = 0; i < raw.length; i++) buf[i] = raw.charCodeAt(i);
+  return URL.createObjectURL(new Blob([buf], { type: mime }));
+}
+
 async function bytes(res: Response, fallback: string): Promise<SongResult> {
   const blob = await res.blob();
   if (!blob.size) return { ok: false, error: "The provider returned no audio. Try again." };
@@ -35,7 +43,7 @@ export async function makeSong(ask: SongAsk, fetcher: Fetch = fetch, signal?: Ab
       const body = (await res.json()) as { promptFeedback?: { blockReason?: string }; candidates?: { finishReason?: string; content?: { parts?: { inlineData?: { mimeType?: string; data?: string } }[] } }[] };
       if (body.promptFeedback?.blockReason || /SAFETY|PROHIBITED|BLOCKLIST/.test(body.candidates?.[0]?.finishReason ?? "")) return { ok: false, safety: true, error: `${name} declined this for safety. Try a gentler description.` };
       const audio = body.candidates?.[0]?.content?.parts?.find((part) => part.inlineData?.mimeType?.startsWith("audio/"))?.inlineData;
-      return audio?.data ? { ok: true, src: `data:${audio.mimeType};base64,${audio.data}`, mime: audio.mimeType as string } : { ok: false, error: `${name} returned no audio. Try again.` };
+      return audio?.data ? { ok: true, src: inlineMedia(audio.data, audio.mimeType as string), mime: audio.mimeType as string } : { ok: false, error: `${name} returned no audio. Try again.` };
     }
     if (ask.id === "elevenlabs") {
       const res = await fetcher("https://api.elevenlabs.io/v1/music?output_format=mp3_44100_128", {
