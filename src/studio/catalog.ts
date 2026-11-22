@@ -116,20 +116,18 @@ export const PROVIDERS: Provider[] = [
   {
     id: "free",
     name: "Free services",
-    blurb: "No key, no account. Pollinations stills; Kokoro recitation and LTX Video on Hugging Face Spaces. Third-party: your prompt goes to them, images may carry a mark, and daily limits are theirs.",
-    keyUrl: "https://pollinations.ai",
+    blurb: "No key, no account. Kokoro recitation on a public Hugging Face Space. Third-party: your text goes to them, and limits are theirs.",
+    keyUrl: "https://huggingface.co/spaces/remsky/Kokoro-TTS-Zero",
     placeholder: "",
     keyless: true,
     caps: {
-      still: [{ id: "sana", label: "Pollinations Sana" }],
       voice: [{ id: "kokoro", label: "Kokoro 82M" }],
-      film: [{ id: "ltx-video-distilled", label: "LTX Video (distilled)" }],
     },
   },
 ];
 
 /** Said wherever the free services are used, so nobody mistakes them for their own account. */
-export const FREE_NOTE = "Free third-party services (no key). Your prompt goes to them, not to an account of yours. Marks, limits and availability are theirs and can change.";
+export const FREE_NOTE = "Free third-party recitation (no key). Your text goes to a public Hugging Face Space, not to an account of yours. Limits and availability are theirs and can change.";
 
 export function provider(id: ProviderId) {
   return PROVIDERS.find((row) => row.id === id) as Provider;
