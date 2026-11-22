@@ -264,7 +264,6 @@ function Words() {
                 saying={key}
                 cite={`${chapter}:${verse.v}`}
                 guideMark={position === 0}
-                markSpeech={false}
               />
             </div>
           );

@@ -121,7 +121,7 @@ test("Studio is off by default: no verse mark, header icon or drawer row", async
   await reader(page, server.url);
   assert.equal(await page.locator(".studio-mark").count(), 0);
   assert.equal(await page.getByRole("button", { name: "Studio", exact: true }).count(), 0);
-  assert.equal(await page.getByRole("button", { name: /Create from verse/ }).count(), 0);
+  assert.equal(await page.getByRole("button", { name: "Open in AI Studio" }).count(), 0);
   await page.getByRole("button", { name: "Books" }).click();
   assert.equal(await page.getByRole("navigation", { name: "Books" }).getByRole("button", { name: "Studio", exact: true }).count(), 0);
   assert.deepEqual(errors, []);
@@ -138,7 +138,7 @@ test("turning Studio on in the Reading sheet adds one quiet mark per verse and a
   await toggle.click();
   assert.equal(await toggle.getAttribute("aria-checked"), "true");
   await page.keyboard.press("Escape");
-  assert.equal(await page.getByRole("button", { name: /Create from verse/ }).count(), verses);
+  assert.equal(await page.getByRole("button", { name: "Open in AI Studio" }).count(), verses);
   assert.equal(await page.getByRole("button", { name: "Studio", exact: true }).count(), 1);
   const prefs = await page.evaluate(() => localStorage.getItem("injeel-studio"));
   assert.deepEqual(JSON.parse(prefs), { enabled: true });
@@ -152,7 +152,7 @@ test("turning Studio on in the Reading sheet adds one quiet mark per verse and a
 test("a verse mark opens Studio pre-filled with that verse; range widens to the chapter", async () => {
   const { context, page, errors } = await setup(browser, server.url, { enabled: true });
   await reader(page, server.url);
-  await page.getByRole("button", { name: "Create from verse 3 in Studio" }).click();
+  await page.locator("#v-3").getByRole("button", { name: "Open in AI Studio" }).click();
   const dialog = page.getByRole("dialog", { name: "Studio" });
   await dialog.waitFor();
   assert.equal(await dialog.locator("[data-studio-ref]").textContent(), "Matthew 5:3");
@@ -174,7 +174,7 @@ test("a verse mark opens Studio pre-filled with that verse; range widens to the 
 test("Passage: Book, Chapter, From and To set a range, and the still prompt quotes it", async () => {
   const { context, page, errors } = await setup(browser, server.url, { enabled: true, session: JSON.stringify({ v: 2, keys: { google: `AQ.${"g".repeat(30)}` } }) });
   await reader(page, server.url);
-  await page.getByRole("button", { name: "Create from verse 3 in Studio" }).click();
+  await page.locator("#v-3").getByRole("button", { name: "Open in AI Studio" }).click();
   const dialog = page.getByRole("dialog", { name: "Studio" });
   await dialog.waitFor();
   await dialog.getByLabel("To", { exact: true }).selectOption("4");
@@ -253,7 +253,7 @@ for (const theme of ["day", "night"]) {
       await reader(page, server.url);
       assert.ok(await noHorizontalScroll(page), `reader ${width} ${theme}`);
       if (SHOTS && width === 390) await shot(page, `${SHOTS}/reader-mark-${theme}-390.png`);
-      await page.getByRole("button", { name: "Create from verse 3 in Studio" }).click();
+      await page.locator("#v-3").getByRole("button", { name: "Open in AI Studio" }).click();
       const dialog = page.getByRole("dialog", { name: "Studio" });
       await dialog.waitFor();
       assert.ok(await noHorizontalScroll(page), `studio ${width} ${theme}`);
@@ -286,7 +286,7 @@ const geminiImage = { match: /:generateContent$/, reply: () => ({ body: { candid
 test("Still: century style + aspect shape the verse-aware prompt; the result carries its label", async () => {
   const { context, page, calls, errors } = await setup(browser, server.url, { enabled: true, session: JSON.stringify({ v: 2, keys: { google: GOOGLE } }), replies: [geminiImage] });
   await reader(page, server.url);
-  await page.getByRole("button", { name: "Create from verse 3 in Studio" }).click();
+  await page.locator("#v-3").getByRole("button", { name: "Open in AI Studio" }).click();
   const dialog = page.getByRole("dialog", { name: "Studio" });
   await dialog.getByLabel("Style", { exact: true }).selectOption("rabbula");
   await openAdvanced(dialog);
@@ -318,7 +318,7 @@ test("Still: century style + aspect shape the verse-aware prompt; the result car
 test("Still: style is a dropdown, palettes are gone, Advanced starts closed, and a custom style is sent in the request", async () => {
   const { context, page, calls, errors } = await setup(browser, server.url, { enabled: true, session: JSON.stringify({ v: 2, keys: { google: GOOGLE } }), replies: [geminiImage] });
   await reader(page, server.url);
-  await page.getByRole("button", { name: "Create from verse 3 in Studio" }).click();
+  await page.locator("#v-3").getByRole("button", { name: "Open in AI Studio" }).click();
   const dialog = page.getByRole("dialog", { name: "Studio" });
   await dialog.waitFor();
   assert.equal(await dialog.getByRole("radiogroup", { name: "Century style" }).count(), 0);
@@ -347,7 +347,7 @@ test("Still: a provider safety stop is shown as one calm line, nothing else", as
   const blocked = { match: /:generateContent$/, reply: () => ({ body: { candidates: [{ finishReason: "IMAGE_SAFETY" }] } }) };
   const { context, page } = await setup(browser, server.url, { theme: "night", enabled: true, session: JSON.stringify({ v: 2, keys: { google: GOOGLE } }), replies: [blocked] });
   await reader(page, server.url);
-  await page.getByRole("button", { name: "Create from verse 3 in Studio" }).click();
+  await page.locator("#v-3").getByRole("button", { name: "Open in AI Studio" }).click();
   const dialog = page.getByRole("dialog", { name: "Studio" });
   if (SHOTS) await shot(page, `${SHOTS}/still-panel-night-390.png`);
   await dialog.getByRole("button", { name: "Make the still" }).click();
@@ -359,7 +359,7 @@ test("Still: a provider safety stop is shown as one calm line, nothing else", as
 test("Gallery keeps what was made on this device, labelled, and can delete it", async () => {
   const { context, page, errors } = await setup(browser, server.url, { enabled: true, session: JSON.stringify({ v: 2, keys: { google: GOOGLE } }), replies: [geminiImage] });
   await reader(page, server.url);
-  await page.getByRole("button", { name: "Create from verse 3 in Studio" }).click();
+  await page.locator("#v-3").getByRole("button", { name: "Open in AI Studio" }).click();
   const dialog = page.getByRole("dialog", { name: "Studio" });
   await dialog.getByRole("button", { name: "Make the still" }).click();
   await dialog.getByText("Kept in your gallery on this device.").waitFor();
@@ -386,7 +386,7 @@ test("Song: the verse becomes lyrics (English, Syriac or both) and ElevenLabs co
   const music = { match: /api\.elevenlabs\.io\/v1\/music/, reply: () => ({ contentType: "audio/mpeg", body: Buffer.from("ID3fake-mp3-bytes") }) };
   const { context, page, calls, errors } = await setup(browser, server.url, { enabled: true, session: JSON.stringify({ v: 2, keys: { elevenlabs: ELEVEN } }), replies: [music] });
   await reader(page, server.url);
-  await page.getByRole("button", { name: "Create from verse 3 in Studio" }).click();
+  await page.locator("#v-3").getByRole("button", { name: "Open in AI Studio" }).click();
   const dialog = page.getByRole("dialog", { name: "Studio" });
   await dialog.getByRole("tab", { name: "Voice" }).click();
   await dialog.getByLabel("Style", { exact: true }).selectOption("Byzantine chant");
@@ -425,7 +425,7 @@ test("Film: a passage becomes a storyboard; Gemini Omni makes each shot in turn 
   };
   const { context, page, calls, errors } = await setup(browser, server.url, { enabled: true, session: JSON.stringify({ v: 2, keys: { google: GOOGLE } }), replies: [omni] });
   await reader(page, server.url);
-  await page.getByRole("button", { name: "Create from verse 3 in Studio" }).click();
+  await page.locator("#v-3").getByRole("button", { name: "Open in AI Studio" }).click();
   const dialog = page.getByRole("dialog", { name: "Studio" });
   await dialog.getByRole("tab", { name: "Video" }).click();
   await dialog.getByLabel("To", { exact: true }).selectOption("4");
@@ -462,7 +462,7 @@ test("Free services: one tap turns them on (no key); recitation works, still and
   ];
   const { context, page, calls, errors } = await setup(browser, server.url, { enabled: true, replies });
   await reader(page, server.url);
-  await page.getByRole("button", { name: "Create from verse 3 in Studio" }).click();
+  await page.locator("#v-3").getByRole("button", { name: "Open in AI Studio" }).click();
   const dialog = page.getByRole("dialog", { name: "Studio" });
   await dialog.getByRole("button", { name: "Connections" }).click();
   const row = dialog.locator("[data-provider=free]");
@@ -501,7 +501,7 @@ test("Sermon: the tab writes from the passage, filters bad citations, labels the
   const { context, page, calls, errors } = await setup(browser, server.url, { enabled: true, session: JSON.stringify({ v: 2, keys: { anthropic: CLAUDE } }), replies: [claude] });
   await context.grantPermissions(["clipboard-read", "clipboard-write"]);
   await reader(page, server.url);
-  await page.getByRole("button", { name: "Create from verse 3 in Studio" }).click();
+  await page.locator("#v-3").getByRole("button", { name: "Open in AI Studio" }).click();
   const dialog = page.getByRole("dialog", { name: "Studio" });
   await dialog.waitFor();
   await dialog.getByLabel("Book", { exact: true }).selectOption("john");
