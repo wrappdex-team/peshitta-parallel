@@ -473,9 +473,9 @@ test("Free services: one tap turns them on (no key); recitation works, still and
   assert.deepEqual(JSON.parse(await page.evaluate(() => sessionStorage.getItem("injeel-agent"))), { v: 2, keys: { free: "no-key" } });
   await dialog.getByRole("button", { name: "Done" }).click();
   assert.match(await dialog.textContent(), /None of your connections makes a still yet/);
-  await dialog.getByRole("tab", { name: "Film" }).click();
+  await dialog.getByRole("tab", { name: "Video" }).click();
   assert.match(await dialog.textContent(), /None of your connections makes a film yet/);
-  await dialog.getByRole("tab", { name: "Song" }).click();
+  await dialog.getByRole("tab", { name: "Voice" }).click();
   assert.match(await dialog.locator("[data-studio-free]").textContent(), /Free third-party recitation/);
   await dialog.getByRole("button", { name: "Make the recitation" }).click();
   const label = dialog.locator("[data-studio-label]");
