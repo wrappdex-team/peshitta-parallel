@@ -95,6 +95,15 @@ async function noHorizontalScroll(page) {
   });
 }
 
+
+async function openAdvanced(dialog) {
+  const box = dialog.locator("[data-studio-advanced]");
+  if (!(await box.evaluate((el) => el instanceof HTMLDetailsElement && el.open))) {
+    await box.locator("summary").click();
+  }
+  await box.locator("summary").waitFor();
+}
+
 let server;
 let browser;
 test.before(async () => {
@@ -173,7 +182,8 @@ test("Passage: Book, Chapter, From and To set a range, and the still prompt quot
   const passage = await dialog.locator("[data-studio-passage]").textContent();
   assert.match(passage, /poor in spirit/);
   assert.match(passage, /mourners/);
-  const prompt = await dialog.getByRole("textbox").inputValue();
+  await openAdvanced(dialog);
+  const prompt = await dialog.locator("[data-studio-still] textarea").inputValue();
   assert.match(prompt, /Matthew 5:3–4/);
   assert.match(prompt, /poor in spirit/);
   assert.match(prompt, /mourners/);
@@ -184,7 +194,7 @@ test("Passage: Book, Chapter, From and To set a range, and the still prompt quot
   assert.equal(await dialog.getByLabel("To", { exact: true }).inputValue(), "1");
   assert.equal(await dialog.getByLabel("Chapter", { exact: true }).locator("option").count(), 21, "chapter list follows the selected book");
   assert.match(await dialog.locator("[data-studio-passage]").textContent(), /In the beginning was the Word/);
-  const john = await dialog.getByRole("textbox").inputValue();
+  const john = await dialog.locator("[data-studio-still] textarea").inputValue();
   assert.match(john, /John 1:1/);
   assert.match(john, /Elohim was the Word/);
   await dialog.getByLabel("Chapter", { exact: true }).selectOption("3");
@@ -195,7 +205,7 @@ test("Passage: Book, Chapter, From and To set a range, and the still prompt quot
   assert.equal(toValues[0], "16", "To cannot be earlier than From");
   await dialog.getByLabel("To", { exact: true }).selectOption("17");
   assert.equal(await dialog.locator("[data-studio-ref]").textContent(), "John 3:16–17");
-  assert.match(await dialog.getByRole("textbox").inputValue(), /John 3:16–17/);
+  assert.match(await dialog.locator("[data-studio-still] textarea").inputValue(), /John 3:16–17/);
   assert.deepEqual(errors, []);
   await context.close();
 });
@@ -274,9 +284,10 @@ test("Still: century style + aspect shape the verse-aware prompt; the result car
   await reader(page, server.url);
   await page.getByRole("button", { name: "Create from verse 3 in Studio" }).click();
   const dialog = page.getByRole("dialog", { name: "Studio" });
-  await dialog.getByRole("radio", { name: /Rabbula Gospels/ }).click();
+  await dialog.getByLabel("Style", { exact: true }).selectOption("rabbula");
+  await openAdvanced(dialog);
   await dialog.getByRole("radio", { name: "16:9" }).click();
-  const prompt = await dialog.getByRole("textbox").inputValue();
+  const prompt = await dialog.locator("textarea").filter({ hasText: "Rabbula" }).inputValue();
   assert.match(prompt, /Rabbula Gospels \(586 AD\)/);
   assert.match(prompt, /Blessed are the poor in spirit/);
   assert.match(prompt, /No text, letters or captions/);
@@ -295,6 +306,34 @@ test("Still: century style + aspect shape the verse-aware prompt; the result car
   }
   const prefs = JSON.parse(await page.evaluate(() => localStorage.getItem("injeel-studio")));
   assert.equal(prefs.style, "rabbula");
+  assert.ok(!JSON.stringify(prefs).includes(GOOGLE));
+  assert.deepEqual(errors, []);
+  await context.close();
+});
+
+test("Still: style is a dropdown, palettes are gone, Advanced starts closed, and a custom style is sent in the request", async () => {
+  const { context, page, calls, errors } = await setup(browser, server.url, { enabled: true, session: JSON.stringify({ v: 2, keys: { google: GOOGLE } }), replies: [geminiImage] });
+  await reader(page, server.url);
+  await page.getByRole("button", { name: "Create from verse 3 in Studio" }).click();
+  const dialog = page.getByRole("dialog", { name: "Studio" });
+  await dialog.waitFor();
+  assert.equal(await dialog.getByRole("radiogroup", { name: "Century style" }).count(), 0);
+  assert.equal(await dialog.locator("[data-studio-still] [style*='background']").count(), 0, "no colour-board swatches");
+  const advanced = dialog.locator("[data-studio-still] [data-studio-advanced]");
+  assert.equal(await advanced.evaluate((el) => el instanceof HTMLDetailsElement && el.open), false);
+  await dialog.getByLabel("Style", { exact: true }).selectOption("custom");
+  await dialog.getByLabel("Custom style").fill("Baptist hall light, plain plaster walls, natural window light");
+  await dialog.getByRole("button", { name: "Make the still" }).click();
+  await dialog.locator("[data-studio-label]").waitFor();
+  const call = calls.find((c) => c.url.includes("gemini-nano-banana-2.1:generateContent"));
+  const asked = JSON.stringify(JSON.parse(call.body));
+  assert.match(asked, /Baptist hall light, plain plaster walls, natural window light/);
+  assert.match(asked, /Blessed are the poor in spirit/);
+  assert.match(asked, /No text, letters or captions/);
+  assert.doesNotMatch(asked, /Rabbula Gospels|Byzantine icon, Middle Byzantine/);
+  const prefs = JSON.parse(await page.evaluate(() => localStorage.getItem("injeel-studio")));
+  assert.equal(prefs.style, "custom");
+  assert.equal(prefs.customStyle, "Baptist hall light, plain plaster walls, natural window light");
   assert.ok(!JSON.stringify(prefs).includes(GOOGLE));
   assert.deepEqual(errors, []);
   await context.close();
@@ -346,13 +385,14 @@ test("Song: the verse becomes lyrics (English, Syriac or both) and ElevenLabs co
   await page.getByRole("button", { name: "Create from verse 3 in Studio" }).click();
   const dialog = page.getByRole("dialog", { name: "Studio" });
   await dialog.getByRole("tab", { name: "Song" }).click();
+  await dialog.getByLabel("Style", { exact: true }).selectOption("Byzantine chant");
+  await openAdvanced(dialog);
   await dialog.getByRole("radio", { name: "Both" }).click();
   const box = dialog.getByLabel("LYRICS · SCRIPTURE");
   await page.waitForFunction(() => /[\u0700-\u074F]/.test(document.querySelector("[data-studio-song] textarea")?.value ?? ""), null, { timeout: 5000 });
   const lyrics = await box.inputValue();
   assert.match(lyrics, /[\u0700-\u074F]/, "Syriac line from the verse");
   assert.match(lyrics, /Blessed are the poor in spirit/);
-  await dialog.getByLabel("Genre").selectOption("Byzantine chant");
   if (SHOTS) await shot(page, `${SHOTS}/song-panel-day-390.png`);
   await dialog.getByRole("button", { name: "Make the song" }).click();
   const label = dialog.locator("[data-studio-label]");
@@ -385,7 +425,8 @@ test("Film: a passage becomes a storyboard; Gemini Omni makes each shot in turn 
   const dialog = page.getByRole("dialog", { name: "Studio" });
   await dialog.getByRole("tab", { name: "Film" }).click();
   await dialog.getByLabel("To", { exact: true }).selectOption("4");
-  await dialog.getByLabel("Film style").selectOption("rublev");
+  await dialog.getByLabel("Style", { exact: true }).selectOption("rublev");
+  await openAdvanced(dialog);
   await dialog.getByRole("radio", { name: "9:16" }).click();
   const shots = dialog.getByRole("list", { name: "Storyboard" }).getByRole("listitem");
   assert.equal(await shots.count(), 2);

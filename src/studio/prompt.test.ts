@@ -26,6 +26,18 @@ test("still prompt quotes the verse verbatim, names the style and always carries
   assert.ok(prompt.endsWith(REVERENCE));
 });
 
+test("a custom pre-prompt replaces the century style text and still carries the reverence guard", () => {
+  const custom = { prompt: "Baptist hall light, plain plaster walls, natural window light" };
+  const still = stillPrompt("John 1:1", [{ v: 1, en: "In the beginning was the Word." }], custom);
+  assert.match(still, /^Baptist hall light, plain plaster walls, natural window light/);
+  assert.doesNotMatch(still, /Rabbula|Byzantine icon|San Vitale/);
+  assert.ok(still.includes("In the beginning was the Word."));
+  assert.ok(still.endsWith(REVERENCE));
+  const shot = storyboard("John", 1, [{ v: 1, en: "In the beginning was the Word." }], custom)[0];
+  assert.match(shot.prompt, /^Baptist hall light, plain plaster walls, natural window light/);
+  assert.match(shot.prompt, /on screen/);
+});
+
 test("lyrics: English, Syriac or both, verse text untouched", () => {
   assert.equal(lyricsFor([v3], "english"), `[Verse]\n${v3.en}`);
   assert.equal(lyricsFor([v3], "syriac"), `[Verse]\n${v3.sy}`);

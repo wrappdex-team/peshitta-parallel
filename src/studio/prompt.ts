@@ -4,6 +4,9 @@
  */
 import type { CenturyStyle } from "./styles.ts";
 
+/** A century preset, or a reader's custom pre-prompt, used only as style text. */
+export type StylePrompt = Pick<CenturyStyle, "prompt">;
+
 export type Verse = { v: number; en: string; sy?: string };
 export const REVERENCE = "Reverent, dignified sacred art. No gore, no nudity, no mockery, no modern objects or logos. No text, letters or captions in the image.";
 export const ASPECTS = ["1:1", "4:5", "3:2", "16:9", "9:16"] as const;
@@ -14,7 +17,7 @@ function quote(text: string, max = 600) {
   return clean.length > max ? `${clean.slice(0, max)}…` : clean;
 }
 
-export function stillPrompt(ref: string, verses: Verse[], style: CenturyStyle) {
+export function stillPrompt(ref: string, verses: Verse[], style: StylePrompt) {
   const text = quote(verses.map((verse) => verse.en).join(" "));
   return `${style.prompt}. Depict the scene of ${ref}: “${text}”. ${REVERENCE}`;
 }
@@ -50,7 +53,7 @@ export function songPrompt(ref: string, shape: SongShape) {
 export type Shot = { id: string; ref: string; verses: Verse[]; prompt: string };
 
 /** A verse or chapter becomes at most `max` shots, verses grouped evenly. */
-export function storyboard(bookName: string, chapter: number, verses: Verse[], style: CenturyStyle, max = 8): Shot[] {
+export function storyboard(bookName: string, chapter: number, verses: Verse[], style: StylePrompt, max = 8): Shot[] {
   if (!verses.length) return [];
   const count = Math.min(max, verses.length);
   const size = Math.ceil(verses.length / count);
