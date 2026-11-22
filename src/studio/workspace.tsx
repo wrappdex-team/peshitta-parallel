@@ -4,6 +4,8 @@ import { CAPABILITIES, provider, type Capability } from "./catalog.ts";
 import { ConnectionsPanel } from "./connections-panel.tsx";
 import { patchStudioPrefs, readStudioPrefs, scopeRef, scopeVerses, type StudioScope } from "./prefs.ts";
 import { useConnections } from "./use-connections.ts";
+import type { Output } from "./result.tsx";
+import { StillPanel } from "./still-panel.tsx";
 
 export type Tab = "still" | "song" | "film";
 const TABS: { id: Tab; label: string }[] = [
@@ -12,7 +14,7 @@ const TABS: { id: Tab; label: string }[] = [
   { id: "film", label: "Film" },
 ];
 
-export type PanelProps = { scope: StudioScope; keys: ReturnType<typeof useConnections>["keys"]; onConnect: () => void };
+export type PanelProps = { scope: StudioScope; keys: ReturnType<typeof useConnections>["keys"]; onConnect: () => void; onMade?: (output: Output) => void };
 
 /** Which connected account a tab will use, or a calm nudge to connect one. */
 export function Engine({ cap, keys, onConnect }: { cap: Capability; keys: PanelProps["keys"]; onConnect: () => void }) {
@@ -39,7 +41,7 @@ function Placeholder({ tab, ...props }: PanelProps & { tab: Tab }) {
 }
 
 /** Filled by the Still, Song and Film panels. */
-const PANELS: Partial<Record<Tab, (props: PanelProps) => ReactNode>> = {};
+const PANELS: Partial<Record<Tab, (props: PanelProps) => ReactNode>> = { still: (props) => <StillPanel {...props} /> };
 
 export default function Workspace({ scope: initial, onClose }: { scope: StudioScope; onClose: () => void }) {
   const [scope, setScope] = useState(initial);

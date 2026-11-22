@@ -4,6 +4,7 @@
 import assert from "node:assert/strict";
 import { mkdirSync } from "node:fs";
 import test from "node:test";
+import { deflateSync, crc32 } from "node:zlib";
 import { chromium } from "playwright";
 import { startBuiltServer } from "./serve-built.mjs";
 
@@ -12,13 +13,45 @@ const SIZES = [206, 360, 390, 412, 1280];
 const FAKE_OPENAI = `sk-proj-${"o".repeat(40)}`;
 const FAKE_OPENROUTER = `sk-or-v1-${"r".repeat(48)}`;
 
-async function setup(browser, url, { theme = "day", width = 390, enabled = false, session = null } = {}) {
+/** A small mosaic-like PNG so screenshots show a plausible still. */
+function mockPng(w = 160, h = 200) {
+  const rows = [];
+  for (let y = 0; y < h; y++) {
+    rows.push(0);
+    for (let x = 0; x < w; x++) {
+      const on = (Math.floor(x / 8) + Math.floor(y / 8)) % 2;
+      const inner = x > 50 && x < 110 && y > 40 && y < 170;
+      rows.push(...(inner ? (on ? [232, 223, 200] : [140, 59, 42]) : on ? [201, 162, 39] : [31, 63, 107]));
+    }
+  }
+  const chunk = (type, data) => {
+    const len = Buffer.alloc(4);
+    len.writeUInt32BE(data.length);
+    const body = Buffer.concat([Buffer.from(type), data]);
+    const crc = Buffer.alloc(4);
+    crc.writeUInt32BE(crc32(body) >>> 0);
+    return Buffer.concat([len, body, crc]);
+  };
+  const ihdr = Buffer.alloc(13);
+  ihdr.writeUInt32BE(w, 0);
+  ihdr.writeUInt32BE(h, 4);
+  ihdr.set([8, 2, 0, 0, 0], 8);
+  return Buffer.concat([Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]), chunk("IHDR", ihdr), chunk("IDAT", deflateSync(Buffer.from(rows))), chunk("IEND", Buffer.alloc(0))]).toString("base64");
+}
+const PNG = mockPng();
+
+async function setup(browser, url, { theme = "day", width = 390, enabled = false, session = null, replies = [] } = {}) {
   const context = await browser.newContext({ viewport: { width, height: 844 } });
   const calls = [];
   await context.route(/^https:\/\/(api\.openai\.com|generativelanguage\.googleapis\.com|api\.anthropic\.com|api\.x\.ai|openrouter\.ai|api\.elevenlabs\.io|queue\.fal\.run|fal\.run|api\.stability\.ai)\//, async (route) => {
     const request = route.request();
     calls.push({ url: request.url(), method: request.method(), headers: request.headers(), body: request.postData() });
     const href = request.url();
+    const custom = replies.find((reply) => reply.match.test(href));
+    if (custom) {
+      const out = custom.reply(request);
+      return route.fulfill({ status: out.status ?? 200, contentType: out.contentType ?? "application/json", headers: { "access-control-allow-origin": "*" }, body: typeof out.body === "string" || Buffer.isBuffer(out.body) ? out.body : JSON.stringify(out.body) });
+    }
     if (href.endsWith("/api/v1/auth/keys")) return route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ key: FAKE_OPENROUTER }) });
     return route.fulfill({ status: 200, contentType: "application/json", headers: { "access-control-allow-origin": "*" }, body: JSON.stringify({ data: [{ id: "model-a" }, { id: "model-b" }] }) });
   });
@@ -44,7 +77,12 @@ async function reader(page, url) {
 }
 
 async function noHorizontalScroll(page) {
-  return page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1);
+  return page.evaluate(() => {
+    if (document.documentElement.scrollWidth > window.innerWidth + 1) return false;
+    // Inside Studio, scrolling panes must not be pushed wider than the sheet either.
+    const pane = document.querySelector('dialog[aria-label="Studio"] section > div.overflow-y-auto');
+    return !pane || pane.scrollWidth <= pane.clientWidth + 1;
+  });
 }
 
 let server;
@@ -165,3 +203,50 @@ for (const theme of ["day", "night"]) {
     }
   });
 }
+
+const GOOGLE = `AQ.${"g".repeat(30)}`;
+const geminiImage = { match: /:generateContent$/, reply: () => ({ body: { candidates: [{ finishReason: "STOP", content: { parts: [{ inlineData: { mimeType: "image/png", data: PNG } }] } }] } }) };
+
+test("Still: century style + aspect shape the verse-aware prompt; the result carries its label", async () => {
+  const { context, page, calls, errors } = await setup(browser, server.url, { enabled: true, session: JSON.stringify({ v: 2, keys: { google: GOOGLE } }), replies: [geminiImage] });
+  await reader(page, server.url);
+  await page.getByRole("button", { name: "Create from verse 3 in Studio" }).click();
+  const dialog = page.getByRole("dialog", { name: "Studio" });
+  await dialog.getByRole("radio", { name: /Rabbula Gospels/ }).click();
+  await dialog.getByRole("radio", { name: "16:9" }).click();
+  const prompt = await dialog.getByRole("textbox").inputValue();
+  assert.match(prompt, /Rabbula Gospels \(586 AD\)/);
+  assert.match(prompt, /Blessed are the poor in spirit/);
+  assert.match(prompt, /No text, letters or captions/);
+  await dialog.getByRole("button", { name: "Make the still" }).click();
+  const label = dialog.locator("[data-studio-label]");
+  await label.waitFor();
+  assert.equal(await label.textContent(), "AI-generated · Google Gemini · Nano Banana 2.1 · Matthew 5:3 · not reviewed");
+  const call = calls.find((c) => c.url.includes("gemini-nano-banana-2.1:generateContent"));
+  assert.equal(call.headers["x-goog-api-key"], GOOGLE);
+  const body = JSON.parse(call.body);
+  assert.deepEqual(body.generationConfig, { responseModalities: ["IMAGE"], imageConfig: { aspectRatio: "16:9" } });
+  assert.equal(await dialog.getByRole("link", { name: "Download" }).getAttribute("download"), "injeel-matthew-5-3-rabbula-gospels.png");
+  if (SHOTS) {
+    await label.scrollIntoViewIfNeeded();
+    await page.screenshot({ path: `${SHOTS}/still-result-day-390.png` });
+  }
+  const prefs = JSON.parse(await page.evaluate(() => localStorage.getItem("injeel-studio")));
+  assert.equal(prefs.style, "rabbula");
+  assert.ok(!JSON.stringify(prefs).includes(GOOGLE));
+  assert.deepEqual(errors, []);
+  await context.close();
+});
+
+test("Still: a provider safety stop is shown as one calm line, nothing else", async () => {
+  const blocked = { match: /:generateContent$/, reply: () => ({ body: { candidates: [{ finishReason: "IMAGE_SAFETY" }] } }) };
+  const { context, page } = await setup(browser, server.url, { theme: "night", enabled: true, session: JSON.stringify({ v: 2, keys: { google: GOOGLE } }), replies: [blocked] });
+  await reader(page, server.url);
+  await page.getByRole("button", { name: "Create from verse 3 in Studio" }).click();
+  const dialog = page.getByRole("dialog", { name: "Studio" });
+  if (SHOTS) await page.screenshot({ path: `${SHOTS}/still-panel-night-390.png` });
+  await dialog.getByRole("button", { name: "Make the still" }).click();
+  await dialog.getByText("Google Gemini declined this for safety. Try a gentler, more reverent description.").waitFor();
+  assert.equal(await dialog.locator("[data-studio-output]").count(), 0);
+  await context.close();
+});
